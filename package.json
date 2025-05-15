@@ -36,7 +36,6 @@
     "@cryptography/aes": "^0.1.1",
     "async-mutex": "^0.3.0",
     "big-integer": "^1.6.48",
-    "htmlparser2": "^6.1.0",
     "mime": "^3.0.0",
     "node-localstorage": "^2.2.1",
     "pako": "^2.0.3",

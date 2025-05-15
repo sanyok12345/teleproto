@@ -1,164 +1,168 @@
-import { Parser } from "htmlparser2";
-import { Handler } from "htmlparser2/lib/Parser";
 import { Api } from "../tl";
 import { helpers } from "../index";
-
-class HTMLToTelegramParser implements Handler {
-    text: string;
-    entities: Api.TypeMessageEntity[];
-    private readonly _buildingEntities: Map<string, Api.TypeMessageEntity>;
-    private readonly _openTags: string[];
-    private readonly _openTagsMeta: (string | undefined)[];
-
-    constructor() {
-        this.text = "";
-        this.entities = [];
-        this._buildingEntities = new Map<string, Api.TypeMessageEntity>();
-        this._openTags = [];
-        this._openTagsMeta = [];
-    }
-
-    onopentag(
-        name: string,
-        attributes: {
-            [s: string]: string;
-        }
-    ) {
-        /*
-         * This fires when a new tag is opened.
-         *
-         * If you don't need an aggregated `attributes` object,
-         * have a look at the `onopentagname` and `onattribute` events.
-         */
-        this._openTags.unshift(name);
-        this._openTagsMeta.unshift(undefined);
-        let EntityType;
-        const args: any = {};
-        if (name == "strong" || name == "b") {
-            EntityType = Api.MessageEntityBold;
-        } else if (name == "spoiler") {
-            EntityType = Api.MessageEntitySpoiler;
-        } else if (name == "em" || name == "i") {
-            EntityType = Api.MessageEntityItalic;
-        } else if (name == "u") {
-            EntityType = Api.MessageEntityUnderline;
-        } else if (name == "del" || name == "s") {
-            EntityType = Api.MessageEntityStrike;
-        } else if (name == "blockquote") {
-            EntityType = Api.MessageEntityBlockquote;
-            if (attributes.expandable !== undefined) {
-                args.collapsed = true;
-            }
-        } else if (name == "code") {
-            const pre = this._buildingEntities.get("pre");
-            if (pre && pre instanceof Api.MessageEntityPre) {
-                try {
-                    pre.language = attributes.class.slice(
-                        "language-".length,
-                        attributes.class.length
-                    );
-                } catch (e) {
-                    // no language block
-                }
-            } else {
-                EntityType = Api.MessageEntityCode;
-            }
-        } else if (name == "pre") {
-            EntityType = Api.MessageEntityPre;
-            args["language"] = "";
-        } else if (name == "a") {
-            let url: string | undefined = attributes.href;
-            if (!url) {
-                return;
-            }
-            if (url.startsWith("mailto:")) {
-                url = url.slice("mailto:".length, url.length);
-                EntityType = Api.MessageEntityEmail;
-            } else {
-                EntityType = Api.MessageEntityTextUrl;
-                args["url"] = url;
-                url = undefined;
-            }
-            this._openTagsMeta.shift();
-            this._openTagsMeta.unshift(url);
-        } else if (name == "tg-emoji") {
-            EntityType = Api.MessageEntityCustomEmoji;
-            args["documentId"] = attributes["emoji-id"];
-        }
-        if (EntityType && !this._buildingEntities.has(name)) {
-            this._buildingEntities.set(
-                name,
-                new EntityType({
-                    offset: this.text.length,
-                    length: 0,
-                    ...args,
-                })
-            );
-        }
-    }
-
-    ontext(text: string) {
-        const previousTag = this._openTags.length > 0 ? this._openTags[0] : "";
-        if (previousTag == "a") {
-            const url = this._openTagsMeta[0];
-            if (url) {
-                text = url;
-            }
-        }
-        for (let [tag, entity] of this._buildingEntities) {
-            entity.length += text.length;
-        }
-        this.text += text;
-    }
-
-    onclosetag(tagname: string) {
-        this._openTagsMeta.shift();
-        this._openTags.shift();
-        const entity = this._buildingEntities.get(tagname);
-        if (entity) {
-            this._buildingEntities.delete(tagname);
-            this.entities.push(entity);
-        }
-    }
-
-    onattribute(
-        name: string,
-        value: string,
-        quote?: string | undefined | null
-    ): void {}
-
-    oncdataend(): void {}
-
-    oncdatastart(): void {}
-
-    oncomment(data: string): void {}
-
-    oncommentend(): void {}
-
-    onend(): void {}
-
-    onerror(error: Error): void {}
-
-    onopentagname(name: string): void {}
-
-    onparserinit(parser: Parser): void {}
-
-    onprocessinginstruction(name: string, data: string): void {}
-
-    onreset(): void {}
-}
 
 export class HTMLParser {
     static parse(html: string): [string, Api.TypeMessageEntity[]] {
         if (!html) {
             return [html, []];
         }
-        const handler = new HTMLToTelegramParser();
-        const parser = new Parser(handler);
-        parser.write(html);
-        parser.end();
-        const text = helpers.stripText(handler.text, handler.entities);
-        return [text, handler.entities];
+        
+        const text: string[] = [];
+        const entities: Api.TypeMessageEntity[] = [];
+        const openTags: {name: string, meta?: string}[] = [];
+        const buildingEntities = new Map<string, Api.TypeMessageEntity>();
+        
+        let pos = 0;
+        let textPos = 0;
+        
+        while (pos < html.length) {
+            const tagStart = html.indexOf('<', pos);
+            
+            if (tagStart === -1) {
+                const textContent = html.substring(pos);
+                text.push(textContent);
+
+                for (const [_, entity] of buildingEntities) {
+                    entity.length += textContent.length;
+                }
+                break;
+            }
+            
+            if (tagStart > pos) {
+                const textContent = html.substring(pos, tagStart);
+                text.push(textContent);
+                
+                for (const [_, entity] of buildingEntities) {
+                    entity.length += textContent.length;
+                }
+                textPos += textContent.length;
+            }
+            
+            const tagEnd = html.indexOf('>', tagStart);
+            if (tagEnd === -1) {
+                text.push(html.substring(tagStart));
+                break;
+            }
+            
+            const tagContent = html.substring(tagStart + 1, tagEnd);
+            
+            if (tagContent.startsWith('/')) {
+                const tagName = tagContent.substring(1).trim().toLowerCase();
+                
+                const entity = buildingEntities.get(tagName);
+                if (entity) {
+                    buildingEntities.delete(tagName);
+                    entities.push(entity);
+                }
+                
+                const index = openTags.findIndex(t => t.name === tagName);
+                if (index !== -1) {
+                    openTags.splice(index, 1);
+                }
+            } else {
+                let tagName = tagContent;
+                let attributes: Record<string, string> = {};
+                
+                const spaceIndex = tagContent.indexOf(' ');
+                if (spaceIndex !== -1) {
+                    tagName = tagContent.substring(0, spaceIndex).toLowerCase();
+                    
+                    const attrStr = tagContent.substring(spaceIndex + 1);
+                    const attrRegex = /([^\s=]+)(?:=(?:"([^"]*)"|'([^']*)'|([^\s>]*)))?/g;
+                    let match;
+                    
+                    while ((match = attrRegex.exec(attrStr)) !== null) {
+                        const name = match[1];
+                        const value = match[2] || match[3] || match[4] || '';
+                        attributes[name] = value;
+                    }
+                } else {
+                    tagName = tagContent.toLowerCase();
+                }
+                
+                if (tagName.endsWith('/')) {
+                    tagName = tagName.slice(0, -1);
+                    pos = tagEnd + 1;
+                    continue;
+                }
+                
+                let tagMeta: string | undefined = undefined;
+                openTags.unshift({name: tagName, meta: tagMeta});
+                
+                let EntityType;
+                const args: any = {};
+                
+                if (tagName === "strong" || tagName === "b") {
+                    EntityType = Api.MessageEntityBold;
+                } else if (tagName === "spoiler") {
+                    EntityType = Api.MessageEntitySpoiler;
+                } else if (tagName === "em" || tagName === "i") {
+                    EntityType = Api.MessageEntityItalic;
+                } else if (tagName === "u") {
+                    EntityType = Api.MessageEntityUnderline;
+                } else if (tagName === "del" || tagName === "s") {
+                    EntityType = Api.MessageEntityStrike;
+                } else if (tagName === "blockquote") {
+                    EntityType = Api.MessageEntityBlockquote;
+                    if (attributes.expandable !== undefined) {
+                        args.collapsed = true;
+                    }
+                } else if (tagName === "code") {
+                    const pre = buildingEntities.get("pre");
+                    if (pre && pre instanceof Api.MessageEntityPre) {
+                        if (attributes.class && attributes.class.startsWith('language-')) {
+                            pre.language = attributes.class.slice("language-".length);
+                        }
+                    } else {
+                        EntityType = Api.MessageEntityCode;
+                    }
+                } else if (tagName === "pre") {
+                    EntityType = Api.MessageEntityPre;
+                    args["language"] = "";
+                } else if (tagName === "a") {
+                    let url: string | undefined = attributes.href;
+                    if (url) {
+                        if (url.startsWith("mailto:")) {
+                            url = url.slice("mailto:".length);
+                            EntityType = Api.MessageEntityEmail;
+                            tagMeta = url;
+                        } else {
+                            EntityType = Api.MessageEntityTextUrl;
+                            args["url"] = url;
+                        }
+                        openTags[0].meta = tagMeta;
+                    }
+                } else if (tagName === "tg-emoji") {
+                    EntityType = Api.MessageEntityCustomEmoji;
+                    args["documentId"] = attributes["emoji-id"];
+                }
+                
+                if (EntityType && !buildingEntities.has(tagName)) {
+                    buildingEntities.set(
+                        tagName,
+                        new EntityType({
+                            offset: textPos,
+                            length: 0,
+                            ...args,
+                        })
+                    );
+                }
+                
+                if (tagName === "a" && tagMeta) {
+                    text.push(tagMeta);
+                    
+                    for (const [_, entity] of buildingEntities) {
+                        entity.length += tagMeta.length;
+                    }
+                    textPos += tagMeta.length;
+                }
+            }
+            
+            pos = tagEnd + 1;
+        }
+        
+        const finalText = text.join('');
+        return [helpers.stripText(finalText, entities), entities];
     }
 
     static unparse(

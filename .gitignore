@@ -1,0 +1,26 @@
+/node_modules/
+/.vscode/
+/.idea/
+# Generated code
+/docs/
+/dist/
+/coverage/
+
+# User session
+*.session
+usermedia/
+
+# Quick tests should live in these files
+example.js
+example.ts
+example.d.ts
+
+# dotenv
+.env
+
+settings
+
+/browser/
+
+.DS_STORE
+package-lock.json

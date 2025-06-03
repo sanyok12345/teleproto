@@ -99,8 +99,58 @@ function checkPrimeAndGood(primeBytes: Buffer, g: number) {
             return; // It's good
         }
     }
-    throw new Error("Changing passwords unsupported");
-    //checkPrimeAndGoodCheck(readBigIntFromBuffer(primeBytes, false), g)
+    
+    try {
+        checkPrimeAndGoodCheck(readBigIntFromBuffer(primeBytes, false), g);
+    } catch (error) {
+        throw new Error(`Invalid prime or generator parameters: ${error instanceof Error ? error.message : String(error)}`);
+    }
+}
+
+function checkPrimeAndGoodCheck(prime: bigInt.BigInteger, g: number) {
+    if (!isProbablePrime(prime)) {
+        throw new Error("Prime number validation failed");
+    }
+    
+    if (![2, 3, 4, 5, 6, 7].includes(g)) {
+        throw new Error("Invalid generator value");
+    }
+    
+    if (prime.bitLength().toJSNumber() < 2048) {
+        throw new Error("Prime too small for secure DH");
+    }
+}
+
+function isProbablePrime(n: bigInt.BigInteger, k: number = 5): boolean {
+    if (n.equals(2) || n.equals(3)) return true;
+    if (n.isEven() || n.equals(1)) return false;
+    
+    let r = 0;
+    let d = n.subtract(1);
+    while (d.isEven()) {
+        d = d.divide(2);
+        r++;
+    }
+    
+    for (let i = 0; i < k; i++) {
+        const a = bigInt.randBetween(2, n.subtract(2));
+        let x = a.modPow(d, n);
+        
+        if (x.equals(1) || x.equals(n.subtract(1))) continue;
+        
+        let composite = true;
+        for (let j = 0; j < r - 1; j++) {
+            x = x.modPow(2, n);
+            if (x.equals(n.subtract(1))) {
+                composite = false;
+                break;
+            }
+        }
+        
+        if (composite) return false;
+    }
+    
+    return true;
 }
 
 /**

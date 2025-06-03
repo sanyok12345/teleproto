@@ -33,7 +33,6 @@
     "util": "^0.12.4"
   },
   "dependencies": {
-    "@cryptography/aes": "^0.1.1",
     "async-mutex": "^0.3.0",
     "big-integer": "^1.6.48",
     "mime": "^3.0.0",

@@ -93,3 +93,6 @@ client.addEventHandler(async (event) => {
   }
 }, new NewMessage({}));
 ```
+
+# Ask a question
+If you have any questions or need help, feel free to join our [Telegram group](https://t.me/TeleprotoChat) or open an issue on GitHub

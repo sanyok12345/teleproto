@@ -28,7 +28,6 @@ class IGE {
   }
 
   private aesDecryptBlock(block: Buffer): Buffer {
-    // AES-256-ECB без padding
     const decipher = crypto.createDecipheriv("aes-256-ecb", this.key, null);
     decipher.setAutoPadding(false);
     return Buffer.concat([decipher.update(block), decipher.final()]);

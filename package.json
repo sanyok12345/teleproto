@@ -8,6 +8,9 @@
     "type": "git",
     "url": "git+https://github.com/sanyok12345/teleproto.git"
   },
+  "scripts": {
+    "docs": "typedoc"
+  },
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/sanyok12345/teleproto/issues"
@@ -29,6 +32,7 @@
     "@types/pako": "^1.0.1",
     "@types/websocket": "^1.0.4",
     "ts-node": "^9.1.1",
+    "typedoc": "^0.28.7",
     "typescript": "^5.8.3",
     "util": "^0.12.4"
   },

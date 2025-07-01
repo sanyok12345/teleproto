@@ -1,12 +1,13 @@
 {
-  "entryPoints": ["teleproto"],
+  "entryPoints": ["teleproto/index.ts"],
   "out": "docs",
-  "tsconfig": "tsconfig.json",
   "excludeExternals": true,
   "excludePrivate": true,
   "excludeProtected": true,
   "readme": "README.md",
   "includeVersion": true,
   "gitRevision": "main",
-  "hideGenerator": true
+  "hideGenerator": true,
+  "theme": "default",
+  "tsconfig": "tsconfig.json",
 }

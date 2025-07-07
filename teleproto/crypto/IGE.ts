@@ -43,8 +43,8 @@ class IGE {
       ]);
     }
 
-    const iv1 = this.iv.slice(0, blockSize);
-    const iv2 = this.iv.slice(blockSize, 2 * blockSize);
+    const iv1 = this.iv.subarray(0, blockSize);
+    const iv2 = this.iv.subarray(blockSize, 2 * blockSize);
 
     let prevCipher = iv1;
     let prevPlain = iv2;
@@ -52,7 +52,7 @@ class IGE {
     const output = Buffer.alloc(plainText.length);
 
     for (let i = 0; i < plainText.length; i += blockSize) {
-      const plainBlock = plainText.slice(i, i + blockSize);
+      const plainBlock = plainText.subarray(i, i + blockSize);
       const xored = this.xorBuffers(plainBlock, prevCipher);
       const encrypted = this.aesEncryptBlock(xored);
       const cipherBlock = this.xorBuffers(encrypted, prevPlain);
@@ -71,8 +71,8 @@ class IGE {
       throw new Error("Cipher text must be multiple of 16 bytes");
     }
 
-    const iv1 = this.iv.slice(0, blockSize);
-    const iv2 = this.iv.slice(blockSize, 2 * blockSize);
+    const iv1 = this.iv.subarray(0, blockSize);
+    const iv2 = this.iv.subarray(blockSize, 2 * blockSize);
 
     let prevCipher = iv1;
     let prevPlain = iv2;
@@ -80,7 +80,7 @@ class IGE {
     const output = Buffer.alloc(cipherText.length);
 
     for (let i = 0; i < cipherText.length; i += blockSize) {
-      const cipherBlock = cipherText.slice(i, i + blockSize);
+      const cipherBlock = cipherText.subarray(i, i + blockSize);
       const xored = this.xorBuffers(cipherBlock, prevPlain);
       const decrypted = this.aesDecryptBlock(xored);
       const plainBlock = this.xorBuffers(decrypted, prevCipher);

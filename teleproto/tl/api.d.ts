@@ -12580,8 +12580,9 @@ export namespace Api {
     quoteText?: string;
     quoteEntities?: Api.TypeMessageEntity[];
     quoteOffset?: int;
+    todoItemId?: int;
   }> {
-  CONSTRUCTOR_ID: 2948336091;
+  CONSTRUCTOR_ID: 1763137035;
   SUBCLASS_OF_ID: 1531810151;
   classType: "constructor";
   className: "MessageReplyHeader";
@@ -12598,6 +12599,7 @@ export namespace Api {
     quoteText?: string;
     quoteEntities?: Api.TypeMessageEntity[];
     quoteOffset?: int;
+    todoItemId?: int;
   }
   export class MessageReplyStoryHeader extends VirtualClass<{
     peer: Api.TypePeer;
@@ -14494,8 +14496,9 @@ export namespace Api {
     quoteEntities?: Api.TypeMessageEntity[];
     quoteOffset?: int;
     monoforumPeerId?: Api.TypeInputPeer;
+    todoItemId?: int;
   }> {
-  CONSTRUCTOR_ID: 2960144560;
+  CONSTRUCTOR_ID: 2258615824;
   SUBCLASS_OF_ID: 2356220701;
   classType: "constructor";
   className: "InputReplyToMessage";
@@ -14508,6 +14511,7 @@ export namespace Api {
     quoteEntities?: Api.TypeMessageEntity[];
     quoteOffset?: int;
     monoforumPeerId?: Api.TypeInputPeer;
+    todoItemId?: int;
   }
   export class InputReplyToStory extends VirtualClass<{
     peer: Api.TypeInputPeer;
@@ -15999,8 +16003,9 @@ export namespace Api {
     upgradeStars?: long;
     resellMinStars?: long;
     title?: string;
+    releasedBy?: Api.TypePeer;
   }> {
-  CONSTRUCTOR_ID: 3324693032;
+  CONSTRUCTOR_ID: 2139438098;
   SUBCLASS_OF_ID: 3273414923;
   classType: "constructor";
   className: "StarGift";
@@ -16021,6 +16026,7 @@ export namespace Api {
     upgradeStars?: long;
     resellMinStars?: long;
     title?: string;
+    releasedBy?: Api.TypePeer;
   }
   export class StarGiftUnique extends VirtualClass<{
     // flags: null;
@@ -16036,8 +16042,9 @@ export namespace Api {
     availabilityTotal: int;
     giftAddress?: string;
     resellStars?: long;
+    releasedBy?: Api.TypePeer;
   }> {
-  CONSTRUCTOR_ID: 1678891913;
+  CONSTRUCTOR_ID: 4130830510;
   SUBCLASS_OF_ID: 3273414923;
   classType: "constructor";
   className: "StarGiftUnique";
@@ -16055,6 +16062,7 @@ export namespace Api {
     availabilityTotal: int;
     giftAddress?: string;
     resellStars?: long;
+    releasedBy?: Api.TypePeer;
   }
   export class MessageReportOption extends VirtualClass<{
     text: string;
@@ -20780,14 +20788,18 @@ export namespace Api {
     export class StarGifts extends VirtualClass<{
       hash: int;
       gifts: Api.TypeStarGift[];
+      chats: Api.TypeChat[];
+      users: Api.TypeUser[];
     }> {
-    CONSTRUCTOR_ID: 2417396202;
+    CONSTRUCTOR_ID: 785918357;
     SUBCLASS_OF_ID: 1635309988;
     classType: "constructor";
     className: "payments.StarGifts";
     static fromReader(reader: Reader): StarGifts;
       hash: int;
       gifts: Api.TypeStarGift[];
+      chats: Api.TypeChat[];
+      users: Api.TypeUser[];
     }
     export class ConnectedStarRefBots extends VirtualClass<{
       count: int;

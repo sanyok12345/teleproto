@@ -2468,11 +2468,11 @@ export namespace Api {
     fromId?: Api.TypePeer;
     peer?: Api.TypePeer;
     savedId?: long;
-    resaleStars?: long;
+    resaleAmount?: Api.TypeStarsAmount;
     canTransferAt?: int;
     canResellAt?: int;
   }> {
-  CONSTRUCTOR_ID: 775611918;
+  CONSTRUCTOR_ID: 888627955;
   SUBCLASS_OF_ID: 2256589094;
   classType: "constructor";
   className: "MessageActionStarGiftUnique";
@@ -2488,7 +2488,7 @@ export namespace Api {
     fromId?: Api.TypePeer;
     peer?: Api.TypePeer;
     savedId?: long;
-    resaleStars?: long;
+    resaleAmount?: Api.TypeStarsAmount;
     canTransferAt?: int;
     canResellAt?: int;
   }
@@ -3152,8 +3152,10 @@ export namespace Api {
     sendPaidMessagesStars?: long;
     disallowedGifts?: Api.TypeDisallowedGiftsSettings;
     starsRating?: Api.TypeStarsRating;
+    starsMyPendingRating?: Api.TypeStarsRating;
+    starsMyPendingRatingDate?: int;
   }> {
-  CONSTRUCTOR_ID: 702447806;
+  CONSTRUCTOR_ID: 2120470047;
   SUBCLASS_OF_ID: 524706233;
   classType: "constructor";
   className: "UserFull";
@@ -3209,6 +3211,8 @@ export namespace Api {
     sendPaidMessagesStars?: long;
     disallowedGifts?: Api.TypeDisallowedGiftsSettings;
     starsRating?: Api.TypeStarsRating;
+    starsMyPendingRating?: Api.TypeStarsRating;
+    starsMyPendingRatingDate?: int;
   }
   export class Contact extends VirtualClass<{
     userId: long;
@@ -12270,6 +12274,16 @@ export namespace Api {
   static fromReader(reader: Reader): WebPageAttributeUniqueStarGift;
     gift: Api.TypeStarGift;
   }
+  export class WebPageAttributeStarGiftCollection extends VirtualClass<{
+    icons: Api.TypeDocument[];
+  }> {
+  CONSTRUCTOR_ID: 835375875;
+  SUBCLASS_OF_ID: 2949638599;
+  classType: "constructor";
+  className: "WebPageAttributeStarGiftCollection";
+  static fromReader(reader: Reader): WebPageAttributeStarGiftCollection;
+    icons: Api.TypeDocument[];
+  }
   export class BankCardOpenUrl extends VirtualClass<{
     url: string;
     name: string;
@@ -13488,14 +13502,18 @@ export namespace Api {
     stars: long;
   }
   export class InputInvoiceStarGiftResale extends VirtualClass<{
+    // flags: null;
+    ton?: boolean;
     slug: string;
     toId: Api.TypeInputPeer;
   }> {
-  CONSTRUCTOR_ID: 1674298252;
+  CONSTRUCTOR_ID: 3281998628;
   SUBCLASS_OF_ID: 1919851518;
   classType: "constructor";
   className: "InputInvoiceStarGiftResale";
   static fromReader(reader: Reader): InputInvoiceStarGiftResale;
+    // flags: null;
+    ton?: boolean;
     slug: string;
     toId: Api.TypeInputPeer;
   }
@@ -14406,8 +14424,9 @@ export namespace Api {
     privacy?: Api.TypePrivacyRule[];
     views?: Api.TypeStoryViews;
     sentReaction?: Api.TypeReaction;
+    albums?: int[];
   }> {
-  CONSTRUCTOR_ID: 2041735716;
+  CONSTRUCTOR_ID: 3992020209;
   SUBCLASS_OF_ID: 3564613939;
   classType: "constructor";
   className: "StoryItem";
@@ -14434,6 +14453,7 @@ export namespace Api {
     privacy?: Api.TypePrivacyRule[];
     views?: Api.TypeStoryViews;
     sentReaction?: Api.TypeReaction;
+    albums?: int[];
   }
   export class StoryView extends VirtualClass<{
     // flags: null;
@@ -16041,6 +16061,7 @@ export namespace Api {
   export class StarGiftUnique extends VirtualClass<{
     // flags: null;
     requirePremium?: boolean;
+    resaleTonOnly?: boolean;
     id: long;
     title: string;
     slug: string;
@@ -16052,16 +16073,17 @@ export namespace Api {
     availabilityIssued: int;
     availabilityTotal: int;
     giftAddress?: string;
-    resellStars?: long;
+    resellAmount?: Api.TypeStarsAmount[];
     releasedBy?: Api.TypePeer;
   }> {
-  CONSTRUCTOR_ID: 4130830510;
+  CONSTRUCTOR_ID: 975654224;
   SUBCLASS_OF_ID: 3273414923;
   classType: "constructor";
   className: "StarGiftUnique";
   static fromReader(reader: Reader): StarGiftUnique;
     // flags: null;
     requirePremium?: boolean;
+    resaleTonOnly?: boolean;
     id: long;
     title: string;
     slug: string;
@@ -16073,7 +16095,7 @@ export namespace Api {
     availabilityIssued: int;
     availabilityTotal: int;
     giftAddress?: string;
-    resellStars?: long;
+    resellAmount?: Api.TypeStarsAmount[];
     releasedBy?: Api.TypePeer;
   }
   export class MessageReportOption extends VirtualClass<{
@@ -16666,6 +16688,44 @@ export namespace Api {
     icon?: Api.TypeDocument;
     giftsCount: int;
     hash: long;
+  }
+  export class StoryAlbum extends VirtualClass<{
+    // flags: null;
+    albumId: int;
+    title: string;
+    iconPhoto?: Api.TypePhoto;
+    iconVideo?: Api.TypeDocument;
+  }> {
+  CONSTRUCTOR_ID: 2468704346;
+  SUBCLASS_OF_ID: 2089574050;
+  classType: "constructor";
+  className: "StoryAlbum";
+  static fromReader(reader: Reader): StoryAlbum;
+    // flags: null;
+    albumId: int;
+    title: string;
+    iconPhoto?: Api.TypePhoto;
+    iconVideo?: Api.TypeDocument;
+  }
+  export class SearchPostsFlood extends VirtualClass<{
+    // flags: null;
+    queryIsFree?: boolean;
+    totalDaily: int;
+    remains: int;
+    waitTill?: int;
+    starsAmount: long;
+  }> {
+  CONSTRUCTOR_ID: 1040931690;
+  SUBCLASS_OF_ID: 3267415233;
+  classType: "constructor";
+  className: "SearchPostsFlood";
+  static fromReader(reader: Reader): SearchPostsFlood;
+    // flags: null;
+    queryIsFree?: boolean;
+    totalDaily: int;
+    remains: int;
+    waitTill?: int;
+    starsAmount: long;
   }
   export class ResPQ extends VirtualClass<{
     nonce: int128;
@@ -18163,11 +18223,12 @@ export namespace Api {
       count: int;
       nextRate?: int;
       offsetIdOffset?: int;
+      searchFlood?: Api.TypeSearchPostsFlood;
       messages: Api.TypeMessage[];
       chats: Api.TypeChat[];
       users: Api.TypeUser[];
     }> {
-    CONSTRUCTOR_ID: 978610270;
+    CONSTRUCTOR_ID: 1982539325;
     SUBCLASS_OF_ID: 3568569182;
     classType: "constructor";
     className: "messages.MessagesSlice";
@@ -18177,6 +18238,7 @@ export namespace Api {
       count: int;
       nextRate?: int;
       offsetIdOffset?: int;
+      searchFlood?: Api.TypeSearchPostsFlood;
       messages: Api.TypeMessage[];
       chats: Api.TypeChat[];
       users: Api.TypeUser[];
@@ -21563,6 +21625,25 @@ export namespace Api {
     static fromReader(reader: Reader): CanSendStoryCount;
       countRemains: int;
     }
+    export class AlbumsNotModified extends VirtualClass<void> {
+    CONSTRUCTOR_ID: 1448008427;
+    SUBCLASS_OF_ID: 94846265;
+    classType: "constructor";
+    className: "stories.AlbumsNotModified";
+    static fromReader(reader: Reader): AlbumsNotModified;
+}
+    export class Albums extends VirtualClass<{
+      hash: long;
+      albums: Api.TypeStoryAlbum[];
+    }> {
+    CONSTRUCTOR_ID: 3281549882;
+    SUBCLASS_OF_ID: 94846265;
+    classType: "constructor";
+    className: "stories.Albums";
+    static fromReader(reader: Reader): Albums;
+      hash: long;
+      albums: Api.TypeStoryAlbum[];
+    }
   }
 
   export namespace premium {
@@ -21934,6 +22015,7 @@ export namespace Api {
     export type TypeStoryReactionsList = stories.StoryReactionsList;
     export type TypeFoundStories = stories.FoundStories;
     export type TypeCanSendStoryCount = stories.CanSendStoryCount;
+    export type TypeAlbums = stories.AlbumsNotModified | stories.Albums;
   }
 
   export namespace premium {
@@ -28746,22 +28828,28 @@ export namespace Api {
       restricted: Bool;
     }
     export class SearchPosts extends Request<Partial<{
-      hashtag: string;
+      // flags: null;
+      hashtag?: string;
+      query?: string;
       offsetRate: int;
       offsetPeer: Api.TypeEntityLike;
       offsetId: int;
       limit: int;
+      allowPaidStars?: long;
     }>, messages.TypeMessages> {
-    CONSTRUCTOR_ID: 3516897403;
+    CONSTRUCTOR_ID: 4072993357;
     SUBCLASS_OF_ID: 3568569182;
     classType: "request";
     className: "channels.SearchPosts";
     static fromReader(reader: Reader): SearchPosts;
-      hashtag: string;
+      // flags: null;
+      hashtag?: string;
+      query?: string;
       offsetRate: int;
       offsetPeer: Api.TypeEntityLike;
       offsetId: int;
       limit: int;
+      allowPaidStars?: long;
     }
     export class UpdatePaidMessagesPrice extends Request<Partial<{
       // flags: null;
@@ -28802,6 +28890,18 @@ export namespace Api {
     static fromReader(reader: Reader): GetMessageAuthor;
       channel: Api.TypeEntityLike;
       id: int;
+    }
+    export class CheckSearchPostsFlood extends Request<Partial<{
+      // flags: null;
+      query?: string;
+    }>, Api.TypeSearchPostsFlood> {
+    CONSTRUCTOR_ID: 576090389;
+    SUBCLASS_OF_ID: 3267415233;
+    classType: "request";
+    className: "channels.CheckSearchPostsFlood";
+    static fromReader(reader: Reader): CheckSearchPostsFlood;
+      // flags: null;
+      query?: string;
     }
   }
 
@@ -29857,15 +29957,15 @@ export namespace Api {
     }
     export class UpdateStarGiftPrice extends Request<Partial<{
       stargift: Api.TypeInputSavedStarGift;
-      resellStars: long;
+      resellAmount: Api.TypeStarsAmount;
     }>, Api.TypeUpdates> {
-    CONSTRUCTOR_ID: 1001301217;
+    CONSTRUCTOR_ID: 3988679883;
     SUBCLASS_OF_ID: 2331323052;
     classType: "request";
     className: "payments.UpdateStarGiftPrice";
     static fromReader(reader: Reader): UpdateStarGiftPrice;
       stargift: Api.TypeInputSavedStarGift;
-      resellStars: long;
+      resellAmount: Api.TypeStarsAmount;
     }
     export class CreateStarGiftCollection extends Request<Partial<{
       peer: Api.TypeEntityLike;
@@ -30980,8 +31080,9 @@ export namespace Api {
       period?: int;
       fwdFromId?: Api.TypeEntityLike;
       fwdFromStory?: int;
+      albums?: int[];
     }>, Api.TypeUpdates> {
-    CONSTRUCTOR_ID: 3840305483;
+    CONSTRUCTOR_ID: 1937752812;
     SUBCLASS_OF_ID: 2331323052;
     classType: "request";
     className: "stories.SendStory";
@@ -31000,6 +31101,7 @@ export namespace Api {
       period?: int;
       fwdFromId?: Api.TypeEntityLike;
       fwdFromStory?: int;
+      albums?: int[];
     }
     export class EditStory extends Request<Partial<{
       // flags: null;
@@ -31339,6 +31441,94 @@ export namespace Api {
       offset: string;
       limit: int;
     }
+    export class CreateAlbum extends Request<Partial<{
+      peer: Api.TypeEntityLike;
+      title: string;
+      stories: int[];
+    }>, Api.TypeStoryAlbum> {
+    CONSTRUCTOR_ID: 2741212901;
+    SUBCLASS_OF_ID: 2089574050;
+    classType: "request";
+    className: "stories.CreateAlbum";
+    static fromReader(reader: Reader): CreateAlbum;
+      peer: Api.TypeEntityLike;
+      title: string;
+      stories: int[];
+    }
+    export class UpdateAlbum extends Request<Partial<{
+      // flags: null;
+      peer: Api.TypeEntityLike;
+      albumId: int;
+      title?: string;
+      deleteStories?: int[];
+      addStories?: int[];
+      order?: int[];
+    }>, Api.TypeStoryAlbum> {
+    CONSTRUCTOR_ID: 1582455222;
+    SUBCLASS_OF_ID: 2089574050;
+    classType: "request";
+    className: "stories.UpdateAlbum";
+    static fromReader(reader: Reader): UpdateAlbum;
+      // flags: null;
+      peer: Api.TypeEntityLike;
+      albumId: int;
+      title?: string;
+      deleteStories?: int[];
+      addStories?: int[];
+      order?: int[];
+    }
+    export class ReorderAlbums extends Request<Partial<{
+      peer: Api.TypeEntityLike;
+      order: int[];
+    }>, Bool> {
+    CONSTRUCTOR_ID: 2234907609;
+    SUBCLASS_OF_ID: 4122188204;
+    classType: "request";
+    className: "stories.ReorderAlbums";
+    static fromReader(reader: Reader): ReorderAlbums;
+      peer: Api.TypeEntityLike;
+      order: int[];
+    }
+    export class DeleteAlbum extends Request<Partial<{
+      peer: Api.TypeEntityLike;
+      albumId: int;
+    }>, Bool> {
+    CONSTRUCTOR_ID: 2369017552;
+    SUBCLASS_OF_ID: 4122188204;
+    classType: "request";
+    className: "stories.DeleteAlbum";
+    static fromReader(reader: Reader): DeleteAlbum;
+      peer: Api.TypeEntityLike;
+      albumId: int;
+    }
+    export class GetAlbums extends Request<Partial<{
+      peer: Api.TypeEntityLike;
+      hash: long;
+    }>, stories.TypeAlbums> {
+    CONSTRUCTOR_ID: 632548039;
+    SUBCLASS_OF_ID: 94846265;
+    classType: "request";
+    className: "stories.GetAlbums";
+    static fromReader(reader: Reader): GetAlbums;
+      peer: Api.TypeEntityLike;
+      hash: long;
+    }
+    export class GetAlbumStories extends Request<Partial<{
+      peer: Api.TypeEntityLike;
+      albumId: int;
+      offset: int;
+      limit: int;
+    }>, stories.TypeStories> {
+    CONSTRUCTOR_ID: 2894097761;
+    SUBCLASS_OF_ID: 622595116;
+    classType: "request";
+    className: "stories.GetAlbumStories";
+    static fromReader(reader: Reader): GetAlbumStories;
+      peer: Api.TypeEntityLike;
+      albumId: int;
+      offset: int;
+      limit: int;
+    }
   }
 
   export namespace premium {
@@ -31670,7 +31860,7 @@ export namespace Api {
   export type TypeBaseTheme = BaseThemeClassic | BaseThemeDay | BaseThemeNight | BaseThemeTinted | BaseThemeArctic;
   export type TypeInputThemeSettings = InputThemeSettings;
   export type TypeThemeSettings = ThemeSettings;
-  export type TypeWebPageAttribute = WebPageAttributeTheme | WebPageAttributeStory | WebPageAttributeStickerSet | WebPageAttributeUniqueStarGift;
+  export type TypeWebPageAttribute = WebPageAttributeTheme | WebPageAttributeStory | WebPageAttributeStickerSet | WebPageAttributeUniqueStarGift | WebPageAttributeStarGiftCollection;
   export type TypeBankCardOpenUrl = BankCardOpenUrl;
   export type TypeDialogFilter = DialogFilter | DialogFilterDefault | DialogFilterChatlist;
   export type TypeDialogFilterSuggested = DialogFilterSuggested;
@@ -31836,6 +32026,8 @@ export namespace Api {
   export type TypeSuggestedPost = SuggestedPost;
   export type TypeStarsRating = StarsRating;
   export type TypeStarGiftCollection = StarGiftCollection;
+  export type TypeStoryAlbum = StoryAlbum;
+  export type TypeSearchPostsFlood = SearchPostsFlood;
   export type TypeResPQ = ResPQ;
   export type TypeP_Q_inner_data = PQInnerData | PQInnerDataDc | PQInnerDataTemp | PQInnerDataTempDc;
   export type TypeBindAuthKeyInner = BindAuthKeyInner;
@@ -31874,7 +32066,7 @@ export namespace Api {
     | photos.UpdateProfilePhoto | photos.UploadProfilePhoto | photos.DeletePhotos | photos.GetUserPhotos | photos.UploadContactProfilePhoto
     | upload.SaveFilePart | upload.GetFile | upload.SaveBigFilePart | upload.GetWebFile | upload.GetCdnFile | upload.ReuploadCdnFile | upload.GetCdnFileHashes | upload.GetFileHashes
     | help.GetConfig | help.GetNearestDc | help.GetAppUpdate | help.GetInviteText | help.GetSupport | help.SetBotUpdatesStatus | help.GetCdnConfig | help.GetRecentMeUrls | help.GetTermsOfServiceUpdate | help.AcceptTermsOfService | help.GetDeepLinkInfo | help.GetAppConfig | help.SaveAppLog | help.GetPassportConfig | help.GetSupportName | help.GetUserInfo | help.EditUserInfo | help.GetPromoData | help.HidePromoData | help.DismissSuggestion | help.GetCountriesList | help.GetPremiumPromo | help.GetPeerColors | help.GetPeerProfileColors | help.GetTimezonesList
-    | channels.ReadHistory | channels.DeleteMessages | channels.ReportSpam | channels.GetMessages | channels.GetParticipants | channels.GetParticipant | channels.GetChannels | channels.GetFullChannel | channels.CreateChannel | channels.EditAdmin | channels.EditTitle | channels.EditPhoto | channels.CheckUsername | channels.UpdateUsername | channels.JoinChannel | channels.LeaveChannel | channels.InviteToChannel | channels.DeleteChannel | channels.ExportMessageLink | channels.ToggleSignatures | channels.GetAdminedPublicChannels | channels.EditBanned | channels.GetAdminLog | channels.SetStickers | channels.ReadMessageContents | channels.DeleteHistory | channels.TogglePreHistoryHidden | channels.GetLeftChannels | channels.GetGroupsForDiscussion | channels.SetDiscussionGroup | channels.EditCreator | channels.EditLocation | channels.ToggleSlowMode | channels.GetInactiveChannels | channels.ConvertToGigagroup | channels.GetSendAs | channels.DeleteParticipantHistory | channels.ToggleJoinToSend | channels.ToggleJoinRequest | channels.ReorderUsernames | channels.ToggleUsername | channels.DeactivateAllUsernames | channels.ToggleForum | channels.CreateForumTopic | channels.GetForumTopics | channels.GetForumTopicsByID | channels.EditForumTopic | channels.UpdatePinnedForumTopic | channels.DeleteTopicHistory | channels.ReorderPinnedForumTopics | channels.ToggleAntiSpam | channels.ReportAntiSpamFalsePositive | channels.ToggleParticipantsHidden | channels.UpdateColor | channels.ToggleViewForumAsMessages | channels.GetChannelRecommendations | channels.UpdateEmojiStatus | channels.SetBoostsToUnblockRestrictions | channels.SetEmojiStickers | channels.RestrictSponsoredMessages | channels.SearchPosts | channels.UpdatePaidMessagesPrice | channels.ToggleAutotranslation | channels.GetMessageAuthor
+    | channels.ReadHistory | channels.DeleteMessages | channels.ReportSpam | channels.GetMessages | channels.GetParticipants | channels.GetParticipant | channels.GetChannels | channels.GetFullChannel | channels.CreateChannel | channels.EditAdmin | channels.EditTitle | channels.EditPhoto | channels.CheckUsername | channels.UpdateUsername | channels.JoinChannel | channels.LeaveChannel | channels.InviteToChannel | channels.DeleteChannel | channels.ExportMessageLink | channels.ToggleSignatures | channels.GetAdminedPublicChannels | channels.EditBanned | channels.GetAdminLog | channels.SetStickers | channels.ReadMessageContents | channels.DeleteHistory | channels.TogglePreHistoryHidden | channels.GetLeftChannels | channels.GetGroupsForDiscussion | channels.SetDiscussionGroup | channels.EditCreator | channels.EditLocation | channels.ToggleSlowMode | channels.GetInactiveChannels | channels.ConvertToGigagroup | channels.GetSendAs | channels.DeleteParticipantHistory | channels.ToggleJoinToSend | channels.ToggleJoinRequest | channels.ReorderUsernames | channels.ToggleUsername | channels.DeactivateAllUsernames | channels.ToggleForum | channels.CreateForumTopic | channels.GetForumTopics | channels.GetForumTopicsByID | channels.EditForumTopic | channels.UpdatePinnedForumTopic | channels.DeleteTopicHistory | channels.ReorderPinnedForumTopics | channels.ToggleAntiSpam | channels.ReportAntiSpamFalsePositive | channels.ToggleParticipantsHidden | channels.UpdateColor | channels.ToggleViewForumAsMessages | channels.GetChannelRecommendations | channels.UpdateEmojiStatus | channels.SetBoostsToUnblockRestrictions | channels.SetEmojiStickers | channels.RestrictSponsoredMessages | channels.SearchPosts | channels.UpdatePaidMessagesPrice | channels.ToggleAutotranslation | channels.GetMessageAuthor | channels.CheckSearchPostsFlood
     | bots.SendCustomRequest | bots.AnswerWebhookJSONQuery | bots.SetBotCommands | bots.ResetBotCommands | bots.GetBotCommands | bots.SetBotMenuButton | bots.GetBotMenuButton | bots.SetBotBroadcastDefaultAdminRights | bots.SetBotGroupDefaultAdminRights | bots.SetBotInfo | bots.GetBotInfo | bots.ReorderUsernames | bots.ToggleUsername | bots.CanSendMessage | bots.AllowSendMessage | bots.InvokeWebViewCustomMethod | bots.GetPopularAppBots | bots.AddPreviewMedia | bots.EditPreviewMedia | bots.DeletePreviewMedia | bots.ReorderPreviewMedias | bots.GetPreviewInfo | bots.GetPreviewMedias | bots.UpdateUserEmojiStatus | bots.ToggleUserEmojiStatusPermission | bots.CheckDownloadFileParams | bots.GetAdminedBots | bots.UpdateStarRefProgram | bots.SetCustomVerification | bots.GetBotRecommendations
     | payments.GetPaymentForm | payments.GetPaymentReceipt | payments.ValidateRequestedInfo | payments.SendPaymentForm | payments.GetSavedInfo | payments.ClearSavedInfo | payments.GetBankCardData | payments.ExportInvoice | payments.AssignAppStoreTransaction | payments.AssignPlayMarketTransaction | payments.GetPremiumGiftCodeOptions | payments.CheckGiftCode | payments.ApplyGiftCode | payments.GetGiveawayInfo | payments.LaunchPrepaidGiveaway | payments.GetStarsTopupOptions | payments.GetStarsStatus | payments.GetStarsTransactions | payments.SendStarsForm | payments.RefundStarsCharge | payments.GetStarsRevenueStats | payments.GetStarsRevenueWithdrawalUrl | payments.GetStarsRevenueAdsAccountUrl | payments.GetStarsTransactionsByID | payments.GetStarsGiftOptions | payments.GetStarsSubscriptions | payments.ChangeStarsSubscription | payments.FulfillStarsSubscription | payments.GetStarsGiveawayOptions | payments.GetStarGifts | payments.SaveStarGift | payments.ConvertStarGift | payments.BotCancelStarsSubscription | payments.GetConnectedStarRefBots | payments.GetConnectedStarRefBot | payments.GetSuggestedStarRefBots | payments.ConnectStarRefBot | payments.EditConnectedStarRefBot | payments.GetStarGiftUpgradePreview | payments.UpgradeStarGift | payments.TransferStarGift | payments.GetUniqueStarGift | payments.GetSavedStarGifts | payments.GetSavedStarGift | payments.GetStarGiftWithdrawalUrl | payments.ToggleChatStarGiftNotifications | payments.ToggleStarGiftsPinnedToTop | payments.CanPurchaseStore | payments.GetResaleStarGifts | payments.UpdateStarGiftPrice | payments.CreateStarGiftCollection | payments.UpdateStarGiftCollection | payments.ReorderStarGiftCollections | payments.DeleteStarGiftCollection | payments.GetStarGiftCollections
     | stickers.CreateStickerSet | stickers.RemoveStickerFromSet | stickers.ChangeStickerPosition | stickers.AddStickerToSet | stickers.SetStickerSetThumb | stickers.CheckShortName | stickers.SuggestShortName | stickers.ChangeSticker | stickers.RenameStickerSet | stickers.DeleteStickerSet | stickers.ReplaceSticker
@@ -31883,7 +32075,7 @@ export namespace Api {
     | folders.EditPeerFolders
     | stats.GetBroadcastStats | stats.LoadAsyncGraph | stats.GetMegagroupStats | stats.GetMessagePublicForwards | stats.GetMessageStats | stats.GetStoryStats | stats.GetStoryPublicForwards
     | chatlists.ExportChatlistInvite | chatlists.DeleteExportedInvite | chatlists.EditExportedInvite | chatlists.GetExportedInvites | chatlists.CheckChatlistInvite | chatlists.JoinChatlistInvite | chatlists.GetChatlistUpdates | chatlists.JoinChatlistUpdates | chatlists.HideChatlistUpdates | chatlists.GetLeaveChatlistSuggestions | chatlists.LeaveChatlist
-    | stories.CanSendStory | stories.SendStory | stories.EditStory | stories.DeleteStories | stories.TogglePinned | stories.GetAllStories | stories.GetPinnedStories | stories.GetStoriesArchive | stories.GetStoriesByID | stories.ToggleAllStoriesHidden | stories.ReadStories | stories.IncrementStoryViews | stories.GetStoryViewsList | stories.GetStoriesViews | stories.ExportStoryLink | stories.Report | stories.ActivateStealthMode | stories.SendReaction | stories.GetPeerStories | stories.GetAllReadPeerStories | stories.GetPeerMaxIDs | stories.GetChatsToSend | stories.TogglePeerStoriesHidden | stories.GetStoryReactionsList | stories.TogglePinnedToTop | stories.SearchPosts
+    | stories.CanSendStory | stories.SendStory | stories.EditStory | stories.DeleteStories | stories.TogglePinned | stories.GetAllStories | stories.GetPinnedStories | stories.GetStoriesArchive | stories.GetStoriesByID | stories.ToggleAllStoriesHidden | stories.ReadStories | stories.IncrementStoryViews | stories.GetStoryViewsList | stories.GetStoriesViews | stories.ExportStoryLink | stories.Report | stories.ActivateStealthMode | stories.SendReaction | stories.GetPeerStories | stories.GetAllReadPeerStories | stories.GetPeerMaxIDs | stories.GetChatsToSend | stories.TogglePeerStoriesHidden | stories.GetStoryReactionsList | stories.TogglePinnedToTop | stories.SearchPosts | stories.CreateAlbum | stories.UpdateAlbum | stories.ReorderAlbums | stories.DeleteAlbum | stories.GetAlbums | stories.GetAlbumStories
     | premium.GetBoostsList | premium.GetMyBoosts | premium.ApplyBoost | premium.GetBoostsStatus | premium.GetUserBoosts
     | smsjobs.IsEligibleToJoin | smsjobs.Join | smsjobs.Leave | smsjobs.UpdateSettings | smsjobs.GetStatus | smsjobs.GetSmsJob | smsjobs.FinishJob
     | fragment.GetCollectibleInfo;

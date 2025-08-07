@@ -25,7 +25,7 @@ const PING_WAKE_UP_WARNING_TIMEOUT = 1000; // 1 sec
  it will stop the execution of all other registered event handlers.
  It can be seen as the ``StopIteration`` in a for loop but for events.
  */
-export class StopPropagation extends Error {}
+export class StopPropagation extends Error { }
 
 /** @hidden */
 export function on(client: TelegramClient, event?: EventBuilder) {
@@ -177,7 +177,9 @@ export async function _dispatchUpdate(
                     if (client._errorHandler) {
                         await client._errorHandler(e as Error);
                     }
-                    if (client._log.canSend(LogLevel.ERROR)) {
+                    if (client._log && typeof client._log.canSend === 'function' && client._log.canSend(LogLevel.ERROR)) {
+                        console.error(e);
+                    } else if (client._log) {
                         console.error(e);
                     }
                 }
@@ -247,7 +249,9 @@ export async function _updateLoop(client: TelegramClient) {
             if (client._errorHandler) {
                 await client._errorHandler(err as Error);
             }
-            if (client._log.canSend(LogLevel.ERROR)) {
+            if (client._log && typeof client._log.canSend === 'function' && client._log.canSend(LogLevel.ERROR)) {
+                console.error(err);
+            } else if (client._log) {
                 console.error(err);
             }
 

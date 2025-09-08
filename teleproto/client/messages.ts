@@ -850,33 +850,36 @@ export async function forwardMessages(
         schedule,
         noforwards,
         dropAuthor,
-    }: ForwardMessagesParams
+        topMsgId,
+    }: ForwardMessagesParams & { topMsgId?: number | Api.Message } // или свой тип ID
 ) {
     if (!isArrayLike(messages)) {
         messages = [messages];
     }
+
     entity = await client.getInputEntity(entity);
+
     let fromPeerId: string | undefined;
     if (fromPeer) {
         fromPeer = await client.getInputEntity(fromPeer);
         fromPeerId = await client.getPeerId(fromPeer);
     }
+
     const getKey = (m: string | Api.Message) => {
         if (m instanceof Api.Message) {
             return m.chatId;
         }
         let msgId = parseID(m);
-
         if (msgId) {
-            if (fromPeerId !== undefined) {
-                return fromPeerId;
-            }
+            if (fromPeerId !== undefined) return fromPeerId;
             throw new Error("fromPeer must be given if integer IDs are used");
         } else {
             throw new Error(`Cannot forward ${m}`);
         }
     };
+
     const sent: Api.Message[] = [];
+
     for (let [chatId, chunk] of groupBy(messages, getKey) as Map<
         number,
         Api.Message[] | number[]
@@ -887,10 +890,10 @@ export async function forwardMessages(
             chat = fromPeer;
             numbers = chunk as number[];
         } else {
-            chat = await chunk[0].getInputChat();
+            chat = await (chunk as Api.Message[])[0].getInputChat();
             numbers = (chunk as Api.Message[]).map((m: Api.Message) => m.id);
         }
-        chunk.push();
+
         const request = new Api.messages.ForwardMessages({
             fromPeer: chat,
             id: numbers,
@@ -899,12 +902,15 @@ export async function forwardMessages(
             scheduleDate: schedule,
             noforwards: noforwards,
             dropAuthor: dropAuthor,
+            topMsgId: topMsgId ? getMessageId(topMsgId) : undefined,
         });
+
         const result = await client.invoke(request);
         sent.push(
             client._getResponseMessage(request, result, entity) as Api.Message
         );
     }
+
     return sent;
 }
 

@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------------------------
- *  Copyright (c) sanyok12345. Based on GramJS (MIT).
+ *  Copyright (c) 2025 sanyok12345. All rights reserved.
  *  Licensed under the MIT License. See LICENSE.txt in the project root for details.
  *--------------------------------------------------------------------------------------------*/
 
@@ -12,7 +12,8 @@ export function i2abLow(buf: Uint32Array): ArrayBufferLike {
     let o = 0;
 
     for (let j = 0; j < buf.length; j++) {
-        const v = buf[j] >>> 0; // ensure uint32
+        const v = buf[j] >>> 0;
+
         out[o++] = (v >>> 24) & 0xff;
         out[o++] = (v >>> 16) & 0xff;
         out[o++] = (v >>> 8) & 0xff;

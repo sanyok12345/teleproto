@@ -744,11 +744,15 @@ export async function sendMessage(
         replyTo = discussionData.replyTo;
     }
     let markup, request;
-    let replyObject = undefined;
+    let replyObject: Api.InputReplyToMessage | undefined = undefined;
     if (replyTo != undefined) {
         replyObject = new Api.InputReplyToMessage({
             replyToMsgId: getMessageId(replyTo)!,
             topMsgId: getMessageId(topMsgId),
+        });
+    } else if (topMsgId != undefined) {
+        replyObject = new Api.InputReplyToMessage({
+            replyToMsgId: getMessageId(topMsgId)!,
         });
     }
 

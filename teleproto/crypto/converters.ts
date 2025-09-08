@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------------------------
- *  Copyright (c) 2025 sanyok12345. All rights reserved.
+ *  Copyright (c) sanyok12345. All rights reserved.
  *  Licensed under the MIT License. See LICENSE.txt in the project root for details.
  *--------------------------------------------------------------------------------------------*/
 

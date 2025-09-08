@@ -1,6 +1,6 @@
 {
   "name": "teleproto",
-  "version": "214.1.5",
+  "version": "214.1.6",
   "description": "NodeJS MTProto API Telegram client library,",
   "main": "index.js",
   "types": "index.d.ts",

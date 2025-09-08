@@ -538,6 +538,8 @@ export interface ForwardMessagesParams {
     schedule?: DateLike;
     dropAuthor?: boolean;
     noforwards?: boolean;
+    /** Used for threads to reply to a specific thread */
+    topMsgId?: number | Api.Message;
 }
 
 /** Interface for editing messages */

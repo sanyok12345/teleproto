@@ -37,7 +37,7 @@ npmi.on("close", (code) => {
     if (code === 0) {
       fs.copyFileSync("package.json", "dist/package.json");
       fs.copyFileSync("README.md", "dist/README.md");
-      fs.copyFileSync("LICENSE", "dist/LICENSE");
+      fs.copyFileSync("LICENSE", "dist/LICENSE.txt");
       fs.copyFileSync("teleproto/tl/api.d.ts", "dist/tl/api.d.ts");
       fs.copyFileSync("teleproto/define.d.ts", "dist/define.d.ts");
       renameFiles("dist", "delete");

@@ -612,11 +612,15 @@ export async function _sendAlbum(
             })
         );
     }
-    let replyObject = undefined;
+    let replyObject: Api.InputReplyToMessage | undefined = undefined;
     if (replyTo != undefined) {
         replyObject = new Api.InputReplyToMessage({
             replyToMsgId: getMessageId(replyTo)!,
             topMsgId: getMessageId(topMsgId),
+        });
+    } else if (topMsgId != undefined) {
+        replyObject = new Api.InputReplyToMessage({
+            replyToMsgId: getMessageId(topMsgId)!,
         });
     }
 
@@ -724,11 +728,15 @@ export async function sendFile(
         throw new Error(`Cannot use ${file} as file.`);
     }
     const markup = client.buildReplyMarkup(buttons);
-    let replyObject = undefined;
+    let replyObject: Api.InputReplyToMessage | undefined = undefined;
     if (replyTo != undefined) {
         replyObject = new Api.InputReplyToMessage({
             replyToMsgId: getMessageId(replyTo)!,
             topMsgId: getMessageId(topMsgId),
+        });
+    } else if (topMsgId != undefined) {
+        replyObject = new Api.InputReplyToMessage({
+            replyToMsgId: getMessageId(topMsgId)!,
         });
     }
 

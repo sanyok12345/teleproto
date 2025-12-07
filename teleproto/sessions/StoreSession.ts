@@ -2,6 +2,7 @@ import { MemorySession } from "./Memory";
 import store, { StoreBase } from "store2";
 import { AuthKey } from "../crypto/AuthKey";
 import bigInt from "big-integer";
+import { LocalStorage } from "./localStorage";
 
 export class StoreSession extends MemorySession {
     private readonly sessionName: string;
@@ -14,15 +15,10 @@ export class StoreSession extends MemorySession {
                 "Session name can't be 'session'. Please use a different name."
             );
         }
-        if (typeof localStorage === "undefined" || localStorage === null) {
-            const LocalStorage = require("./localStorage").LocalStorage;
-            this.store = store.area(
-                sessionName,
-                new LocalStorage("./" + sessionName)
-            );
-        } else {
-            this.store = store.area(sessionName, localStorage);
-        }
+        this.store = store.area(
+            sessionName,
+            new LocalStorage("./" + sessionName)
+        );
         if (divider == undefined) {
             divider = ":";
         }

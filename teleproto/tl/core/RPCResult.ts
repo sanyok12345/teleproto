@@ -1,19 +1,18 @@
 import { Api } from "../api";
 import type { BinaryReader } from "../../extensions";
 import { GZIPPacked } from ".";
-import bigInt from "big-integer";
 
 export class RPCResult {
     static CONSTRUCTOR_ID = 0xf35c6d01;
     static classType = "constructor";
     private CONSTRUCTOR_ID: number;
-    private reqMsgId: bigInt.BigInteger;
+    private reqMsgId: bigint;
     private body?: Buffer;
     private error?: Api.RpcError;
     private classType: string;
 
     constructor(
-        reqMsgId: bigInt.BigInteger,
+        reqMsgId: bigint,
         body?: Buffer,
         error?: Api.RpcError
     ) {

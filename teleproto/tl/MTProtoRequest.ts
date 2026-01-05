@@ -1,17 +1,23 @@
-export class MTProtoRequest {
+export class MTProtoRequest<R = any> {
     private sent: boolean;
     private sequence: number;
-    private msgId: number;
+    private _msgId: number;
     private readonly dirty: boolean;
     private sendTime: number;
     private confirmReceived: boolean;
     private constructorId: number;
-    private readonly confirmed: boolean;
+    private readonly _confirmed: boolean;
     private responded: boolean;
+
+    // These are added to satisfy the interface expected by the generated code and usages
+    public className: string = "MTProtoRequest";
+    public classType: string = "request";
+    public SUBCLASS_OF_ID: number = 0;
+    public __response!: R;
 
     constructor() {
         this.sent = false;
-        this.msgId = 0; // long
+        this._msgId = 0; // long
         this.sequence = 0;
 
         this.dirty = false;
@@ -21,8 +27,12 @@ export class MTProtoRequest {
         // These should be overrode
 
         this.constructorId = 0;
-        this.confirmed = false;
+        this._confirmed = false;
         this.responded = false;
+    }
+
+    getBytes(): Buffer {
+        throw new Error("getBytes not implemented in base MTProtoRequest");
     }
 
     // these should not be overrode
@@ -38,7 +48,7 @@ export class MTProtoRequest {
     needResend() {
         return (
             this.dirty ||
-            (this.confirmed &&
+            (this._confirmed &&
                 !this.confirmReceived &&
                 new Date().getTime() - this.sendTime > 3000)
         );
@@ -52,4 +62,7 @@ export class MTProtoRequest {
     onResponse(buffer: Buffer) {}
 
     onException(exception: Error) {}
+
+    // Stub for resolve method used by some requests
+    async resolve(client: any, utils: any): Promise<void> {}
 }

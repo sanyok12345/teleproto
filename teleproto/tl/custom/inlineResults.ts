@@ -1,14 +1,15 @@
 import type { TelegramClient } from "../..";
 import type { EntityLike } from "../../define";
-import { Api } from "../api";
+import type { Api } from "../api";
 import { InlineResult } from "./inlineResult";
 import { betterConsoleLog } from "../../Helpers";
 import { inspect } from "../../inspect";
 
+
 export class InlineResults extends Array<InlineResult> {
     private result: Api.messages.TypeBotResults;
-    private queryId: Api.long;
-    private readonly cacheTime: Api.int;
+    private queryId: bigint;
+    private readonly cacheTime: number;
     private readonly _validUntil: number;
     private users: Api.TypeUser[];
     private gallery: boolean;

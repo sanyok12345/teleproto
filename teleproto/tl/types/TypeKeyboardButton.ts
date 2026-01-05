@@ -1,0 +1,20 @@
+import { KeyboardButton } from "./KeyboardButton";
+import { KeyboardButtonUrl } from "./KeyboardButtonUrl";
+import { KeyboardButtonCallback } from "./KeyboardButtonCallback";
+import { KeyboardButtonRequestPhone } from "./KeyboardButtonRequestPhone";
+import { KeyboardButtonRequestGeoLocation } from "./KeyboardButtonRequestGeoLocation";
+import { KeyboardButtonSwitchInline } from "./KeyboardButtonSwitchInline";
+import { KeyboardButtonGame } from "./KeyboardButtonGame";
+import { KeyboardButtonBuy } from "./KeyboardButtonBuy";
+import { KeyboardButtonUrlAuth } from "./KeyboardButtonUrlAuth";
+import { InputKeyboardButtonUrlAuth } from "./InputKeyboardButtonUrlAuth";
+import { KeyboardButtonRequestPoll } from "./KeyboardButtonRequestPoll";
+import { InputKeyboardButtonUserProfile } from "./InputKeyboardButtonUserProfile";
+import { KeyboardButtonUserProfile } from "./KeyboardButtonUserProfile";
+import { KeyboardButtonWebView } from "./KeyboardButtonWebView";
+import { KeyboardButtonSimpleWebView } from "./KeyboardButtonSimpleWebView";
+import { KeyboardButtonRequestPeer } from "./KeyboardButtonRequestPeer";
+import { InputKeyboardButtonRequestPeer } from "./InputKeyboardButtonRequestPeer";
+import { KeyboardButtonCopy } from "./KeyboardButtonCopy";
+
+export type TypeKeyboardButton = KeyboardButton | KeyboardButtonUrl | KeyboardButtonCallback | KeyboardButtonRequestPhone | KeyboardButtonRequestGeoLocation | KeyboardButtonSwitchInline | KeyboardButtonGame | KeyboardButtonBuy | KeyboardButtonUrlAuth | InputKeyboardButtonUrlAuth | KeyboardButtonRequestPoll | InputKeyboardButtonUserProfile | KeyboardButtonUserProfile | KeyboardButtonWebView | KeyboardButtonSimpleWebView | KeyboardButtonRequestPeer | InputKeyboardButtonRequestPeer | KeyboardButtonCopy;

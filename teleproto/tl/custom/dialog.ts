@@ -17,7 +17,7 @@ export class Dialog {
     date: number;
     entity?: Entity;
     inputEntity: Api.TypeInputPeer;
-    id?: bigInt.BigInteger;
+    id?: bigint;
     name?: string;
     title?: string;
     unreadCount: number;

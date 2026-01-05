@@ -1,0 +1,36 @@
+import { BinaryReader } from "../../extensions/BinaryReader";
+import { BinaryWriter } from "../../extensions/BinaryWriter";
+import { TLObject } from "../../extensions/TLObject";
+
+export class InputPhoneCall extends TLObject {
+    static CONSTRUCTOR_ID = 506920429;
+    static SUBCLASS_OF_ID = 3165319744;
+    static className = "InputPhoneCall";
+    static classType = "constructor";
+
+    id!: bigint;
+    accessHash!: bigint;
+
+    constructor(args: { id?: bigint, accessHash?: bigint } = {}) {
+        super();
+        this.id = args.id!;
+        this.accessHash = args.accessHash!;
+    }
+
+    getBytes(): Buffer {
+        const writer = new BinaryWriter(Buffer.alloc(0));
+        writer.writeInt(506920429, false);
+        writer.writeLargeInt(this.id, 64);
+        writer.writeLargeInt(this.accessHash, 64);
+        return writer.getValue();
+    }
+
+    static fromReader(reader: BinaryReader): InputPhoneCall {
+        const args: any = {};
+        const _id = reader.readLargeInt(64);
+        args.id = _id;
+        const _accessHash = reader.readLargeInt(64);
+        args.accessHash = _accessHash;
+        return new InputPhoneCall(args);
+    }
+}

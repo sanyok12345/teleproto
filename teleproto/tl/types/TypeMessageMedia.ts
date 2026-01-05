@@ -1,0 +1,21 @@
+import { MessageMediaEmpty } from "./MessageMediaEmpty";
+import { MessageMediaPhoto } from "./MessageMediaPhoto";
+import { MessageMediaGeo } from "./MessageMediaGeo";
+import { MessageMediaContact } from "./MessageMediaContact";
+import { MessageMediaUnsupported } from "./MessageMediaUnsupported";
+import { MessageMediaDocument } from "./MessageMediaDocument";
+import { MessageMediaWebPage } from "./MessageMediaWebPage";
+import { MessageMediaVenue } from "./MessageMediaVenue";
+import { MessageMediaGame } from "./MessageMediaGame";
+import { MessageMediaInvoice } from "./MessageMediaInvoice";
+import { MessageMediaGeoLive } from "./MessageMediaGeoLive";
+import { MessageMediaPoll } from "./MessageMediaPoll";
+import { MessageMediaDice } from "./MessageMediaDice";
+import { MessageMediaStory } from "./MessageMediaStory";
+import { MessageMediaGiveaway } from "./MessageMediaGiveaway";
+import { MessageMediaGiveawayResults } from "./MessageMediaGiveawayResults";
+import { MessageMediaPaidMedia } from "./MessageMediaPaidMedia";
+import { MessageMediaToDo } from "./MessageMediaToDo";
+import { MessageMediaVideoStream } from "./MessageMediaVideoStream";
+
+export type TypeMessageMedia = MessageMediaEmpty | MessageMediaPhoto | MessageMediaGeo | MessageMediaContact | MessageMediaUnsupported | MessageMediaDocument | MessageMediaWebPage | MessageMediaVenue | MessageMediaGame | MessageMediaInvoice | MessageMediaGeoLive | MessageMediaPoll | MessageMediaDice | MessageMediaStory | MessageMediaGiveaway | MessageMediaGiveawayResults | MessageMediaPaidMedia | MessageMediaToDo | MessageMediaVideoStream;

@@ -12,9 +12,9 @@ export class Draft {
     private _inputEntity: Api.TypeInputPeer | undefined;
     private _text?: string;
     private _rawText?: string;
-    private date?: Api.int;
+    private date?: number;
     private linkPreview?: boolean;
-    private replyToMsgId?: Api.int;
+    private replyToMsgId?: number;
 
     [inspect.custom]() {
         return betterConsoleLog(this);

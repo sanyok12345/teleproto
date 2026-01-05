@@ -1,5 +1,5 @@
 import type { ButtonLike, EntityLike } from "../../define";
-import { Api } from "../api";
+import type { Api } from "../api";
 import { utils } from "../..";
 import { betterConsoleLog } from "../../Helpers";
 import { inspect } from "../../inspect";
@@ -27,6 +27,7 @@ export class Button {
     }
 
     static _isInline(button: ButtonLike) {
+        const Api = utils.getApi();
         return (
             button instanceof Api.KeyboardButtonCallback ||
             button instanceof Api.KeyboardButtonSwitchInline ||
@@ -43,6 +44,7 @@ export class Button {
         if (data.length > 64) {
             throw new Error("Too many bytes for the data");
         }
+        const Api = utils.getApi();
         return new Api.KeyboardButtonCallback({
             text: text,
             data: data,
@@ -50,6 +52,7 @@ export class Button {
     }
 
     static switchInline(text: string, query = "", samePeer = false) {
+        const Api = utils.getApi();
         return new Api.KeyboardButtonSwitchInline({
             text,
             query,
@@ -58,6 +61,7 @@ export class Button {
     }
 
     static url(text: string, url?: string) {
+        const Api = utils.getApi();
         return new Api.KeyboardButtonUrl({
             text: text,
             url: url || text,
@@ -71,6 +75,7 @@ export class Button {
         writeAccess?: boolean,
         fwdText?: string
     ) {
+        const Api = utils.getApi();
         return new Api.InputKeyboardButtonUrlAuth({
             text,
             url: url || text,
@@ -86,6 +91,7 @@ export class Button {
         singleUse?: boolean,
         selective?: boolean
     ) {
+        const Api = utils.getApi();
         return new this(
             new Api.KeyboardButton({ text }),
             resize,
@@ -100,6 +106,7 @@ export class Button {
         singleUse?: boolean,
         selective?: boolean
     ) {
+        const Api = utils.getApi();
         return new this(
             new Api.KeyboardButtonRequestGeoLocation({ text }),
             resize,
@@ -114,6 +121,7 @@ export class Button {
         singleUse?: boolean,
         selective?: boolean
     ) {
+        const Api = utils.getApi();
         return new this(
             new Api.KeyboardButtonRequestPhone({ text }),
             resize,
@@ -128,6 +136,7 @@ export class Button {
         singleUse?: boolean,
         selective?: boolean
     ) {
+        const Api = utils.getApi();
         return new this(
             new Api.KeyboardButtonRequestPoll({ text }),
             resize,
@@ -137,10 +146,12 @@ export class Button {
     }
 
     static clear() {
+        const Api = utils.getApi();
         return new Api.ReplyKeyboardHide({});
     }
 
     static forceReply() {
+        const Api = utils.getApi();
         return new Api.ReplyKeyboardForceReply({});
     }
 }

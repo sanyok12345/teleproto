@@ -58,7 +58,7 @@ export class Forward extends SenderGetter {
             inputChat: inputChat,
         });
         SenderGetter.initSenderClass(this, {
-            senderId: senderId ? returnBigInt(senderId) : undefined,
+            senderId: senderId ? BigInt(senderId) : undefined,
             sender: sender,
             inputSender: inputSender,
         });

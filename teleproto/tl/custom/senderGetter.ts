@@ -7,13 +7,13 @@ import bigInt from "big-integer";
 import { inspect } from "../../inspect";
 
 interface SenderGetterConstructorInterface {
-    senderId?: bigInt.BigInteger;
+    senderId?: bigint;
     sender?: Entity;
     inputSender?: Api.TypeInputPeer;
 }
 
 export class SenderGetter extends ChatGetter {
-    _senderId?: bigInt.BigInteger;
+    _senderId?: bigint;
     _sender?: Entity;
     _inputSender?: Api.TypeInputPeer;
     public _client?: TelegramClient;
@@ -70,7 +70,7 @@ export class SenderGetter extends ChatGetter {
         return this._inputSender;
     }
 
-    get senderId() {
+    get senderId(): bigint | undefined {
         return this._senderId;
     }
 

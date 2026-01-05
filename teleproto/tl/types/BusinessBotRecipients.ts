@@ -1,0 +1,121 @@
+import { BinaryReader } from "../../extensions/BinaryReader";
+import { BinaryWriter } from "../../extensions/BinaryWriter";
+import { TLObject } from "../../extensions/TLObject";
+
+export class BusinessBotRecipients extends TLObject {
+    static CONSTRUCTOR_ID = 3096245107;
+    static SUBCLASS_OF_ID = 4036133834;
+    static className = "BusinessBotRecipients";
+    static classType = "constructor";
+
+    flags!: number;
+    existingChats?: boolean;
+    newChats?: boolean;
+    contacts?: boolean;
+    nonContacts?: boolean;
+    excludeSelected?: boolean;
+    users?: bigint[];
+    excludeUsers?: bigint[];
+
+    constructor(args: { flags?: number, existingChats?: boolean, newChats?: boolean, contacts?: boolean, nonContacts?: boolean, excludeSelected?: boolean, users?: bigint[], excludeUsers?: bigint[] } = {}) {
+        super();
+        this.flags = args.flags!;
+        this.existingChats = args.existingChats;
+        this.newChats = args.newChats;
+        this.contacts = args.contacts;
+        this.nonContacts = args.nonContacts;
+        this.excludeSelected = args.excludeSelected;
+        this.users = args.users;
+        this.excludeUsers = args.excludeUsers;
+    }
+
+    getBytes(): Buffer {
+        const writer = new BinaryWriter(Buffer.alloc(0));
+        writer.writeInt(3096245107, false);
+        let flags = 0;
+        if (this.existingChats) { flags |= 1 << 0; }
+        if (this.newChats) { flags |= 1 << 1; }
+        if (this.contacts) { flags |= 1 << 2; }
+        if (this.nonContacts) { flags |= 1 << 3; }
+        if (this.excludeSelected) { flags |= 1 << 5; }
+        if (this.users !== undefined && this.users !== null) { flags |= 1 << 4; }
+        if (this.excludeUsers !== undefined && this.excludeUsers !== null) { flags |= 1 << 6; }
+        writer.writeInt(flags, false);
+        if (this.existingChats !== undefined && this.existingChats !== null) {
+        }
+        if (this.newChats !== undefined && this.newChats !== null) {
+        }
+        if (this.contacts !== undefined && this.contacts !== null) {
+        }
+        if (this.nonContacts !== undefined && this.nonContacts !== null) {
+        }
+        if (this.excludeSelected !== undefined && this.excludeSelected !== null) {
+        }
+        if (this.users !== undefined && this.users !== null) {
+            writer.writeVector(this.users, (item) => {
+                writer.writeLargeInt(item, 64);
+            });
+        }
+        if (this.excludeUsers !== undefined && this.excludeUsers !== null) {
+            writer.writeVector(this.excludeUsers, (item) => {
+                writer.writeLargeInt(item, 64);
+            });
+        }
+        return writer.getValue();
+    }
+
+    static fromReader(reader: BinaryReader): BusinessBotRecipients {
+        const args: any = {};
+        const _flags = reader.readInt();
+        args.flags = _flags;
+        if (args.flags & (1 << 0)) {
+            const _existingChats = true;
+            args.existingChats = _existingChats;
+        } else {
+            args.existingChats = false;
+        }
+        if (args.flags & (1 << 1)) {
+            const _newChats = true;
+            args.newChats = _newChats;
+        } else {
+            args.newChats = false;
+        }
+        if (args.flags & (1 << 2)) {
+            const _contacts = true;
+            args.contacts = _contacts;
+        } else {
+            args.contacts = false;
+        }
+        if (args.flags & (1 << 3)) {
+            const _nonContacts = true;
+            args.nonContacts = _nonContacts;
+        } else {
+            args.nonContacts = false;
+        }
+        if (args.flags & (1 << 5)) {
+            const _excludeSelected = true;
+            args.excludeSelected = _excludeSelected;
+        } else {
+            args.excludeSelected = false;
+        }
+        if (args.flags & (1 << 4)) {
+            const _users = reader.readVector((reader) => {
+                const item = reader.readLargeInt(64);
+                return item;
+            });
+            args.users = _users;
+        } else {
+            args.users = undefined;
+        }
+        if (args.flags & (1 << 6)) {
+            const _excludeUsers = reader.readVector((reader) => {
+                const item = reader.readLargeInt(64);
+                return item;
+            });
+            args.excludeUsers = _excludeUsers;
+        } else {
+            args.excludeUsers = undefined;
+        }
+        return new BusinessBotRecipients(args);
+    }
+}

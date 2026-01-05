@@ -72,7 +72,7 @@ export class ChatGetter {
                 for await (const dialog of this._client.iterDialogs({
                     limit: 100,
                 })) {
-                    if (dialog.id!.eq(target!)) {
+                    if (dialog.id! === target!) {
                         this._chat = dialog.entity;
                         this._inputChat = dialog.inputEntity;
                         break;

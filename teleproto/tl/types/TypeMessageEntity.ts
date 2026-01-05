@@ -1,0 +1,23 @@
+import { MessageEntityUnknown } from "./MessageEntityUnknown";
+import { MessageEntityMention } from "./MessageEntityMention";
+import { MessageEntityHashtag } from "./MessageEntityHashtag";
+import { MessageEntityBotCommand } from "./MessageEntityBotCommand";
+import { MessageEntityUrl } from "./MessageEntityUrl";
+import { MessageEntityEmail } from "./MessageEntityEmail";
+import { MessageEntityBold } from "./MessageEntityBold";
+import { MessageEntityItalic } from "./MessageEntityItalic";
+import { MessageEntityCode } from "./MessageEntityCode";
+import { MessageEntityPre } from "./MessageEntityPre";
+import { MessageEntityTextUrl } from "./MessageEntityTextUrl";
+import { MessageEntityMentionName } from "./MessageEntityMentionName";
+import { InputMessageEntityMentionName } from "./InputMessageEntityMentionName";
+import { MessageEntityPhone } from "./MessageEntityPhone";
+import { MessageEntityCashtag } from "./MessageEntityCashtag";
+import { MessageEntityUnderline } from "./MessageEntityUnderline";
+import { MessageEntityStrike } from "./MessageEntityStrike";
+import { MessageEntityBankCard } from "./MessageEntityBankCard";
+import { MessageEntitySpoiler } from "./MessageEntitySpoiler";
+import { MessageEntityCustomEmoji } from "./MessageEntityCustomEmoji";
+import { MessageEntityBlockquote } from "./MessageEntityBlockquote";
+
+export type TypeMessageEntity = MessageEntityUnknown | MessageEntityMention | MessageEntityHashtag | MessageEntityBotCommand | MessageEntityUrl | MessageEntityEmail | MessageEntityBold | MessageEntityItalic | MessageEntityCode | MessageEntityPre | MessageEntityTextUrl | MessageEntityMentionName | InputMessageEntityMentionName | MessageEntityPhone | MessageEntityCashtag | MessageEntityUnderline | MessageEntityStrike | MessageEntityBankCard | MessageEntitySpoiler | MessageEntityCustomEmoji | MessageEntityBlockquote;

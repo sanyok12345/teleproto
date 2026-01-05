@@ -245,7 +245,7 @@ export class CustomMessage extends SenderGetter {
      * The ID of the bot used to send this message
      * through its inline mode (e.g. "via @like").
      */
-    viaBotId?: bigInt.BigInteger;
+    viaBotId?: bigint;
     /**
      * The original reply header if this message is replying to another.
      */
@@ -609,7 +609,7 @@ export class CustomMessage extends SenderGetter {
             const chat = this.isChannel ? await this.getInputChat() : undefined;
             let temp = await this._client.getMessages(chat, { ids: this.id });
             if (temp) {
-                msg = temp[0] as CustomMessage;
+                msg = temp[0] as unknown as CustomMessage;
             }
         } catch (e) {
             this._client._log.error(

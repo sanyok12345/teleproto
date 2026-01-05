@@ -1,6 +1,6 @@
 import type { TelegramClient } from "../..";
 import type { EntityLike, MessageIDLike } from "../../define";
-import { Api } from "../api";
+import { Api } from "../../tl";
 import { utils } from "../..";
 import { betterConsoleLog } from "../../Helpers";
 import { inspect } from "../../inspect";
@@ -19,7 +19,7 @@ export class InlineResult {
     private _CONTACT = "contact";
     private _GAME = "game";
     private readonly _entity: EntityLike | undefined;
-    private readonly _queryId: Api.long | undefined;
+    private readonly _queryId: bigint | undefined;
     private readonly result: Api.TypeBotInlineResult;
     private _client: TelegramClient;
 
@@ -30,7 +30,7 @@ export class InlineResult {
     constructor(
         client: TelegramClient,
         original: Api.TypeBotInlineResult,
-        queryId?: Api.long,
+        queryId?: bigint,
         entity?: EntityLike
     ) {
         this._client = client;
@@ -80,6 +80,7 @@ export class InlineResult {
         clearDraft: boolean = false,
         hideVia: boolean = false
     ) {
+        const Api = utils.getApi();
         if (entity) {
             entity = await this._client.getInputEntity(entity);
         } else if (this._entity) {

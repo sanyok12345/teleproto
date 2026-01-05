@@ -1,4 +1,4 @@
-import { Api } from "../api";
+import { Message, MessageService, MessageEmpty } from "../types";
 import { CustomMessage } from "../custom/message";
 import { tlobjects } from "../AllTLObjects";
 
@@ -78,9 +78,9 @@ function patchClass(clazz: Function) {
 }
 
 function patchAll() {
-    patchClass(Api.Message);
-    patchClass(Api.MessageService);
-    patchClass(Api.MessageEmpty);
+    patchClass(Message);
+    patchClass(MessageService);
+    patchClass(MessageEmpty);
 }
 
 export { patchAll };

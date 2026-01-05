@@ -1,0 +1,56 @@
+import { BinaryReader } from "../../extensions/BinaryReader";
+import { BinaryWriter } from "../../extensions/BinaryWriter";
+import { TLObject } from "../../extensions/TLObject";
+
+export class PQInnerData extends TLObject {
+    static CONSTRUCTOR_ID = 2211011308;
+    static SUBCLASS_OF_ID = 1097864055;
+    static className = "PQInnerData";
+    static classType = "constructor";
+
+    pq!: Buffer;
+    p!: Buffer;
+    q!: Buffer;
+    nonce!: bigint;
+    serverNonce!: bigint;
+    newNonce!: bigint;
+
+    constructor(args: { pq?: Buffer, p?: Buffer, q?: Buffer, nonce?: bigint, serverNonce?: bigint, newNonce?: bigint } = {}) {
+        super();
+        this.pq = args.pq!;
+        this.p = args.p!;
+        this.q = args.q!;
+        this.nonce = args.nonce!;
+        this.serverNonce = args.serverNonce!;
+        this.newNonce = args.newNonce!;
+    }
+
+    getBytes(): Buffer {
+        const writer = new BinaryWriter(Buffer.alloc(0));
+        writer.writeInt(2211011308, false);
+        writer.tgWriteBytes(this.pq);
+        writer.tgWriteBytes(this.p);
+        writer.tgWriteBytes(this.q);
+        writer.writeLargeInt(this.nonce, 128);
+        writer.writeLargeInt(this.serverNonce, 128);
+        writer.writeLargeInt(this.newNonce, 256);
+        return writer.getValue();
+    }
+
+    static fromReader(reader: BinaryReader): PQInnerData {
+        const args: any = {};
+        const _pq = reader.tgReadBytes();
+        args.pq = _pq;
+        const _p = reader.tgReadBytes();
+        args.p = _p;
+        const _q = reader.tgReadBytes();
+        args.q = _q;
+        const _nonce = reader.readLargeInt(128);
+        args.nonce = _nonce;
+        const _serverNonce = reader.readLargeInt(128);
+        args.serverNonce = _serverNonce;
+        const _newNonce = reader.readLargeInt(256);
+        args.newNonce = _newNonce;
+        return new PQInnerData(args);
+    }
+}

@@ -1,0 +1,21 @@
+import { SendMessageTypingAction } from "./SendMessageTypingAction";
+import { SendMessageCancelAction } from "./SendMessageCancelAction";
+import { SendMessageRecordVideoAction } from "./SendMessageRecordVideoAction";
+import { SendMessageUploadVideoAction } from "./SendMessageUploadVideoAction";
+import { SendMessageRecordAudioAction } from "./SendMessageRecordAudioAction";
+import { SendMessageUploadAudioAction } from "./SendMessageUploadAudioAction";
+import { SendMessageUploadPhotoAction } from "./SendMessageUploadPhotoAction";
+import { SendMessageUploadDocumentAction } from "./SendMessageUploadDocumentAction";
+import { SendMessageGeoLocationAction } from "./SendMessageGeoLocationAction";
+import { SendMessageChooseContactAction } from "./SendMessageChooseContactAction";
+import { SendMessageGamePlayAction } from "./SendMessageGamePlayAction";
+import { SendMessageRecordRoundAction } from "./SendMessageRecordRoundAction";
+import { SendMessageUploadRoundAction } from "./SendMessageUploadRoundAction";
+import { SpeakingInGroupCallAction } from "./SpeakingInGroupCallAction";
+import { SendMessageHistoryImportAction } from "./SendMessageHistoryImportAction";
+import { SendMessageChooseStickerAction } from "./SendMessageChooseStickerAction";
+import { SendMessageEmojiInteraction } from "./SendMessageEmojiInteraction";
+import { SendMessageEmojiInteractionSeen } from "./SendMessageEmojiInteractionSeen";
+import { SendMessageTextDraftAction } from "./SendMessageTextDraftAction";
+
+export type TypeSendMessageAction = SendMessageTypingAction | SendMessageCancelAction | SendMessageRecordVideoAction | SendMessageUploadVideoAction | SendMessageRecordAudioAction | SendMessageUploadAudioAction | SendMessageUploadPhotoAction | SendMessageUploadDocumentAction | SendMessageGeoLocationAction | SendMessageChooseContactAction | SendMessageGamePlayAction | SendMessageRecordRoundAction | SendMessageUploadRoundAction | SpeakingInGroupCallAction | SendMessageHistoryImportAction | SendMessageChooseStickerAction | SendMessageEmojiInteraction | SendMessageEmojiInteractionSeen | SendMessageTextDraftAction;

@@ -1,0 +1,22 @@
+import { InputMediaEmpty } from "./InputMediaEmpty";
+import { InputMediaUploadedPhoto } from "./InputMediaUploadedPhoto";
+import { InputMediaPhoto } from "./InputMediaPhoto";
+import { InputMediaGeoPoint } from "./InputMediaGeoPoint";
+import { InputMediaContact } from "./InputMediaContact";
+import { InputMediaUploadedDocument } from "./InputMediaUploadedDocument";
+import { InputMediaDocument } from "./InputMediaDocument";
+import { InputMediaVenue } from "./InputMediaVenue";
+import { InputMediaPhotoExternal } from "./InputMediaPhotoExternal";
+import { InputMediaDocumentExternal } from "./InputMediaDocumentExternal";
+import { InputMediaGame } from "./InputMediaGame";
+import { InputMediaInvoice } from "./InputMediaInvoice";
+import { InputMediaGeoLive } from "./InputMediaGeoLive";
+import { InputMediaPoll } from "./InputMediaPoll";
+import { InputMediaDice } from "./InputMediaDice";
+import { InputMediaStory } from "./InputMediaStory";
+import { InputMediaWebPage } from "./InputMediaWebPage";
+import { InputMediaPaidMedia } from "./InputMediaPaidMedia";
+import { InputMediaTodo } from "./InputMediaTodo";
+import { InputMediaStakeDice } from "./InputMediaStakeDice";
+
+export type TypeInputMedia = InputMediaEmpty | InputMediaUploadedPhoto | InputMediaPhoto | InputMediaGeoPoint | InputMediaContact | InputMediaUploadedDocument | InputMediaDocument | InputMediaVenue | InputMediaPhotoExternal | InputMediaDocumentExternal | InputMediaGame | InputMediaInvoice | InputMediaGeoLive | InputMediaPoll | InputMediaDice | InputMediaStory | InputMediaWebPage | InputMediaPaidMedia | InputMediaTodo | InputMediaStakeDice;

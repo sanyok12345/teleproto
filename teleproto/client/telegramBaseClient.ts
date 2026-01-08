@@ -130,6 +130,11 @@ export interface TelegramClientParams {
      * What type of network connection to use (Normal Socket (for node) or Websockets (for browsers usually) )
      */
     networkSocket?: typeof PromisedNetSockets | typeof PromisedWebSockets;
+    /**
+     * Callback for handling reCAPTCHA verification.
+     * It should return the token obtained after solving the CAPTCHA.
+     */
+    reCaptchaCallback?: (siteKey: string) => Promise<string>;
 }
 
 const clientParamsDefault = {
@@ -212,6 +217,8 @@ export abstract class TelegramBaseClient {
     /** @hidden */
     public _parseMode?: ParseInterface;
     /** @hidden */
+    public _reCaptchaCallback?: (siteKey: string) => Promise<string>;
+    /** @hidden */
     public _ALBUMS = new Map<
         string,
         [ReturnType<typeof setTimeout>, Api.TypeUpdate[]]
@@ -285,6 +292,7 @@ export abstract class TelegramBaseClient {
         );
         this.testServers = clientParams.testServers || false;
         this.networkSocket = clientParams.networkSocket || PromisedNetSockets;
+        this._reCaptchaCallback = clientParams.reCaptchaCallback;
         if (!(clientParams.connection instanceof Function)) {
             throw new Error("Connection should be a class not an instance");
         }

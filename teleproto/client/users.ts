@@ -112,6 +112,28 @@ export async function invoke<R extends Api.AnyRequest>(
                 await state.isReady();
 
                 state.after = undefined;
+            } else if (
+                e.errorMessage &&
+                e.errorMessage.startsWith("RECAPTCHA_CHECK_") &&
+                client._reCaptchaCallback
+            ) {
+                const match = e.errorMessage.match(
+                    /RECAPTCHA_CHECK_.*(6Le[-\w]+)/
+                );
+                if (match) {
+                    const siteKey = match[1];
+                    const token = await client._reCaptchaCallback(siteKey);
+                    const newRequest = new Api.InvokeWithReCaptcha({
+                        token: token,
+                        query: request,
+                    });
+                    await newRequest.resolve(client, utils);
+                    state.request = newRequest;
+                    state.data = newRequest.getBytes();
+                } else {
+                    state.finished.resolve();
+                    throw e;
+                }
             } else if (e.message === "CONNECTION_NOT_INITED") {
                 await client.disconnect();
                 await sleep(2000);

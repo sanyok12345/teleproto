@@ -1418,6 +1418,77 @@ export function decodeWaveform(
 }
 
 /**
+ * Splits a message text while preserving formatting entities.
+ * Useful for sending messages that exceed Telegram's character limit.
+ * @param text The text to split
+ * @param entities The formatting entities
+ * @param limit Maximum length per chunk (default: 4096)
+ * @returns Array of [text, entities] tuples
+ */
+export function splitText(
+    text: string,
+    entities: Api.TypeMessageEntity[] = [],
+    limit: number = 4096
+): [string, Api.TypeMessageEntity[]][] {
+    if (text.length <= limit) {
+        return [[text, entities]];
+    }
+
+    const result: [string, Api.TypeMessageEntity[]][] = [];
+    let offset = 0;
+
+    while (offset < text.length) {
+        let end = Math.min(offset + limit, text.length);
+
+        if (end < text.length) {
+            const newlinePos = text.lastIndexOf("\n", end);
+            const spacePos = text.lastIndexOf(" ", end);
+
+            if (newlinePos > offset + limit / 2) {
+                end = newlinePos + 1;
+            } else if (spacePos > offset + limit / 2) {
+                end = spacePos + 1;
+            }
+        }
+
+        const chunk = text.slice(offset, end);
+        const chunkEntities: Api.TypeMessageEntity[] = [];
+
+        for (const entity of entities) {
+            const entityEnd = entity.offset + entity.length;
+
+            if (entityEnd <= offset) {
+                continue;
+            }
+            if (entity.offset >= end) {
+                continue;
+            }
+
+            const newOffset = Math.max(0, entity.offset - offset);
+            const newLength = Math.min(
+                entity.length,
+                end - offset - newOffset,
+                entityEnd - offset - newOffset
+            );
+
+            if (newLength > 0) {
+                const clonedEntity = Object.assign(
+                    Object.create(Object.getPrototypeOf(entity)),
+                    entity,
+                    { offset: newOffset, length: newLength }
+                );
+                chunkEntities.push(clonedEntity);
+            }
+        }
+
+        result.push([chunk, chunkEntities]);
+        offset = end;
+    }
+
+    return result;
+}
+
+/**
  * check if a given item is an array like or not
  * @param item
  * @returns {boolean}

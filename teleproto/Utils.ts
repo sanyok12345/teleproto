@@ -1271,8 +1271,35 @@ export function parseID(id: string) {
     return isValid ? bigInt(id) : undefined;
 }
 
-export function resolveInviteLink(link: string): [number, number, number] {
-    throw new Error("not implemented");
+/**
+ * Parses a Telegram invite link and extracts the hash.
+ * Supports formats like:
+ * - https://t.me/joinchat/HASH
+ * - https://t.me/+HASH
+ * - tg://join?invite=HASH
+ * @param link The invite link
+ * @returns The invite hash, or undefined if not a valid invite link
+ */
+export function resolveInviteLink(link: string): string | undefined {
+    if (!link) {
+        return undefined;
+    }
+
+    link = link.trim();
+
+    const tmeMatch = link.match(
+        /(?:https?:\/\/)?(?:www\.)?(?:telegram\.(?:me|dog)|t\.me)\/(?:joinchat\/|\+)([a-zA-Z0-9_-]+)/i
+    );
+    if (tmeMatch) {
+        return tmeMatch[1];
+    }
+
+    const tgMatch = link.match(/tg:\/\/join\?invite=([a-zA-Z0-9_-]+)/i);
+    if (tgMatch) {
+        return tgMatch[1];
+    }
+
+    return undefined;
 }
 
 /**

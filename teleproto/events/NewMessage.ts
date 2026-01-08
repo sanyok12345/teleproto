@@ -248,7 +248,6 @@ export class NewMessageEvent extends EventCommon {
         super._setClient(client);
         const m = this.message;
         try {
-            // todo make sure this never fails
             m._finishInit(
                 client,
                 this.originalUpdate._entities || new Map(),
@@ -265,5 +264,123 @@ export class NewMessageEvent extends EventCommon {
                 console.error(e);
             }
         }
+    }
+
+    /**
+     * The regex match object from the pattern filter (if any).
+     */
+    get patternMatch(): RegExpMatchArray | undefined {
+        return this.message.patternMatch;
+    }
+
+    /**
+     * Replies to the message (with a reply header).
+     */
+    async reply(params: {
+        message?: string;
+        parseMode?: any;
+        formattingEntities?: Api.TypeMessageEntity[];
+        file?: any;
+        linkPreview?: boolean;
+        silent?: boolean;
+    }): Promise<Api.Message | undefined> {
+        if (!this._client) return undefined;
+        return this._client.sendMessage(this.message.peerId!, {
+            message: params.message,
+            parseMode: params.parseMode,
+            formattingEntities: params.formattingEntities,
+            file: params.file,
+            linkPreview: params.linkPreview,
+            silent: params.silent,
+            replyTo: this.message.id,
+        });
+    }
+
+    /**
+     * Responds to the message in the same chat (without reply header).
+     */
+    async respond(params: {
+        message?: string;
+        parseMode?: any;
+        formattingEntities?: Api.TypeMessageEntity[];
+        file?: any;
+        linkPreview?: boolean;
+        silent?: boolean;
+    }): Promise<Api.Message | undefined> {
+        if (!this._client) return undefined;
+        return this._client.sendMessage(this.message.peerId!, {
+            message: params.message,
+            parseMode: params.parseMode,
+            formattingEntities: params.formattingEntities,
+            file: params.file,
+            linkPreview: params.linkPreview,
+            silent: params.silent,
+        });
+    }
+
+    /**
+     * Deletes the message.
+     */
+    async delete(params: { revoke?: boolean } = {}): Promise<Api.messages.AffectedMessages[] | undefined> {
+        if (!this._client) return undefined;
+        return this._client.deleteMessages(
+            this.message.peerId!,
+            [this.message.id],
+            params
+        );
+    }
+
+    /**
+     * Forwards the message to another chat.
+     */
+    async forward(chat: EntityLike): Promise<Api.Message[] | undefined> {
+        if (!this._client) return undefined;
+        return this._client.forwardMessages(chat, {
+            messages: [this.message.id],
+            fromPeer: this.message.peerId!,
+        });
+    }
+
+    /**
+     * Edits the message (only own messages can be edited).
+     */
+    async edit(params: {
+        message?: string;
+        parseMode?: any;
+        formattingEntities?: Api.TypeMessageEntity[];
+        file?: any;
+    }): Promise<Api.Message | undefined> {
+        if (!this._client) return undefined;
+        return this._client.editMessage(this.message.peerId!, {
+            message: this.message.id,
+            text: params.message,
+            parseMode: params.parseMode,
+            formattingEntities: params.formattingEntities,
+            file: params.file,
+        });
+    }
+
+    /**
+     * Marks the message as read.
+     */
+    async markRead(): Promise<boolean | undefined> {
+        if (!this._client) return undefined;
+        return this._client.markAsRead(this.message.peerId!, this.message.id);
+    }
+
+    /**
+     * Pins the message.
+     */
+    async pin(params?: { notify?: boolean; pmOneside?: boolean }): Promise<Api.Message | undefined> {
+        if (!this._client) return undefined;
+        return this._client.pinMessage(this.message.peerId!, this.message.id, params);
+    }
+
+    /**
+     * Unpins the message.
+     */
+    async unpin(): Promise<void> {
+        if (!this._client) return undefined;
+        await this._client.unpinMessage(this.message.peerId!, this.message.id);
     }
 }

@@ -1489,6 +1489,28 @@ export function splitText(
 }
 
 /**
+ * Similar to getInputPeer, but for InputDialogPeer.
+ * @param dialog The dialog to convert
+ */
+export function getInputDialog(dialog: any): Api.TypeInputDialogPeer {
+    if (dialog.SUBCLASS_OF_ID === undefined) {
+        _raiseCastFail(dialog, "InputDialogPeer");
+    }
+    if (dialog.SUBCLASS_OF_ID === 0xa21c9795) {
+        return dialog;
+    }
+    if (dialog.SUBCLASS_OF_ID === 0xc91c90b6) {
+        return new Api.InputDialogPeer({ peer: dialog });
+    }
+
+    try {
+        return new Api.InputDialogPeer({ peer: getInputPeer(dialog) });
+    } catch (e) {
+        _raiseCastFail(dialog, "InputDialogPeer");
+    }
+}
+
+/**
  * check if a given item is an array like or not
  * @param item
  * @returns {boolean}

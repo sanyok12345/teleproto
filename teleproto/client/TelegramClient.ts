@@ -201,18 +201,21 @@ export class TelegramClient extends TelegramBaseClient {
      * @param apiCredentials - credentials to be used.
      * @param phoneNumber - the phone number to send the code to
      * @param forceSMS - whether to send it as an SMS or a normal in app message
+     * @param reCaptchaCallback - callback to handle reCAPTCHA verification
      * @return the phone code hash and whether it was sent via app
      */
     sendCode(
         apiCredentials: authMethods.ApiCredentials,
         phoneNumber: string,
-        forceSMS = false
+        forceSMS = false,
+        reCaptchaCallback?: (siteKey: string) => Promise<string>
     ) {
         return authMethods.sendCode(
             this,
             apiCredentials,
             phoneNumber,
-            forceSMS
+            forceSMS,
+            reCaptchaCallback
         );
     }
 

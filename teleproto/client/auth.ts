@@ -28,6 +28,8 @@ export interface UserAuthParams {
     onError: (err: Error) => Promise<boolean> | void;
     /** whether to send the code through SMS or not. */
     forceSMS?: boolean;
+    /** optional callback for handling reCAPTCHA. */
+    reCaptchaCallback?: (siteKey: string) => Promise<string>;
 }
 
 export interface UserPasswordAuthParams {
@@ -139,7 +141,8 @@ export async function signInUser(
             const sendCodeResult = await client.sendCode(
                 apiCredentials,
                 phoneNumber,
-                authParams.forceSMS
+                authParams.forceSMS,
+                authParams.reCaptchaCallback
             );
             phoneCodeHash = sendCodeResult.phoneCodeHash;
             isCodeViaApp = sendCodeResult.isCodeViaApp;
@@ -362,25 +365,46 @@ export async function signInUserWithQrCode(
 }
 
 /** @hidden */
+/** @hidden */
 export async function sendCode(
     client: TelegramClient,
     apiCredentials: ApiCredentials,
     phoneNumber: string,
-    forceSMS = false
+    forceSMS = false,
+    reCaptchaCallback?: (siteKey: string) => Promise<string>
 ): Promise<{
     phoneCodeHash: string;
     isCodeViaApp: boolean;
 }> {
     try {
         const { apiId, apiHash } = apiCredentials;
-        const sendResult = await client.invoke(
-            new Api.auth.SendCode({
-                phoneNumber,
-                apiId,
-                apiHash,
-                settings: new Api.CodeSettings({}),
-            })
-        );
+        const request = new Api.auth.SendCode({
+            phoneNumber,
+            apiId,
+            apiHash,
+            settings: new Api.CodeSettings({}),
+        });
+
+        let sendResult: any;
+
+        try {
+            sendResult = await client.invoke(request);
+        } catch (err: any) {
+            const match = err.errorMessage?.match(/RECAPTCHA_CHECK_.*(6Le[-\w]+)/);
+            if (match && reCaptchaCallback) {
+                const siteKey = match[1];
+                const token = await reCaptchaCallback(siteKey);
+                sendResult = await client.invoke(
+                    new Api.InvokeWithReCaptcha({
+                        token: token,
+                        query: request,
+                    })
+                );
+            } else {
+                throw err;
+            }
+        }
+
         if (sendResult instanceof Api.auth.SentCodeSuccess)
             throw new Error("logged in right after sending the code");
 
@@ -421,7 +445,13 @@ export async function sendCode(
         };
     } catch (err: any) {
         if (err.errorMessage === "AUTH_RESTART") {
-            return client.sendCode(apiCredentials, phoneNumber, forceSMS);
+            return sendCode(
+                client,
+                apiCredentials,
+                phoneNumber,
+                forceSMS,
+                reCaptchaCallback
+            );
         } else {
             throw err;
         }

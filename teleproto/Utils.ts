@@ -1346,6 +1346,18 @@ export function getDisplayName(entity: EntityLike) {
 }
 
 /**
+ * Returns `True` if the file is a GIF.
+ */
+export function isGif(file: any): boolean {
+    const ext = _getExtension(file).toLowerCase();
+    if (ext === ".gif") {
+        return true;
+    }
+    const metadata = _getMetadata(file);
+    return (metadata.get("mimeType") || "") === "image/gif";
+}
+
+/**
  * check if a given item is an array like or not
  * @param item
  * @returns {boolean}

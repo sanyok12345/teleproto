@@ -1358,6 +1358,66 @@ export function isGif(file: any): boolean {
 }
 
 /**
+ * Encodes the given array of 5-bit values into a waveform bytestring.
+ * Used for voice message waveforms.
+ * @param waveform Array of numbers (0-31, 5 bits each)
+ * @returns Buffer with encoded waveform
+ */
+export function encodeWaveform(waveform: number[]): Buffer {
+    const bitCount = waveform.length * 5;
+    const byteCount = Math.floor((bitCount + 7) / 8);
+    const result = Buffer.alloc(byteCount);
+
+    let bitPos = 0;
+    for (const value of waveform) {
+        const bytePos = Math.floor(bitPos / 8);
+        const shift = bitPos % 8;
+
+        result[bytePos] |= (value & 0x1f) << shift;
+        if (shift > 3 && bytePos + 1 < byteCount) {
+            result[bytePos + 1] |= (value & 0x1f) >> (8 - shift);
+        }
+        bitPos += 5;
+    }
+
+    return result;
+}
+
+/**
+ * Decodes a waveform bytestring into an array of 5-bit values.
+ * @param waveform Buffer with encoded waveform
+ * @param valueCount Number of values to decode (default: calculated from buffer size)
+ * @returns Array of numbers (0-31)
+ */
+export function decodeWaveform(
+    waveform: Buffer,
+    valueCount?: number
+): number[] {
+    if (!waveform || waveform.length === 0) {
+        return [];
+    }
+
+    const bitCount = waveform.length * 8;
+    const count = valueCount ?? Math.floor(bitCount / 5);
+    const result: number[] = [];
+
+    let bitPos = 0;
+    for (let i = 0; i < count; i++) {
+        const bytePos = Math.floor(bitPos / 8);
+        const shift = bitPos % 8;
+
+        let value = (waveform[bytePos] >> shift) & 0x1f;
+        if (shift > 3 && bytePos + 1 < waveform.length) {
+            value |= (waveform[bytePos + 1] << (8 - shift)) & 0x1f;
+        }
+        result.push(value);
+        bitPos += 5;
+    }
+
+    return result;
+}
+
+/**
  * check if a given item is an array like or not
  * @param item
  * @returns {boolean}

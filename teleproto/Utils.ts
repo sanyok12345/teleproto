@@ -1537,6 +1537,236 @@ export function getInputDialog(dialog: any): Api.TypeInputDialogPeer {
     }
 }
 
+// Bot File ID constants
+const FILE_REFERENCE_FLAG = 0x01000000;
+const WEB_LOCATION_FLAG = 0x02000000;
+
+enum BotFileType {
+    Thumbnail = 0,
+    ProfilePhoto = 1,
+    Photo = 2,
+    Voice = 3,
+    Video = 4,
+    Document = 5,
+    Encrypted = 6,
+    Temp = 7,
+    Sticker = 8,
+    Audio = 9,
+    Animation = 10,
+    EncryptedThumbnail = 11,
+    Wallpaper = 12,
+    VideoNote = 13,
+    SecureRaw = 14,
+    Secure = 15,
+    Background = 16,
+    DocumentAsFile = 17,
+}
+
+function _rleDecodeFileId(data: Buffer): Buffer {
+    const result: number[] = [];
+    let i = 0;
+    while (i < data.length) {
+        if (data[i] === 0x00 && i + 1 < data.length) {
+            const count = data[i + 1];
+            for (let j = 0; j < count; j++) {
+                result.push(0x00);
+            }
+            i += 2;
+        } else {
+            result.push(data[i]);
+            i += 1;
+        }
+    }
+    return Buffer.from(result);
+}
+
+function _rleEncodeFileId(data: Buffer): Buffer {
+    const result: number[] = [];
+    let i = 0;
+    while (i < data.length) {
+        if (data[i] === 0x00) {
+            let count = 0;
+            while (i < data.length && data[i] === 0x00 && count < 255) {
+                count++;
+                i++;
+            }
+            result.push(0x00, count);
+        } else {
+            result.push(data[i]);
+            i++;
+        }
+    }
+    return Buffer.from(result);
+}
+
+/**
+ * Decodes a bot API file_id into the corresponding InputDocument/InputPhoto.
+ * @param fileId The bot API file_id string
+ * @returns InputDocument, InputPhoto, or undefined if decoding fails
+ */
+export function resolveBotFileId(
+    fileId: string
+): Api.InputDocument | Api.InputPhoto | undefined {
+    try {
+        const data = Buffer.from(
+            fileId.replace(/-/g, "+").replace(/_/g, "/"),
+            "base64"
+        );
+
+        if (data.length < 8) {
+            return undefined;
+        }
+
+        const decoded = _rleDecodeFileId(data);
+        if (!decoded || decoded.length < 8) {
+            return undefined;
+        }
+
+        let offset = 0;
+
+        const fileType = decoded.readUInt32LE(offset);
+        offset += 4;
+
+        offset += 4; // dcId (not used)
+
+        const hasFileReference = (fileType & FILE_REFERENCE_FLAG) !== 0;
+        const hasWebLocation = (fileType & WEB_LOCATION_FLAG) !== 0;
+        const actualFileType = fileType & 0x00ffffff;
+
+        if (hasWebLocation) {
+            return undefined;
+        }
+
+        let fileReference = Buffer.alloc(0);
+        if (hasFileReference && offset < decoded.length) {
+            const refLength = decoded[offset];
+            offset += 1;
+            if (offset + refLength <= decoded.length) {
+                fileReference = Buffer.from(decoded.subarray(offset, offset + refLength));
+                offset += refLength;
+            }
+        }
+
+        if (offset + 16 > decoded.length) {
+            return undefined;
+        }
+
+        const id = decoded.readBigInt64LE(offset);
+        offset += 8;
+
+        const accessHash = decoded.readBigInt64LE(offset);
+
+        if (actualFileType === BotFileType.Photo || actualFileType === BotFileType.ProfilePhoto) {
+            return new Api.InputPhoto({
+                id: bigInt(id.toString()),
+                accessHash: bigInt(accessHash.toString()),
+                fileReference: fileReference,
+            });
+        } else {
+            return new Api.InputDocument({
+                id: bigInt(id.toString()),
+                accessHash: bigInt(accessHash.toString()),
+                fileReference: fileReference,
+            });
+        }
+    } catch (e) {
+        return undefined;
+    }
+}
+
+/**
+ * Encodes a document or photo into a bot API file_id.
+ * @param media The media object (Document, Photo, etc.)
+ * @returns The encoded file_id string, or undefined if encoding fails
+ */
+export function packBotFileId(
+    media: Api.Document | Api.Photo | Api.TypeInputDocument | Api.TypeInputPhoto
+): string | undefined {
+    try {
+        let id: bigInt.BigInteger;
+        let accessHash: bigInt.BigInteger;
+        let fileReference = Buffer.alloc(0);
+        let fileType: BotFileType;
+        let dcId = 0;
+
+        if (media instanceof Api.Document) {
+            id = media.id;
+            accessHash = media.accessHash;
+            fileReference = Buffer.from(media.fileReference);
+            dcId = media.dcId;
+
+            if (media.mimeType === "audio/ogg") {
+                fileType = BotFileType.Voice;
+            } else if (media.mimeType?.startsWith("audio/")) {
+                fileType = BotFileType.Audio;
+            } else if (media.mimeType?.startsWith("video/")) {
+                const isVideoNote = media.attributes?.some(
+                    (a) => a instanceof Api.DocumentAttributeVideo && a.roundMessage
+                );
+                fileType = isVideoNote ? BotFileType.VideoNote : BotFileType.Video;
+            } else if (media.mimeType === "application/x-tgsticker" || media.mimeType === "image/webp") {
+                fileType = BotFileType.Sticker;
+            } else if (media.mimeType === "video/mp4" || media.mimeType === "image/gif") {
+                fileType = BotFileType.Animation;
+            } else {
+                fileType = BotFileType.Document;
+            }
+        } else if (media instanceof Api.Photo) {
+            id = media.id;
+            accessHash = media.accessHash;
+            fileReference = Buffer.from(media.fileReference);
+            dcId = media.dcId;
+            fileType = BotFileType.Photo;
+        } else if (media instanceof Api.InputDocument) {
+            id = media.id;
+            accessHash = media.accessHash;
+            fileReference = media.fileReference ? Buffer.from(media.fileReference) : Buffer.alloc(0);
+            fileType = BotFileType.Document;
+        } else if (media instanceof Api.InputPhoto) {
+            id = media.id;
+            accessHash = media.accessHash;
+            fileReference = media.fileReference ? Buffer.from(media.fileReference) : Buffer.alloc(0);
+            fileType = BotFileType.Photo;
+        } else {
+            return undefined;
+        }
+
+        const hasFileRef = fileReference.length > 0;
+        const typeWithFlags = fileType | (hasFileRef ? FILE_REFERENCE_FLAG : 0);
+
+        const bufferSize = 4 + 4 + (hasFileRef ? 1 + fileReference.length : 0) + 8 + 8;
+        const buffer = Buffer.alloc(bufferSize);
+        let offset = 0;
+
+        buffer.writeUInt32LE(typeWithFlags, offset);
+        offset += 4;
+
+        buffer.writeUInt32LE(dcId, offset);
+        offset += 4;
+
+        if (hasFileRef) {
+            buffer.writeUInt8(fileReference.length, offset);
+            offset += 1;
+            fileReference.copy(buffer, offset);
+            offset += fileReference.length;
+        }
+
+        buffer.writeBigInt64LE(BigInt(id.toString()), offset);
+        offset += 8;
+
+        buffer.writeBigInt64LE(BigInt(accessHash.toString()), offset);
+
+        const encoded = _rleEncodeFileId(buffer);
+        return encoded
+            .toString("base64")
+            .replace(/\+/g, "-")
+            .replace(/\//g, "_")
+            .replace(/=+$/, "");
+    } catch (e) {
+        return undefined;
+    }
+}
+
 /**
  * check if a given item is an array like or not
  * @param item

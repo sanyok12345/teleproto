@@ -1,5 +1,6 @@
 import { Api } from "../tl";
 import { NewMessage, NewMessageEvent, NewMessageInterface } from "./NewMessage";
+import bigInt from "big-integer";
 
 export interface EditedMessageInterface extends NewMessageInterface {
     func?: { (event: EditedMessageEvent): boolean };

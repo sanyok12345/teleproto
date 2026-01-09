@@ -1,8 +1,10 @@
 export { Raw } from "./Raw";
 export { NewMessage, NewMessageEvent } from "./NewMessage";
-export { MessageEdited, MessageEditedEvent } from "./MessageEdited";
+export { EditedMessage, EditedMessageEvent } from "./EditedMessage";
 export { UserUpdate, UserUpdateEvent } from "./UserUpdate";
 export { MessageRead, MessageReadEvent } from "./MessageRead";
 export { DeletedMessage, DeletedMessageEvent } from "./DeletedMessage";
 export { ChatAction, ChatActionEvent } from "./ChatAction";
 export { InlineQuery, InlineQueryEvent, InlineBuilder } from "./InlineQuery";
+export { Album, AlbumEvent } from "./Album";
+export { CallbackQuery, CallbackQueryEvent } from "./CallbackQuery";

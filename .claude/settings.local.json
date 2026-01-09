@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx tsc:*)",
+      "Bash(npm run build:*)",
+      "Bash(git checkout:*)",
+      "Bash(del \"c:\\\\Users\\\\sanyok12345\\\\Desktop\\\\teleproto\\\\teleproto\\\\events\\\\MessageEdited.ts\")"
+    ]
+  }
+}

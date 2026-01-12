@@ -220,6 +220,88 @@ export class TelegramClient extends TelegramBaseClient {
     }
 
     /**
+     * Sends an email verification code for login setup.
+     * This is used when Telegram requires email verification during login.
+     * @param phoneNumber - The phone number being used for login
+     * @param phoneCodeHash - The phone code hash from sendCode
+     * @param email - The email address to verify
+     * @returns The email pattern and code length
+     * @example
+     * ```ts
+     * const result = await client.sendVerifyEmailCode(
+     *     "+1234567890",
+     *     "abc123hash",
+     *     "user@example.com"
+     * );
+     * console.log(`Code sent to ${result.emailPattern}, length: ${result.length}`);
+     * ```
+     */
+    sendVerifyEmailCode(
+        phoneNumber: string,
+        phoneCodeHash: string,
+        email: string
+    ) {
+        return authMethods.sendVerifyEmailCode(
+            this,
+            phoneNumber,
+            phoneCodeHash,
+            email
+        );
+    }
+
+    /**
+     * Verifies an email address during login setup.
+     * @param phoneNumber - The phone number being used for login
+     * @param phoneCodeHash - The phone code hash from sendCode
+     * @param verification - The verification result (code, Google token, or Apple token)
+     * @returns The verified email and the new sent code for phone verification
+     * @example
+     * ```ts
+     * // Verify with email code
+     * const result = await client.verifyEmail(
+     *     "+1234567890",
+     *     "abc123hash",
+     *     { type: "code", code: "12345" }
+     * );
+     *
+     * // Or verify with Google Sign-In
+     * const result = await client.verifyEmail(
+     *     "+1234567890",
+     *     "abc123hash",
+     *     { type: "google", token: "google-id-token" }
+     * );
+     * ```
+     */
+    verifyEmail(
+        phoneNumber: string,
+        phoneCodeHash: string,
+        verification: authMethods.EmailVerificationResult
+    ) {
+        return authMethods.verifyEmail(
+            this,
+            phoneNumber,
+            phoneCodeHash,
+            verification
+        );
+    }
+
+    /**
+     * Resets the login email when the user cannot access their current email.
+     * This will cancel the current email verification and allow setting up a new one.
+     * @param phoneNumber - The phone number being used for login
+     * @param phoneCodeHash - The phone code hash from sendCode
+     * @returns The new sent code result
+     * @example
+     * ```ts
+     * // User can't access their email, reset it
+     * const newSentCode = await client.resetLoginEmail("+1234567890", "abc123hash");
+     * ```
+     */
+    resetLoginEmail(phoneNumber: string, phoneCodeHash: string) {
+        return authMethods.resetLoginEmail(this, phoneNumber, phoneCodeHash);
+    }
+
+    /**
      * Uses the 2FA password to sign in the account.<br/>
      * This function should be used after the user has signed in with the code they received.
      * @param apiCredentials - credentials to be used.

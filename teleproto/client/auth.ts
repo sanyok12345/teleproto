@@ -5,6 +5,32 @@ import { computeCheck as computePasswordSrpCheck } from "../Password";
 import type { TelegramClient } from "./TelegramClient";
 
 /**
+ * Email verification options passed to the email callback.
+ */
+export interface EmailVerificationOptions {
+    /** Whether Google Sign-In is allowed for email verification. */
+    googleSigninAllowed?: boolean;
+    /** Whether Apple Sign-In is allowed for email verification. */
+    appleSigninAllowed?: boolean;
+    /** The email pattern (masked email) when code was sent to existing email. */
+    emailPattern?: string;
+    /** The code length when email code is expected. */
+    codeLength?: number;
+    /** Period in seconds after which the email can be reset. */
+    resetAvailablePeriod?: number;
+    /** Date when the pending reset will complete. */
+    resetPendingDate?: number;
+}
+
+/**
+ * Result from the email callback - can be code, Google token, or Apple token.
+ */
+export type EmailVerificationResult =
+    | { type: "code"; code: string }
+    | { type: "google"; token: string }
+    | { type: "apple"; token: string };
+
+/**
  * For when you want to login as a {@link Api.User}<br/>
  * this should handle all needed steps for authorization as a user.<br/>
  * to stop the operation at any point just raise and error with the message `AUTH_USER_CANCEL`.
@@ -30,6 +56,16 @@ export interface UserAuthParams {
     forceSMS?: boolean;
     /** optional callback for handling reCAPTCHA. */
     reCaptchaCallback?: (siteKey: string) => Promise<string>;
+    /** callback for email verification when Telegram requires email setup or code.<br/>
+     *  Called when `auth.SentCodeTypeSetUpEmailRequired` or `auth.SentCodeTypeEmailCode` is received.<br/>
+     *  For setup: should return email address to use and then handle verification code.<br/>
+     *  For existing email: should return the verification result (code, Google token, or Apple token). */
+    emailVerification?: (
+        options: EmailVerificationOptions
+    ) => Promise<EmailVerificationResult>;
+    /** callback to get email address when email setup is required.<br/>
+     *  Called first when `auth.SentCodeTypeSetUpEmailRequired` is received. */
+    emailAddress?: () => Promise<string>;
 }
 
 export interface UserPasswordAuthParams {
@@ -116,8 +152,8 @@ export async function signInUser(
     apiCredentials: ApiCredentials,
     authParams: UserAuthParams
 ): Promise<Api.TypeUser> {
-    let phoneNumber;
-    let phoneCodeHash;
+    let phoneNumber: string = "";
+    let phoneCodeHash: string = "";
     let isCodeViaApp = false;
 
     while (1) {
@@ -149,6 +185,78 @@ export async function signInUser(
 
             if (typeof phoneCodeHash !== "string") {
                 throw new Error("Failed to retrieve phone code hash");
+            }
+
+            // Handle email verification if required
+            if (sendCodeResult.emailRequired) {
+                // Email setup is required before phone code
+                if (!authParams.emailAddress || !authParams.emailVerification) {
+                    throw new Error(
+                        "Email verification required but emailAddress or emailVerification callback not provided"
+                    );
+                }
+
+                // Get email address from user
+                const email = await authParams.emailAddress();
+
+                // Send verification code to email
+                const emailCodeResult = await sendVerifyEmailCode(
+                    client,
+                    phoneNumber,
+                    phoneCodeHash,
+                    email
+                );
+
+                // Get verification from user
+                const verification = await authParams.emailVerification({
+                    ...sendCodeResult.emailOptions,
+                    emailPattern: emailCodeResult.emailPattern,
+                    codeLength: emailCodeResult.length,
+                });
+
+                // Verify email
+                const verifyResult = await verifyEmail(
+                    client,
+                    phoneNumber,
+                    phoneCodeHash,
+                    verification
+                );
+
+                // Update phone code hash from the new sent code
+                if (verifyResult.sentCode instanceof Api.auth.SentCode) {
+                    phoneCodeHash = verifyResult.sentCode.phoneCodeHash;
+                    isCodeViaApp =
+                        verifyResult.sentCode.type instanceof
+                        Api.auth.SentCodeTypeApp;
+                }
+            } else if (sendCodeResult.emailCodeSent) {
+                // Code was sent to existing email
+                if (!authParams.emailVerification) {
+                    throw new Error(
+                        "Email code sent but emailVerification callback not provided"
+                    );
+                }
+
+                // Get verification from user for existing email
+                const verification = await authParams.emailVerification(
+                    sendCodeResult.emailOptions || {}
+                );
+
+                // Verify with existing email
+                const verifyResult = await verifyEmail(
+                    client,
+                    phoneNumber,
+                    phoneCodeHash,
+                    verification
+                );
+
+                // Update phone code hash from the new sent code
+                if (verifyResult.sentCode instanceof Api.auth.SentCode) {
+                    phoneCodeHash = verifyResult.sentCode.phoneCodeHash;
+                    isCodeViaApp =
+                        verifyResult.sentCode.type instanceof
+                        Api.auth.SentCodeTypeApp;
+                }
             }
 
             break;
@@ -364,7 +472,22 @@ export async function signInUserWithQrCode(
     throw new Error("QR auth failed");
 }
 
-/** @hidden */
+/**
+ * Result from sendCode containing info about how to proceed with verification.
+ */
+export interface SendCodeResult {
+    /** The phone code hash needed for sign in. */
+    phoneCodeHash: string;
+    /** Whether the code was sent via Telegram app (true) or SMS (false). */
+    isCodeViaApp: boolean;
+    /** If true, email setup is required before phone code. */
+    emailRequired?: boolean;
+    /** If true, code was sent to existing email. */
+    emailCodeSent?: boolean;
+    /** Email verification options when email is involved. */
+    emailOptions?: EmailVerificationOptions;
+}
+
 /** @hidden */
 export async function sendCode(
     client: TelegramClient,
@@ -372,10 +495,7 @@ export async function sendCode(
     phoneNumber: string,
     forceSMS = false,
     reCaptchaCallback?: (siteKey: string) => Promise<string>
-): Promise<{
-    phoneCodeHash: string;
-    isCodeViaApp: boolean;
-}> {
+): Promise<SendCodeResult> {
     try {
         const { apiId, apiHash } = apiCredentials;
         const request = new Api.auth.SendCode({
@@ -415,6 +535,37 @@ export async function sendCode(
             };
         }
 
+        // Handle email verification types
+        if (
+            sendResult.type instanceof Api.auth.SentCodeTypeSetUpEmailRequired
+        ) {
+            return {
+                phoneCodeHash: sendResult.phoneCodeHash,
+                isCodeViaApp: false,
+                emailRequired: true,
+                emailOptions: {
+                    googleSigninAllowed: sendResult.type.googleSigninAllowed,
+                    appleSigninAllowed: sendResult.type.appleSigninAllowed,
+                },
+            };
+        }
+
+        if (sendResult.type instanceof Api.auth.SentCodeTypeEmailCode) {
+            return {
+                phoneCodeHash: sendResult.phoneCodeHash,
+                isCodeViaApp: false,
+                emailCodeSent: true,
+                emailOptions: {
+                    googleSigninAllowed: sendResult.type.googleSigninAllowed,
+                    appleSigninAllowed: sendResult.type.appleSigninAllowed,
+                    emailPattern: sendResult.type.emailPattern,
+                    codeLength: sendResult.type.length,
+                    resetAvailablePeriod: sendResult.type.resetAvailablePeriod,
+                    resetPendingDate: sendResult.type.resetPendingDate,
+                },
+            };
+        }
+
         // If we already sent a SMS, do not resend the phoneCode (hash may be empty)
         if (!forceSMS || sendResult.type instanceof Api.auth.SentCodeTypeSms) {
             return {
@@ -436,6 +587,37 @@ export async function sendCode(
             return {
                 phoneCodeHash: resendResult.phoneCodeHash,
                 isCodeViaApp: false,
+            };
+        }
+
+        // Handle email types in resend result as well
+        if (
+            resendResult.type instanceof Api.auth.SentCodeTypeSetUpEmailRequired
+        ) {
+            return {
+                phoneCodeHash: resendResult.phoneCodeHash,
+                isCodeViaApp: false,
+                emailRequired: true,
+                emailOptions: {
+                    googleSigninAllowed: resendResult.type.googleSigninAllowed,
+                    appleSigninAllowed: resendResult.type.appleSigninAllowed,
+                },
+            };
+        }
+
+        if (resendResult.type instanceof Api.auth.SentCodeTypeEmailCode) {
+            return {
+                phoneCodeHash: resendResult.phoneCodeHash,
+                isCodeViaApp: false,
+                emailCodeSent: true,
+                emailOptions: {
+                    googleSigninAllowed: resendResult.type.googleSigninAllowed,
+                    appleSigninAllowed: resendResult.type.appleSigninAllowed,
+                    emailPattern: resendResult.type.emailPattern,
+                    codeLength: resendResult.type.length,
+                    resetAvailablePeriod: resendResult.type.resetAvailablePeriod,
+                    resetPendingDate: resendResult.type.resetPendingDate,
+                },
             };
         }
 
@@ -548,4 +730,134 @@ export async function _authFlow(
             : await client.signInBot(apiCredentials, authParams);
 
     client._log.info("Signed in successfully as " + utils.getDisplayName(me));
+}
+
+/**
+ * Result from sendVerifyEmailCode.
+ */
+export interface SentEmailCodeResult {
+    /** The masked email pattern where the code was sent. */
+    emailPattern: string;
+    /** The length of the verification code. */
+    length: number;
+}
+
+/**
+ * Sends an email verification code for login setup.
+ * @param client - The telegram client
+ * @param phoneNumber - The phone number being used for login
+ * @param phoneCodeHash - The phone code hash from sendCode
+ * @param email - The email address to verify
+ * @returns The email pattern and code length
+ */
+/** @hidden */
+export async function sendVerifyEmailCode(
+    client: TelegramClient,
+    phoneNumber: string,
+    phoneCodeHash: string,
+    email: string
+): Promise<SentEmailCodeResult> {
+    const result = await client.invoke(
+        new Api.account.SendVerifyEmailCode({
+            purpose: new Api.EmailVerifyPurposeLoginSetup({
+                phoneNumber,
+                phoneCodeHash,
+            }),
+            email,
+        })
+    );
+
+    return {
+        emailPattern: result.emailPattern,
+        length: result.length,
+    };
+}
+
+/**
+ * Result from verifyEmail for login.
+ */
+export interface EmailVerifiedLoginResult {
+    /** The verified email address. */
+    email: string;
+    /** The new sent code result to continue with phone verification. */
+    sentCode: Api.auth.TypeSentCode;
+}
+
+/**
+ * Verifies an email address during login setup.
+ * @param client - The telegram client
+ * @param phoneNumber - The phone number being used for login
+ * @param phoneCodeHash - The phone code hash from sendCode
+ * @param verification - The verification (code, Google token, or Apple token)
+ * @returns The verified email and the new sent code for phone verification
+ */
+/** @hidden */
+export async function verifyEmail(
+    client: TelegramClient,
+    phoneNumber: string,
+    phoneCodeHash: string,
+    verification: EmailVerificationResult
+): Promise<EmailVerifiedLoginResult> {
+    let emailVerification: Api.TypeEmailVerification;
+
+    switch (verification.type) {
+        case "code":
+            emailVerification = new Api.EmailVerificationCode({
+                code: verification.code,
+            });
+            break;
+        case "google":
+            emailVerification = new Api.EmailVerificationGoogle({
+                token: verification.token,
+            });
+            break;
+        case "apple":
+            emailVerification = new Api.EmailVerificationApple({
+                token: verification.token,
+            });
+            break;
+    }
+
+    const result = await client.invoke(
+        new Api.account.VerifyEmail({
+            purpose: new Api.EmailVerifyPurposeLoginSetup({
+                phoneNumber,
+                phoneCodeHash,
+            }),
+            verification: emailVerification,
+        })
+    );
+
+    if (!(result instanceof Api.account.EmailVerifiedLogin)) {
+        throw new Error(
+            "Expected EmailVerifiedLogin but got " + result.className
+        );
+    }
+
+    return {
+        email: result.email,
+        sentCode: result.sentCode,
+    };
+}
+
+/**
+ * Resets the login email when the user cannot access their current email.
+ * This will cancel the current email verification and allow setting up a new one.
+ * @param client - The telegram client
+ * @param phoneNumber - The phone number being used for login
+ * @param phoneCodeHash - The phone code hash from sendCode
+ * @returns The new sent code result
+ */
+/** @hidden */
+export async function resetLoginEmail(
+    client: TelegramClient,
+    phoneNumber: string,
+    phoneCodeHash: string
+): Promise<Api.auth.TypeSentCode> {
+    return await client.invoke(
+        new Api.auth.ResetLoginEmail({
+            phoneNumber,
+            phoneCodeHash,
+        })
+    );
 }

@@ -193,7 +193,7 @@ export async function _updateLoop(client: TelegramClient) {
     let lastPongAt;
     while (!client._destroyed) {
         await sleep(PING_INTERVAL, true);
-        if (client._destroyed) break;
+        if (client._destroyed || client.disconnected) break;
         if (client._sender!.isReconnecting || client._isSwitchingDc) {
             lastPongAt = undefined;
             continue;
@@ -257,6 +257,9 @@ export async function _updateLoop(client: TelegramClient) {
 
             lastPongAt = undefined;
 
+            if (client.disconnected || client._destroyed) {
+                break;
+            }
             if (client._sender!.isReconnecting || client._isSwitchingDc) {
                 continue;
             }

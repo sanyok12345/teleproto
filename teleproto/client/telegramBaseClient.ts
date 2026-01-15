@@ -233,6 +233,8 @@ export abstract class TelegramBaseClient {
     /** @hidden */
     protected _loopStarted: boolean;
     /** @hidden */
+    _updateState?: { pts: number; qts: number; date: number; seq: number };
+    /** @hidden */
     _reconnecting: boolean;
     /** @hidden */
     _destroyed: boolean;

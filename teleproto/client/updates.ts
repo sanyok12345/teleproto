@@ -65,9 +65,118 @@ export function listEventHandlers(client: TelegramClient) {
     return client._eventBuilders;
 }
 
+/**
+ * Fetches and processes any updates that were missed while disconnected.
+ * Call this after reconnecting to ensure no updates are lost.
+ */
+export async function catchUp(client: TelegramClient): Promise<void> {
+    try {
+        // Get current state if we don't have one
+        if (!client._updateState) {
+            const state = await client.invoke(new Api.updates.GetState());
+            client._updateState = {
+                pts: state.pts,
+                qts: state.qts,
+                date: state.date,
+                seq: state.seq,
+            };
+            client._log.debug("Initialized update state");
+            return;
+        }
+
+        // Fetch missed updates
+        client._log.debug("Catching up on missed updates...");
+        let fetching = true;
+
+        while (fetching) {
+            const diff: Api.updates.TypeDifference = await client.invoke(
+                new Api.updates.GetDifference({
+                    pts: client._updateState.pts,
+                    date: client._updateState.date,
+                    qts: client._updateState.qts,
+                })
+            );
+
+            if (diff instanceof Api.updates.DifferenceEmpty) {
+                client._updateState.date = diff.date;
+                client._updateState.seq = diff.seq;
+                fetching = false;
+            } else if (diff instanceof Api.updates.Difference) {
+                // Process all missed updates
+                await _processDifference(client, diff);
+                client._updateState = {
+                    pts: diff.state.pts,
+                    qts: diff.state.qts,
+                    date: diff.state.date,
+                    seq: diff.state.seq,
+                };
+                fetching = false;
+            } else if (diff instanceof Api.updates.DifferenceSlice) {
+                // Process partial updates, continue fetching
+                await _processDifference(client, diff);
+                client._updateState = {
+                    pts: diff.intermediateState.pts,
+                    qts: diff.intermediateState.qts,
+                    date: diff.intermediateState.date,
+                    seq: diff.intermediateState.seq,
+                };
+                // Continue loop to fetch more
+            } else if (diff instanceof Api.updates.DifferenceTooLong) {
+                // Too many updates missed, just update pts and continue
+                client._updateState.pts = diff.pts;
+                fetching = false;
+                client._log.warn("Too many updates missed, some may be lost");
+            }
+        }
+
+        client._log.debug("Catch up complete");
+    } catch (e) {
+        client._log.error(`Error during catch up: ${e}`);
+    }
+}
+
 /** @hidden */
-export function catchUp() {
-    // TODO
+async function _processDifference(
+    client: TelegramClient,
+    diff: Api.updates.Difference | Api.updates.DifferenceSlice
+): Promise<void> {
+    // Build entities map
+    const entities = new Map();
+    for (const user of diff.users) {
+        try {
+            entities.set(utils.getPeerId(user), user);
+        } catch (e) {
+            // Skip invalid
+        }
+    }
+    for (const chat of diff.chats) {
+        try {
+            entities.set(utils.getPeerId(chat), chat);
+        } catch (e) {
+            // Skip invalid
+        }
+    }
+
+    // Process entities
+    client._entityCache.add(diff);
+    client.session.processEntities(diff);
+
+    // Process new messages as updates
+    for (const message of diff.newMessages) {
+        if (message instanceof Api.Message || message instanceof Api.MessageService) {
+            const update = new Api.UpdateNewMessage({
+                message: message,
+                pts: 0,
+                ptsCount: 0,
+            });
+            _processUpdate(client, update, null, entities);
+        }
+    }
+
+    // Process other updates
+    for (const update of diff.otherUpdates) {
+        _processUpdate(client, update, diff.otherUpdates, entities);
+    }
 }
 
 /** @hidden */
@@ -211,6 +320,22 @@ export async function _dispatchUpdate(
 
 /** @hidden */
 export async function _updateLoop(client: TelegramClient) {
+    // Initialize update state on first run
+    if (!client._updateState) {
+        try {
+            const state = await client.invoke(new Api.updates.GetState());
+            client._updateState = {
+                pts: state.pts,
+                qts: state.qts,
+                date: state.date,
+                seq: state.seq,
+            };
+            client._log.debug("Initialized update state");
+        } catch (e) {
+            client._log.error(`Failed to get initial update state: ${e}`);
+        }
+    }
+
     let lastPongAt;
     while (!client._destroyed) {
         await sleep(PING_INTERVAL, true);
@@ -288,7 +413,14 @@ export async function _updateLoop(client: TelegramClient) {
 
         if (Date.now() - (client._lastRequest || 0) > 30 * 60 * 1000) {
             try {
-                await client.invoke(new Api.updates.GetState());
+                const state = await client.invoke(new Api.updates.GetState());
+                // Update our state to stay in sync
+                if (client._updateState) {
+                    client._updateState.pts = state.pts;
+                    client._updateState.qts = state.qts;
+                    client._updateState.date = state.date;
+                    client._updateState.seq = state.seq;
+                }
             } catch (e) {
                 // we don't care about errors here
             }

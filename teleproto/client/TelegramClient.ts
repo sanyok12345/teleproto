@@ -22,7 +22,7 @@ import { LAYER } from "../tl/AllTLObjects";
 import { betterConsoleLog } from "../Helpers";
 import { DownloadMediaInterface, IterDownloadFunction } from "./downloads";
 import { NewMessage, NewMessageEvent } from "../events";
-import { _handleUpdate, _updateLoop } from "./updates";
+import { _handleUpdate, _updateLoop, catchUp } from "./updates";
 import { Session } from "../sessions";
 import { Album, AlbumEvent } from "../events/Album";
 import { CallbackQuery, CallbackQueryEvent } from "../events/CallbackQuery";
@@ -1212,6 +1212,19 @@ export class TelegramClient extends TelegramBaseClient {
      */
     listEventHandlers() {
         return updateMethods.listEventHandlers(this);
+    }
+
+    /**
+     * Fetches and processes any updates that were missed while disconnected.
+     * Call this after reconnecting to ensure no updates are lost.
+     * @example
+     * ```ts
+     * await client.connect();
+     * await client.catchUp(); // Fetch missed updates
+     * ```
+     */
+    async catchUp() {
+        return catchUp(this);
     }
 
     // region uploads

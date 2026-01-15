@@ -5,7 +5,6 @@ import { UpdateConnectionState } from "../network";
 import type { Raw } from "../events";
 import { utils } from "../index";
 import { getRandomInt, returnBigInt, sleep } from "../Helpers";
-import { LogLevel } from "../extensions/Logger";
 import Timeout = NodeJS.Timeout;
 
 const PING_INTERVAL = 9000; // 9 sec
@@ -76,35 +75,43 @@ export function _handleUpdate(
     client: TelegramClient,
     update: Api.TypeUpdate | number
 ): void {
-    if (typeof update === "number") {
-        if ([-1, 0, 1].includes(update)) {
-            _dispatchUpdate(client, {
-                update: new UpdateConnectionState(update),
-            });
-            return;
+    try {
+        if (typeof update === "number") {
+            if ([-1, 0, 1].includes(update)) {
+                _dispatchUpdate(client, {
+                    update: new UpdateConnectionState(update),
+                }).catch((e) => {
+                    client._log.error(`Error dispatching connection state: ${e}`);
+                });
+                return;
+            }
         }
-    }
 
-    //this.session.processEntities(update)
-    client._entityCache.add(update);
-    client.session.processEntities(update);
+        client._entityCache.add(update);
+        client.session.processEntities(update);
 
-    if (
-        update instanceof Api.Updates ||
-        update instanceof Api.UpdatesCombined
-    ) {
-        // TODO deal with entities
-        const entities = new Map();
-        for (const x of [...update.users, ...update.chats]) {
-            entities.set(utils.getPeerId(x), x);
+        if (
+            update instanceof Api.Updates ||
+            update instanceof Api.UpdatesCombined
+        ) {
+            const entities = new Map();
+            for (const x of [...update.users, ...update.chats]) {
+                try {
+                    entities.set(utils.getPeerId(x), x);
+                } catch (e) {
+                    // Skip invalid entity
+                }
+            }
+            for (const u of update.updates) {
+                _processUpdate(client, u, update.updates, entities);
+            }
+        } else if (update instanceof Api.UpdateShort) {
+            _processUpdate(client, update.update, null);
+        } else {
+            _processUpdate(client, update, null);
         }
-        for (const u of update.updates) {
-            _processUpdate(client, u, update.updates, entities);
-        }
-    } else if (update instanceof Api.UpdateShort) {
-        _processUpdate(client, update.update, null);
-    } else {
-        _processUpdate(client, update, null);
+    } catch (e) {
+        client._log.error(`Error handling update: ${e}`);
     }
 }
 
@@ -121,7 +128,9 @@ export function _processUpdate(
         others: others,
     };
 
-    _dispatchUpdate(client, args);
+    _dispatchUpdate(client, args).catch((e) => {
+        client._log.error(`Error dispatching update: ${e}`);
+    });
 }
 
 /** @hidden */
@@ -133,8 +142,13 @@ export async function _dispatchUpdate(
         if (!builder || !callback) {
             continue;
         }
-        if (!builder.resolved) {
-            await builder.resolve(client);
+        try {
+            if (!builder.resolved) {
+                await builder.resolve(client);
+            }
+        } catch (e) {
+            client._log.error(`Error resolving event builder: ${e}`);
+            continue;
         }
         let event = args.update;
         if (event) {
@@ -149,13 +163,18 @@ export async function _dispatchUpdate(
                 // TODO fix me
             }
             // TODO fix others not being passed
-            event = builder.build(
-                event,
-                callback,
-                client._selfInputPeer
-                    ? returnBigInt(client._selfInputPeer.userId)
-                    : undefined
-            );
+            try {
+                event = builder.build(
+                    event,
+                    callback,
+                    client._selfInputPeer
+                        ? returnBigInt(client._selfInputPeer.userId)
+                        : undefined
+                );
+            } catch (e) {
+                client._log.error(`Error building event: ${e}`);
+                continue;
+            }
             if (event) {
                 event._client = client;
 
@@ -164,7 +183,13 @@ export async function _dispatchUpdate(
                     event.originalUpdate = args.update;
                     event._entities = args.update._entities;
                 }
-                const filter = await builder.filter(event);
+                let filter;
+                try {
+                    filter = await builder.filter(event);
+                } catch (e) {
+                    client._log.error(`Error in event filter: ${e}`);
+                    continue;
+                }
                 if (!filter) {
                     continue;
                 }
@@ -177,11 +202,7 @@ export async function _dispatchUpdate(
                     if (client._errorHandler) {
                         await client._errorHandler(e as Error);
                     }
-                    if (client._log && typeof client._log.canSend === 'function' && client._log.canSend(LogLevel.ERROR)) {
-                        console.error(e);
-                    } else if (client._log) {
-                        console.error(e);
-                    }
+                    client._log.error(`Error in event handler: ${e}`);
                 }
             }
         }
@@ -245,15 +266,10 @@ export async function _updateLoop(client: TelegramClient) {
 
             lastPongAt = Date.now();
         } catch (err) {
-            // eslint-disable-next-line no-console
             if (client._errorHandler) {
                 await client._errorHandler(err as Error);
             }
-            if (client._log && typeof client._log.canSend === 'function' && client._log.canSend(LogLevel.ERROR)) {
-                console.error(err);
-            } else if (client._log) {
-                console.error(err);
-            }
+            client._log.error(`Ping failed: ${err}`);
 
             lastPongAt = undefined;
 

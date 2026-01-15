@@ -392,6 +392,7 @@ export class MTProtoSender {
             this._log.debug("Already have an auth key ...");
         }
         this._userConnected = true;
+        this._disconnected = false;
         this.isReconnecting = false;
 
         if (!this._sendLoopHandle) {
@@ -431,6 +432,7 @@ export class MTProtoSender {
             "Disconnecting from %s...".replace("%s", connection.toString())
         );
         this._userConnected = false;
+        this._disconnected = true;
         this._log.debug("Closing current connection...");
         
         // Signal abort to any ongoing operations

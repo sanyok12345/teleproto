@@ -409,6 +409,7 @@ export abstract class TelegramBaseClient {
     }
 
     async _disconnect() {
+        this._loopStarted = false;
         await this._sender?.disconnect();
     }
 

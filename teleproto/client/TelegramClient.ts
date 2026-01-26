@@ -1493,6 +1493,12 @@ export class TelegramClient extends TelegramBaseClient {
                 console.error(e);
             }
         }
+        // Restart update loop if it was stopped during reconnect
+        if (!this._loopStarted && !this._destroyed) {
+            this._log.info("Restarting update loop after reconnect");
+            _updateLoop(this);
+            this._loopStarted = true;
+        }
     }
 
     //region base methods

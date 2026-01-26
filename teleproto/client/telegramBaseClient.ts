@@ -144,6 +144,7 @@ const clientParamsDefault = {
     timeout: 10,
     requestRetries: 5,
     connectionRetries: Infinity,
+    reconnectRetries: Infinity,
     retryDelay: 1000,
     downloadRetries: 5,
     autoReconnect: true,
@@ -231,7 +232,7 @@ export abstract class TelegramBaseClient {
         ReturnType<typeof setTimeout>
     >();
     /** @hidden */
-    protected _loopStarted: boolean;
+    _loopStarted: boolean;
     /** @hidden */
     _updateState?: { pts: number; qts: number; date: number; seq: number };
     /** @hidden */

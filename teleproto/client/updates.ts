@@ -339,11 +339,15 @@ export async function _updateLoop(client: TelegramClient) {
     let lastPongAt;
     while (!client._destroyed) {
         await sleep(PING_INTERVAL, true);
-        if (client._destroyed || client.disconnected) break;
-        if (client._sender!.isReconnecting || client._isSwitchingDc) {
+        if (client._destroyed) break;
+        // Check reconnecting state first - if reconnecting, skip this iteration
+        // but don't exit the loop
+        if (client._sender?.isReconnecting || client._isSwitchingDc) {
             lastPongAt = undefined;
             continue;
         }
+        // Only exit if truly disconnected (not reconnecting)
+        if (client.disconnected) break;
 
         try {
             const ping = () => {
@@ -398,11 +402,16 @@ export async function _updateLoop(client: TelegramClient) {
 
             lastPongAt = undefined;
 
-            if (client.disconnected || client._destroyed) {
+            if (client._destroyed) {
                 break;
             }
-            if (client._sender!.isReconnecting || client._isSwitchingDc) {
+            // Check reconnecting state first - if reconnecting, skip this iteration
+            if (client._sender?.isReconnecting || client._isSwitchingDc) {
                 continue;
+            }
+            // Only exit if truly disconnected (not reconnecting)
+            if (client.disconnected) {
+                break;
             }
             client._sender!.reconnect();
         }
@@ -428,7 +437,12 @@ export async function _updateLoop(client: TelegramClient) {
             lastPongAt = undefined;
         }
     }
-    await client.disconnect();
+    // Mark loop as stopped so it can be restarted if needed
+    client._loopStarted = false;
+    // Only call disconnect if client was explicitly destroyed
+    if (client._destroyed) {
+        await client.disconnect();
+    }
 }
 
 /** @hidden */

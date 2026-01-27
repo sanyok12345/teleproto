@@ -320,22 +320,6 @@ export async function _dispatchUpdate(
 
 /** @hidden */
 export async function _updateLoop(client: TelegramClient) {
-    // Initialize update state on first run
-    if (!client._updateState) {
-        try {
-            const state = await client.invoke(new Api.updates.GetState());
-            client._updateState = {
-                pts: state.pts,
-                qts: state.qts,
-                date: state.date,
-                seq: state.seq,
-            };
-            client._log.debug("Initialized update state");
-        } catch (e) {
-            client._log.error(`Failed to get initial update state: ${e}`);
-        }
-    }
-
     let lastPongAt;
     while (!client._destroyed) {
         await sleep(PING_INTERVAL, true);
@@ -419,7 +403,6 @@ export async function _updateLoop(client: TelegramClient) {
         // We need to send some content-related request at least hourly
         // for Telegram to keep delivering updates, otherwise they will
         // just stop even if we're connected. Do so every 30 minutes.
-
         if (Date.now() - (client._lastRequest || 0) > 30 * 60 * 1000) {
             try {
                 const state = await client.invoke(new Api.updates.GetState());
@@ -429,9 +412,17 @@ export async function _updateLoop(client: TelegramClient) {
                     client._updateState.qts = state.qts;
                     client._updateState.date = state.date;
                     client._updateState.seq = state.seq;
+                } else {
+                    // Initialize update state if not yet set
+                    client._updateState = {
+                        pts: state.pts,
+                        qts: state.qts,
+                        date: state.date,
+                        seq: state.seq,
+                    };
                 }
             } catch (e) {
-                // we don't care about errors here
+                // Ignore auth errors - user might not be logged in yet
             }
 
             lastPongAt = undefined;

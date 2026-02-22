@@ -19,7 +19,6 @@ import type { EventBuilder } from "../events/common";
 import { MTProtoSender } from "../network";
 
 import { LAYER } from "../tl/AllTLObjects";
-import { betterConsoleLog } from "../Helpers";
 import { DownloadMediaInterface, IterDownloadFunction } from "./downloads";
 import { NewMessage, NewMessageEvent } from "../events";
 import { _handleUpdate, _updateLoop, catchUp } from "./updates";
@@ -29,7 +28,6 @@ import { CallbackQuery, CallbackQueryEvent } from "../events/CallbackQuery";
 import { EditedMessage, EditedMessageEvent } from "../events/EditedMessage";
 import { DeletedMessage, DeletedMessageEvent } from "../events/DeletedMessage";
 import { LogLevel } from "../extensions/Logger";
-import { inspect } from "../inspect";
 
 /**
  * The TelegramClient uses several methods in different files to provide all the common functionality in a nice interface.</br>
@@ -1526,12 +1524,11 @@ export class TelegramClient extends TelegramBaseClient {
 
         const connection = new this._connection({
             ip: this.session.serverAddress,
-            port: this.useWSS ? 443 : 80,
+            port: this.session.port || 80,
             dcId: this.session.dcId,
             loggers: this._log,
             proxy: this._proxy,
             socket: this.networkSocket,
-            testServers: this.testServers,
         });
         if (!(await this._sender.connect(connection, false))) {
             if (!this._loopStarted) {
@@ -1578,18 +1575,16 @@ export class TelegramClient extends TelegramBaseClient {
     }
 
     /**
-     * Returns the DC ip in case of node or the DC web address in case of browser.<br/>
+     * Returns the DC IP address.<br/>
      * This will do an API request to fill the cache if it's the first time it's called.
      * @param dcId The DC ID.
      * @param downloadDC whether to use -1 DCs or not
-     * @param web if true this will get the web DCs.
      * TODO, hardcode IPs.
      * (These only support downloading/uploading and not creating a new AUTH key)
      */
     async getDC(
         dcId: number,
-        downloadDC = false,
-        web = false
+        downloadDC = false
     ): Promise<{ id: number; ipAddress: string; port: number }> {
         this._log.debug(`Getting DC ${dcId}`);
         if (!this._config) {
@@ -1618,13 +1613,6 @@ export class TelegramClient extends TelegramBaseClient {
     }
 
     /** @hidden */
-    [inspect.custom]() {
-        return betterConsoleLog(this);
-    }
-
-    /**
-     * Small hack for using it in browsers
-     */
     static get events() {
         return require("../events");
     }

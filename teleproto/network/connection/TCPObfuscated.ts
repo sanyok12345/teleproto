@@ -2,11 +2,11 @@ import { generateRandomBytes } from "../../Helpers";
 import { ObfuscatedConnection } from "./Connection";
 import { AbridgedPacketCodec } from "./TCPAbridged";
 import { CTR } from "../../crypto/CTR";
-import { PromisedNetSockets, PromisedWebSockets } from "../../extensions";
+import { PromisedNetSockets } from "../../extensions";
 
 class ObfuscatedIO {
     header?: Buffer = undefined;
-    private connection: PromisedNetSockets | PromisedWebSockets;
+    private connection: PromisedNetSockets;
     private _encrypt?: CTR;
     private _decrypt?: CTR;
     private _packetClass;

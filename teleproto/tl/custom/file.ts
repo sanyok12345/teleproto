@@ -1,14 +1,9 @@
 import type { FileLike } from "../../define";
 import { Api } from "../api";
 import { _photoSizeByteCount } from "../../Utils";
-import { betterConsoleLog } from "../../Helpers";
-import { inspect } from "../../inspect";
 
 export class File {
     private readonly media: FileLike;
-    [inspect.custom]() {
-        return betterConsoleLog(this);
-    }
 
     constructor(media: FileLike) {
         this.media = media;

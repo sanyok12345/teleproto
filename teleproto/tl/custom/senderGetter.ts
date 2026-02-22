@@ -1,10 +1,8 @@
 import type { Entity } from "../../define";
 import type { TelegramClient } from "../..";
 import { Api } from "../api";
-import { betterConsoleLog } from "../../Helpers";
 import { ChatGetter } from "./chatGetter";
 import bigInt from "big-integer";
-import { inspect } from "../../inspect";
 
 interface SenderGetterConstructorInterface {
     senderId?: bigInt.BigInteger;
@@ -17,9 +15,6 @@ export class SenderGetter extends ChatGetter {
     _sender?: Entity;
     _inputSender?: Api.TypeInputPeer;
     public _client?: TelegramClient;
-    [inspect.custom]() {
-        return betterConsoleLog(this);
-    }
 
     static initSenderClass(
         c: any,

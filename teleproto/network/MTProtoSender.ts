@@ -283,7 +283,7 @@ export class MTProtoSender {
                     );
                 }
                 this._log.error(
-                    `WebSocket connection failed attempt: ${attempt + 1}`
+                    `Connection failed attempt: ${attempt + 1}`
                 );
                 if (this._client._errorHandler) {
                     await this._client._errorHandler(err as Error);
@@ -1087,7 +1087,6 @@ export class MTProtoSender {
             dcId: connection._dcId,
             loggers: connection._log,
             proxy: connection._proxy,
-            testServers: connection._testServers,
             socket: this._client.networkSocket,
         });
         await this.connect(newConnection, true);

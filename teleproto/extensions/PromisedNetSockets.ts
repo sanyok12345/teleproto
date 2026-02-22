@@ -161,8 +161,6 @@ export class PromisedNetSockets {
             this.client.on("data", async (message: Buffer) => {
                 const release = await mutex.acquire();
                 try {
-                    let data;
-                    //CONTEST BROWSER
                     this.stream = Buffer.concat([this.stream, message]);
                     if (this.resolveRead) {
                         this.resolveRead(true);

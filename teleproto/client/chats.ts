@@ -4,14 +4,12 @@ import {
     sleep,
     getMinBigInt,
     TotalList,
-    betterConsoleLog,
     returnBigInt,
 } from "../Helpers";
 import { RequestIter } from "../requestIter";
 import { helpers, utils } from "..";
 import { Api } from "../tl";
 import bigInt, { BigInteger, isInstance } from "big-integer";
-import { inspect } from "../inspect";
 import { getPeerId } from "../Utils";
 
 const _MAX_PARTICIPANTS_CHUNK_SIZE = 200;
@@ -56,10 +54,6 @@ class _ChatAction {
     private _request?: Api.AnyRequest;
     private _task: null;
     private _running: boolean;
-
-    [inspect.custom]() {
-        return betterConsoleLog(this);
-    }
 
     constructor(
         client: TelegramClient,
@@ -128,10 +122,6 @@ interface ParticipantsIterInterface {
 export class _ParticipantsIter extends RequestIter {
     private filterEntity: ((entity: Entity) => boolean) | undefined;
     private requests?: Api.channels.GetParticipants[];
-
-    [inspect.custom]() {
-        return betterConsoleLog(this);
-    }
 
     async _init({
         entity,
@@ -337,10 +327,6 @@ interface _AdminLogSearchInterface {
 class _AdminLogIter extends RequestIter {
     private entity?: Api.TypeInputPeer;
     private request?: Api.channels.GetAdminLog;
-
-    [inspect.custom]() {
-        return betterConsoleLog(this);
-    }
 
     async _init(
         entity: EntityLike,

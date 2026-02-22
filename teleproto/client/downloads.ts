@@ -7,10 +7,10 @@ import { utils } from "..";
 import { RequestIter } from "../requestIter";
 import { MTProtoSender } from "../network";
 import { FileMigrateError } from "../errors";
-import { createWriteStream } from "./fs";
+import { createWriteStream } from "fs";
 import { BinaryWriter } from "../extensions";
-import * as fs from "./fs";
-import path from "./path";
+import * as fs from "fs";
+import path from "path";
 import bigInt from "big-integer";
 
 /**

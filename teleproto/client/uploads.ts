@@ -4,8 +4,8 @@ import { TelegramClient } from "./TelegramClient";
 import { generateRandomBytes, readBigIntFromBuffer, sleep } from "../Helpers";
 import { getAppropriatedPartSize, getInputMedia, getMessageId } from "../Utils";
 import { EntityLike, FileLike, MarkupLike, MessageIDLike } from "../define";
-import path from "./path";
-import { promises as fs } from "./fs";
+import path from "path";
+import { promises as fs } from "fs";
 import { errors, utils } from "../index";
 import { _parseMessageText } from "./messageParse";
 import { getCommentData } from "./messages";
@@ -22,8 +22,8 @@ interface OnProgress {
  * interface for uploading files.
  */
 export interface UploadFileParams {
-    /** for browsers this should be an instance of File.<br/>
-     * On node you should use {@link CustomFile} class to wrap your file.
+    /** In runtimes with File API this can be an instance of File.<br/>
+     * On Node.js you should use {@link CustomFile} class to wrap your file.
      */
     file: File | CustomFile;
     /** How many workers to use to upload the file. anything above 16 is unstable. */
@@ -34,7 +34,7 @@ export interface UploadFileParams {
 }
 
 /**
- * A custom file class that mimics the browser's File class.<br/>
+ * A custom file class compatible with File-like upload shape.<br/>
  * You should use this whenever you want to upload a file.
  */
 export class CustomFile {

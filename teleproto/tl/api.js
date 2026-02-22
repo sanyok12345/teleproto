@@ -1,11 +1,9 @@
-const { inspect } = require("../inspect");
 const bigInt = require("big-integer");
 
 const {
     generateRandomBytes,
     readBigIntFromBuffer,
     isArrayLike,
-    betterConsoleLog,
 } = require("../Helpers");
 const tlContent = require("./apiTl.js");
 const schemeContent = require("./schemaTl.js");
@@ -59,30 +57,9 @@ class CastError extends Error {
     }
 }
 
-const CACHING_SUPPORTED =
-    typeof self !== "undefined" && self.localStorage !== undefined;
-
-const CACHE_KEY = "teleproto:apiCache";
-
 function buildApiFromTlSchema() {
-    let definitions;
-    const fromCache = CACHING_SUPPORTED && loadFromCache();
-
-    if (fromCache) {
-        definitions = fromCache;
-    } else {
-        definitions = loadFromTlSchemas();
-
-        if (CACHING_SUPPORTED) {
-            localStorage.setItem(CACHE_KEY, JSON.stringify(definitions));
-        }
-    }
+    const definitions = loadFromTlSchemas();
     return createClasses("all", definitions);
-}
-
-function loadFromCache() {
-    const jsonCache = localStorage.getItem(CACHE_KEY);
-    return jsonCache && JSON.parse(jsonCache);
 }
 
 function loadFromTlSchemas() {
@@ -584,10 +561,6 @@ function createClasses(classesType, params) {
                         }
                     }
                 }
-            }
-
-            [inspect.custom]() {
-                return betterConsoleLog(this);
             }
 
             toJSON() {

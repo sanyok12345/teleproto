@@ -2,7 +2,7 @@ import { MemorySession } from "./Memory";
 import store, { StoreBase } from "store2";
 import { AuthKey } from "../crypto/AuthKey";
 import bigInt from "big-integer";
-import { LocalStorage } from "./localStorage";
+import { LocalStorage } from "node-localstorage";
 
 export class StoreSession extends MemorySession {
     private readonly sessionName: string;

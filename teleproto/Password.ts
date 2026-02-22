@@ -8,7 +8,7 @@ import {
     sha256,
 } from "./Helpers";
 import bigInt from "big-integer";
-import crypto from "./CryptoFile";
+import crypto from "crypto";
 
 const SIZE_FOR_HASH = 256;
 

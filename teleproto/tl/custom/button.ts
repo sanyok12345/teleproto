@@ -1,18 +1,12 @@
 import type { ButtonLike, EntityLike } from "../../define";
 import { Api } from "../api";
 import { utils } from "../..";
-import { betterConsoleLog } from "../../Helpers";
-import { inspect } from "../../inspect";
 
 export class Button {
     public button: ButtonLike;
     public resize: boolean | undefined;
     public selective: boolean | undefined;
     public singleUse: boolean | undefined;
-
-    [inspect.custom]() {
-        return betterConsoleLog(this);
-    }
 
     constructor(
         button: Api.TypeKeyboardButton,

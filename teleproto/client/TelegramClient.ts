@@ -18,7 +18,7 @@ import { sanitizeParseMode } from "../Utils";
 import type { EventBuilder } from "../events/common";
 import { MTProtoSender } from "../network";
 
-import { LAYER } from "../tl/AllTLObjects";
+import { LAYER } from "../tl/runtime/registry";
 import { DownloadMediaInterface, IterDownloadFunction } from "./downloads";
 import { NewMessage, NewMessageEvent } from "../events";
 import { _handleUpdate, _updateLoop, catchUp } from "./updates";

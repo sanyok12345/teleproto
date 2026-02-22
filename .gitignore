@@ -1,26 +1,37 @@
+# Dependencies
 /node_modules/
+package-lock.json
+
+# Build and generated output
+/dist/
+/docs/
+/coverage/
+*.tsbuildinfo
+
+# Environment and local config
+.env
 /.vscode/
 /.idea/
-# Generated code
-/docs/
-/dist/
-/coverage/
+/settings/
 
-# User session
+# Local runtime data
 *.session
-usermedia/
+/usermedia/
 
-# Quick tests should live in these files
+# Temporary playground files
 example.js
 example.ts
 example.d.ts
 
-# dotenv
-.env
-
-settings
-
+# Legacy browser artifacts
 /browser/
 
+# OS files
+.DS_Store
 .DS_STORE
-package-lock.json
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*

@@ -1,7 +1,7 @@
 import { TypeNotFoundError } from "../errors";
 import { coreObjects } from "../tl/core";
 
-import { tlobjects } from "../tl/AllTLObjects";
+import { tlobjects } from "../tl/runtime/registry";
 import { readBigIntFromBuffer } from "../Helpers";
 
 export class BinaryReader {

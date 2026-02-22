@@ -11,7 +11,7 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc --noEmit",
-    "generate:tl": "node teleproto_generator/generate-module.js",
+    "generate:tl": "ts-node --transpile-only teleproto_generator/generate.ts",
     "docs": "typedoc"
   },
   "license": "MIT",

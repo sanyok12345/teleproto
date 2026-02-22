@@ -17,6 +17,11 @@
     "declaration": true,
     "outDir": "./dist"
   },
-  "exclude": ["teleproto_generator", "node_modules"],
+  "exclude": [
+    "dist",
+    "teleproto_generator",
+    "node_modules",
+    "teleproto/tl/generated/api.js"
+  ],
   "include": ["teleproto"]
 }

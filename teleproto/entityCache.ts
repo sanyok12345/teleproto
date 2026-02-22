@@ -48,11 +48,11 @@ export class EntityCache {
         if (item == undefined) {
             throw new Error("No cached entity for the given key");
         }
-        item = returnBigInt(item);
-        if (item.lesser(bigInt.zero)) {
+        const normalizedItem = returnBigInt(item);
+        if (normalizedItem.lesser(bigInt.zero)) {
             let res;
             try {
-                res = this.cacheMap.get(getPeerId(item).toString());
+                res = this.cacheMap.get(getPeerId(normalizedItem).toString());
                 if (res) {
                     return res;
                 }
@@ -64,9 +64,9 @@ export class EntityCache {
             const result = this.cacheMap.get(
                 getPeerId(
                     new cls({
-                        userId: item,
-                        chatId: item,
-                        channelId: item,
+                        userId: normalizedItem,
+                        chatId: normalizedItem,
+                        channelId: normalizedItem,
                     })
                 ).toString()
             );

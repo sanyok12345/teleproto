@@ -4,11 +4,8 @@ const fs = require("fs");
 const { parseTl } = require("../generationHelpers");
 const templateFn = require("./template");
 
-const INPUT_FILE = path.resolve(__dirname, "../../teleproto/tl/static/api.tl");
-const SCHEMA_FILE = path.resolve(
-    __dirname,
-    "../../teleproto/tl/static/schema.tl"
-);
+const INPUT_FILE = path.resolve(__dirname, "../static/api.tl");
+const SCHEMA_FILE = path.resolve(__dirname, "../static/schema.tl");
 
 const OUTPUT_FILE = path.resolve(__dirname, "../../teleproto/tl/api.d.ts");
 const peersToPatch = [

@@ -5,7 +5,7 @@ require("./types-generator/generate");
 
 function main() {
     const apiTl = fs.readFileSync(
-        path.resolve(__dirname, "../teleproto/tl/static/api.tl"),
+        path.resolve(__dirname, "./static/api.tl"),
         "utf-8"
     );
     fs.writeFileSync(
@@ -14,7 +14,7 @@ function main() {
     );
 
     const schemaTl = fs.readFileSync(
-        path.resolve(__dirname, "../teleproto/tl/static/schema.tl"),
+        path.resolve(__dirname, "./static/schema.tl"),
         "utf-8"
     );
     fs.writeFileSync(

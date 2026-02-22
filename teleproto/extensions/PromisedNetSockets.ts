@@ -1,5 +1,5 @@
-import * as net from "./net";
-import { SocksClient } from "./socks";
+import * as net from "node:net";
+import { SocksClient } from "socks";
 
 import { Mutex } from "async-mutex";
 import {

@@ -2,8 +2,6 @@ import type { TelegramClient } from "../..";
 import type { EntityLike, MessageIDLike } from "../../define";
 import { Api } from "../api";
 import { utils } from "../..";
-import { betterConsoleLog } from "../../Helpers";
-import { inspect } from "../../inspect";
 import { getMessageId } from "../../Utils";
 
 export class InlineResult {
@@ -22,10 +20,6 @@ export class InlineResult {
     private readonly _queryId: Api.long | undefined;
     private readonly result: Api.TypeBotInlineResult;
     private _client: TelegramClient;
-
-    [inspect.custom]() {
-        return betterConsoleLog(this);
-    }
 
     constructor(
         client: TelegramClient,

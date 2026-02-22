@@ -6,18 +6,12 @@ import type { Entity } from "../../define";
 import {
     _EntityType,
     _entityType,
-    betterConsoleLog,
     returnBigInt,
 } from "../../Helpers";
 import { _getEntityPair, getPeerId } from "../../Utils";
-import { inspect } from "../../inspect";
 
 export class Forward extends SenderGetter {
     private originalFwd: Api.MessageFwdHeader;
-
-    [inspect.custom]() {
-        return betterConsoleLog(this);
-    }
 
     constructor(
         client: TelegramClient,

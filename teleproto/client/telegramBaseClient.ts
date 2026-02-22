@@ -5,10 +5,10 @@ import {
     ConnectionTCPObfuscated,
 } from "../network/connection";
 import { Session, StoreSession } from "../sessions";
-import { Logger, PromisedNetSockets, PromisedWebSockets } from "../extensions";
+import { Logger, PromisedNetSockets } from "../extensions";
 import { Api } from "../tl";
 
-import os from "./os";
+import os from "os";
 import type { AuthKey } from "../crypto/AuthKey";
 import { EntityCache } from "../entityCache";
 import type { ParseInterface } from "./messageParse";
@@ -37,7 +37,7 @@ const DEFAULT_IPV6_IP = "2001:067c:04e8:f004:0000:0000:0000:000a";
  */
 export interface TelegramClientParams {
     /** The connection instance to be used when creating a new connection to the servers. It must be a type.<br/>
-     * Defaults to {@link ConnectionTCPFull} on Node and {@link ConnectionTCPObfuscated} on browsers.
+    * Defaults to {@link ConnectionTCPFull}.
      */
     connection?: typeof Connection;
     /**
@@ -111,10 +111,6 @@ export interface TelegramClientParams {
      */
     baseLogger?: Logger;
     /**
-     * Whether to try to connect over Wss (or 443 port) or not.
-     */
-    useWSS?: boolean;
-    /**
      * Limits how many downloads happen at the same time.
      */
     maxConcurrentDownloads?: number;
@@ -123,13 +119,9 @@ export interface TelegramClientParams {
      */
     securityChecks?: boolean;
     /**
-     * Only for web DCs. Whether to use test servers or not.
+     * What type of network connection to use.
      */
-    testServers?: boolean;
-    /**
-     * What type of network connection to use (Normal Socket (for node) or Websockets (for browsers usually) )
-     */
-    networkSocket?: typeof PromisedNetSockets | typeof PromisedWebSockets;
+    networkSocket?: typeof PromisedNetSockets;
     /**
      * Callback for handling reCAPTCHA verification.
      * It should return the token obtained after solving the CAPTCHA.
@@ -156,8 +148,6 @@ const clientParamsDefault = {
     langCode: "en",
     systemLangCode: "en",
     _securityChecks: true,
-    useWSS: false,
-    testServers: false,
 };
 
 export abstract class TelegramBaseClient {
@@ -205,9 +195,6 @@ export abstract class TelegramBaseClient {
     /** @hidden */
     public _selfInputPeer?: Api.InputPeerUser;
     /** @hidden */
-    public useWSS: boolean;
-
-    /** @hidden */
     public _errorHandler?: (error: Error) => Promise<void>;
     /** @hidden */
     public _eventBuilders: [EventBuilder, CallableFunction][];
@@ -247,10 +234,7 @@ export abstract class TelegramBaseClient {
     _semaphore: Semaphore;
     /** @hidden */
     _securityChecks: boolean;
-    /** @hidden */
-    public testServers: boolean;
-    /** @hidden */
-    public networkSocket: typeof PromisedNetSockets | typeof PromisedWebSockets;
+    public networkSocket: typeof PromisedNetSockets;
     _connectedDeferred: Deferred<void>;
 
     constructor(
@@ -293,7 +277,6 @@ export abstract class TelegramBaseClient {
         this._semaphore = new Semaphore(
             clientParams.maxConcurrentDownloads || 1
         );
-        this.testServers = clientParams.testServers || false;
         this.networkSocket = clientParams.networkSocket || PromisedNetSockets;
         this._reCaptchaCallback = clientParams.reCaptchaCallback;
         if (!(clientParams.connection instanceof Function)) {
@@ -326,13 +309,7 @@ export abstract class TelegramBaseClient {
         this._borrowedSenderPromises = {};
         this._bot = undefined;
         this._selfInputPeer = undefined;
-        this.useWSS = clientParams.useWSS!;
         this._securityChecks = !!clientParams.securityChecks;
-        if (this.useWSS && this._proxy) {
-            throw new Error(
-                "Cannot use SSL with proxies. You need to disable the useWSS client param in TelegramClient"
-            );
-        }
         this._entityCache = new EntityCache();
         // These will be set later
         this._config = undefined;
@@ -366,7 +343,7 @@ export abstract class TelegramBaseClient {
             this.session.setDC(
                 DEFAULT_DC_ID,
                 this._useIPV6 ? DEFAULT_IPV6_IP : DEFAULT_IPV4_IP,
-                this.useWSS ? 443 : 80
+                80
             );
         } else {
             this._useIPV6 = this.session.serverAddress.includes(":");
@@ -464,7 +441,6 @@ export abstract class TelegramBaseClient {
                         dcId: dcId,
                         loggers: this._log,
                         proxy: this._proxy,
-                        testServers: this.testServers,
                         socket: this.networkSocket,
                     }),
                     false

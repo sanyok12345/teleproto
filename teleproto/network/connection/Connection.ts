@@ -1,7 +1,6 @@
 import {
     Logger,
     PromisedNetSockets,
-    PromisedWebSockets,
 } from "../../extensions";
 import { AsyncQueue } from "../../extensions";
 import { AbridgedPacketCodec } from "./TCPAbridged";
@@ -14,8 +13,7 @@ interface ConnectionInterfaceParams {
     dcId: number;
     loggers: Logger;
     proxy?: ProxyInterface;
-    socket: typeof PromisedNetSockets | typeof PromisedWebSockets;
-    testServers: boolean;
+    socket: typeof PromisedNetSockets;
 }
 
 /**
@@ -44,8 +42,7 @@ class Connection {
     _sendArray: AsyncQueue;
     _recvArray: AsyncQueue;
     private _abortController: AbortController;
-    socket: PromisedNetSockets | PromisedWebSockets;
-    public _testServers: boolean;
+    socket: PromisedNetSockets;
 
     constructor({
         ip,
@@ -54,7 +51,6 @@ class Connection {
         loggers,
         proxy,
         socket,
-        testServers,
     }: ConnectionInterfaceParams) {
         this._ip = ip;
         this._port = port;
@@ -70,13 +66,12 @@ class Connection {
         this._recvArray = new AsyncQueue();
         this._abortController = new AbortController();
         this.socket = new socket(proxy);
-        this._testServers = testServers;
     }
 
     async _connect() {
         this._log.debug("Connecting");
         this._codec = new this.PacketCodecClass!(this);
-        await this.socket.connect(this._port, this._ip, this._testServers);
+        await this.socket.connect(this._port, this._ip);
         this._log.debug("Finished connecting");
         // await this.socket.connect({host: this._ip, port: this._port});
         await this._initConn();
@@ -218,7 +213,7 @@ class PacketCodec {
     }
 
     async readPacket(
-        reader: PromisedNetSockets | PromisedWebSockets
+        reader: PromisedNetSockets
     ): Promise<Buffer> {
         // override
         throw new Error("Not Implemented");

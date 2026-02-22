@@ -2,8 +2,6 @@ import type { Entity } from "../../define";
 import type { TelegramClient } from "../..";
 import { getInputPeer, getPeer } from "../../Utils";
 import { Api } from "../api";
-import { betterConsoleLog } from "../../Helpers";
-import { inspect } from "../../inspect";
 
 export class Draft {
     private _client: TelegramClient;
@@ -15,10 +13,6 @@ export class Draft {
     private date?: Api.int;
     private linkPreview?: boolean;
     private replyToMsgId?: Api.int;
-
-    [inspect.custom]() {
-        return betterConsoleLog(this);
-    }
 
     constructor(
         client: TelegramClient,

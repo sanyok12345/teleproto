@@ -1,7 +1,7 @@
 import bigInt from "big-integer";
 import type { EntityLike } from "./define";
 import type { Api } from "./tl";
-import crypto from "./CryptoFile";
+import crypto from "crypto";
 
 /**
  * converts a buffer to big int

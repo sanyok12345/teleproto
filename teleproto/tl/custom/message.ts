@@ -12,12 +12,11 @@ import {
     UpdatePinMessageParams,
 } from "../../client/messages";
 import { DownloadMediaInterface } from "../../client/downloads";
-import { betterConsoleLog, returnBigInt } from "../../Helpers";
+import { returnBigInt } from "../../Helpers";
 import { _selfId } from "../../client/users";
 import bigInt, { BigInteger } from "big-integer";
 import { LogLevel } from "../../extensions/Logger";
 import { MessageButton } from "./messageButton";
-import { inspect } from "../../inspect";
 
 interface MessageBaseInterface {
     id: any;
@@ -359,10 +358,6 @@ export class CustomMessage extends SenderGetter {
     originalArgs: any;
 
     patternMatch?: RegExpMatchArray;
-
-    [inspect.custom]() {
-        return betterConsoleLog(this);
-    }
 
     init({
         id,

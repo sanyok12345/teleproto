@@ -4,7 +4,6 @@ import { generateRandomBytes, sha256 } from "../../Helpers";
 import {
     Logger,
     PromisedNetSockets,
-    PromisedWebSockets,
 } from "../../extensions";
 import { CTR } from "../../crypto/CTR";
 
@@ -27,7 +26,7 @@ export type ProxyInterface = MTProxyType | SocksProxyType;
 
 class MTProxyIO {
     header?: Buffer = undefined;
-    private connection: PromisedNetSockets | PromisedWebSockets;
+    private connection: PromisedNetSockets;
     private _encrypt?: CTR;
     private _decrypt?: CTR;
     private _packetClass: AbridgedPacketCodec;
@@ -133,8 +132,7 @@ interface TCPMTProxyInterfaceParams {
     dcId: number;
     loggers: Logger;
     proxy: ProxyInterface;
-    socket: typeof PromisedNetSockets | typeof PromisedWebSockets;
-    testServers: boolean;
+    socket: typeof PromisedNetSockets;
 }
 
 export class TCPMTProxy extends ObfuscatedConnection {
@@ -149,7 +147,6 @@ export class TCPMTProxy extends ObfuscatedConnection {
         loggers,
         proxy,
         socket,
-        testServers,
     }: TCPMTProxyInterfaceParams) {
         super({
             ip: proxy.ip,
@@ -158,7 +155,6 @@ export class TCPMTProxy extends ObfuscatedConnection {
             loggers: loggers,
             socket: socket,
             proxy: proxy,
-            testServers: testServers,
         });
         if (!("MTProxy" in proxy)) {
             throw new Error("This connection only supports MPTProxies");

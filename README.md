@@ -1,98 +1,138 @@
 # teleproto
 
-A modern Telegram client library written in TypeScript for Node.js, forked from [GramJS](https://github.com/gram-js/gramjs) with performance and size improvements.
+<p align="center">
+  <img src="https://img.shields.io/npm/v/teleproto" alt="npm version">
+  <img src="https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen" alt="node version">
+  <img src="https://img.shields.io/badge/language-TypeScript-3178c6" alt="typescript">
+  <img src="https://img.shields.io/badge/license-MIT-blue" alt="license">
+</p>
+
+Modern Telegram MTProto client for Node.js, written in TypeScript.
+`teleproto` is a high-performance fork of GramJS focused on clean API ergonomics, runtime reliability, and up-to-date Telegram layers.
+
+## Features
+
+- **MTProto-first**: Full Telegram API access through high-level client methods and raw `Api` calls.
+- **TypeScript-friendly**: Strong typings across client methods, events, sessions, and TL objects.
+- **Session options**: Use `StringSession` for portability or `StoreSession` for local persistence.
+- **Event system**: Handle updates with builders like `NewMessage`, `EditedMessage`, `CallbackQuery`, and more.
+- **Examples included**: Ready-to-run scripts in `teleproto_examples`.
+
+## Installation
+
+```bash
+npm i teleproto
+```
 
 ## Quick Start
 
-Here's how to get started with teleproto:
+1. Open https://my.telegram.org
+2. Create an app in **API development tools**
+3. Copy your `api_id` and `api_hash`
 
-### Installation
-
-```bash
-$ npm i teleproto
-```
-
-### Authentication Setup
-
-1. Login to your [Telegram account](https://my.telegram.org/)
-2. Click "API development tools" and create an application
-3. Save your API ID and hash (never share these with anyone)
-
-### Basic Usage
-
-```javascript
+```ts
 import { TelegramClient } from "teleproto";
 import { StringSession } from "teleproto/sessions";
 import readline from "readline";
 
-const apiId = 123456; // Replace with your API ID
-const apiHash = "123456abcdefg"; // Replace with your API Hash
-const stringSession = new StringSession(""); // Save the string session for later use
+const apiId = 123456;
+const apiHash = "0123456789abcdef0123456789abcdef";
+const session = new StringSession("");
 
 const rl = readline.createInterface({
   input: process.stdin,
   output: process.stdout,
 });
 
+const ask = (q: string) =>
+  new Promise<string>((resolve) => rl.question(q, resolve));
+
 async function main() {
-  console.log("Starting teleproto client...");
-  const client = new TelegramClient(stringSession, apiId, apiHash, {
+  const client = new TelegramClient(session, apiId, apiHash, {
     connectionRetries: 5,
   });
-  
+
   await client.start({
-    phoneNumber: async () => 
-      await new Promise(resolve => rl.question("Phone number: ", resolve)),
-    password: async () =>
-      await new Promise(resolve => rl.question("Password: ", resolve)),
-    phoneCode: async () =>
-      await new Promise(resolve => rl.question("Verification code: ", resolve)),
+    phoneNumber: async () => await ask("Phone number: "),
+    password: async () => await ask("2FA password (if enabled): "),
+    phoneCode: async () => await ask("Code from Telegram: "),
     onError: (err) => console.error(err),
   });
-  
-  console.log("Connected successfully!");
-  console.log("Session string:", client.session.save()); // Save this to avoid login next time
-  
-  // Send a message to yourself
+
+  console.log("Connected as:", (await client.getMe())?.username || "unknown");
+  console.log("String session:\n", client.session.save());
+
   await client.sendMessage("me", { message: "Hello from teleproto!" });
-  
-  // Disconnect when done
   await client.disconnect();
   rl.close();
 }
 
-main();
+main().catch(console.error);
 ```
 
-You can also use `StoreSession` to save auth data to a folder instead of a string:
+## Sessions
 
-```javascript
+Use `StringSession` when you want to store auth as a single string:
+
+```ts
+import { StringSession } from "teleproto/sessions";
+const session = new StringSession("");
+```
+
+Use `StoreSession` when you want local folder-based persistence:
+
+```ts
 import { StoreSession } from "teleproto/sessions";
-const storeSession = new StoreSession("session_folder");
-const client = new TelegramClient(storeSession, apiId, apiHash, {});
+const session = new StoreSession("teleproto_session");
 ```
 
-## API Usage
+## Events
 
-### Calling Raw API Methods
-
-```javascript
-await client.invoke(new Api.RequestClass({ param1: "value1" }));
-```
-
-### Event Handling
-
-```javascript
+```ts
 import { NewMessage } from "teleproto/events";
 
-client.addEventHandler(async (event) => {
-  console.log("New message received:", event.message.text);
-  
-  if (event.message.text === "Hello") {
-    await event.message.reply("Hi there!");
-  }
-}, new NewMessage({}));
+client.addEventHandler(
+  async (event) => {
+    const text = event.message.message || "";
+    if (/^hello$/i.test(text.trim())) {
+      await event.message.reply({ message: "Hi there!" });
+    }
+  },
+  new NewMessage({})
+);
 ```
 
-# Ask a question
-If you have any questions or need help, feel free to join our [Telegram group](https://t.me/TeleprotoChat) or open an issue on GitHub
+## Raw API
+
+```ts
+import { Api } from "teleproto";
+
+const result = await client.invoke(
+  new Api.help.GetConfig()
+);
+console.log(result);
+```
+
+## Examples
+
+Practical scripts are available in `teleproto_examples`:
+
+- `print_updates.ts`
+- `print_messages.ts`
+- `replier.ts`
+- `interactive_terminal.ts`
+
+Run any example from the project root:
+
+```bash
+npx ts-node --transpile-only teleproto_examples/print_updates.ts
+```
+
+## Community
+
+- Telegram chat: https://t.me/TeleprotoChat
+- Issues: https://github.com/sanyok12345/teleproto/issues
+
+## License
+
+MIT

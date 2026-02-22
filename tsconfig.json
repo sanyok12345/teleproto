@@ -9,12 +9,19 @@
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "strict": true,
+    "skipLibCheck": true,
+    "incremental": true,
     "forceConsistentCasingInFileNames": true,
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "declaration": true,
     "outDir": "./dist"
   },
-  "exclude": ["teleproto/tl/types-generator", "node_modules"],
+  "exclude": [
+    "dist",
+    "teleproto_generator",
+    "node_modules",
+    "teleproto/tl/generated/api.js"
+  ],
   "include": ["teleproto"]
 }

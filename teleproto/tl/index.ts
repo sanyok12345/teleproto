@@ -1,5 +1,8 @@
-import { Api } from "./api";
-import { patchAll } from "./patched";
+import { Api } from "./generated/api";
+import { patchAll } from "./runtime/patches/messages";
+
 patchAll();
+
 export { Api };
-export { serializeBytes, serializeDate } from "./generationHelpers";
+export { serializeBytes, serializeDate } from "./runtime/helpers";
+export { LAYER, tlobjects } from "./runtime/registry";

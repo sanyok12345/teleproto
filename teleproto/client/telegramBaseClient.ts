@@ -15,7 +15,7 @@ import type { ParseInterface } from "./messageParse";
 import type { EventBuilder } from "../events/common";
 import { MarkdownParser } from "../extensions/markdown";
 import { MTProtoSender } from "../network";
-import { LAYER } from "../tl/AllTLObjects";
+import { LAYER } from "../tl/runtime/registry";
 import {
     ConnectionTCPMTProxyAbridged,
     ProxyInterface,

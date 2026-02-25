@@ -308,9 +308,11 @@ function createClasses(
             classType = isFunction ? "request" : "constructor";
             originalArgs: Record<string, unknown> = {};
 
-            constructor(args?: Record<string, unknown>) {
+            constructor(args?: Record<string, unknown> = {}) {
                 args = args || {};
-                this.originalArgs = args;
+                Object.defineProperty(this, "originalArgs", {
+                    value: args, enumerable: false, writable: true, configurable: true
+                });
                 this.init(args);
                 for (const argName in argsConfig) {
                     if (argName === "randomId" && !args[argName]) {

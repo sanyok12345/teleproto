@@ -5,6 +5,7 @@
   <img src="https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen" alt="node version">
   <img src="https://img.shields.io/badge/language-TypeScript-3178c6" alt="typescript">
   <img src="https://img.shields.io/badge/license-MIT-blue" alt="license">
+  <a href="https://t.me/teleproto"><img src="https://img.shields.io/badge/Telegram-Chat-26A5E4?logo=telegram" alt="telegram chat"></a>
 </p>
 
 Modern Telegram MTProto client for Node.js, written in TypeScript.
@@ -20,7 +21,7 @@ Modern Telegram MTProto client for Node.js, written in TypeScript.
 
 ## Installation
 
-```bash
+```bash 
 npm i teleproto
 ```
 
@@ -130,8 +131,8 @@ npx ts-node --transpile-only teleproto_examples/print_updates.ts
 
 ## Community
 
-- Telegram chat: https://t.me/TeleprotoChat
-- Issues: https://github.com/sanyok12345/teleproto/issues
+- [Telegram Chat](https://t.me/teleproto) — questions, discussions, updates
+- [GitHub Issues](https://github.com/sanyok12345/teleproto/issues) — bug reports and feature requests
 
 ## License
 

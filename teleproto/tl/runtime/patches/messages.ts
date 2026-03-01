@@ -71,16 +71,4 @@ export function patchAll() {
     patchClass((Api as any).Message);
     patchClass((Api as any).MessageService);
     patchClass((Api as any).MessageEmpty);
-
-    for (const constructorId of [
-        0xb6d915d7,
-        0x90dddc11,
-        0x8f31b327,
-        0xe8fd8014,
-        0xbe9c2a5d,
-    ]) {
-        if (tlobjects[constructorId]) {
-            patchClass(tlobjects[constructorId]);
-        }
-    }
 }

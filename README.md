@@ -134,13 +134,16 @@ npx ts-node --transpile-only teleproto_examples/print_updates.ts
 - [Telegram Chat](https://t.me/teleproto) — questions, discussions, updates
 - [GitHub Issues](https://github.com/sanyok12345/teleproto/issues) — bug reports and feature requests
 
-## Support my work
+## Support the project ☕
+
+If teleproto saves you time or powers your product — consider buying me a coffee.
+Every donation keeps the lights on and the commits flowing.
 
 | Network | Address |
 |---------|---------|
-| **TON** | `sanyok12345.ton` |
-| **TRX (USDT-TRC20)** | `TXCtN1UrxST9ovq5tDN3Zb96eNF4164nK5` |
-| **SOL** | `B3XcKmAR9aG2nBiWSMDe76GGa55hPNgLQ92QR2SjRR6F` |
+|  **TON** | `sanyok12345.ton` |
+|  **TRX** | `TXCtN1UrxST9ovq5tDN3Zb96eNF4164nK5` |
+|  **SOL** | `B3XcKmAR9aG2nBiWSMDe76GGa55hPNgLQ92QR2SjRR6F` |
 
 ## License
 

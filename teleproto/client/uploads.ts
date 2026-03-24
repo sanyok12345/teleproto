@@ -10,7 +10,7 @@ import * as errors from "../errors";
 import * as utils from "../Utils";
 import { _parseMessageText } from "./messageParse";
 import { getCommentData } from "./messages";
-import bigInt from "big-integer";
+import bigInt, { BigInteger } from "big-integer";
 
 interface OnProgress {
     // Float between 0 and 1.
@@ -302,6 +302,12 @@ export interface SendFileInterface {
      * Used for threads to reply to a specific thread
      */
     topMsgId?: number | Api.Message;
+    /** Send the file as a specific entity (channel/user). */
+    sendAs?: EntityLike;
+    /** Message effect ID (animation/visual effect). */
+    effect?: BigInteger;
+    /** If true, media will be shown below the text instead of above. */
+    invertMedia?: boolean;
 }
 
 interface FileToMediaInterface {
@@ -530,6 +536,9 @@ export async function _sendAlbum(
         noforwards,
         commentTo,
         topMsgId,
+        sendAs,
+        effect,
+        invertMedia,
     }: SendFileInterface
 ) {
     entity = await client.getInputEntity(entity);
@@ -639,6 +648,11 @@ export async function _sendAlbum(
             scheduleDate: scheduleDate,
             clearDraft: clearDraft,
             noforwards: noforwards,
+            sendAs: sendAs
+                ? await client.getInputEntity(sendAs)
+                : undefined,
+            effect: effect,
+            invertMedia: invertMedia,
         })
     );
     const randomIds = albumFiles.map((m) => m.randomId);
@@ -671,6 +685,9 @@ export async function sendFile(
         noforwards,
         commentTo,
         topMsgId,
+        sendAs,
+        effect,
+        invertMedia,
     }: SendFileInterface
 ) {
     if (!file) {
@@ -758,6 +775,11 @@ export async function sendFile(
         scheduleDate: scheduleDate,
         clearDraft: clearDraft,
         noforwards: noforwards,
+        sendAs: sendAs
+            ? await client.getInputEntity(sendAs)
+            : undefined,
+        effect: effect,
+        invertMedia: invertMedia,
     });
     const result = await client.invoke(request);
     return client._getResponseMessage(request, result, entity) as Api.Message;

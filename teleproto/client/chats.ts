@@ -7,7 +7,8 @@ import {
     returnBigInt,
 } from "../Helpers";
 import { RequestIter } from "../requestIter";
-import { helpers, utils } from "..";
+import * as helpers from "../Helpers";
+import * as utils from "../Utils";
 import { Api } from "../tl";
 import bigInt, { BigInteger, isInstance } from "big-integer";
 import { getPeerId } from "../Utils";

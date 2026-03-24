@@ -17,8 +17,8 @@ import {
     generateRandomBigInt,
 } from "../Helpers";
 import { getInputMedia, getMessageId, getPeerId, parseID } from "../Utils";
-import type { TelegramClient } from "..";
-import { utils } from "..";
+import type { TelegramClient } from "./TelegramClient";
+import * as utils from "../Utils";
 import { _parseMessageText } from "./messageParse";
 import { _getPeer } from "./users";
 import bigInt from "big-integer";

@@ -1,6 +1,7 @@
 import { Api } from "../tl";
 import { RequestIter } from "../requestIter";
-import { TelegramClient, utils } from "../index";
+import type { TelegramClient } from "./TelegramClient";
+import * as utils from "../Utils";
 import { Dialog } from "../tl/custom/dialog";
 import { DateLike, EntityLike } from "../define";
 import { TotalList } from "../Helpers";

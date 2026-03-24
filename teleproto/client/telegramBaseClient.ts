@@ -1,4 +1,6 @@
-import { Connection, TelegramClient, version } from "..";
+import { Connection } from "../network";
+import { TelegramClient } from "./TelegramClient";
+import { version } from "../Version";
 import { sleep } from "../Helpers";
 import {
     ConnectionTCPFull,

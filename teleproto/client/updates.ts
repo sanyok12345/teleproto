@@ -1,9 +1,9 @@
 import type { EventBuilder } from "../events/common";
 import { Api } from "../tl";
-import type { TelegramClient } from "..";
+import type { TelegramClient } from "./TelegramClient";
 import { UpdateConnectionState } from "../network";
 import type { Raw } from "../events";
-import { utils } from "../index";
+import * as utils from "../Utils";
 import { getRandomInt, returnBigInt, sleep } from "../Helpers";
 import Timeout = NodeJS.Timeout;
 

@@ -8,8 +8,9 @@ import {
     isArrayLike,
     returnBigInt,
 } from "../Helpers";
-import { errors, utils } from "..";
-import type { TelegramClient } from "..";
+import * as errors from "../errors";
+import * as utils from "../Utils";
+import type { TelegramClient } from "./TelegramClient";
 import bigInt from "big-integer";
 import { LogLevel } from "../extensions/Logger";
 import { RequestState } from "../network/RequestState";

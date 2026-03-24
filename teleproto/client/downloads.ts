@@ -3,7 +3,7 @@ import type { TelegramClient } from "./TelegramClient";
 import { strippedPhotoToJpg } from "../Utils";
 import { sleep } from "../Helpers";
 import { EntityLike, OutFile, ProgressCallback } from "../define";
-import { utils } from "..";
+import * as utils from "../Utils";
 import { RequestIter } from "../requestIter";
 import { MTProtoSender } from "../network";
 import { FileMigrateError } from "../errors";

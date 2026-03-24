@@ -136,9 +136,13 @@ export async function invoke<R extends Api.AnyRequest>(
                     throw e;
                 }
             } else if (e.message === "CONNECTION_NOT_INITED") {
-                await client.disconnect();
-                await sleep(2000);
-                await client.connect();
+                const targetSender = sender || client._sender;
+                if (targetSender) {
+                    targetSender._needsInitConnection = true;
+                }
+                client._log.warn(
+                    "CONNECTION_NOT_INITED, will re-wrap next request with initConnection"
+                );
             } else {
                 state.finished.resolve();
 

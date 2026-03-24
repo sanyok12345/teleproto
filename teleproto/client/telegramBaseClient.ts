@@ -225,6 +225,22 @@ export abstract class TelegramBaseClient {
     /** @hidden */
     _updateState?: { pts: number; qts: number; date: number; seq: number };
     /** @hidden */
+    _channelPts: Map<string, number>;
+    /** @hidden */
+    _fetchingDifference: boolean;
+    /** @hidden */
+    _fetchingChannelDifference: Set<string>;
+    /** @hidden */
+    _pendingPtsUpdates: Array<{ update: any; pts: number; ptsCount: number; others: any; entities?: any; bufferedAt: number }>;
+    /** @hidden */
+    _pendingSeqUpdates: Array<{ update: any; seqStart: number; seq: number; bufferedAt: number }>;
+    /** @hidden */
+    _pendingQtsUpdates: Array<{ update: any; qts: number; others: any; entities?: any; bufferedAt: number }>;
+    /** @hidden */
+    _pendingChannelUpdates: Map<string, Array<{ update: any; pts: number; ptsCount: number; others: any; entities?: any; bufferedAt: number }>>;
+    /** @hidden */
+    _lastUpdateTime: number;
+    /** @hidden */
     _reconnecting: boolean;
     /** @hidden */
     _destroyed: boolean;
@@ -316,6 +332,14 @@ export abstract class TelegramBaseClient {
         // These will be set later
         this._config = undefined;
         this._loopStarted = false;
+        this._channelPts = new Map();
+        this._fetchingDifference = false;
+        this._fetchingChannelDifference = new Set();
+        this._pendingPtsUpdates = [];
+        this._pendingSeqUpdates = [];
+        this._pendingQtsUpdates = [];
+        this._pendingChannelUpdates = new Map();
+        this._lastUpdateTime = Date.now();
         this._reconnecting = false;
         this._destroyed = false;
         this._isSwitchingDc = false;

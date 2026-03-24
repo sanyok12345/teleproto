@@ -1,5 +1,5 @@
 import { Api } from "../tl";
-import type { TelegramClient } from "..";
+import type { TelegramClient } from "../client/TelegramClient";
 import type { Entity, EntityLike } from "../define";
 import { EventBuilder, EventCommonSender, _intoIdSet } from "./common";
 import bigInt from "big-integer";

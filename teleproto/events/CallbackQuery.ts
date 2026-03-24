@@ -2,7 +2,7 @@ import { EntityLike } from "../define";
 import { EventBuilder, EventCommon, EventCommonSender } from "./common";
 import { Api } from "../tl";
 import { returnBigInt, toSignedLittleBuffer } from "../Helpers";
-import { TelegramClient } from "..";
+import type { TelegramClient } from "../client/TelegramClient";
 import { _getEntityPair, getInputPeer } from "../Utils";
 import { EditMessageParams, SendMessageParams } from "../client/messages";
 

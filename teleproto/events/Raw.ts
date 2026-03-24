@@ -1,5 +1,5 @@
 import { EventBuilder, EventCommon } from "./common";
-import type { TelegramClient } from "..";
+import type { TelegramClient } from "../client/TelegramClient";
 import { Api } from "../tl";
 
 export interface RawInterface {

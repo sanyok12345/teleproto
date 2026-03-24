@@ -5,7 +5,7 @@ import {
     EventCommon,
 } from "./common";
 import type { Entity, EntityLike } from "../define";
-import type { TelegramClient } from "..";
+import type { TelegramClient } from "../client/TelegramClient";
 import { Api } from "../tl";
 import bigInt from "big-integer";
 import { LogLevel } from "../extensions/Logger";

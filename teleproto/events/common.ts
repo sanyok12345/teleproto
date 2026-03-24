@@ -1,10 +1,10 @@
 import { Api } from "../tl";
 import type { Entity, EntityLike } from "../define";
 import { ChatGetter } from "../tl/custom";
-import type { TelegramClient } from "..";
+import type { TelegramClient } from "../client/TelegramClient";
 
 import { isArrayLike, returnBigInt } from "../Helpers";
-import { utils } from "..";
+import { getPeerId } from "../Utils";
 import { SenderGetter } from "../tl/custom/senderGetter";
 import bigInt from "big-integer";
 import { parseID } from "../Utils";
@@ -33,21 +33,21 @@ export async function _intoIdSet(
                 result.add(chat.toString());
             } else {
                 result.add(
-                    utils.getPeerId(
+                    getPeerId(
                         new Api.PeerUser({
                             userId: chat,
                         })
                     )
                 );
                 result.add(
-                    utils.getPeerId(
+                    getPeerId(
                         new Api.PeerChat({
                             chatId: chat,
                         })
                     )
                 );
                 result.add(
-                    utils.getPeerId(
+                    getPeerId(
                         new Api.PeerChannel({
                             channelId: chat,
                         })
@@ -58,13 +58,13 @@ export async function _intoIdSet(
             typeof chat == "object" &&
             chat.SUBCLASS_OF_ID == 0x2d45687
         ) {
-            result.add(utils.getPeerId(chat));
+            result.add(getPeerId(chat));
         } else {
             chat = await client.getInputEntity(chat);
             if (chat instanceof Api.InputPeerSelf) {
                 chat = await client.getMe(true);
             }
-            result.add(utils.getPeerId(chat));
+            result.add(getPeerId(chat));
         }
     }
     return Array.from(result);

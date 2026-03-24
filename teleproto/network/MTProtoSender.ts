@@ -30,8 +30,9 @@ import {
     SecurityError,
     TypeNotFoundError,
 } from "../errors";
-import { Connection, UpdateConnectionState } from ".";
-import type { TelegramClient } from "..";
+import { Connection } from "./connection";
+import { UpdateConnectionState } from "./UpdateConnectionState";
+import type { TelegramClient } from "../client/TelegramClient";
 import { LogLevel } from "../extensions/Logger";
 import { Mutex } from "async-mutex";
 import { PendingState } from "../extensions/PendingState";

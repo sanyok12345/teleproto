@@ -13,7 +13,7 @@ export class MemorySession extends Session {
     protected _dcId: number;
     protected _port?: number;
     protected _takeoutId: undefined;
-    protected _entities: Set<any>;
+    protected _entities: Map<string, any>;
     protected _updateStates: {};
     protected _authKey?: AuthKey;
 
@@ -25,7 +25,7 @@ export class MemorySession extends Session {
         this._port = undefined;
         this._takeoutId = undefined;
 
-        this._entities = new Set();
+        this._entities = new Map();
         this._updateStates = {};
     }
 
@@ -172,12 +172,12 @@ export class MemorySession extends Session {
     processEntities(tlo: any) {
         const entitiesSet = this._entitiesToRows(tlo);
         for (const e of entitiesSet) {
-            this._entities.add(e);
+            this._entities.set(e[0].toString(), e);
         }
     }
 
     getEntityRowsByPhone(phone: string) {
-        for (const e of this._entities) {
+        for (const e of this._entities.values()) {
             // id, hash, username, phone, name
             if (e[3] === phone) {
                 return [e[0], e[1]];
@@ -186,7 +186,7 @@ export class MemorySession extends Session {
     }
 
     getEntityRowsByUsername(username: string) {
-        for (const e of this._entities) {
+        for (const e of this._entities.values()) {
             // id, hash, username, phone, name
             if (e[2] === username) {
                 return [e[0], e[1]];
@@ -195,7 +195,7 @@ export class MemorySession extends Session {
     }
 
     getEntityRowsByName(name: string) {
-        for (const e of this._entities) {
+        for (const e of this._entities.values()) {
             // id, hash, username, phone, name
             if (e[4] === name) {
                 return [e[0], e[1]];
@@ -205,7 +205,7 @@ export class MemorySession extends Session {
 
     getEntityRowsById(id: string | bigInt.BigInteger, exact = true) {
         if (exact) {
-            for (const e of this._entities) {
+            for (const e of this._entities.values()) {
                 // id, hash, username, phone, name
                 if (e[0] === id) {
                     return [e[0], e[1]];
@@ -219,7 +219,7 @@ export class MemorySession extends Session {
                     new Api.PeerChannel({ channelId: returnBigInt(id) })
                 ),
             ];
-            for (const e of this._entities) {
+            for (const e of this._entities.values()) {
                 // id, hash, username, phone, name
                 if (ids.includes(e[0])) {
                     return [e[0], e[1]];

@@ -1,5 +1,5 @@
 import { Api } from "../tl";
-import { helpers } from "../index";
+import { stripText } from "../Helpers";
 
 export class HTMLParser {
     static parse(html: string): [string, Api.TypeMessageEntity[]] {
@@ -162,7 +162,7 @@ export class HTMLParser {
         }
         
         const finalText = text.join('');
-        return [helpers.stripText(finalText, entities), entities];
+        return [stripText(finalText, entities), entities];
     }
 
     static unparse(

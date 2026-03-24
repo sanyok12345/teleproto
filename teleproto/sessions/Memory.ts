@@ -5,7 +5,7 @@ import bigInt from "big-integer";
 
 import { getDisplayName, getInputPeer, getPeerId } from "../Utils";
 import { isArrayLike, returnBigInt } from "../Helpers";
-import { utils } from "..";
+import * as utils from "../Utils";
 import type { EntityLike } from "../define";
 
 export class MemorySession extends Session {

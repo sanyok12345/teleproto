@@ -39,6 +39,14 @@ interface MessageIterParams {
     replyTo: MessageIDLike;
 }
 
+/**
+ * Async iterator over messages in a chat.
+ *
+ * Fetches messages in chunks from the Telegram API, supporting forward/reverse
+ * iteration, date offsets, sender filtering, text search, and reply threading.
+ * Used internally by `iterMessages` / `getMessages`.
+ * @internal
+ */
 export class _MessagesIter extends RequestIter {
     entity?: Api.TypeInputPeer;
     request?:

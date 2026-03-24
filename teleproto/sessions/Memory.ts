@@ -8,6 +8,14 @@ import { isArrayLike, returnBigInt } from "../Helpers";
 import * as utils from "../Utils";
 import type { EntityLike } from "../define";
 
+/**
+ * In-memory session storage that keeps all auth and entity data in RAM.
+ *
+ * All data is lost when the process exits. Use {@link StringSession} to export
+ * the session to a portable string, or {@link StoreSession} for persistent on-disk storage.
+ *
+ * Entities are keyed by their peer ID to prevent duplicate accumulation.
+ */
 export class MemorySession extends Session {
     protected _serverAddress?: string;
     protected _dcId: number;

@@ -7,23 +7,103 @@ import {
 } from "../../extensions";
 import { CTR } from "../../crypto/CTR";
 
+/**
+ * Base proxy configuration shared by all proxy types.
+ */
 interface BasicProxyInterface {
+    /** Proxy server IP address. */
     ip: string;
+    /** Proxy server port. */
     port: number;
+    /** Connection timeout in seconds. Defaults to 5. */
     timeout?: number;
+    /** Username for proxy authentication (SOCKS5 only). */
     username?: string;
+    /** Password for proxy authentication (SOCKS5 only). */
     password?: string;
 }
+
+/**
+ * Configuration for Telegram MTProxy connections.
+ *
+ * MTProxy is Telegram's own proxy protocol that obfuscates traffic to look like
+ * regular HTTPS. When used, the client automatically switches to
+ * {@link ConnectionTCPMTProxyAbridged} and notifies Telegram about the proxy
+ * via `InputClientProxy` in the `InitConnection` request.
+ *
+ * @example
+ * ```ts
+ * const client = new TelegramClient(session, apiId, apiHash, {
+ *     proxy: {
+ *         MTProxy: true,
+ *         ip: "178.62.232.110",
+ *         port: 443,
+ *         secret: "dd0123456789abcdef0123456789abcdef",
+ *     },
+ * });
+ * ```
+ */
 export type MTProxyType = BasicProxyInterface & {
+    /**
+     * The proxy secret (hex or base64 encoded).
+     * Must decode to exactly 16 bytes. Secrets prefixed with `dd` (fake-TLS)
+     * are also supported — the leading byte is stripped automatically.
+     */
     secret: string;
+    /** Must be `true` to identify this as an MTProxy configuration. */
     MTProxy: true;
 };
+
+/**
+ * Configuration for SOCKS4/SOCKS5 proxy connections.
+ *
+ * SOCKS proxies are handled at the socket level via the `socks` package and
+ * work transparently with any connection type (Full, Abridged, Obfuscated).
+ * SOCKS5 supports username/password authentication.
+ *
+ * @example
+ * ```ts
+ * // SOCKS5 with authentication
+ * const client = new TelegramClient(session, apiId, apiHash, {
+ *     proxy: {
+ *         socksType: 5,
+ *         ip: "127.0.0.1",
+ *         port: 1080,
+ *         username: "user",
+ *         password: "pass",
+ *     },
+ * });
+ *
+ * // SOCKS4 (no authentication)
+ * const client = new TelegramClient(session, apiId, apiHash, {
+ *     proxy: {
+ *         socksType: 4,
+ *         ip: "127.0.0.1",
+ *         port: 1080,
+ *     },
+ * });
+ * ```
+ */
 export type SocksProxyType = BasicProxyInterface & {
+    /** SOCKS protocol version: `4` for SOCKS4 or `5` for SOCKS5. */
     socksType: 4 | 5;
 };
 
+/**
+ * Union type for all supported proxy configurations.
+ *
+ * Pass to `TelegramClientParams.proxy` to route all connections through a proxy.
+ *
+ * - {@link MTProxyType} — Telegram MTProxy (obfuscated, secret-based)
+ * - {@link SocksProxyType} — SOCKS4/SOCKS5 (general-purpose, optional auth)
+ */
 export type ProxyInterface = MTProxyType | SocksProxyType;
 
+/**
+ * Handles the MTProxy obfuscation layer: generates the initial handshake header
+ * and wraps all reads/writes in AES-CTR encryption keyed by the proxy secret.
+ * @internal
+ */
 class MTProxyIO {
     header?: Buffer = undefined;
     private connection: PromisedNetSockets;
@@ -135,6 +215,17 @@ interface TCPMTProxyInterfaceParams {
     socket: typeof PromisedNetSockets;
 }
 
+/**
+ * Connection that routes traffic through a Telegram MTProxy server.
+ *
+ * Connects to the proxy address (not Telegram directly), performs the
+ * MTProxy obfuscated handshake using the provided secret, and then tunnels
+ * all MTProto traffic through the proxy with AES-CTR encryption.
+ *
+ * Not intended to be used directly — use {@link ConnectionTCPMTProxyAbridged} instead,
+ * or simply pass an {@link MTProxyType} config to `TelegramClientParams.proxy`
+ * and the client will select the correct connection class automatically.
+ */
 export class TCPMTProxy extends ObfuscatedConnection {
     ObfuscatedIO = MTProxyIO;
 
@@ -172,6 +263,11 @@ export class TCPMTProxy extends ObfuscatedConnection {
     }
 }
 
+/**
+ * MTProxy connection using the Abridged packet codec.
+ *
+ * This is the connection class automatically selected when `proxy.MTProxy` is `true`.
+ */
 export class ConnectionTCPMTProxyAbridged extends TCPMTProxy {
     PacketCodecClass = AbridgedPacketCodec;
 }

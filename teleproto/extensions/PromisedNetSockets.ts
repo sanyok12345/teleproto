@@ -11,6 +11,13 @@ const mutex = new Mutex();
 
 const closeError = new Error("NetSocket was closed");
 
+/**
+ * Promise-based TCP socket wrapper used as the network transport layer.
+ *
+ * When a {@link SocksProxyType} proxy is provided, connections are tunneled
+ * through the SOCKS proxy via the `socks` package. MTProxy connections are
+ * handled at a higher level by {@link TCPMTProxy} and do not affect this class.
+ */
 export class PromisedNetSockets {
     private client?: net.Socket;
     private closed: boolean;

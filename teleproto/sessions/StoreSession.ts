@@ -4,6 +4,18 @@ import { AuthKey } from "../crypto/AuthKey";
 import bigInt from "big-integer";
 import { LocalStorage } from "node-localstorage";
 
+/**
+ * Persistent session that stores auth keys and entity data on disk using `node-localstorage`.
+ *
+ * Creates a directory named after the session in the current working directory.
+ * Suitable for long-running server applications where session data must survive restarts.
+ *
+ * @example
+ * ```ts
+ * const session = new StoreSession("my_session");
+ * const client = new TelegramClient(session, apiId, apiHash, {});
+ * ```
+ */
 export class StoreSession extends MemorySession {
     private readonly sessionName: string;
     private store: StoreBase;

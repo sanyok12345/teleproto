@@ -40,6 +40,13 @@ export interface DialogsIterInterface {
     folder: number;
 }
 
+/**
+ * Async iterator over the user's dialogs (conversations).
+ *
+ * Fetches dialogs in chunks, supports date/ID offsets, folder filtering,
+ * and can skip pinned or migrated chats. Used internally by `iterDialogs` / `getDialogs`.
+ * @internal
+ */
 export class _DialogsIter extends RequestIter {
     private request?: Api.messages.GetDialogs;
     private seen?: Set<any>;

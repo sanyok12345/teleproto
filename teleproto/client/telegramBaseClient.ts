@@ -69,7 +69,15 @@ export interface TelegramClientParams {
      */
     reconnectRetries?: number;
     /**
-     * Experimental proxy to be used for the connection. (only supports MTProxies)
+     * Proxy configuration for routing all connections through a proxy server.
+     *
+     * Supports two proxy types:
+     * - **MTProxy** (`{ MTProxy: true, ip, port, secret }`) — Telegram's own obfuscated proxy.
+     *   Automatically switches the connection to {@link ConnectionTCPMTProxyAbridged}.
+     * - **SOCKS4/5** (`{ socksType: 4 | 5, ip, port }`) — general-purpose SOCKS proxy.
+     *   SOCKS5 supports optional `username`/`password` authentication.
+     *
+     * @see {@link ProxyInterface} for detailed type definitions and examples.
      */
     proxy?: ProxyInterface;
     /**

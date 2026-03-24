@@ -19,7 +19,22 @@ import { MTProtoSender } from "../network";
 // UserMethods {
 // region Invoking Telegram request
 
-/** @hidden */
+/**
+ * Invokes a raw Telegram API request and returns the result.
+ *
+ * Handles automatic retry on transient errors (server errors, flood waits below
+ * {@link TelegramClientParams.floodSleepThreshold}, DC migration, reCAPTCHA),
+ * and caches any entities found in the response.
+ *
+ * @param client - The Telegram client instance.
+ * @param request - The MTProto request to invoke.
+ * @param dcId - Optional DC to send the request to (uses a borrowed sender).
+ * @param otherSender - Optional explicit sender to use instead of the default.
+ * @returns The response corresponding to the request type.
+ * @throws {FloodWaitError} If the flood wait exceeds `floodSleepThreshold`.
+ * @throws {Error} If the request fails after all retries.
+ * @hidden
+ */
 export async function invoke<R extends Api.AnyRequest>(
     client: TelegramClient,
     request: R,
@@ -154,7 +169,13 @@ export async function invoke<R extends Api.AnyRequest>(
     throw new Error(`Request was unsuccessful ${attempt} time(s)`);
 }
 
-/** @hidden */
+/**
+ * Returns the current user as an {@link Api.User}, or as an {@link Api.InputPeerUser}
+ * if `inputPeer` is `true` (useful when only the input peer is needed without a full API call).
+ *
+ * The result is cached after the first call.
+ * @hidden
+ */
 export async function getMe<
     T extends boolean,
     R = T extends true ? Api.InputPeerUser : Api.User
@@ -201,7 +222,16 @@ export async function isUserAuthorized(client: TelegramClient) {
     }
 }
 
-/** @hidden */
+/**
+ * Resolves one or more entity-like values into their full {@link Entity} objects
+ * by calling the appropriate Telegram API methods (`users.GetUsers`, `messages.GetChats`,
+ * `channels.GetChannels`).
+ *
+ * @param client - The Telegram client instance.
+ * @param entity - A single entity or array of entities to resolve (usernames, IDs, peers, etc.).
+ * @returns A single entity if a single value was given, or an array of entities.
+ * @hidden
+ */
 export async function getEntity(
     client: TelegramClient,
     entity: EntityLike | EntityLike[]
@@ -291,7 +321,20 @@ export async function getEntity(
     return single ? result[0] : result;
 }
 
-/** @hidden */
+/**
+ * Resolves an entity-like value into an {@link Api.TypeInputPeer}, using (in order):
+ * 1. Direct InputPeer conversion
+ * 2. In-memory entity cache
+ * 3. Known strings ("me", "this", "self")
+ * 4. Session (disk) cache
+ * 5. Network lookup (username resolution, `users.GetUsers`, `channels.GetChannels`)
+ *
+ * @param client - The Telegram client instance.
+ * @param peer - The entity to resolve (username, phone, ID, Peer object, etc.).
+ * @returns The corresponding InputPeer.
+ * @throws {Error} If the entity cannot be resolved by any means.
+ * @hidden
+ */
 export async function getInputEntity(
     client: TelegramClient,
     peer: EntityLike

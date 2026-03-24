@@ -22,6 +22,15 @@ interface ChatActionInterface {
     autoCancel: boolean;
 }
 
+/**
+ * Sends a chat action (e.g. "typing…") that repeats at a fixed interval until stopped.
+ *
+ * Supported action strings: `"typing"`, `"contact"`, `"game"`, `"location"`,
+ * `"record-audio"` / `"record-voice"`, `"record-round"`, `"record-video"`,
+ * `"audio"` / `"voice"` / `"song"`, `"round"`, `"video"`, `"photo"`,
+ * `"document"` / `"file"`, `"cancel"`.
+ * @internal
+ */
 class _ChatAction {
     static _str_mapping = {
         typing: new Api.SendMessageTypingAction(),

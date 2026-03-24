@@ -33,7 +33,22 @@ const PENDING_UPDATE_TTL = 60_000; // 60 sec
  */
 export class StopPropagation extends Error { }
 
-/** @hidden */
+/**
+ * Decorator-style method for registering an event handler.
+ * Returns a function that, when called with a callback, registers it for the given event.
+ *
+ * @param client - The Telegram client instance.
+ * @param event - The event builder to listen for. If omitted, listens for all raw updates.
+ * @returns A function that accepts a callback and registers it as an event handler.
+ *
+ * @example
+ * ```ts
+ * client.on(new NewMessage({ incoming: true }))(async (event) => {
+ *     console.log(event.message.text);
+ * });
+ * ```
+ * @hidden
+ */
 export function on(client: TelegramClient, event?: EventBuilder) {
     return (f: { (event: any): void }) => {
         client.addEventHandler(f, event);
@@ -41,7 +56,22 @@ export function on(client: TelegramClient, event?: EventBuilder) {
     };
 }
 
-/** @hidden */
+/**
+ * Registers a callback to be invoked when the specified event occurs.
+ *
+ * @param client - The Telegram client instance.
+ * @param callback - The function to call when the event fires. Receives the event object as its argument.
+ * @param event - The event builder that defines which updates to listen for.
+ *   If omitted, a {@link Raw} handler is used, which fires for every incoming update.
+ *
+ * @example
+ * ```ts
+ * client.addEventHandler(async (event) => {
+ *     await event.reply("Hello!");
+ * }, new NewMessage({ incoming: true }));
+ * ```
+ * @hidden
+ */
 export function addEventHandler(
     client: TelegramClient,
     callback: CallableFunction,
@@ -56,7 +86,16 @@ export function addEventHandler(
     client._eventBuilders.push([event, callback]);
 }
 
-/** @hidden */
+/**
+ * Removes a previously registered event handler.
+ *
+ * Both the callback and the event builder must match the ones used during registration.
+ *
+ * @param client - The Telegram client instance.
+ * @param callback - The callback to remove.
+ * @param event - The event builder that was used when registering the handler.
+ * @hidden
+ */
 export function removeEventHandler(
     client: TelegramClient,
     callback: CallableFunction,
@@ -67,7 +106,10 @@ export function removeEventHandler(
     });
 }
 
-/** @hidden */
+/**
+ * Returns a list of all currently registered event handlers as `[eventBuilder, callback]` pairs.
+ * @hidden
+ */
 export function listEventHandlers(client: TelegramClient) {
     return client._eventBuilders;
 }

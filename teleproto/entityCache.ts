@@ -5,6 +5,14 @@ import { isArrayLike, returnBigInt } from "./Helpers";
 import { Api } from "./tl";
 import bigInt from "big-integer";
 
+/**
+ * In-memory cache that maps peer IDs to their {@link Api.TypeInputPeer} representations.
+ *
+ * Populated automatically from API responses via `client._entityCache.add(result)`.
+ * Used to resolve entities without making additional network requests.
+ * Unlike the session entity store, this cache is not persisted and lives only for the
+ * lifetime of the client.
+ */
 export class EntityCache {
     private cacheMap: Map<string, any>;
 

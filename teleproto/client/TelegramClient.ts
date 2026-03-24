@@ -1187,8 +1187,24 @@ export class TelegramClient extends TelegramBaseClient {
     //endregion
 
     //region updates
-    /** TODO */
-    on(event: any) {
+    /**
+     * Decorator-style event handler registration.
+     * Returns a function that accepts a callback and registers it for the given event.
+     *
+     * @example
+     * ```ts
+     * client.on(new NewMessage({ incoming: true }))(async (event) => {
+     *     console.log(event.message.text);
+     * });
+     * ```
+     */
+    on(event: NewMessage): (f: (event: NewMessageEvent) => void) => void;
+    on(event: CallbackQuery): (f: (event: CallbackQueryEvent) => void) => void;
+    on(event: Album): (f: (event: AlbumEvent) => void) => void;
+    on(event: EditedMessage): (f: (event: EditedMessageEvent) => void) => void;
+    on(event: DeletedMessage): (f: (event: DeletedMessageEvent) => void) => void;
+    on(event?: EventBuilder): (f: (event: any) => void) => void;
+    on(event?: EventBuilder) {
         return updateMethods.on(this, event);
     }
 

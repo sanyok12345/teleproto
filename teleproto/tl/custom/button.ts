@@ -1,6 +1,7 @@
 import type { ButtonLike, EntityLike } from "../../define";
 import { Api } from "../api";
 import { getInputUser } from "../../Utils";
+import type { BigInteger } from "big-integer";
 
 export class Button {
     public button: ButtonLike;
@@ -26,11 +27,18 @@ export class Button {
             button instanceof Api.KeyboardButtonSwitchInline ||
             button instanceof Api.KeyboardButtonUrl ||
             button instanceof Api.KeyboardButtonUrlAuth ||
-            button instanceof Api.InputKeyboardButtonUrlAuth
+            button instanceof Api.InputKeyboardButtonUrlAuth ||
+            button instanceof Api.KeyboardButtonWebView ||
+            button instanceof Api.KeyboardButtonSimpleWebView ||
+            button instanceof Api.KeyboardButtonCopy ||
+            button instanceof Api.KeyboardButtonGame ||
+            button instanceof Api.KeyboardButtonBuy ||
+            button instanceof Api.InputKeyboardButtonUserProfile ||
+            button instanceof Api.InputKeyboardButtonRequestPeer
         );
     }
 
-    static inline(text: string, data?: Buffer) {
+    static inline(text: string, data?: Buffer, style?: Api.KeyboardButtonStyle) {
         if (!data) {
             data = Buffer.from(text, "utf-8");
         }
@@ -40,21 +48,24 @@ export class Button {
         return new Api.KeyboardButtonCallback({
             text: text,
             data: data,
+            style: style,
         });
     }
 
-    static switchInline(text: string, query = "", samePeer = false) {
+    static switchInline(text: string, query = "", samePeer = false, style?: Api.KeyboardButtonStyle) {
         return new Api.KeyboardButtonSwitchInline({
             text,
             query,
             samePeer,
+            style,
         });
     }
 
-    static url(text: string, url?: string) {
+    static url(text: string, url?: string, style?: Api.KeyboardButtonStyle) {
         return new Api.KeyboardButtonUrl({
             text: text,
             url: url || text,
+            style,
         });
     }
 
@@ -63,7 +74,8 @@ export class Button {
         url?: string,
         bot?: EntityLike,
         writeAccess?: boolean,
-        fwdText?: string
+        fwdText?: string,
+        style?: Api.KeyboardButtonStyle
     ) {
         return new Api.InputKeyboardButtonUrlAuth({
             text,
@@ -71,6 +83,7 @@ export class Button {
             bot: getInputUser(bot || new Api.InputUserSelf()),
             requestWriteAccess: writeAccess,
             fwdText: fwdText,
+            style,
         });
     }
 
@@ -130,6 +143,84 @@ export class Button {
         );
     }
 
+    static webView(text: string, url: string, style?: Api.KeyboardButtonStyle) {
+        return new Api.KeyboardButtonWebView({
+            text,
+            url,
+            style,
+        });
+    }
+
+    static simpleWebView(text: string, url: string, style?: Api.KeyboardButtonStyle) {
+        return new Api.KeyboardButtonSimpleWebView({
+            text,
+            url,
+            style,
+        });
+    }
+
+    static copy(text: string, copyText: string, style?: Api.KeyboardButtonStyle) {
+        return new Api.KeyboardButtonCopy({
+            text,
+            copyText,
+            style,
+        });
+    }
+
+    static game(text: string, style?: Api.KeyboardButtonStyle) {
+        return new Api.KeyboardButtonGame({
+            text,
+            style,
+        });
+    }
+
+    static buy(text: string, style?: Api.KeyboardButtonStyle) {
+        return new Api.KeyboardButtonBuy({
+            text,
+            style,
+        });
+    }
+
+    static userProfile(text: string, user: EntityLike, style?: Api.KeyboardButtonStyle) {
+        return new Api.InputKeyboardButtonUserProfile({
+            text,
+            userId: getInputUser(user),
+            style,
+        });
+    }
+
+    static requestPeer(
+        text: string,
+        buttonId: number,
+        peerType: Api.TypeRequestPeerType,
+        maxCount?: number,
+        style?: Api.KeyboardButtonStyle
+    ) {
+        return new Api.InputKeyboardButtonRequestPeer({
+            text,
+            buttonId,
+            peerType,
+            maxQuantity: maxCount || 1,
+            style,
+        });
+    }
+
+    static style: StyleFunction = Object.assign(
+        (opts?: {
+            bgPrimary?: boolean;
+            bgDanger?: boolean;
+            bgSuccess?: boolean;
+            icon?: BigInteger;
+        }): Api.KeyboardButtonStyle => {
+            return new Api.KeyboardButtonStyle(opts || {});
+        },
+        {
+            primary: () => new Api.KeyboardButtonStyle({ bgPrimary: true }),
+            danger: () => new Api.KeyboardButtonStyle({ bgDanger: true }),
+            success: () => new Api.KeyboardButtonStyle({ bgSuccess: true }),
+        }
+    );
+
     static clear() {
         return new Api.ReplyKeyboardHide({});
     }
@@ -137,4 +228,16 @@ export class Button {
     static forceReply() {
         return new Api.ReplyKeyboardForceReply({});
     }
+}
+
+interface StyleFunction {
+    (opts?: {
+        bgPrimary?: boolean;
+        bgDanger?: boolean;
+        bgSuccess?: boolean;
+        icon?: BigInteger;
+    }): Api.KeyboardButtonStyle;
+    primary(): Api.KeyboardButtonStyle;
+    danger(): Api.KeyboardButtonStyle;
+    success(): Api.KeyboardButtonStyle;
 }

@@ -1,4 +1,4 @@
-import { serializeBytes } from "..";
+import { serializeBytes } from "../runtime/helpers";
 import { unzipSync } from "zlib";
 import type { BinaryReader } from "../../extensions";
 

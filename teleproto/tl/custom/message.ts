@@ -1,7 +1,7 @@
 import { SenderGetter } from "./senderGetter";
 import type { Entity, EntityLike } from "../../define";
 import { Api } from "../api";
-import type { TelegramClient } from "../..";
+import type { TelegramClient } from "../../client/TelegramClient";
 import { ChatGetter } from "./chatGetter";
 import * as utils from "../../Utils";
 import { Forward } from "./forward";

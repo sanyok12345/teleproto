@@ -1,4 +1,4 @@
-import type { TelegramClient } from "../..";
+import type { TelegramClient } from "../../client/TelegramClient";
 import type { EntityLike } from "../../define";
 import { Api } from "../api";
 import { InlineResult } from "./inlineResult";

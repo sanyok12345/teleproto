@@ -21,7 +21,7 @@ import type { TelegramClient } from "./TelegramClient";
 import * as utils from "../Utils";
 import { _parseMessageText } from "./messageParse";
 import { _getPeer } from "./users";
-import bigInt from "big-integer";
+import bigInt, { BigInteger } from "big-integer";
 import { _fileToMedia } from "./uploads";
 
 const _MAX_CHUNK_SIZE = 100;
@@ -523,6 +523,12 @@ export interface SendMessageParams {
      * Used for threads to reply to a specific thread
      */
     topMsgId?: number | Api.Message;
+    /** Send the message as a specific entity (channel/user). */
+    sendAs?: EntityLike;
+    /** Message effect ID (animation/visual effect). */
+    effect?: BigInteger;
+    /** If true, media will be shown below the text instead of above. */
+    invertMedia?: boolean;
 }
 
 /** interface used for forwarding messages */
@@ -540,6 +546,14 @@ export interface ForwardMessagesParams {
     noforwards?: boolean;
     /** Used for threads to reply to a specific thread */
     topMsgId?: number | Api.Message;
+    /** Send the forwarded message as a specific entity (channel/user). */
+    sendAs?: EntityLike;
+    /** Message effect ID (animation/visual effect). */
+    effect?: BigInteger;
+    /** If true, drop media captions when forwarding. */
+    dropMediaCaptions?: boolean;
+    /** If true, forward the game score along with the message. */
+    withMyScore?: boolean;
 }
 
 /** Interface for editing messages */
@@ -570,6 +584,8 @@ export interface EditMessageParams {
     buttons?: MarkupLike;
     /** If set, the message won't be edited immediately, and instead it will be scheduled to be automatically edited at a later time. */
     schedule?: DateLike;
+    /** If true, media will be shown below the text instead of above. */
+    invertMedia?: boolean;
 }
 
 /** Interface for editing messages */
@@ -713,6 +729,9 @@ export async function sendMessage(
         noforwards,
         commentTo,
         topMsgId,
+        sendAs,
+        effect,
+        invertMedia,
     }: SendMessageParams = {}
 ) {
     if (file) {
@@ -793,6 +812,11 @@ export async function sendMessage(
             noWebpage: !(message.media instanceof Api.MessageMediaWebPage),
             scheduleDate: schedule,
             noforwards: noforwards,
+            sendAs: sendAs
+                ? await client.getInputEntity(sendAs)
+                : undefined,
+            effect: effect,
+            invertMedia: invertMedia,
         });
         message = message.message;
     } else {
@@ -820,6 +844,11 @@ export async function sendMessage(
             replyMarkup: client.buildReplyMarkup(buttons),
             scheduleDate: schedule,
             noforwards: noforwards,
+            sendAs: sendAs
+                ? await client.getInputEntity(sendAs)
+                : undefined,
+            effect: effect,
+            invertMedia: invertMedia,
         });
     }
     const result = await client.invoke(request);
@@ -853,7 +882,11 @@ export async function forwardMessages(
         noforwards,
         dropAuthor,
         topMsgId,
-    }: ForwardMessagesParams & { topMsgId?: number | Api.Message } // или свой тип ID
+        sendAs,
+        effect,
+        dropMediaCaptions,
+        withMyScore,
+    }: ForwardMessagesParams & { topMsgId?: number | Api.Message }
 ) {
     if (!isArrayLike(messages)) {
         messages = [messages];
@@ -905,6 +938,12 @@ export async function forwardMessages(
             noforwards: noforwards,
             dropAuthor: dropAuthor,
             topMsgId: topMsgId ? getMessageId(topMsgId) : undefined,
+            sendAs: sendAs
+                ? await client.getInputEntity(sendAs)
+                : undefined,
+            effect: effect,
+            dropMediaCaptions: dropMediaCaptions,
+            withMyScore: withMyScore,
         });
 
         const result = await client.invoke(request);
@@ -930,6 +969,7 @@ export async function editMessage(
         forceDocument,
         buttons,
         schedule,
+        invertMedia,
     }: EditMessageParams
 ) {
     if (
@@ -993,6 +1033,7 @@ export async function editMessage(
         media: inputMedia,
         replyMarkup: markup,
         scheduleDate: schedule,
+        invertMedia: invertMedia,
     });
     const result = await client.invoke(request);
     return client._getResponseMessage(request, result, entity) as Api.Message;
@@ -1207,3 +1248,42 @@ export async function getCommentData(
 }
 
 // TODO do the rest
+
+/** @hidden */
+export async function sendReaction(
+    client: TelegramClient,
+    entity: EntityLike,
+    messageId: number,
+    reaction?: Api.TypeReaction[],
+    big?: boolean
+) {
+    return client.invoke(
+        new Api.messages.SendReaction({
+            peer: entity,
+            msgId: messageId,
+            reaction: reaction || [],
+            big: big,
+        })
+    );
+}
+
+/** @hidden */
+export async function getReactionUsers(
+    client: TelegramClient,
+    entity: EntityLike,
+    messageId: number,
+    params?: { reaction?: string; limit?: number; offset?: string }
+) {
+    const { reaction, limit = 100, offset = "" } = params || {};
+    return client.invoke(
+        new Api.messages.GetMessageReactionsList({
+            peer: entity,
+            id: messageId,
+            limit: limit,
+            offset: offset,
+            reaction: reaction
+                ? new Api.ReactionEmoji({ emoticon: reaction })
+                : undefined,
+        })
+    );
+}

@@ -981,6 +981,76 @@ export class CustomMessage extends SenderGetter {
         }
     }
 
+    async react(
+        reaction?:
+            | string
+            | BigInteger
+            | Api.TypeReaction
+            | (string | BigInteger | Api.TypeReaction)[],
+        big?: boolean
+    ) {
+        if (!this._client) return;
+
+        function toReaction(
+            r: string | BigInteger | Api.TypeReaction
+        ): Api.TypeReaction {
+            if (typeof r === "string") {
+                return new Api.ReactionEmoji({ emoticon: r });
+            }
+            if (
+                r instanceof Api.ReactionEmoji ||
+                r instanceof Api.ReactionCustomEmoji ||
+                r instanceof Api.ReactionPaid ||
+                r instanceof Api.ReactionEmpty
+            ) {
+                return r;
+            }
+            // BigInteger
+            return new Api.ReactionCustomEmoji({
+                documentId: returnBigInt(r),
+            });
+        }
+
+        let reactionList: Api.TypeReaction[];
+        if (reaction == undefined) {
+            reactionList = [];
+        } else if (Array.isArray(reaction)) {
+            reactionList = reaction.map(toReaction);
+        } else {
+            reactionList = [toReaction(reaction)];
+        }
+
+        return this._client.sendReaction(
+            (await this.getInputChat())!,
+            this.id,
+            reactionList,
+            big
+        );
+    }
+
+    async getReactions(limit?: number, reaction?: string) {
+        if (!this._client) return;
+        return this._client.getReactionUsers(
+            (await this.getInputChat())!,
+            this.id,
+            { limit, reaction }
+        );
+    }
+
+    async copy(entity: EntityLike) {
+        if (!this._client) return;
+        entity = await this._client.getInputEntity(entity);
+        const request = new Api.messages.ForwardMessages({
+            fromPeer: (await this.getInputChat())!,
+            id: [this.id],
+            toPeer: entity,
+            dropAuthor: true,
+            randomId: [bigInt(Math.floor(Math.random() * 1e15))],
+        });
+        const result = await this._client.invoke(request);
+        return this._client._getResponseMessage(request, result, entity);
+    }
+
     async click({
         i,
         j,

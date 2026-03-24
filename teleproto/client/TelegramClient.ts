@@ -1014,6 +1014,55 @@ export class TelegramClient extends TelegramBaseClient {
         );
     }
 
+    /**
+     * Sends a reaction to a message.
+     *
+     * @param entity - The chat/channel where the message is.
+     * @param messageId - The message ID to react to.
+     * @param reaction - Array of reactions. Use Api.ReactionEmoji or Api.ReactionCustomEmoji.
+     * @param big - Whether to show a big animation.
+     * @example
+     * ```ts
+     * await client.sendReaction(chat, 123, [new Api.ReactionEmoji({ emoticon: "👍" })]);
+     * ```
+     */
+    sendReaction(
+        entity: EntityLike,
+        messageId: number,
+        reaction?: Api.TypeReaction[],
+        big?: boolean
+    ) {
+        return messageMethods.sendReaction(
+            this,
+            entity,
+            messageId,
+            reaction,
+            big
+        );
+    }
+
+    /**
+     * Gets users who reacted to a message.
+     *
+     * @param entity - The chat/channel where the message is.
+     * @param messageId - The message ID.
+     * @param params.reaction - Filter by specific emoji string.
+     * @param params.limit - Maximum number of users to return.
+     * @param params.offset - Pagination offset.
+     */
+    getReactionUsers(
+        entity: EntityLike,
+        messageId: number,
+        params?: { reaction?: string; limit?: number; offset?: string }
+    ) {
+        return messageMethods.getReactionUsers(
+            this,
+            entity,
+            messageId,
+            params
+        );
+    }
+
     //endregion
     //region dialogs
 

@@ -93,16 +93,11 @@ function main(): void {
     const definitions = loadTlDefinitions(apiTl, schemaTl);
     const { constructors, functions } = splitDefinitions(definitions);
 
-    // Write runtime definitions BEFORE patching — resolve() relies on
-    // original TL types ("InputPeer", "InputUser", "int", etc.) to auto-cast
-    // arguments.  patchMethods() replaces them with "EntityLike" /
-    // "MessageIDLike" which are only useful for TypeScript declarations.
     fs.writeFileSync(
         path.resolve(root, "../teleproto/tl/generated/api-definitions.js"),
         `module.exports = ${JSON.stringify(definitions)};\n`
     );
 
-    // Patch types for the .d.ts only (TypeScript ergonomics)
     patchMethods(functions);
 
     const types = buildTypes(constructors);

@@ -1,7 +1,7 @@
 import { Api } from "../tl";
 import type { TelegramClient } from "./TelegramClient";
 import { strippedPhotoToJpg } from "../Utils";
-import { sleep } from "../Helpers";
+import { sleep, sha256 } from "../Helpers";
 import { EntityLike, OutFile, ProgressCallback } from "../define";
 import * as utils from "../Utils";
 import { RequestIter } from "../requestIter";
@@ -9,6 +9,7 @@ import { MTProtoSender } from "../network";
 import { FileMigrateError } from "../errors";
 import { createWriteStream } from "fs";
 import { BinaryWriter } from "../extensions";
+import { CTR } from "../crypto/CTR";
 import * as fs from "fs";
 import path from "path";
 import bigInt from "big-integer";
@@ -359,6 +360,171 @@ function returnWriterValue(writer: any): Buffer | string | undefined {
         } else {
             return Buffer.from(writer.path);
         }
+    }
+}
+
+function getDownloadPartSize(fileSize?: bigInt.BigInteger): number {
+    if (!fileSize) return 256;
+    if (fileSize.lesser(10 * ONE_MB)) return 256;
+    if (fileSize.lesser(100 * ONE_MB)) return 512;
+    return 1024;
+}
+
+function computeCdnIv(initialIv: Buffer, offset: number): Buffer {
+    const iv = Buffer.from(initialIv);
+    let carry = Math.floor(offset / 16);
+    for (let i = 15; i >= 0 && carry > 0; i--) {
+        carry += iv[i];
+        iv[i] = carry & 0xff;
+        carry >>= 8;
+    }
+    return iv;
+}
+
+async function verifyFileHashes(
+    data: Buffer,
+    offset: number,
+    hashes: Api.TypeFileHash[]
+): Promise<boolean> {
+    for (const hash of hashes) {
+        const hashOffset = typeof hash.offset === "number"
+            ? hash.offset
+            : (hash.offset as any).toJSNumber();
+        const hashLimit = hash.limit;
+        const localOffset = hashOffset - offset;
+        if (localOffset < 0 || localOffset + hashLimit > data.length) continue;
+
+        const chunk = data.subarray(localOffset, localOffset + hashLimit);
+        const computed = await sha256(chunk);
+        if (!computed.equals(hash.hash)) {
+            return false;
+        }
+    }
+    return true;
+}
+
+async function downloadChunk(
+    client: TelegramClient,
+    location: Api.TypeInputFileLocation,
+    offset: bigInt.BigInteger,
+    limit: number,
+    dcId: number | undefined,
+    senderRef: { sender?: MTProtoSender }
+): Promise<Buffer> {
+    let timedOut = false;
+    while (true) {
+        try {
+            if (!senderRef.sender || !senderRef.sender.isConnected()) {
+                senderRef.sender = await client.getSender(senderRef.sender?.dcId ?? dcId ?? 0);
+            }
+            const result = await client.invokeWithSender(
+                new Api.upload.GetFile({
+                    location,
+                    offset,
+                    limit,
+                    precise: true,
+                    cdnSupported: false,
+                }),
+                senderRef.sender
+            );
+
+            if (result instanceof Api.upload.FileCdnRedirect) {
+                return await downloadFromCdn(
+                    client,
+                    senderRef,
+                    result,
+                    location,
+                    offset,
+                    limit
+                );
+            }
+
+            return result.bytes;
+        } catch (e: any) {
+            if (e.errorMessage === "TIMEOUT") {
+                if (timedOut) {
+                    throw e;
+                }
+                timedOut = true;
+                client._log.info("Got timeout while downloading file, retrying once");
+                await sleep(TIMED_OUT_SLEEP);
+                continue;
+            } else if (e instanceof FileMigrateError) {
+                client._log.info("File lives in another DC");
+                senderRef.sender = await client.getSender(e.newDc);
+                continue;
+            } else if (
+                e.errorMessage === "FLOOD_WAIT" ||
+                e.errorMessage?.startsWith("FLOOD_WAIT_")
+            ) {
+                const seconds = e.seconds || parseInt(e.errorMessage.split("_").pop()) || 1;
+                client._log.warn(`Flood wait ${seconds}s during download`);
+                await sleep(seconds * 1000);
+                continue;
+            }
+            throw e;
+        }
+    }
+}
+
+async function downloadFromCdn(
+    client: TelegramClient,
+    originSenderRef: { sender?: MTProtoSender },
+    redirect: Api.upload.FileCdnRedirect,
+    _location: Api.TypeInputFileLocation,
+    offset: bigInt.BigInteger,
+    limit: number
+): Promise<Buffer> {
+    const cdnSender = await client.getSender(redirect.dcId);
+    const offsetNum = typeof offset === "number" ? offset : offset.toJSNumber();
+
+    while (true) {
+        const cdnResult = await client.invokeWithSender(
+            new Api.upload.GetCdnFile({
+                fileToken: redirect.fileToken,
+                offset,
+                limit,
+            }),
+            cdnSender
+        );
+
+        if (cdnResult instanceof Api.upload.CdnFileReuploadNeeded) {
+            const originSender = await client.getSender(
+                originSenderRef.sender?.dcId ?? 0
+            );
+            await client.invokeWithSender(
+                new Api.upload.ReuploadCdnFile({
+                    fileToken: redirect.fileToken,
+                    requestToken: cdnResult.requestToken,
+                }),
+                originSender
+            );
+            continue;
+        }
+
+        const iv = computeCdnIv(redirect.encryptionIv, offsetNum);
+        const ctr = new CTR(redirect.encryptionKey, iv);
+        const decrypted = ctr.encrypt(cdnResult.bytes);
+
+        let hashes = redirect.fileHashes;
+        if (!hashes || hashes.length === 0) {
+            const cdnHashes = await client.invokeWithSender(
+                new Api.upload.GetCdnFileHashes({
+                    fileToken: redirect.fileToken,
+                    offset,
+                }),
+                await client.getSender(originSenderRef.sender?.dcId ?? 0)
+            );
+            hashes = cdnHashes;
+        }
+        if (hashes && hashes.length > 0) {
+            const valid = await verifyFileHashes(decrypted, offsetNum, hashes);
+            if (!valid) {
+                throw new Error("CDN file hash verification failed");
+            }
+        }
+
+        return decrypted;
     }
 }
 

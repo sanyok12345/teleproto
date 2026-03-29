@@ -166,6 +166,8 @@ export abstract class TelegramBaseClient {
     /** @hidden */
     _config?: Api.Config;
     /** @hidden */
+    _appConfig?: { [key: string]: any };
+    /** @hidden */
     public _log: Logger;
 
     /** @hidden */

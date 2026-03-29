@@ -71,6 +71,7 @@ const MIN_CHUNK_SIZE = 4096;
 const ONE_MB = 1024 * 1024;
 const TIMED_OUT_SLEEP = 1000;
 const MAX_CHUNK_SIZE = ONE_MB;
+const MAX_WORKERS = 16;
 
 export interface DirectDownloadIterInterface {
     fileLocation: Api.TypeInputFileLocation;
@@ -542,19 +543,30 @@ export async function downloadFile(
     }: DownloadFileParams
 ) {
     if (!partSizeKb) {
-        if (!fileSize) {
-            partSizeKb = 64;
-        } else {
-            partSizeKb = utils.getAppropriatedPartSize(fileSize);
-        }
+        partSizeKb = getDownloadPartSize(fileSize || undefined);
     }
 
     const partSize = Math.floor(partSizeKb * 1024);
-    if (partSize % MIN_CHUNK_SIZE != 0) {
+    if (partSize % MIN_CHUNK_SIZE !== 0) {
         throw new Error("The part size must be evenly divisible by 4096");
     }
-    const writer = getWriter(outputFile);
 
+    if (fileSize && fileSize.greater(0)) {
+        const sizeNum = fileSize.toJSNumber();
+        const workers = await client._getDownloadConcurrency(sizeNum);
+        if (workers > 1) {
+            return _downloadParallel(client, inputLocation, {
+                outputFile,
+                partSize,
+                fileSize,
+                workers: Math.min(workers, MAX_WORKERS),
+                dcId,
+                progressCallback,
+            });
+        }
+    }
+
+    const writer = getWriter(outputFile);
     let downloaded = bigInt.zero;
     try {
         for await (const chunk of iterDownload(client, {
@@ -572,6 +584,80 @@ export async function downloadFile(
                 );
             }
         }
+        return returnWriterValue(writer);
+    } finally {
+        closeWriter(writer);
+    }
+}
+
+async function _downloadParallel(
+    client: TelegramClient,
+    inputLocation: Api.TypeInputFileLocation,
+    params: {
+        outputFile?: OutFile;
+        partSize: number;
+        fileSize: bigInt.BigInteger;
+        workers: number;
+        dcId?: number;
+        progressCallback?: progressCallback;
+    }
+) {
+    const { outputFile, partSize, fileSize, workers, dcId, progressCallback } =
+        params;
+    const fileSizeNum = fileSize.toJSNumber();
+    const partCount = Math.ceil(fileSizeNum / partSize);
+    const writer = getWriter(outputFile);
+
+    let downloaded = bigInt.zero;
+    const senderRef: { sender?: MTProtoSender } = {};
+    senderRef.sender = await client.getSender(dcId ?? 0);
+
+    client._log.info(
+        `Starting parallel download: ${partCount} parts, ${workers} workers, ${partSize / 1024}KB chunks`
+    );
+
+    try {
+        for (let i = 0; i < partCount; i += workers) {
+            const batchEnd = Math.min(i + workers, partCount);
+            const batchPromises: Promise<{ index: number; data: Buffer }>[] = [];
+
+            for (let j = i; j < batchEnd; j++) {
+                const offset = bigInt(j).multiply(partSize);
+
+                batchPromises.push(
+                    (async (partIndex: number) => {
+                        const partSenderRef: { sender?: MTProtoSender } = {
+                            sender: senderRef.sender,
+                        };
+                        const data = await downloadChunk(
+                            client,
+                            inputLocation,
+                            offset,
+                            partSize,
+                            dcId,
+                            partSenderRef
+                        );
+                        senderRef.sender = partSenderRef.sender;
+                        return { index: partIndex, data };
+                    })(j)
+                );
+            }
+
+            const results = await Promise.all(batchPromises);
+
+            results.sort((a, b) => a.index - b.index);
+            for (const { data } of results) {
+                await writer.write(data);
+                downloaded = downloaded.add(data.length);
+                if (progressCallback) {
+                    if (progressCallback.isCanceled) {
+                        throw new Error("USER_CANCELED");
+                    }
+                    await progressCallback(downloaded, fileSize);
+                }
+            }
+        }
+
         return returnWriterValue(writer);
     } finally {
         closeWriter(writer);

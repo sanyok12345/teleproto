@@ -1668,6 +1668,41 @@ export class TelegramClient extends TelegramBaseClient {
     }
 
     /** @hidden */
+    async _getDownloadConcurrency(fileSize: number): Promise<number> {
+        if (!this._appConfig) {
+            try {
+                const result = await this.invoke(
+                    new Api.help.GetAppConfig({ hash: 0 })
+                );
+                if (result instanceof Api.help.AppConfig) {
+                    this._appConfig = {};
+                    const walk = (v: any): any => {
+                        if (v instanceof Api.JsonObject) {
+                            const obj: any = {};
+                            for (const kv of v.value) {
+                                obj[kv.key] = walk(kv.value);
+                            }
+                            return obj;
+                        }
+                        if (v instanceof Api.JsonArray) return v.value.map(walk);
+                        if (v instanceof Api.JsonString) return v.value;
+                        if (v instanceof Api.JsonNumber) return v.value;
+                        if (v instanceof Api.JsonBool) return v.value;
+                        if (v instanceof Api.JsonNull) return null;
+                        return v;
+                    };
+                    this._appConfig = walk(result.config);
+                }
+            } catch {
+                this._appConfig = {};
+            }
+        }
+        const smallLimit = this._appConfig?.small_queue_max_active_operations_count ?? 4;
+        const largeLimit = this._appConfig?.large_queue_max_active_operations_count ?? 8;
+        return fileSize > 20 * 1024 * 1024 ? largeLimit : smallLimit;
+    }
+
+    /** @hidden */
     _removeSender(dcId: number) {
         delete this._borrowedSenderPromises[dcId];
     }

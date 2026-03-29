@@ -505,9 +505,9 @@ export class TelegramClient extends TelegramBaseClient {
      */
     downloadFile(
         inputLocation: Api.TypeInputFileLocation,
-        fileParams: downloadMethods.DownloadFileParamsV2 = {}
+        fileParams: downloadMethods.DownloadFileParams = {}
     ) {
-        return downloadMethods.downloadFileV2(this, inputLocation, fileParams);
+        return downloadMethods.downloadFile(this, inputLocation, fileParams);
     }
 
     /**

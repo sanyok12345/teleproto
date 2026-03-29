@@ -32,31 +32,7 @@ export interface progressCallback {
     acceptsBuffer?: boolean;
 }
 
-/**
- * Low level interface for downloading files
- */
 export interface DownloadFileParams {
-    /** The dcId that the file belongs to. Used to borrow a sender from that DC */
-    dcId: number;
-    /** How much to download. The library will download until it reaches this amount.<br/>
-     *  can be useful for downloading by chunks */
-    fileSize?: number;
-    /** Used to determine how many download tasks should be run in parallel. anything above 16 is unstable. */
-    workers?: number;
-    /** How much to download in each chunk. The larger the less requests to be made. (max is 512kb). */
-    partSizeKb?: number;
-    /** Where to start downloading. useful for chunk downloading. */
-    start?: number;
-    /** Where to stop downloading. useful for chunk downloading. */
-    end?: number;
-    /** A callback function accepting two parameters:     ``(received bytes, total)``.     */
-    progressCallback?: progressCallback;
-}
-
-/**
- * Low level interface for downloading files
- */
-export interface DownloadFileParamsV2 {
     /**
      * The output file path, directory,buffer, or stream-like object.
      * If the path exists and is a file, it will be overwritten.
@@ -74,8 +50,6 @@ export interface DownloadFileParamsV2 {
     partSizeKb?: number;
     /** Progress callback accepting one param. (progress :number) which is a float between 0 and 1 */
     progressCallback?: progressCallback;
-    /** */
-
     msgData?: [EntityLike, number];
 }
 
@@ -88,22 +62,14 @@ export interface DownloadProfilePhotoParams {
     outputFile?: OutFile;
 }
 
-interface Deferred {
-    promise: Promise<any>;
-    resolve: (value?: any) => void;
-}
-
 // All types
 const sizeTypes = ["w", "y", "d", "x", "c", "m", "b", "a", "s"];
 
 // Chunk sizes for `upload.getFile` must be multiple of the smallest size
 const MIN_CHUNK_SIZE = 4096;
-const DEFAULT_CHUNK_SIZE = 64; // kb
 const ONE_MB = 1024 * 1024;
-const REQUEST_TIMEOUT = 15000;
-const DISCONNECT_SLEEP = 1000;
 const TIMED_OUT_SLEEP = 1000;
-const MAX_CHUNK_SIZE = 512 * 1024;
+const MAX_CHUNK_SIZE = ONE_MB;
 
 export interface DirectDownloadIterInterface {
     fileLocation: Api.TypeInputFileLocation;
@@ -395,7 +361,7 @@ function returnWriterValue(writer: any): Buffer | string | undefined {
 }
 
 /** @hidden */
-export async function downloadFileV2(
+export async function downloadFile(
     client: TelegramClient,
     inputLocation: Api.TypeInputFileLocation,
     {
@@ -405,7 +371,7 @@ export async function downloadFileV2(
         progressCallback = undefined,
         dcId = undefined,
         msgData = undefined,
-    }: DownloadFileParamsV2
+    }: DownloadFileParams
 ) {
     if (!partSizeKb) {
         if (!fileSize) {
@@ -442,44 +408,6 @@ export async function downloadFileV2(
     } finally {
         closeWriter(writer);
     }
-}
-
-class Foreman {
-    private deferred: Deferred | undefined;
-    private activeWorkers = 0;
-
-    constructor(private maxWorkers: number) {}
-
-    requestWorker() {
-        this.activeWorkers++;
-
-        if (this.activeWorkers > this.maxWorkers) {
-            this.deferred = createDeferred();
-            return this.deferred.promise;
-        }
-
-        return Promise.resolve();
-    }
-
-    releaseWorker() {
-        this.activeWorkers--;
-
-        if (this.deferred && this.activeWorkers <= this.maxWorkers) {
-            this.deferred.resolve();
-        }
-    }
-}
-
-function createDeferred(): Deferred {
-    let resolve: Deferred["resolve"];
-    const promise = new Promise((_resolve) => {
-        resolve = _resolve;
-    });
-
-    return {
-        promise,
-        resolve: resolve!,
-    };
 }
 
 /**
@@ -616,7 +544,7 @@ export async function _downloadDocument(
             return _downloadCachedPhotoSize(size, outputFile);
         }
     }
-    return await downloadFileV2(
+    return await downloadFile(
         client,
         new Api.InputDocumentFileLocation({
             id: doc.id,
@@ -799,7 +727,7 @@ export async function _downloadPhoto(
         fileSize = "size" in size ? size.size : 512;
     }
 
-    return downloadFileV2(
+    return downloadFile(
         client,
         new Api.InputPhotoFileLocation({
             id: photo.id,

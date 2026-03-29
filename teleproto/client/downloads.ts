@@ -117,6 +117,8 @@ export class DirectDownloadIter extends RequestIter {
             location: fileLocation,
             offset,
             limit: requestSize,
+            precise: true,
+            cdnSupported: false,
         });
 
         this.total = fileSize;

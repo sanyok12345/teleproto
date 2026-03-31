@@ -227,36 +227,44 @@ export namespace Api {
   export class InputMediaUploadedPhoto extends VirtualClass<{
     // flags: Api.Typeunknown;
     spoiler?: boolean;
+    livePhoto?: boolean;
     file: Api.TypeInputFile;
     stickers?: Api.TypeInputDocument[];
     ttlSeconds?: int;
+    video?: Api.TypeInputDocument;
   }> {
-  CONSTRUCTOR_ID: 505969924;
+  CONSTRUCTOR_ID: 2105767386;
   SUBCLASS_OF_ID: 4210575092;
   classType: "constructor";
   className: "InputMediaUploadedPhoto";
   static fromReader(reader: Reader): InputMediaUploadedPhoto;
     // flags: Api.Typeunknown;
     spoiler?: boolean;
+    livePhoto?: boolean;
     file: Api.TypeInputFile;
     stickers?: Api.TypeInputDocument[];
     ttlSeconds?: int;
+    video?: Api.TypeInputDocument;
   }
   export class InputMediaPhoto extends VirtualClass<{
     // flags: Api.Typeunknown;
     spoiler?: boolean;
+    livePhoto?: boolean;
     id: Api.TypeInputPhoto;
     ttlSeconds?: int;
+    video?: Api.TypeInputDocument;
   }> {
-  CONSTRUCTOR_ID: 3015312949;
+  CONSTRUCTOR_ID: 3819914292;
   SUBCLASS_OF_ID: 4210575092;
   classType: "constructor";
   className: "InputMediaPhoto";
   static fromReader(reader: Reader): InputMediaPhoto;
     // flags: Api.Typeunknown;
     spoiler?: boolean;
+    livePhoto?: boolean;
     id: Api.TypeInputPhoto;
     ttlSeconds?: int;
+    video?: Api.TypeInputDocument;
   }
   export class InputMediaGeoPoint extends VirtualClass<{
     geoPoint: Api.TypeInputGeoPoint;
@@ -455,20 +463,24 @@ export namespace Api {
   export class InputMediaPoll extends VirtualClass<{
     // flags: Api.Typeunknown;
     poll: Api.TypePoll;
-    correctAnswers?: bytes[];
+    correctAnswers?: int[];
+    attachedMedia?: Api.TypeInputMedia;
     solution?: string;
     solutionEntities?: Api.TypeMessageEntity[];
+    solutionMedia?: Api.TypeInputMedia;
   }> {
-  CONSTRUCTOR_ID: 261416433;
+  CONSTRUCTOR_ID: 2285519112;
   SUBCLASS_OF_ID: 4210575092;
   classType: "constructor";
   className: "InputMediaPoll";
   static fromReader(reader: Reader): InputMediaPoll;
     // flags: Api.Typeunknown;
     poll: Api.TypePoll;
-    correctAnswers?: bytes[];
+    correctAnswers?: int[];
+    attachedMedia?: Api.TypeInputMedia;
     solution?: string;
     solutionEntities?: Api.TypeMessageEntity[];
+    solutionMedia?: Api.TypeInputMedia;
   }
   export class InputMediaDice extends VirtualClass<{
     emoticon: string;
@@ -846,6 +858,7 @@ export namespace Api {
     botHasMainApp?: boolean;
     botForumView?: boolean;
     botForumCanManageTopics?: boolean;
+    botCanManageBots?: boolean;
     id: long;
     accessHash?: long;
     firstName?: string;
@@ -901,6 +914,7 @@ export namespace Api {
     botHasMainApp?: boolean;
     botForumView?: boolean;
     botForumCanManageTopics?: boolean;
+    botCanManageBots?: boolean;
     id: long;
     accessHash?: long;
     firstName?: string;
@@ -1543,18 +1557,22 @@ export namespace Api {
   export class MessageMediaPhoto extends VirtualClass<{
     // flags: Api.Typeunknown;
     spoiler?: boolean;
+    livePhoto?: boolean;
     photo?: Api.TypePhoto;
     ttlSeconds?: int;
+    video?: Api.TypeDocument;
   }> {
-  CONSTRUCTOR_ID: 1766936791;
+  CONSTRUCTOR_ID: 3793152867;
   SUBCLASS_OF_ID: 1198308914;
   classType: "constructor";
   className: "MessageMediaPhoto";
   static fromReader(reader: Reader): MessageMediaPhoto;
     // flags: Api.Typeunknown;
     spoiler?: boolean;
+    livePhoto?: boolean;
     photo?: Api.TypePhoto;
     ttlSeconds?: int;
+    video?: Api.TypeDocument;
   }
   export class MessageMediaGeo extends VirtualClass<{
     geo: Api.TypeGeoPoint;
@@ -1720,16 +1738,20 @@ export namespace Api {
     proximityNotificationRadius?: int;
   }
   export class MessageMediaPoll extends VirtualClass<{
+    // flags: Api.Typeunknown;
     poll: Api.TypePoll;
     results: Api.TypePollResults;
+    attachedMedia?: Api.TypeMessageMedia;
   }> {
-  CONSTRUCTOR_ID: 1272375192;
+  CONSTRUCTOR_ID: 2000637542;
   SUBCLASS_OF_ID: 1198308914;
   classType: "constructor";
   className: "MessageMediaPoll";
   static fromReader(reader: Reader): MessageMediaPoll;
+    // flags: Api.Typeunknown;
     poll: Api.TypePoll;
     results: Api.TypePollResults;
+    attachedMedia?: Api.TypeMessageMedia;
   }
   export class MessageMediaDice extends VirtualClass<{
     // flags: Api.Typeunknown;
@@ -2802,6 +2824,36 @@ export namespace Api {
     prevValue: Bool;
     newValue: Bool;
   }
+  export class MessageActionPollAppendAnswer extends VirtualClass<{
+    answer: Api.TypePollAnswer;
+  }> {
+  CONSTRUCTOR_ID: 2644626796;
+  SUBCLASS_OF_ID: 2256589094;
+  classType: "constructor";
+  className: "MessageActionPollAppendAnswer";
+  static fromReader(reader: Reader): MessageActionPollAppendAnswer;
+    answer: Api.TypePollAnswer;
+  }
+  export class MessageActionPollDeleteAnswer extends VirtualClass<{
+    answer: Api.TypePollAnswer;
+  }> {
+  CONSTRUCTOR_ID: 966161628;
+  SUBCLASS_OF_ID: 2256589094;
+  classType: "constructor";
+  className: "MessageActionPollDeleteAnswer";
+  static fromReader(reader: Reader): MessageActionPollDeleteAnswer;
+    answer: Api.TypePollAnswer;
+  }
+  export class MessageActionManagedBotCreated extends VirtualClass<{
+    botId: long;
+  }> {
+  CONSTRUCTOR_ID: 375414334;
+  SUBCLASS_OF_ID: 2256589094;
+  classType: "constructor";
+  className: "MessageActionManagedBotCreated";
+  static fromReader(reader: Reader): MessageActionManagedBotCreated;
+    botId: long;
+  }
   export class Dialog extends VirtualClass<{
     // flags: Api.Typeunknown;
     pinned?: boolean;
@@ -2814,13 +2866,14 @@ export namespace Api {
     unreadCount: int;
     unreadMentionsCount: int;
     unreadReactionsCount: int;
+    unreadPollVotesCount: int;
     notifySettings: Api.TypePeerNotifySettings;
     pts?: int;
     draft?: Api.TypeDraftMessage;
     folderId?: int;
     ttlPeriod?: int;
   }> {
-  CONSTRUCTOR_ID: 3582593222;
+  CONSTRUCTOR_ID: 4236900339;
   SUBCLASS_OF_ID: 1120787796;
   classType: "constructor";
   className: "Dialog";
@@ -2836,6 +2889,7 @@ export namespace Api {
     unreadCount: int;
     unreadMentionsCount: int;
     unreadReactionsCount: int;
+    unreadPollVotesCount: int;
     notifySettings: Api.TypePeerNotifySettings;
     pts?: int;
     draft?: Api.TypeDraftMessage;
@@ -3300,6 +3354,7 @@ export namespace Api {
     displayGiftsButton?: boolean;
     noforwardsMyEnabled?: boolean;
     noforwardsPeerEnabled?: boolean;
+    unofficialSecurityRisk?: boolean;
     id: long;
     about?: string;
     settings: Api.TypePeerSettings;
@@ -3337,8 +3392,9 @@ export namespace Api {
     mainTab?: Api.TypeProfileTab;
     savedMusic?: Api.TypeDocument;
     note?: Api.TypeTextWithEntities;
+    botManagerId?: long;
   }> {
-  CONSTRUCTOR_ID: 2687222078;
+  CONSTRUCTOR_ID: 114026053;
   SUBCLASS_OF_ID: 524706233;
   classType: "constructor";
   className: "UserFull";
@@ -3364,6 +3420,7 @@ export namespace Api {
     displayGiftsButton?: boolean;
     noforwardsMyEnabled?: boolean;
     noforwardsPeerEnabled?: boolean;
+    unofficialSecurityRisk?: boolean;
     id: long;
     about?: string;
     settings: Api.TypePeerSettings;
@@ -3401,6 +3458,7 @@ export namespace Api {
     mainTab?: Api.TypeProfileTab;
     savedMusic?: Api.TypeDocument;
     note?: Api.TypeTextWithEntities;
+    botManagerId?: long;
   }
   export class Contact extends VirtualClass<{
     userId: long;
@@ -3561,6 +3619,13 @@ export namespace Api {
   classType: "constructor";
   className: "InputMessagesFilterPinned";
   static fromReader(reader: Reader): InputMessagesFilterPinned;
+}
+  export class InputMessagesFilterPoll extends VirtualClass<void> {
+  CONSTRUCTOR_ID: 4197173514;
+  SUBCLASS_OF_ID: 2318855188;
+  classType: "constructor";
+  className: "InputMessagesFilterPoll";
+  static fromReader(reader: Reader): InputMessagesFilterPoll;
 }
   export class UpdateNewMessage extends VirtualClass<{
     message: Api.TypeMessage;
@@ -4439,16 +4504,22 @@ export namespace Api {
   }
   export class UpdateMessagePoll extends VirtualClass<{
     // flags: Api.Typeunknown;
+    peer?: Api.TypePeer;
+    msgId?: int;
+    topMsgId?: int;
     pollId: long;
     poll?: Api.TypePoll;
     results: Api.TypePollResults;
   }> {
-  CONSTRUCTOR_ID: 2896258427;
+  CONSTRUCTOR_ID: 3595325995;
   SUBCLASS_OF_ID: 2676568142;
   classType: "constructor";
   className: "UpdateMessagePoll";
   static fromReader(reader: Reader): UpdateMessagePoll;
     // flags: Api.Typeunknown;
+    peer?: Api.TypePeer;
+    msgId?: int;
+    topMsgId?: int;
     pollId: long;
     poll?: Api.TypePoll;
     results: Api.TypePollResults;
@@ -4562,9 +4633,10 @@ export namespace Api {
     pollId: long;
     peer: Api.TypePeer;
     options: bytes[];
+    positions: int[];
     qts: int;
   }> {
-  CONSTRUCTOR_ID: 619974263;
+  CONSTRUCTOR_ID: 1989799956;
   SUBCLASS_OF_ID: 2676568142;
   classType: "constructor";
   className: "UpdateMessagePollVote";
@@ -4572,6 +4644,7 @@ export namespace Api {
     pollId: long;
     peer: Api.TypePeer;
     options: bytes[];
+    positions: int[];
     qts: int;
   }
   export class UpdateDialogFilter extends VirtualClass<{
@@ -5660,6 +5733,20 @@ export namespace Api {
     userId: long;
     rank: string;
     version: int;
+  }
+  export class UpdateManagedBot extends VirtualClass<{
+    userId: long;
+    botId: long;
+    qts: int;
+  }> {
+  CONSTRUCTOR_ID: 1216408986;
+  SUBCLASS_OF_ID: 2676568142;
+  classType: "constructor";
+  className: "UpdateManagedBot";
+  static fromReader(reader: Reader): UpdateManagedBot;
+    userId: long;
+    botId: long;
+    qts: int;
   }
   export class UpdatesTooLong extends VirtualClass<void> {
   CONSTRUCTOR_ID: 3809980286;
@@ -8099,6 +8186,44 @@ export namespace Api {
     offset: int;
     length: int;
     date: int;
+  }
+  export class MessageEntityDiffInsert extends VirtualClass<{
+    offset: int;
+    length: int;
+  }> {
+  CONSTRUCTOR_ID: 1903653142;
+  SUBCLASS_OF_ID: 3479443932;
+  classType: "constructor";
+  className: "MessageEntityDiffInsert";
+  static fromReader(reader: Reader): MessageEntityDiffInsert;
+    offset: int;
+    length: int;
+  }
+  export class MessageEntityDiffReplace extends VirtualClass<{
+    offset: int;
+    length: int;
+    oldText: string;
+  }> {
+  CONSTRUCTOR_ID: 3334596007;
+  SUBCLASS_OF_ID: 3479443932;
+  classType: "constructor";
+  className: "MessageEntityDiffReplace";
+  static fromReader(reader: Reader): MessageEntityDiffReplace;
+    offset: int;
+    length: int;
+    oldText: string;
+  }
+  export class MessageEntityDiffDelete extends VirtualClass<{
+    offset: int;
+    length: int;
+  }> {
+  CONSTRUCTOR_ID: 106086853;
+  SUBCLASS_OF_ID: 3479443932;
+  classType: "constructor";
+  className: "MessageEntityDiffDelete";
+  static fromReader(reader: Reader): MessageEntityDiffDelete;
+    offset: int;
+    length: int;
   }
   export class InputChannelEmpty extends VirtualClass<void> {
   CONSTRUCTOR_ID: 4002160262;
@@ -12001,16 +12126,38 @@ export namespace Api {
     views?: int;
   }
   export class PollAnswer extends VirtualClass<{
+    // flags: Api.Typeunknown;
     text: Api.TypeTextWithEntities;
     option: bytes;
+    media?: Api.TypeMessageMedia;
+    addedBy?: Api.TypePeer;
+    date?: int;
   }> {
-  CONSTRUCTOR_ID: 4279689930;
+  CONSTRUCTOR_ID: 1266514026;
   SUBCLASS_OF_ID: 2124799390;
   classType: "constructor";
   className: "PollAnswer";
   static fromReader(reader: Reader): PollAnswer;
+    // flags: Api.Typeunknown;
     text: Api.TypeTextWithEntities;
     option: bytes;
+    media?: Api.TypeMessageMedia;
+    addedBy?: Api.TypePeer;
+    date?: int;
+  }
+  export class InputPollAnswer extends VirtualClass<{
+    // flags: Api.Typeunknown;
+    text: Api.TypeTextWithEntities;
+    media?: Api.TypeInputMedia;
+  }> {
+  CONSTRUCTOR_ID: 429911446;
+  SUBCLASS_OF_ID: 2124799390;
+  classType: "constructor";
+  className: "InputPollAnswer";
+  static fromReader(reader: Reader): InputPollAnswer;
+    // flags: Api.Typeunknown;
+    text: Api.TypeTextWithEntities;
+    media?: Api.TypeInputMedia;
   }
   export class Poll extends VirtualClass<{
     id: long;
@@ -12019,12 +12166,18 @@ export namespace Api {
     publicVoters?: boolean;
     multipleChoice?: boolean;
     quiz?: boolean;
+    openAnswers?: boolean;
+    revotingDisabled?: boolean;
+    shuffleAnswers?: boolean;
+    hideResultsUntilClose?: boolean;
+    creator?: boolean;
     question: Api.TypeTextWithEntities;
     answers: Api.TypePollAnswer[];
     closePeriod?: int;
     closeDate?: int;
+    hash: long;
   }> {
-  CONSTRUCTOR_ID: 1484026161;
+  CONSTRUCTOR_ID: 3091356649;
   SUBCLASS_OF_ID: 613307771;
   classType: "constructor";
   className: "Poll";
@@ -12035,19 +12188,26 @@ export namespace Api {
     publicVoters?: boolean;
     multipleChoice?: boolean;
     quiz?: boolean;
+    openAnswers?: boolean;
+    revotingDisabled?: boolean;
+    shuffleAnswers?: boolean;
+    hideResultsUntilClose?: boolean;
+    creator?: boolean;
     question: Api.TypeTextWithEntities;
     answers: Api.TypePollAnswer[];
     closePeriod?: int;
     closeDate?: int;
+    hash: long;
   }
   export class PollAnswerVoters extends VirtualClass<{
     // flags: Api.Typeunknown;
     chosen?: boolean;
     correct?: boolean;
     option: bytes;
-    voters: int;
+    voters?: int;
+    recentVoters?: Api.TypePeer[];
   }> {
-  CONSTRUCTOR_ID: 997055186;
+  CONSTRUCTOR_ID: 910500618;
   SUBCLASS_OF_ID: 2095107985;
   classType: "constructor";
   className: "PollAnswerVoters";
@@ -12056,29 +12216,34 @@ export namespace Api {
     chosen?: boolean;
     correct?: boolean;
     option: bytes;
-    voters: int;
+    voters?: int;
+    recentVoters?: Api.TypePeer[];
   }
   export class PollResults extends VirtualClass<{
     // flags: Api.Typeunknown;
     min?: boolean;
+    hasUnreadVotes?: boolean;
     results?: Api.TypePollAnswerVoters[];
     totalVoters?: int;
     recentVoters?: Api.TypePeer[];
     solution?: string;
     solutionEntities?: Api.TypeMessageEntity[];
+    solutionMedia?: Api.TypeMessageMedia;
   }> {
-  CONSTRUCTOR_ID: 2061444128;
+  CONSTRUCTOR_ID: 3128668510;
   SUBCLASS_OF_ID: 3283416711;
   classType: "constructor";
   className: "PollResults";
   static fromReader(reader: Reader): PollResults;
     // flags: Api.Typeunknown;
     min?: boolean;
+    hasUnreadVotes?: boolean;
     results?: Api.TypePollAnswerVoters[];
     totalVoters?: int;
     recentVoters?: Api.TypePeer[];
     solution?: string;
     solutionEntities?: Api.TypeMessageEntity[];
+    solutionMedia?: Api.TypeMessageMedia;
   }
   export class ChatOnlines extends VirtualClass<{
     onlines: int;
@@ -12429,6 +12594,7 @@ export namespace Api {
     requestWriteAccess?: boolean;
     requestPhoneNumber?: boolean;
     matchCodesFirst?: boolean;
+    isApp?: boolean;
     bot: Api.TypeUser;
     domain: string;
     browser?: string;
@@ -12437,8 +12603,9 @@ export namespace Api {
     region?: string;
     matchCodes?: string[];
     userIdHint?: long;
+    verifiedAppName?: string;
   }> {
-  CONSTRUCTOR_ID: 4177062686;
+  CONSTRUCTOR_ID: 1020666860;
   SUBCLASS_OF_ID: 2003159838;
   classType: "constructor";
   className: "UrlAuthResultRequest";
@@ -12447,6 +12614,7 @@ export namespace Api {
     requestWriteAccess?: boolean;
     requestPhoneNumber?: boolean;
     matchCodesFirst?: boolean;
+    isApp?: boolean;
     bot: Api.TypeUser;
     domain: string;
     browser?: string;
@@ -12455,6 +12623,7 @@ export namespace Api {
     region?: string;
     matchCodes?: string[];
     userIdHint?: long;
+    verifiedAppName?: string;
   }
   export class UrlAuthResultAccepted extends VirtualClass<{
     // flags: Api.Typeunknown;
@@ -13058,8 +13227,9 @@ export namespace Api {
     quoteEntities?: Api.TypeMessageEntity[];
     quoteOffset?: int;
     todoItemId?: int;
+    pollOption?: bytes;
   }> {
-  CONSTRUCTOR_ID: 1763137035;
+  CONSTRUCTOR_ID: 462937446;
   SUBCLASS_OF_ID: 1531810151;
   classType: "constructor";
   className: "MessageReplyHeader";
@@ -13077,6 +13247,7 @@ export namespace Api {
     quoteEntities?: Api.TypeMessageEntity[];
     quoteOffset?: int;
     todoItemId?: int;
+    pollOption?: bytes;
   }
   export class MessageReplyStoryHeader extends VirtualClass<{
     peer: Api.TypePeer;
@@ -14554,11 +14725,12 @@ export namespace Api {
     unreadCount: int;
     unreadMentionsCount: int;
     unreadReactionsCount: int;
+    unreadPollVotesCount: int;
     fromId: Api.TypePeer;
     notifySettings: Api.TypePeerNotifySettings;
     draft?: Api.TypeDraftMessage;
   }> {
-  CONSTRUCTOR_ID: 3456044746;
+  CONSTRUCTOR_ID: 4242200597;
   SUBCLASS_OF_ID: 2367169027;
   classType: "constructor";
   className: "ForumTopic";
@@ -14582,6 +14754,7 @@ export namespace Api {
     unreadCount: int;
     unreadMentionsCount: int;
     unreadReactionsCount: int;
+    unreadPollVotesCount: int;
     fromId: Api.TypePeer;
     notifySettings: Api.TypePeerNotifySettings;
     draft?: Api.TypeDraftMessage;
@@ -14661,6 +14834,22 @@ export namespace Api {
     hasUsername?: Bool;
     userAdminRights?: Api.TypeChatAdminRights;
     botAdminRights?: Api.TypeChatAdminRights;
+  }
+  export class RequestPeerTypeCreateBot extends VirtualClass<{
+    // flags: Api.Typeunknown;
+    botManaged?: boolean;
+    suggestedName?: string;
+    suggestedUsername?: string;
+  }> {
+  CONSTRUCTOR_ID: 1048699000;
+  SUBCLASS_OF_ID: 3919636500;
+  classType: "constructor";
+  className: "RequestPeerTypeCreateBot";
+  static fromReader(reader: Reader): RequestPeerTypeCreateBot;
+    // flags: Api.Typeunknown;
+    botManaged?: boolean;
+    suggestedName?: string;
+    suggestedUsername?: string;
   }
   export class EmojiListNotModified extends VirtualClass<void> {
   CONSTRUCTOR_ID: 1209970170;
@@ -14984,8 +15173,9 @@ export namespace Api {
     views?: Api.TypeStoryViews;
     sentReaction?: Api.TypeReaction;
     albums?: int[];
+    music?: Api.TypeDocument;
   }> {
-  CONSTRUCTOR_ID: 3992020209;
+  CONSTRUCTOR_ID: 379894076;
   SUBCLASS_OF_ID: 3564613939;
   classType: "constructor";
   className: "StoryItem";
@@ -15013,6 +15203,7 @@ export namespace Api {
     views?: Api.TypeStoryViews;
     sentReaction?: Api.TypeReaction;
     albums?: int[];
+    music?: Api.TypeDocument;
   }
   export class StoryView extends VirtualClass<{
     // flags: Api.Typeunknown;
@@ -15078,8 +15269,9 @@ export namespace Api {
     quoteOffset?: int;
     monoforumPeerId?: Api.TypeInputPeer;
     todoItemId?: int;
+    pollOption?: bytes;
   }> {
-  CONSTRUCTOR_ID: 2258615824;
+  CONSTRUCTOR_ID: 1003796418;
   SUBCLASS_OF_ID: 2356220701;
   classType: "constructor";
   className: "InputReplyToMessage";
@@ -15093,6 +15285,7 @@ export namespace Api {
     quoteOffset?: int;
     monoforumPeerId?: Api.TypeInputPeer;
     todoItemId?: int;
+    pollOption?: bytes;
   }
   export class InputReplyToStory extends VirtualClass<{
     peer: Api.TypeInputPeer;
@@ -16192,10 +16385,11 @@ export namespace Api {
     // flags: Api.Typeunknown;
     messagesNotifyFrom?: Api.TypeReactionNotificationsFrom;
     storiesNotifyFrom?: Api.TypeReactionNotificationsFrom;
+    pollVotesNotifyFrom?: Api.TypeReactionNotificationsFrom;
     sound: Api.TypeNotificationSound;
     showPreviews: Bool;
   }> {
-  CONSTRUCTOR_ID: 1457736048;
+  CONSTRUCTOR_ID: 1910827608;
   SUBCLASS_OF_ID: 2382301265;
   classType: "constructor";
   className: "ReactionsNotifySettings";
@@ -16203,6 +16397,7 @@ export namespace Api {
     // flags: Api.Typeunknown;
     messagesNotifyFrom?: Api.TypeReactionNotificationsFrom;
     storiesNotifyFrom?: Api.TypeReactionNotificationsFrom;
+    pollVotesNotifyFrom?: Api.TypeReactionNotificationsFrom;
     sound: Api.TypeNotificationSound;
     showPreviews: Bool;
   }
@@ -17863,6 +18058,26 @@ export namespace Api {
     bgDanger?: boolean;
     bgSuccess?: boolean;
     icon?: long;
+  }
+  export class InputMessageReadMetric extends VirtualClass<{
+    msgId: int;
+    viewId: long;
+    timeInViewMs: int;
+    activeTimeInViewMs: int;
+    heightToViewportRatioPermille: int;
+    seenRangeRatioPermille: int;
+  }> {
+  CONSTRUCTOR_ID: 1076577429;
+  SUBCLASS_OF_ID: 3982122149;
+  classType: "constructor";
+  className: "InputMessageReadMetric";
+  static fromReader(reader: Reader): InputMessageReadMetric;
+    msgId: int;
+    viewId: long;
+    timeInViewMs: int;
+    activeTimeInViewMs: int;
+    heightToViewportRatioPermille: int;
+    seenRangeRatioPermille: int;
   }
   export class ResPQ extends VirtualClass<{
     nonce: int128;
@@ -20580,6 +20795,20 @@ export namespace Api {
       params: int[];
       playsLeft?: int;
     }
+    export class ComposedMessageWithAI extends VirtualClass<{
+      // flags: Api.Typeunknown;
+      resultText: Api.TypeTextWithEntities;
+      diffText?: Api.TypeTextWithEntities;
+    }> {
+    CONSTRUCTOR_ID: 2430053882;
+    SUBCLASS_OF_ID: 336069599;
+    classType: "constructor";
+    className: "messages.ComposedMessageWithAI";
+    static fromReader(reader: Reader): ComposedMessageWithAI;
+      // flags: Api.Typeunknown;
+      resultText: Api.TypeTextWithEntities;
+      diffText?: Api.TypeTextWithEntities;
+    }
   }
 
   export namespace updates {
@@ -22922,6 +23151,26 @@ export namespace Api {
       media: Api.TypeBotPreviewMedia[];
       langCodes: string[];
     }
+    export class ExportedBotToken extends VirtualClass<{
+      token: string;
+    }> {
+    CONSTRUCTOR_ID: 1012971041;
+    SUBCLASS_OF_ID: 2018077815;
+    classType: "constructor";
+    className: "bots.ExportedBotToken";
+    static fromReader(reader: Reader): ExportedBotToken;
+      token: string;
+    }
+    export class RequestedButton extends VirtualClass<{
+      webappReqId: string;
+    }> {
+    CONSTRUCTOR_ID: 4047224023;
+    SUBCLASS_OF_ID: 262010170;
+    classType: "constructor";
+    className: "bots.RequestedButton";
+    static fromReader(reader: Reader): RequestedButton;
+      webappReqId: string;
+    }
   }
 
   export namespace stories {
@@ -23326,6 +23575,7 @@ export namespace Api {
     export type TypeWebPagePreview = messages.WebPagePreview;
     export type TypeEmojiGameOutcome = messages.EmojiGameOutcome;
     export type TypeEmojiGameInfo = messages.EmojiGameUnavailable | messages.EmojiGameDiceInfo;
+    export type TypeComposedMessageWithAI = messages.ComposedMessageWithAI;
   }
 
   export namespace updates {
@@ -23479,6 +23729,8 @@ export namespace Api {
     export type TypeBotInfo = bots.BotInfo;
     export type TypePopularAppBots = bots.PopularAppBots;
     export type TypePreviewInfo = bots.PreviewInfo;
+    export type TypeExportedBotToken = bots.ExportedBotToken;
+    export type TypeRequestedButton = bots.RequestedButton;
   }
 
   export namespace stories {
@@ -27306,14 +27558,16 @@ export namespace Api {
     export class GetPollResults extends Request<Partial<{
       peer: Api.TypeEntityLike;
       msgId: MessageIDLike;
+      pollHash: long;
     }>, Api.TypeUpdates> {
-    CONSTRUCTOR_ID: 1941660731;
+    CONSTRUCTOR_ID: 3986940731;
     SUBCLASS_OF_ID: 2331323052;
     classType: "request";
     className: "messages.GetPollResults";
     static fromReader(reader: Reader): GetPollResults;
       peer: Api.TypeEntityLike;
       msgId: MessageIDLike;
+      pollHash: long;
     }
     export class GetOnlines extends Request<Partial<{
       peer: Api.TypeEntityLike;
@@ -28103,8 +28357,9 @@ export namespace Api {
       id?: int[];
       text?: Api.TypeTextWithEntities[];
       toLang: string;
+      tone?: string;
     }>, messages.TypeTranslatedText> {
-    CONSTRUCTOR_ID: 1662529584;
+    CONSTRUCTOR_ID: 2783888197;
     SUBCLASS_OF_ID: 37897192;
     classType: "request";
     className: "messages.TranslateText";
@@ -28114,6 +28369,7 @@ export namespace Api {
       id?: int[];
       text?: Api.TypeTextWithEntities[];
       toLang: string;
+      tone?: string;
     }
     export class GetUnreadReactions extends Request<Partial<{
       // flags: Api.Typeunknown;
@@ -28452,18 +28708,22 @@ export namespace Api {
     static fromReader(reader: Reader): GetDefaultHistoryTTL;
 }
     export class SendBotRequestedPeer extends Request<Partial<{
+      // flags: Api.Typeunknown;
       peer: Api.TypeEntityLike;
-      msgId: MessageIDLike;
+      msgId?: MessageIDLike;
+      webappReqId?: string;
       buttonId: int;
       requestedPeers: Api.TypeEntityLike[];
     }>, Api.TypeUpdates> {
-    CONSTRUCTOR_ID: 2444415072;
+    CONSTRUCTOR_ID: 1818030759;
     SUBCLASS_OF_ID: 2331323052;
     classType: "request";
     className: "messages.SendBotRequestedPeer";
     static fromReader(reader: Reader): SendBotRequestedPeer;
+      // flags: Api.Typeunknown;
       peer: Api.TypeEntityLike;
-      msgId: MessageIDLike;
+      msgId?: MessageIDLike;
+      webappReqId?: string;
       buttonId: int;
       requestedPeers: Api.TypeEntityLike[];
     }
@@ -29329,8 +29589,9 @@ export namespace Api {
       peer: Api.TypeEntityLike;
       id: int;
       toLang?: string;
+      tone?: string;
     }>, Api.TypeTextWithEntities> {
-    CONSTRUCTOR_ID: 2638284002;
+    CONSTRUCTOR_ID: 2881213254;
     SUBCLASS_OF_ID: 2513062661;
     classType: "request";
     className: "messages.SummarizeText";
@@ -29339,6 +29600,7 @@ export namespace Api {
       peer: Api.TypeEntityLike;
       id: int;
       toLang?: string;
+      tone?: string;
     }
     export class EditChatCreator extends Request<Partial<{
       peer: Api.TypeEntityLike;
@@ -29399,6 +29661,116 @@ export namespace Api {
     static fromReader(reader: Reader): CheckUrlAuthMatchCode;
       url: string;
       matchCode: string;
+    }
+    export class ComposeMessageWithAI extends Request<Partial<{
+      // flags: Api.Typeunknown;
+      proofread?: boolean;
+      emojify?: boolean;
+      text: Api.TypeTextWithEntities;
+      translateToLang?: string;
+      changeTone?: string;
+    }>, messages.TypeComposedMessageWithAI> {
+    CONSTRUCTOR_ID: 4248988414;
+    SUBCLASS_OF_ID: 336069599;
+    classType: "request";
+    className: "messages.ComposeMessageWithAI";
+    static fromReader(reader: Reader): ComposeMessageWithAI;
+      // flags: Api.Typeunknown;
+      proofread?: boolean;
+      emojify?: boolean;
+      text: Api.TypeTextWithEntities;
+      translateToLang?: string;
+      changeTone?: string;
+    }
+    export class ReportReadMetrics extends Request<Partial<{
+      peer: Api.TypeEntityLike;
+      metrics: Api.TypeInputMessageReadMetric[];
+    }>, Bool> {
+    CONSTRUCTOR_ID: 1080542694;
+    SUBCLASS_OF_ID: 4122188204;
+    classType: "request";
+    className: "messages.ReportReadMetrics";
+    static fromReader(reader: Reader): ReportReadMetrics;
+      peer: Api.TypeEntityLike;
+      metrics: Api.TypeInputMessageReadMetric[];
+    }
+    export class ReportMusicListen extends Request<Partial<{
+      id: Api.TypeInputDocument;
+      listenedDuration: int;
+    }>, Bool> {
+    CONSTRUCTOR_ID: 3720140825;
+    SUBCLASS_OF_ID: 4122188204;
+    classType: "request";
+    className: "messages.ReportMusicListen";
+    static fromReader(reader: Reader): ReportMusicListen;
+      id: Api.TypeInputDocument;
+      listenedDuration: int;
+    }
+    export class AddPollAnswer extends Request<Partial<{
+      peer: Api.TypeEntityLike;
+      msgId: MessageIDLike;
+      answer: Api.TypePollAnswer;
+    }>, Api.TypeUpdates> {
+    CONSTRUCTOR_ID: 431770477;
+    SUBCLASS_OF_ID: 2331323052;
+    classType: "request";
+    className: "messages.AddPollAnswer";
+    static fromReader(reader: Reader): AddPollAnswer;
+      peer: Api.TypeEntityLike;
+      msgId: MessageIDLike;
+      answer: Api.TypePollAnswer;
+    }
+    export class DeletePollAnswer extends Request<Partial<{
+      peer: Api.TypeEntityLike;
+      msgId: MessageIDLike;
+      option: bytes;
+    }>, Api.TypeUpdates> {
+    CONSTRUCTOR_ID: 2894398885;
+    SUBCLASS_OF_ID: 2331323052;
+    classType: "request";
+    className: "messages.DeletePollAnswer";
+    static fromReader(reader: Reader): DeletePollAnswer;
+      peer: Api.TypeEntityLike;
+      msgId: MessageIDLike;
+      option: bytes;
+    }
+    export class GetUnreadPollVotes extends Request<Partial<{
+      // flags: Api.Typeunknown;
+      peer: Api.TypeEntityLike;
+      topMsgId?: MessageIDLike;
+      offsetId: int;
+      addOffset: int;
+      limit: int;
+      maxId: int;
+      minId: int;
+    }>, messages.TypeMessages> {
+    CONSTRUCTOR_ID: 1126722802;
+    SUBCLASS_OF_ID: 3568569182;
+    classType: "request";
+    className: "messages.GetUnreadPollVotes";
+    static fromReader(reader: Reader): GetUnreadPollVotes;
+      // flags: Api.Typeunknown;
+      peer: Api.TypeEntityLike;
+      topMsgId?: MessageIDLike;
+      offsetId: int;
+      addOffset: int;
+      limit: int;
+      maxId: int;
+      minId: int;
+    }
+    export class ReadPollVotes extends Request<Partial<{
+      // flags: Api.Typeunknown;
+      peer: Api.TypeEntityLike;
+      topMsgId?: MessageIDLike;
+    }>, messages.TypeAffectedHistory> {
+    CONSTRUCTOR_ID: 388019416;
+    SUBCLASS_OF_ID: 743031062;
+    classType: "request";
+    className: "messages.ReadPollVotes";
+    static fromReader(reader: Reader): ReadPollVotes;
+      // flags: Api.Typeunknown;
+      peer: Api.TypeEntityLike;
+      topMsgId?: MessageIDLike;
     }
   }
 
@@ -31045,6 +31417,70 @@ export namespace Api {
     static fromReader(reader: Reader): GetBotRecommendations;
       bot: Api.TypeEntityLike;
     }
+    export class CheckUsername extends Request<Partial<{
+      username: string;
+    }>, Bool> {
+    CONSTRUCTOR_ID: 2280792475;
+    SUBCLASS_OF_ID: 4122188204;
+    classType: "request";
+    className: "bots.CheckUsername";
+    static fromReader(reader: Reader): CheckUsername;
+      username: string;
+    }
+    export class CreateBot extends Request<Partial<{
+      // flags: Api.Typeunknown;
+      viaDeeplink?: boolean;
+      name: string;
+      username: string;
+      managerId: Api.TypeEntityLike;
+    }>, Api.TypeUser> {
+    CONSTRUCTOR_ID: 3853614891;
+    SUBCLASS_OF_ID: 765557111;
+    classType: "request";
+    className: "bots.CreateBot";
+    static fromReader(reader: Reader): CreateBot;
+      // flags: Api.Typeunknown;
+      viaDeeplink?: boolean;
+      name: string;
+      username: string;
+      managerId: Api.TypeEntityLike;
+    }
+    export class ExportBotToken extends Request<Partial<{
+      bot: Api.TypeEntityLike;
+      revoke: Bool;
+    }>, bots.TypeExportedBotToken> {
+    CONSTRUCTOR_ID: 3171785195;
+    SUBCLASS_OF_ID: 2018077815;
+    classType: "request";
+    className: "bots.ExportBotToken";
+    static fromReader(reader: Reader): ExportBotToken;
+      bot: Api.TypeEntityLike;
+      revoke: Bool;
+    }
+    export class RequestWebViewButton extends Request<Partial<{
+      userId: Api.TypeEntityLike;
+      button: Api.TypeKeyboardButton;
+    }>, bots.TypeRequestedButton> {
+    CONSTRUCTOR_ID: 832742238;
+    SUBCLASS_OF_ID: 262010170;
+    classType: "request";
+    className: "bots.RequestWebViewButton";
+    static fromReader(reader: Reader): RequestWebViewButton;
+      userId: Api.TypeEntityLike;
+      button: Api.TypeKeyboardButton;
+    }
+    export class GetRequestedWebViewButton extends Request<Partial<{
+      bot: Api.TypeEntityLike;
+      webappReqId: string;
+    }>, Api.TypeKeyboardButton> {
+    CONSTRUCTOR_ID: 3206920179;
+    SUBCLASS_OF_ID: 195916963;
+    classType: "request";
+    className: "bots.GetRequestedWebViewButton";
+    static fromReader(reader: Reader): GetRequestedWebViewButton;
+      bot: Api.TypeEntityLike;
+      webappReqId: string;
+    }
   }
 
   export namespace payments {
@@ -31702,6 +32138,7 @@ export namespace Api {
       sortByPrice?: boolean;
       sortByNum?: boolean;
       forCraft?: boolean;
+      starsOnly?: boolean;
       attributesHash?: long;
       giftId: long;
       attributes?: Api.TypeStarGiftAttributeId[];
@@ -31717,6 +32154,7 @@ export namespace Api {
       sortByPrice?: boolean;
       sortByNum?: boolean;
       forCraft?: boolean;
+      starsOnly?: boolean;
       attributesHash?: long;
       giftId: long;
       attributes?: Api.TypeStarGiftAttributeId[];
@@ -33065,8 +33503,9 @@ export namespace Api {
       fwdFromId?: Api.TypeEntityLike;
       fwdFromStory?: int;
       albums?: int[];
+      music?: Api.TypeInputDocument;
     }>, Api.TypeUpdates> {
-    CONSTRUCTOR_ID: 1937752812;
+    CONSTRUCTOR_ID: 2409523352;
     SUBCLASS_OF_ID: 2331323052;
     classType: "request";
     className: "stories.SendStory";
@@ -33086,6 +33525,7 @@ export namespace Api {
       fwdFromId?: Api.TypeEntityLike;
       fwdFromStory?: int;
       albums?: int[];
+      music?: Api.TypeInputDocument;
     }
     export class EditStory extends Request<Partial<{
       // flags: Api.Typeunknown;
@@ -33096,8 +33536,9 @@ export namespace Api {
       caption?: string;
       entities?: Api.TypeMessageEntity[];
       privacyRules?: Api.TypeInputPrivacyRule[];
+      music?: Api.TypeInputDocument;
     }>, Api.TypeUpdates> {
-    CONSTRUCTOR_ID: 3045308998;
+    CONSTRUCTOR_ID: 744728363;
     SUBCLASS_OF_ID: 2331323052;
     classType: "request";
     className: "stories.EditStory";
@@ -33110,6 +33551,7 @@ export namespace Api {
       caption?: string;
       entities?: Api.TypeMessageEntity[];
       privacyRules?: Api.TypeInputPrivacyRule[];
+      music?: Api.TypeInputDocument;
     }
     export class DeleteStories extends Request<Partial<{
       peer: Api.TypeEntityLike;
@@ -33709,7 +34151,7 @@ export namespace Api {
   export type TypeChatPhoto = ChatPhotoEmpty | ChatPhoto;
   export type TypeMessage = MessageEmpty | Message | MessageService;
   export type TypeMessageMedia = MessageMediaEmpty | MessageMediaPhoto | MessageMediaGeo | MessageMediaContact | MessageMediaUnsupported | MessageMediaDocument | MessageMediaWebPage | MessageMediaVenue | MessageMediaGame | MessageMediaInvoice | MessageMediaGeoLive | MessageMediaPoll | MessageMediaDice | MessageMediaStory | MessageMediaGiveaway | MessageMediaGiveawayResults | MessageMediaPaidMedia | MessageMediaToDo | MessageMediaVideoStream;
-  export type TypeMessageAction = MessageActionEmpty | MessageActionChatCreate | MessageActionChatEditTitle | MessageActionChatEditPhoto | MessageActionChatDeletePhoto | MessageActionChatAddUser | MessageActionChatDeleteUser | MessageActionChatJoinedByLink | MessageActionChannelCreate | MessageActionChatMigrateTo | MessageActionChannelMigrateFrom | MessageActionPinMessage | MessageActionHistoryClear | MessageActionGameScore | MessageActionPaymentSentMe | MessageActionPaymentSent | MessageActionPhoneCall | MessageActionScreenshotTaken | MessageActionCustomAction | MessageActionBotAllowed | MessageActionSecureValuesSentMe | MessageActionSecureValuesSent | MessageActionContactSignUp | MessageActionGeoProximityReached | MessageActionGroupCall | MessageActionInviteToGroupCall | MessageActionSetMessagesTTL | MessageActionGroupCallScheduled | MessageActionSetChatTheme | MessageActionChatJoinedByRequest | MessageActionWebViewDataSentMe | MessageActionWebViewDataSent | MessageActionGiftPremium | MessageActionTopicCreate | MessageActionTopicEdit | MessageActionSuggestProfilePhoto | MessageActionRequestedPeer | MessageActionSetChatWallPaper | MessageActionGiftCode | MessageActionGiveawayLaunch | MessageActionGiveawayResults | MessageActionBoostApply | MessageActionRequestedPeerSentMe | MessageActionPaymentRefunded | MessageActionGiftStars | MessageActionPrizeStars | MessageActionStarGift | MessageActionStarGiftUnique | MessageActionPaidMessagesRefunded | MessageActionPaidMessagesPrice | MessageActionConferenceCall | MessageActionTodoCompletions | MessageActionTodoAppendTasks | MessageActionSuggestedPostApproval | MessageActionSuggestedPostSuccess | MessageActionSuggestedPostRefund | MessageActionGiftTon | MessageActionSuggestBirthday | MessageActionStarGiftPurchaseOffer | MessageActionStarGiftPurchaseOfferDeclined | MessageActionNewCreatorPending | MessageActionChangeCreator | MessageActionNoForwardsToggle | MessageActionNoForwardsRequest;
+  export type TypeMessageAction = MessageActionEmpty | MessageActionChatCreate | MessageActionChatEditTitle | MessageActionChatEditPhoto | MessageActionChatDeletePhoto | MessageActionChatAddUser | MessageActionChatDeleteUser | MessageActionChatJoinedByLink | MessageActionChannelCreate | MessageActionChatMigrateTo | MessageActionChannelMigrateFrom | MessageActionPinMessage | MessageActionHistoryClear | MessageActionGameScore | MessageActionPaymentSentMe | MessageActionPaymentSent | MessageActionPhoneCall | MessageActionScreenshotTaken | MessageActionCustomAction | MessageActionBotAllowed | MessageActionSecureValuesSentMe | MessageActionSecureValuesSent | MessageActionContactSignUp | MessageActionGeoProximityReached | MessageActionGroupCall | MessageActionInviteToGroupCall | MessageActionSetMessagesTTL | MessageActionGroupCallScheduled | MessageActionSetChatTheme | MessageActionChatJoinedByRequest | MessageActionWebViewDataSentMe | MessageActionWebViewDataSent | MessageActionGiftPremium | MessageActionTopicCreate | MessageActionTopicEdit | MessageActionSuggestProfilePhoto | MessageActionRequestedPeer | MessageActionSetChatWallPaper | MessageActionGiftCode | MessageActionGiveawayLaunch | MessageActionGiveawayResults | MessageActionBoostApply | MessageActionRequestedPeerSentMe | MessageActionPaymentRefunded | MessageActionGiftStars | MessageActionPrizeStars | MessageActionStarGift | MessageActionStarGiftUnique | MessageActionPaidMessagesRefunded | MessageActionPaidMessagesPrice | MessageActionConferenceCall | MessageActionTodoCompletions | MessageActionTodoAppendTasks | MessageActionSuggestedPostApproval | MessageActionSuggestedPostSuccess | MessageActionSuggestedPostRefund | MessageActionGiftTon | MessageActionSuggestBirthday | MessageActionStarGiftPurchaseOffer | MessageActionStarGiftPurchaseOfferDeclined | MessageActionNewCreatorPending | MessageActionChangeCreator | MessageActionNoForwardsToggle | MessageActionNoForwardsRequest | MessageActionPollAppendAnswer | MessageActionPollDeleteAnswer | MessageActionManagedBotCreated;
   export type TypeDialog = Dialog | DialogFolder;
   export type TypePhoto = PhotoEmpty | Photo;
   export type TypePhotoSize = PhotoSizeEmpty | PhotoSize | PhotoCachedSize | PhotoStrippedSize | PhotoSizeProgressive | PhotoPathSize;
@@ -33724,8 +34166,8 @@ export namespace Api {
   export type TypeContact = Contact;
   export type TypeImportedContact = ImportedContact;
   export type TypeContactStatus = ContactStatus;
-  export type TypeMessagesFilter = InputMessagesFilterEmpty | InputMessagesFilterPhotos | InputMessagesFilterVideo | InputMessagesFilterPhotoVideo | InputMessagesFilterDocument | InputMessagesFilterUrl | InputMessagesFilterGif | InputMessagesFilterVoice | InputMessagesFilterMusic | InputMessagesFilterChatPhotos | InputMessagesFilterPhoneCalls | InputMessagesFilterRoundVoice | InputMessagesFilterRoundVideo | InputMessagesFilterMyMentions | InputMessagesFilterGeo | InputMessagesFilterContacts | InputMessagesFilterPinned;
-  export type TypeUpdate = UpdateNewMessage | UpdateMessageID | UpdateDeleteMessages | UpdateUserTyping | UpdateChatUserTyping | UpdateChatParticipants | UpdateUserStatus | UpdateUserName | UpdateNewAuthorization | UpdateNewEncryptedMessage | UpdateEncryptedChatTyping | UpdateEncryption | UpdateEncryptedMessagesRead | UpdateChatParticipantAdd | UpdateChatParticipantDelete | UpdateDcOptions | UpdateNotifySettings | UpdateServiceNotification | UpdatePrivacy | UpdateUserPhone | UpdateReadHistoryInbox | UpdateReadHistoryOutbox | UpdateWebPage | UpdateReadMessagesContents | UpdateChannelTooLong | UpdateChannel | UpdateNewChannelMessage | UpdateReadChannelInbox | UpdateDeleteChannelMessages | UpdateChannelMessageViews | UpdateChatParticipantAdmin | UpdateNewStickerSet | UpdateStickerSetsOrder | UpdateStickerSets | UpdateSavedGifs | UpdateBotInlineQuery | UpdateBotInlineSend | UpdateEditChannelMessage | UpdateBotCallbackQuery | UpdateEditMessage | UpdateInlineBotCallbackQuery | UpdateReadChannelOutbox | UpdateDraftMessage | UpdateReadFeaturedStickers | UpdateRecentStickers | UpdateConfig | UpdatePtsChanged | UpdateChannelWebPage | UpdateDialogPinned | UpdatePinnedDialogs | UpdateBotWebhookJSON | UpdateBotWebhookJSONQuery | UpdateBotShippingQuery | UpdateBotPrecheckoutQuery | UpdatePhoneCall | UpdateLangPackTooLong | UpdateLangPack | UpdateFavedStickers | UpdateChannelReadMessagesContents | UpdateContactsReset | UpdateChannelAvailableMessages | UpdateDialogUnreadMark | UpdateMessagePoll | UpdateChatDefaultBannedRights | UpdateFolderPeers | UpdatePeerSettings | UpdatePeerLocated | UpdateNewScheduledMessage | UpdateDeleteScheduledMessages | UpdateTheme | UpdateGeoLiveViewed | UpdateLoginToken | UpdateMessagePollVote | UpdateDialogFilter | UpdateDialogFilterOrder | UpdateDialogFilters | UpdatePhoneCallSignalingData | UpdateChannelMessageForwards | UpdateReadChannelDiscussionInbox | UpdateReadChannelDiscussionOutbox | UpdatePeerBlocked | UpdateChannelUserTyping | UpdatePinnedMessages | UpdatePinnedChannelMessages | UpdateChat | UpdateGroupCallParticipants | UpdateGroupCall | UpdatePeerHistoryTTL | UpdateChatParticipant | UpdateChannelParticipant | UpdateBotStopped | UpdateGroupCallConnection | UpdateBotCommands | UpdatePendingJoinRequests | UpdateBotChatInviteRequester | UpdateMessageReactions | UpdateAttachMenuBots | UpdateWebViewResultSent | UpdateBotMenuButton | UpdateSavedRingtones | UpdateTranscribedAudio | UpdateReadFeaturedEmojiStickers | UpdateUserEmojiStatus | UpdateRecentEmojiStatuses | UpdateRecentReactions | UpdateMoveStickerSetToTop | UpdateMessageExtendedMedia | UpdateUser | UpdateAutoSaveSettings | UpdateStory | UpdateReadStories | UpdateStoryID | UpdateStoriesStealthMode | UpdateSentStoryReaction | UpdateBotChatBoost | UpdateChannelViewForumAsMessages | UpdatePeerWallpaper | UpdateBotMessageReaction | UpdateBotMessageReactions | UpdateSavedDialogPinned | UpdatePinnedSavedDialogs | UpdateSavedReactionTags | UpdateSmsJob | UpdateQuickReplies | UpdateNewQuickReply | UpdateDeleteQuickReply | UpdateQuickReplyMessage | UpdateDeleteQuickReplyMessages | UpdateBotBusinessConnect | UpdateBotNewBusinessMessage | UpdateBotEditBusinessMessage | UpdateBotDeleteBusinessMessage | UpdateNewStoryReaction | UpdateStarsBalance | UpdateBusinessBotCallbackQuery | UpdateStarsRevenueStatus | UpdateBotPurchasedPaidMedia | UpdatePaidReactionPrivacy | UpdateSentPhoneCode | UpdateGroupCallChainBlocks | UpdateReadMonoForumInbox | UpdateReadMonoForumOutbox | UpdateMonoForumNoPaidException | UpdateGroupCallMessage | UpdateGroupCallEncryptedMessage | UpdatePinnedForumTopic | UpdatePinnedForumTopics | UpdateDeleteGroupCallMessages | UpdateStarGiftAuctionState | UpdateStarGiftAuctionUserState | UpdateEmojiGameInfo | UpdateStarGiftCraftFail | UpdateChatParticipantRank;
+  export type TypeMessagesFilter = InputMessagesFilterEmpty | InputMessagesFilterPhotos | InputMessagesFilterVideo | InputMessagesFilterPhotoVideo | InputMessagesFilterDocument | InputMessagesFilterUrl | InputMessagesFilterGif | InputMessagesFilterVoice | InputMessagesFilterMusic | InputMessagesFilterChatPhotos | InputMessagesFilterPhoneCalls | InputMessagesFilterRoundVoice | InputMessagesFilterRoundVideo | InputMessagesFilterMyMentions | InputMessagesFilterGeo | InputMessagesFilterContacts | InputMessagesFilterPinned | InputMessagesFilterPoll;
+  export type TypeUpdate = UpdateNewMessage | UpdateMessageID | UpdateDeleteMessages | UpdateUserTyping | UpdateChatUserTyping | UpdateChatParticipants | UpdateUserStatus | UpdateUserName | UpdateNewAuthorization | UpdateNewEncryptedMessage | UpdateEncryptedChatTyping | UpdateEncryption | UpdateEncryptedMessagesRead | UpdateChatParticipantAdd | UpdateChatParticipantDelete | UpdateDcOptions | UpdateNotifySettings | UpdateServiceNotification | UpdatePrivacy | UpdateUserPhone | UpdateReadHistoryInbox | UpdateReadHistoryOutbox | UpdateWebPage | UpdateReadMessagesContents | UpdateChannelTooLong | UpdateChannel | UpdateNewChannelMessage | UpdateReadChannelInbox | UpdateDeleteChannelMessages | UpdateChannelMessageViews | UpdateChatParticipantAdmin | UpdateNewStickerSet | UpdateStickerSetsOrder | UpdateStickerSets | UpdateSavedGifs | UpdateBotInlineQuery | UpdateBotInlineSend | UpdateEditChannelMessage | UpdateBotCallbackQuery | UpdateEditMessage | UpdateInlineBotCallbackQuery | UpdateReadChannelOutbox | UpdateDraftMessage | UpdateReadFeaturedStickers | UpdateRecentStickers | UpdateConfig | UpdatePtsChanged | UpdateChannelWebPage | UpdateDialogPinned | UpdatePinnedDialogs | UpdateBotWebhookJSON | UpdateBotWebhookJSONQuery | UpdateBotShippingQuery | UpdateBotPrecheckoutQuery | UpdatePhoneCall | UpdateLangPackTooLong | UpdateLangPack | UpdateFavedStickers | UpdateChannelReadMessagesContents | UpdateContactsReset | UpdateChannelAvailableMessages | UpdateDialogUnreadMark | UpdateMessagePoll | UpdateChatDefaultBannedRights | UpdateFolderPeers | UpdatePeerSettings | UpdatePeerLocated | UpdateNewScheduledMessage | UpdateDeleteScheduledMessages | UpdateTheme | UpdateGeoLiveViewed | UpdateLoginToken | UpdateMessagePollVote | UpdateDialogFilter | UpdateDialogFilterOrder | UpdateDialogFilters | UpdatePhoneCallSignalingData | UpdateChannelMessageForwards | UpdateReadChannelDiscussionInbox | UpdateReadChannelDiscussionOutbox | UpdatePeerBlocked | UpdateChannelUserTyping | UpdatePinnedMessages | UpdatePinnedChannelMessages | UpdateChat | UpdateGroupCallParticipants | UpdateGroupCall | UpdatePeerHistoryTTL | UpdateChatParticipant | UpdateChannelParticipant | UpdateBotStopped | UpdateGroupCallConnection | UpdateBotCommands | UpdatePendingJoinRequests | UpdateBotChatInviteRequester | UpdateMessageReactions | UpdateAttachMenuBots | UpdateWebViewResultSent | UpdateBotMenuButton | UpdateSavedRingtones | UpdateTranscribedAudio | UpdateReadFeaturedEmojiStickers | UpdateUserEmojiStatus | UpdateRecentEmojiStatuses | UpdateRecentReactions | UpdateMoveStickerSetToTop | UpdateMessageExtendedMedia | UpdateUser | UpdateAutoSaveSettings | UpdateStory | UpdateReadStories | UpdateStoryID | UpdateStoriesStealthMode | UpdateSentStoryReaction | UpdateBotChatBoost | UpdateChannelViewForumAsMessages | UpdatePeerWallpaper | UpdateBotMessageReaction | UpdateBotMessageReactions | UpdateSavedDialogPinned | UpdatePinnedSavedDialogs | UpdateSavedReactionTags | UpdateSmsJob | UpdateQuickReplies | UpdateNewQuickReply | UpdateDeleteQuickReply | UpdateQuickReplyMessage | UpdateDeleteQuickReplyMessages | UpdateBotBusinessConnect | UpdateBotNewBusinessMessage | UpdateBotEditBusinessMessage | UpdateBotDeleteBusinessMessage | UpdateNewStoryReaction | UpdateStarsBalance | UpdateBusinessBotCallbackQuery | UpdateStarsRevenueStatus | UpdateBotPurchasedPaidMedia | UpdatePaidReactionPrivacy | UpdateSentPhoneCode | UpdateGroupCallChainBlocks | UpdateReadMonoForumInbox | UpdateReadMonoForumOutbox | UpdateMonoForumNoPaidException | UpdateGroupCallMessage | UpdateGroupCallEncryptedMessage | UpdatePinnedForumTopic | UpdatePinnedForumTopics | UpdateDeleteGroupCallMessages | UpdateStarGiftAuctionState | UpdateStarGiftAuctionUserState | UpdateEmojiGameInfo | UpdateStarGiftCraftFail | UpdateChatParticipantRank | UpdateManagedBot;
   export type TypeUpdates = UpdatesTooLong | UpdateShortMessage | UpdateShortChatMessage | UpdateShort | UpdatesCombined | Updates | UpdateShortSentMessage;
   export type TypeDcOption = DcOption;
   export type TypeConfig = Config;
@@ -33758,7 +34200,7 @@ export namespace Api {
   export type TypeKeyboardButton = KeyboardButton | KeyboardButtonUrl | KeyboardButtonCallback | KeyboardButtonRequestPhone | KeyboardButtonRequestGeoLocation | KeyboardButtonSwitchInline | KeyboardButtonGame | KeyboardButtonBuy | KeyboardButtonUrlAuth | InputKeyboardButtonUrlAuth | KeyboardButtonRequestPoll | InputKeyboardButtonUserProfile | KeyboardButtonUserProfile | KeyboardButtonWebView | KeyboardButtonSimpleWebView | KeyboardButtonRequestPeer | InputKeyboardButtonRequestPeer | KeyboardButtonCopy;
   export type TypeKeyboardButtonRow = KeyboardButtonRow;
   export type TypeReplyMarkup = ReplyKeyboardHide | ReplyKeyboardForceReply | ReplyKeyboardMarkup | ReplyInlineMarkup;
-  export type TypeMessageEntity = MessageEntityUnknown | MessageEntityMention | MessageEntityHashtag | MessageEntityBotCommand | MessageEntityUrl | MessageEntityEmail | MessageEntityBold | MessageEntityItalic | MessageEntityCode | MessageEntityPre | MessageEntityTextUrl | MessageEntityMentionName | InputMessageEntityMentionName | MessageEntityPhone | MessageEntityCashtag | MessageEntityUnderline | MessageEntityStrike | MessageEntityBankCard | MessageEntitySpoiler | MessageEntityCustomEmoji | MessageEntityBlockquote | MessageEntityFormattedDate;
+  export type TypeMessageEntity = MessageEntityUnknown | MessageEntityMention | MessageEntityHashtag | MessageEntityBotCommand | MessageEntityUrl | MessageEntityEmail | MessageEntityBold | MessageEntityItalic | MessageEntityCode | MessageEntityPre | MessageEntityTextUrl | MessageEntityMentionName | InputMessageEntityMentionName | MessageEntityPhone | MessageEntityCashtag | MessageEntityUnderline | MessageEntityStrike | MessageEntityBankCard | MessageEntitySpoiler | MessageEntityCustomEmoji | MessageEntityBlockquote | MessageEntityFormattedDate | MessageEntityDiffInsert | MessageEntityDiffReplace | MessageEntityDiffDelete;
   export type TypeInputChannel = InputChannelEmpty | InputChannel | InputChannelFromMessage;
   export type TypeMessageRange = MessageRange;
   export type TypeChannelMessagesFilter = ChannelMessagesFilterEmpty | ChannelMessagesFilter;
@@ -33845,7 +34287,7 @@ export namespace Api {
   export type TypePageListOrderedItem = PageListOrderedItemText | PageListOrderedItemBlocks;
   export type TypePageRelatedArticle = PageRelatedArticle;
   export type TypePage = Page;
-  export type TypePollAnswer = PollAnswer;
+  export type TypePollAnswer = PollAnswer | InputPollAnswer;
   export type TypePoll = Poll;
   export type TypePollAnswerVoters = PollAnswerVoters;
   export type TypePollResults = PollResults;
@@ -33934,7 +34376,7 @@ export namespace Api {
   export type TypeForumTopic = ForumTopicDeleted | ForumTopic;
   export type TypeDefaultHistoryTTL = DefaultHistoryTTL;
   export type TypeExportedContactToken = ExportedContactToken;
-  export type TypeRequestPeerType = RequestPeerTypeUser | RequestPeerTypeChat | RequestPeerTypeBroadcast;
+  export type TypeRequestPeerType = RequestPeerTypeUser | RequestPeerTypeChat | RequestPeerTypeBroadcast | RequestPeerTypeCreateBot;
   export type TypeEmojiList = EmojiListNotModified | EmojiList;
   export type TypeEmojiGroup = EmojiGroup | EmojiGroupGreeting | EmojiGroupPremium;
   export type TypeTextWithEntities = TextWithEntities;
@@ -34061,6 +34503,7 @@ export namespace Api {
   export type TypeStarGiftAuctionRound = StarGiftAuctionRound | StarGiftAuctionRoundExtendable;
   export type TypeStarGiftAttributeRarity = StarGiftAttributeRarity | StarGiftAttributeRarityUncommon | StarGiftAttributeRarityRare | StarGiftAttributeRarityEpic | StarGiftAttributeRarityLegendary;
   export type TypeKeyboardButtonStyle = KeyboardButtonStyle;
+  export type TypeInputMessageReadMetric = InputMessageReadMetric;
   export type TypeResPQ = ResPQ;
   export type TypeP_Q_inner_data = PQInnerData | PQInnerDataDc | PQInnerDataTemp | PQInnerDataTempDc;
   export type TypeBindAuthKeyInner = BindAuthKeyInner;
@@ -34093,13 +34536,13 @@ export namespace Api {
     | account.RegisterDevice | account.UnregisterDevice | account.UpdateNotifySettings | account.GetNotifySettings | account.ResetNotifySettings | account.UpdateProfile | account.UpdateStatus | account.GetWallPapers | account.ReportPeer | account.CheckUsername | account.UpdateUsername | account.GetPrivacy | account.SetPrivacy | account.DeleteAccount | account.GetAccountTTL | account.SetAccountTTL | account.SendChangePhoneCode | account.ChangePhone | account.UpdateDeviceLocked | account.GetAuthorizations | account.ResetAuthorization | account.GetPassword | account.GetPasswordSettings | account.UpdatePasswordSettings | account.SendConfirmPhoneCode | account.ConfirmPhone | account.GetTmpPassword | account.GetWebAuthorizations | account.ResetWebAuthorization | account.ResetWebAuthorizations | account.GetAllSecureValues | account.GetSecureValue | account.SaveSecureValue | account.DeleteSecureValue | account.GetAuthorizationForm | account.AcceptAuthorization | account.SendVerifyPhoneCode | account.VerifyPhone | account.SendVerifyEmailCode | account.VerifyEmail | account.InitTakeoutSession | account.FinishTakeoutSession | account.ConfirmPasswordEmail | account.ResendPasswordEmail | account.CancelPasswordEmail | account.GetContactSignUpNotification | account.SetContactSignUpNotification | account.GetNotifyExceptions | account.GetWallPaper | account.UploadWallPaper | account.SaveWallPaper | account.InstallWallPaper | account.ResetWallPapers | account.GetAutoDownloadSettings | account.SaveAutoDownloadSettings | account.UploadTheme | account.CreateTheme | account.UpdateTheme | account.SaveTheme | account.InstallTheme | account.GetTheme | account.GetThemes | account.SetContentSettings | account.GetContentSettings | account.GetMultiWallPapers | account.GetGlobalPrivacySettings | account.SetGlobalPrivacySettings | account.ReportProfilePhoto | account.ResetPassword | account.DeclinePasswordReset | account.GetChatThemes | account.SetAuthorizationTTL | account.ChangeAuthorizationSettings | account.GetSavedRingtones | account.SaveRingtone | account.UploadRingtone | account.UpdateEmojiStatus | account.GetDefaultEmojiStatuses | account.GetRecentEmojiStatuses | account.ClearRecentEmojiStatuses | account.ReorderUsernames | account.ToggleUsername | account.GetDefaultProfilePhotoEmojis | account.GetDefaultGroupPhotoEmojis | account.GetAutoSaveSettings | account.SaveAutoSaveSettings | account.DeleteAutoSaveExceptions | account.InvalidateSignInCodes | account.UpdateColor | account.GetDefaultBackgroundEmojis | account.GetChannelDefaultEmojiStatuses | account.GetChannelRestrictedStatusEmojis | account.UpdateBusinessWorkHours | account.UpdateBusinessLocation | account.UpdateBusinessGreetingMessage | account.UpdateBusinessAwayMessage | account.UpdateConnectedBot | account.GetConnectedBots | account.GetBotBusinessConnection | account.UpdateBusinessIntro | account.ToggleConnectedBotPaused | account.DisablePeerConnectedBot | account.UpdateBirthday | account.CreateBusinessChatLink | account.EditBusinessChatLink | account.DeleteBusinessChatLink | account.GetBusinessChatLinks | account.ResolveBusinessChatLink | account.UpdatePersonalChannel | account.ToggleSponsoredMessages | account.GetReactionsNotifySettings | account.SetReactionsNotifySettings | account.GetCollectibleEmojiStatuses | account.GetPaidMessagesRevenue | account.ToggleNoPaidMessagesException | account.SetMainProfileTab | account.SaveMusic | account.GetSavedMusicIds | account.GetUniqueGiftChatThemes | account.InitPasskeyRegistration | account.RegisterPasskey | account.GetPasskeys | account.DeletePasskey
     | users.GetUsers | users.GetFullUser | users.SetSecureValueErrors | users.GetRequirementsToContact | users.GetSavedMusic | users.GetSavedMusicByID | users.SuggestBirthday
     | contacts.GetContactIDs | contacts.GetStatuses | contacts.GetContacts | contacts.ImportContacts | contacts.DeleteContacts | contacts.DeleteByPhones | contacts.Block | contacts.Unblock | contacts.GetBlocked | contacts.Search | contacts.ResolveUsername | contacts.GetTopPeers | contacts.ResetTopPeerRating | contacts.ResetSaved | contacts.GetSaved | contacts.ToggleTopPeers | contacts.AddContact | contacts.AcceptContact | contacts.GetLocated | contacts.BlockFromReplies | contacts.ResolvePhone | contacts.ExportContactToken | contacts.ImportContactToken | contacts.EditCloseFriends | contacts.SetBlocked | contacts.GetBirthdays | contacts.GetSponsoredPeers | contacts.UpdateContactNote
-    | messages.GetMessages | messages.GetDialogs | messages.GetHistory | messages.Search | messages.ReadHistory | messages.DeleteHistory | messages.DeleteMessages | messages.ReceivedMessages | messages.SetTyping | messages.SendMessage | messages.SendMedia | messages.ForwardMessages | messages.ReportSpam | messages.GetPeerSettings | messages.Report | messages.GetChats | messages.GetFullChat | messages.EditChatTitle | messages.EditChatPhoto | messages.AddChatUser | messages.DeleteChatUser | messages.CreateChat | messages.GetDhConfig | messages.RequestEncryption | messages.AcceptEncryption | messages.DiscardEncryption | messages.SetEncryptedTyping | messages.ReadEncryptedHistory | messages.SendEncrypted | messages.SendEncryptedFile | messages.SendEncryptedService | messages.ReceivedQueue | messages.ReportEncryptedSpam | messages.ReadMessageContents | messages.GetStickers | messages.GetAllStickers | messages.GetWebPagePreview | messages.ExportChatInvite | messages.CheckChatInvite | messages.ImportChatInvite | messages.GetStickerSet | messages.InstallStickerSet | messages.UninstallStickerSet | messages.StartBot | messages.GetMessagesViews | messages.EditChatAdmin | messages.MigrateChat | messages.SearchGlobal | messages.ReorderStickerSets | messages.GetDocumentByHash | messages.GetSavedGifs | messages.SaveGif | messages.GetInlineBotResults | messages.SetInlineBotResults | messages.SendInlineBotResult | messages.GetMessageEditData | messages.EditMessage | messages.EditInlineBotMessage | messages.GetBotCallbackAnswer | messages.SetBotCallbackAnswer | messages.GetPeerDialogs | messages.SaveDraft | messages.GetAllDrafts | messages.GetFeaturedStickers | messages.ReadFeaturedStickers | messages.GetRecentStickers | messages.SaveRecentSticker | messages.ClearRecentStickers | messages.GetArchivedStickers | messages.GetMaskStickers | messages.GetAttachedStickers | messages.SetGameScore | messages.SetInlineGameScore | messages.GetGameHighScores | messages.GetInlineGameHighScores | messages.GetCommonChats | messages.GetWebPage | messages.ToggleDialogPin | messages.ReorderPinnedDialogs | messages.GetPinnedDialogs | messages.SetBotShippingResults | messages.SetBotPrecheckoutResults | messages.UploadMedia | messages.SendScreenshotNotification | messages.GetFavedStickers | messages.FaveSticker | messages.GetUnreadMentions | messages.ReadMentions | messages.GetRecentLocations | messages.SendMultiMedia | messages.UploadEncryptedFile | messages.SearchStickerSets | messages.GetSplitRanges | messages.MarkDialogUnread | messages.GetDialogUnreadMarks | messages.ClearAllDrafts | messages.UpdatePinnedMessage | messages.SendVote | messages.GetPollResults | messages.GetOnlines | messages.EditChatAbout | messages.EditChatDefaultBannedRights | messages.GetEmojiKeywords | messages.GetEmojiKeywordsDifference | messages.GetEmojiKeywordsLanguages | messages.GetEmojiURL | messages.GetSearchCounters | messages.RequestUrlAuth | messages.AcceptUrlAuth | messages.HidePeerSettingsBar | messages.GetScheduledHistory | messages.GetScheduledMessages | messages.SendScheduledMessages | messages.DeleteScheduledMessages | messages.GetPollVotes | messages.ToggleStickerSets | messages.GetDialogFilters | messages.GetSuggestedDialogFilters | messages.UpdateDialogFilter | messages.UpdateDialogFiltersOrder | messages.GetOldFeaturedStickers | messages.GetReplies | messages.GetDiscussionMessage | messages.ReadDiscussion | messages.UnpinAllMessages | messages.DeleteChat | messages.DeletePhoneCallHistory | messages.CheckHistoryImport | messages.InitHistoryImport | messages.UploadImportedMedia | messages.StartHistoryImport | messages.GetExportedChatInvites | messages.GetExportedChatInvite | messages.EditExportedChatInvite | messages.DeleteRevokedExportedChatInvites | messages.DeleteExportedChatInvite | messages.GetAdminsWithInvites | messages.GetChatInviteImporters | messages.SetHistoryTTL | messages.CheckHistoryImportPeer | messages.SetChatTheme | messages.GetMessageReadParticipants | messages.GetSearchResultsCalendar | messages.GetSearchResultsPositions | messages.HideChatJoinRequest | messages.HideAllChatJoinRequests | messages.ToggleNoForwards | messages.SaveDefaultSendAs | messages.SendReaction | messages.GetMessagesReactions | messages.GetMessageReactionsList | messages.SetChatAvailableReactions | messages.GetAvailableReactions | messages.SetDefaultReaction | messages.TranslateText | messages.GetUnreadReactions | messages.ReadReactions | messages.SearchSentMedia | messages.GetAttachMenuBots | messages.GetAttachMenuBot | messages.ToggleBotInAttachMenu | messages.RequestWebView | messages.ProlongWebView | messages.RequestSimpleWebView | messages.SendWebViewResultMessage | messages.SendWebViewData | messages.TranscribeAudio | messages.RateTranscribedAudio | messages.GetCustomEmojiDocuments | messages.GetEmojiStickers | messages.GetFeaturedEmojiStickers | messages.ReportReaction | messages.GetTopReactions | messages.GetRecentReactions | messages.ClearRecentReactions | messages.GetExtendedMedia | messages.SetDefaultHistoryTTL | messages.GetDefaultHistoryTTL | messages.SendBotRequestedPeer | messages.GetEmojiGroups | messages.GetEmojiStatusGroups | messages.GetEmojiProfilePhotoGroups | messages.SearchCustomEmoji | messages.TogglePeerTranslations | messages.GetBotApp | messages.RequestAppWebView | messages.SetChatWallPaper | messages.SearchEmojiStickerSets | messages.GetSavedDialogs | messages.GetSavedHistory | messages.DeleteSavedHistory | messages.GetPinnedSavedDialogs | messages.ToggleSavedDialogPin | messages.ReorderPinnedSavedDialogs | messages.GetSavedReactionTags | messages.UpdateSavedReactionTag | messages.GetDefaultTagReactions | messages.GetOutboxReadDate | messages.GetQuickReplies | messages.ReorderQuickReplies | messages.CheckQuickReplyShortcut | messages.EditQuickReplyShortcut | messages.DeleteQuickReplyShortcut | messages.GetQuickReplyMessages | messages.SendQuickReplyMessages | messages.DeleteQuickReplyMessages | messages.ToggleDialogFilterTags | messages.GetMyStickers | messages.GetEmojiStickerGroups | messages.GetAvailableEffects | messages.EditFactCheck | messages.DeleteFactCheck | messages.GetFactCheck | messages.RequestMainWebView | messages.SendPaidReaction | messages.TogglePaidReactionPrivacy | messages.GetPaidReactionPrivacy | messages.ViewSponsoredMessage | messages.ClickSponsoredMessage | messages.ReportSponsoredMessage | messages.GetSponsoredMessages | messages.SavePreparedInlineMessage | messages.GetPreparedInlineMessage | messages.SearchStickers | messages.ReportMessagesDelivery | messages.GetSavedDialogsByID | messages.ReadSavedHistory | messages.ToggleTodoCompleted | messages.AppendTodoList | messages.ToggleSuggestedPostApproval | messages.GetForumTopics | messages.GetForumTopicsByID | messages.EditForumTopic | messages.UpdatePinnedForumTopic | messages.ReorderPinnedForumTopics | messages.CreateForumTopic | messages.DeleteTopicHistory | messages.GetEmojiGameInfo | messages.SummarizeText | messages.EditChatCreator | messages.GetFutureChatCreatorAfterLeave | messages.EditChatParticipantRank | messages.DeclineUrlAuth | messages.CheckUrlAuthMatchCode
+    | messages.GetMessages | messages.GetDialogs | messages.GetHistory | messages.Search | messages.ReadHistory | messages.DeleteHistory | messages.DeleteMessages | messages.ReceivedMessages | messages.SetTyping | messages.SendMessage | messages.SendMedia | messages.ForwardMessages | messages.ReportSpam | messages.GetPeerSettings | messages.Report | messages.GetChats | messages.GetFullChat | messages.EditChatTitle | messages.EditChatPhoto | messages.AddChatUser | messages.DeleteChatUser | messages.CreateChat | messages.GetDhConfig | messages.RequestEncryption | messages.AcceptEncryption | messages.DiscardEncryption | messages.SetEncryptedTyping | messages.ReadEncryptedHistory | messages.SendEncrypted | messages.SendEncryptedFile | messages.SendEncryptedService | messages.ReceivedQueue | messages.ReportEncryptedSpam | messages.ReadMessageContents | messages.GetStickers | messages.GetAllStickers | messages.GetWebPagePreview | messages.ExportChatInvite | messages.CheckChatInvite | messages.ImportChatInvite | messages.GetStickerSet | messages.InstallStickerSet | messages.UninstallStickerSet | messages.StartBot | messages.GetMessagesViews | messages.EditChatAdmin | messages.MigrateChat | messages.SearchGlobal | messages.ReorderStickerSets | messages.GetDocumentByHash | messages.GetSavedGifs | messages.SaveGif | messages.GetInlineBotResults | messages.SetInlineBotResults | messages.SendInlineBotResult | messages.GetMessageEditData | messages.EditMessage | messages.EditInlineBotMessage | messages.GetBotCallbackAnswer | messages.SetBotCallbackAnswer | messages.GetPeerDialogs | messages.SaveDraft | messages.GetAllDrafts | messages.GetFeaturedStickers | messages.ReadFeaturedStickers | messages.GetRecentStickers | messages.SaveRecentSticker | messages.ClearRecentStickers | messages.GetArchivedStickers | messages.GetMaskStickers | messages.GetAttachedStickers | messages.SetGameScore | messages.SetInlineGameScore | messages.GetGameHighScores | messages.GetInlineGameHighScores | messages.GetCommonChats | messages.GetWebPage | messages.ToggleDialogPin | messages.ReorderPinnedDialogs | messages.GetPinnedDialogs | messages.SetBotShippingResults | messages.SetBotPrecheckoutResults | messages.UploadMedia | messages.SendScreenshotNotification | messages.GetFavedStickers | messages.FaveSticker | messages.GetUnreadMentions | messages.ReadMentions | messages.GetRecentLocations | messages.SendMultiMedia | messages.UploadEncryptedFile | messages.SearchStickerSets | messages.GetSplitRanges | messages.MarkDialogUnread | messages.GetDialogUnreadMarks | messages.ClearAllDrafts | messages.UpdatePinnedMessage | messages.SendVote | messages.GetPollResults | messages.GetOnlines | messages.EditChatAbout | messages.EditChatDefaultBannedRights | messages.GetEmojiKeywords | messages.GetEmojiKeywordsDifference | messages.GetEmojiKeywordsLanguages | messages.GetEmojiURL | messages.GetSearchCounters | messages.RequestUrlAuth | messages.AcceptUrlAuth | messages.HidePeerSettingsBar | messages.GetScheduledHistory | messages.GetScheduledMessages | messages.SendScheduledMessages | messages.DeleteScheduledMessages | messages.GetPollVotes | messages.ToggleStickerSets | messages.GetDialogFilters | messages.GetSuggestedDialogFilters | messages.UpdateDialogFilter | messages.UpdateDialogFiltersOrder | messages.GetOldFeaturedStickers | messages.GetReplies | messages.GetDiscussionMessage | messages.ReadDiscussion | messages.UnpinAllMessages | messages.DeleteChat | messages.DeletePhoneCallHistory | messages.CheckHistoryImport | messages.InitHistoryImport | messages.UploadImportedMedia | messages.StartHistoryImport | messages.GetExportedChatInvites | messages.GetExportedChatInvite | messages.EditExportedChatInvite | messages.DeleteRevokedExportedChatInvites | messages.DeleteExportedChatInvite | messages.GetAdminsWithInvites | messages.GetChatInviteImporters | messages.SetHistoryTTL | messages.CheckHistoryImportPeer | messages.SetChatTheme | messages.GetMessageReadParticipants | messages.GetSearchResultsCalendar | messages.GetSearchResultsPositions | messages.HideChatJoinRequest | messages.HideAllChatJoinRequests | messages.ToggleNoForwards | messages.SaveDefaultSendAs | messages.SendReaction | messages.GetMessagesReactions | messages.GetMessageReactionsList | messages.SetChatAvailableReactions | messages.GetAvailableReactions | messages.SetDefaultReaction | messages.TranslateText | messages.GetUnreadReactions | messages.ReadReactions | messages.SearchSentMedia | messages.GetAttachMenuBots | messages.GetAttachMenuBot | messages.ToggleBotInAttachMenu | messages.RequestWebView | messages.ProlongWebView | messages.RequestSimpleWebView | messages.SendWebViewResultMessage | messages.SendWebViewData | messages.TranscribeAudio | messages.RateTranscribedAudio | messages.GetCustomEmojiDocuments | messages.GetEmojiStickers | messages.GetFeaturedEmojiStickers | messages.ReportReaction | messages.GetTopReactions | messages.GetRecentReactions | messages.ClearRecentReactions | messages.GetExtendedMedia | messages.SetDefaultHistoryTTL | messages.GetDefaultHistoryTTL | messages.SendBotRequestedPeer | messages.GetEmojiGroups | messages.GetEmojiStatusGroups | messages.GetEmojiProfilePhotoGroups | messages.SearchCustomEmoji | messages.TogglePeerTranslations | messages.GetBotApp | messages.RequestAppWebView | messages.SetChatWallPaper | messages.SearchEmojiStickerSets | messages.GetSavedDialogs | messages.GetSavedHistory | messages.DeleteSavedHistory | messages.GetPinnedSavedDialogs | messages.ToggleSavedDialogPin | messages.ReorderPinnedSavedDialogs | messages.GetSavedReactionTags | messages.UpdateSavedReactionTag | messages.GetDefaultTagReactions | messages.GetOutboxReadDate | messages.GetQuickReplies | messages.ReorderQuickReplies | messages.CheckQuickReplyShortcut | messages.EditQuickReplyShortcut | messages.DeleteQuickReplyShortcut | messages.GetQuickReplyMessages | messages.SendQuickReplyMessages | messages.DeleteQuickReplyMessages | messages.ToggleDialogFilterTags | messages.GetMyStickers | messages.GetEmojiStickerGroups | messages.GetAvailableEffects | messages.EditFactCheck | messages.DeleteFactCheck | messages.GetFactCheck | messages.RequestMainWebView | messages.SendPaidReaction | messages.TogglePaidReactionPrivacy | messages.GetPaidReactionPrivacy | messages.ViewSponsoredMessage | messages.ClickSponsoredMessage | messages.ReportSponsoredMessage | messages.GetSponsoredMessages | messages.SavePreparedInlineMessage | messages.GetPreparedInlineMessage | messages.SearchStickers | messages.ReportMessagesDelivery | messages.GetSavedDialogsByID | messages.ReadSavedHistory | messages.ToggleTodoCompleted | messages.AppendTodoList | messages.ToggleSuggestedPostApproval | messages.GetForumTopics | messages.GetForumTopicsByID | messages.EditForumTopic | messages.UpdatePinnedForumTopic | messages.ReorderPinnedForumTopics | messages.CreateForumTopic | messages.DeleteTopicHistory | messages.GetEmojiGameInfo | messages.SummarizeText | messages.EditChatCreator | messages.GetFutureChatCreatorAfterLeave | messages.EditChatParticipantRank | messages.DeclineUrlAuth | messages.CheckUrlAuthMatchCode | messages.ComposeMessageWithAI | messages.ReportReadMetrics | messages.ReportMusicListen | messages.AddPollAnswer | messages.DeletePollAnswer | messages.GetUnreadPollVotes | messages.ReadPollVotes
     | updates.GetState | updates.GetDifference | updates.GetChannelDifference
     | photos.UpdateProfilePhoto | photos.UploadProfilePhoto | photos.DeletePhotos | photos.GetUserPhotos | photos.UploadContactProfilePhoto
     | upload.SaveFilePart | upload.GetFile | upload.SaveBigFilePart | upload.GetWebFile | upload.GetCdnFile | upload.ReuploadCdnFile | upload.GetCdnFileHashes | upload.GetFileHashes
     | help.GetConfig | help.GetNearestDc | help.GetAppUpdate | help.GetInviteText | help.GetSupport | help.SetBotUpdatesStatus | help.GetCdnConfig | help.GetRecentMeUrls | help.GetTermsOfServiceUpdate | help.AcceptTermsOfService | help.GetDeepLinkInfo | help.GetAppConfig | help.SaveAppLog | help.GetPassportConfig | help.GetSupportName | help.GetUserInfo | help.EditUserInfo | help.GetPromoData | help.HidePromoData | help.DismissSuggestion | help.GetCountriesList | help.GetPremiumPromo | help.GetPeerColors | help.GetPeerProfileColors | help.GetTimezonesList
     | channels.ReadHistory | channels.DeleteMessages | channels.ReportSpam | channels.GetMessages | channels.GetParticipants | channels.GetParticipant | channels.GetChannels | channels.GetFullChannel | channels.CreateChannel | channels.EditAdmin | channels.EditTitle | channels.EditPhoto | channels.CheckUsername | channels.UpdateUsername | channels.JoinChannel | channels.LeaveChannel | channels.InviteToChannel | channels.DeleteChannel | channels.ExportMessageLink | channels.ToggleSignatures | channels.GetAdminedPublicChannels | channels.EditBanned | channels.GetAdminLog | channels.SetStickers | channels.ReadMessageContents | channels.DeleteHistory | channels.TogglePreHistoryHidden | channels.GetLeftChannels | channels.GetGroupsForDiscussion | channels.SetDiscussionGroup | channels.EditLocation | channels.ToggleSlowMode | channels.GetInactiveChannels | channels.ConvertToGigagroup | channels.GetSendAs | channels.DeleteParticipantHistory | channels.ToggleJoinToSend | channels.ToggleJoinRequest | channels.ReorderUsernames | channels.ToggleUsername | channels.DeactivateAllUsernames | channels.ToggleForum | channels.ToggleAntiSpam | channels.ReportAntiSpamFalsePositive | channels.ToggleParticipantsHidden | channels.UpdateColor | channels.ToggleViewForumAsMessages | channels.GetChannelRecommendations | channels.UpdateEmojiStatus | channels.SetBoostsToUnblockRestrictions | channels.SetEmojiStickers | channels.RestrictSponsoredMessages | channels.SearchPosts | channels.UpdatePaidMessagesPrice | channels.ToggleAutotranslation | channels.GetMessageAuthor | channels.CheckSearchPostsFlood | channels.SetMainProfileTab
-    | bots.SendCustomRequest | bots.AnswerWebhookJSONQuery | bots.SetBotCommands | bots.ResetBotCommands | bots.GetBotCommands | bots.SetBotMenuButton | bots.GetBotMenuButton | bots.SetBotBroadcastDefaultAdminRights | bots.SetBotGroupDefaultAdminRights | bots.SetBotInfo | bots.GetBotInfo | bots.ReorderUsernames | bots.ToggleUsername | bots.CanSendMessage | bots.AllowSendMessage | bots.InvokeWebViewCustomMethod | bots.GetPopularAppBots | bots.AddPreviewMedia | bots.EditPreviewMedia | bots.DeletePreviewMedia | bots.ReorderPreviewMedias | bots.GetPreviewInfo | bots.GetPreviewMedias | bots.UpdateUserEmojiStatus | bots.ToggleUserEmojiStatusPermission | bots.CheckDownloadFileParams | bots.GetAdminedBots | bots.UpdateStarRefProgram | bots.SetCustomVerification | bots.GetBotRecommendations
+    | bots.SendCustomRequest | bots.AnswerWebhookJSONQuery | bots.SetBotCommands | bots.ResetBotCommands | bots.GetBotCommands | bots.SetBotMenuButton | bots.GetBotMenuButton | bots.SetBotBroadcastDefaultAdminRights | bots.SetBotGroupDefaultAdminRights | bots.SetBotInfo | bots.GetBotInfo | bots.ReorderUsernames | bots.ToggleUsername | bots.CanSendMessage | bots.AllowSendMessage | bots.InvokeWebViewCustomMethod | bots.GetPopularAppBots | bots.AddPreviewMedia | bots.EditPreviewMedia | bots.DeletePreviewMedia | bots.ReorderPreviewMedias | bots.GetPreviewInfo | bots.GetPreviewMedias | bots.UpdateUserEmojiStatus | bots.ToggleUserEmojiStatusPermission | bots.CheckDownloadFileParams | bots.GetAdminedBots | bots.UpdateStarRefProgram | bots.SetCustomVerification | bots.GetBotRecommendations | bots.CheckUsername | bots.CreateBot | bots.ExportBotToken | bots.RequestWebViewButton | bots.GetRequestedWebViewButton
     | payments.GetPaymentForm | payments.GetPaymentReceipt | payments.ValidateRequestedInfo | payments.SendPaymentForm | payments.GetSavedInfo | payments.ClearSavedInfo | payments.GetBankCardData | payments.ExportInvoice | payments.AssignAppStoreTransaction | payments.AssignPlayMarketTransaction | payments.GetPremiumGiftCodeOptions | payments.CheckGiftCode | payments.ApplyGiftCode | payments.GetGiveawayInfo | payments.LaunchPrepaidGiveaway | payments.GetStarsTopupOptions | payments.GetStarsStatus | payments.GetStarsTransactions | payments.SendStarsForm | payments.RefundStarsCharge | payments.GetStarsRevenueStats | payments.GetStarsRevenueWithdrawalUrl | payments.GetStarsRevenueAdsAccountUrl | payments.GetStarsTransactionsByID | payments.GetStarsGiftOptions | payments.GetStarsSubscriptions | payments.ChangeStarsSubscription | payments.FulfillStarsSubscription | payments.GetStarsGiveawayOptions | payments.GetStarGifts | payments.SaveStarGift | payments.ConvertStarGift | payments.BotCancelStarsSubscription | payments.GetConnectedStarRefBots | payments.GetConnectedStarRefBot | payments.GetSuggestedStarRefBots | payments.ConnectStarRefBot | payments.EditConnectedStarRefBot | payments.GetStarGiftUpgradePreview | payments.UpgradeStarGift | payments.TransferStarGift | payments.GetUniqueStarGift | payments.GetSavedStarGifts | payments.GetSavedStarGift | payments.GetStarGiftWithdrawalUrl | payments.ToggleChatStarGiftNotifications | payments.ToggleStarGiftsPinnedToTop | payments.CanPurchaseStore | payments.GetResaleStarGifts | payments.UpdateStarGiftPrice | payments.CreateStarGiftCollection | payments.UpdateStarGiftCollection | payments.ReorderStarGiftCollections | payments.DeleteStarGiftCollection | payments.GetStarGiftCollections | payments.GetUniqueStarGiftValueInfo | payments.CheckCanSendGift | payments.GetStarGiftAuctionState | payments.GetStarGiftAuctionAcquiredGifts | payments.GetStarGiftActiveAuctions | payments.ResolveStarGiftOffer | payments.SendStarGiftOffer | payments.GetStarGiftUpgradeAttributes | payments.GetCraftStarGifts | payments.CraftStarGift
     | stickers.CreateStickerSet | stickers.RemoveStickerFromSet | stickers.ChangeStickerPosition | stickers.AddStickerToSet | stickers.SetStickerSetThumb | stickers.CheckShortName | stickers.SuggestShortName | stickers.ChangeSticker | stickers.RenameStickerSet | stickers.DeleteStickerSet | stickers.ReplaceSticker
     | phone.GetCallConfig | phone.RequestCall | phone.AcceptCall | phone.ConfirmCall | phone.ReceivedCall | phone.DiscardCall | phone.SetCallRating | phone.SaveCallDebug | phone.SendSignalingData | phone.CreateGroupCall | phone.JoinGroupCall | phone.LeaveGroupCall | phone.InviteToGroupCall | phone.DiscardGroupCall | phone.ToggleGroupCallSettings | phone.GetGroupCall | phone.GetGroupParticipants | phone.CheckGroupCall | phone.ToggleGroupCallRecord | phone.EditGroupCallParticipant | phone.EditGroupCallTitle | phone.GetGroupCallJoinAs | phone.ExportGroupCallInvite | phone.ToggleGroupCallStartSubscription | phone.StartScheduledGroupCall | phone.SaveDefaultGroupCallJoinAs | phone.JoinGroupCallPresentation | phone.LeaveGroupCallPresentation | phone.GetGroupCallStreamChannels | phone.GetGroupCallStreamRtmpUrl | phone.SaveCallLog | phone.CreateConferenceCall | phone.DeleteConferenceCallParticipants | phone.SendConferenceCallBroadcast | phone.InviteConferenceCallParticipant | phone.DeclineConferenceCallInvite | phone.GetGroupCallChainBlocks | phone.SendGroupCallMessage | phone.SendGroupCallEncryptedMessage | phone.DeleteGroupCallMessages | phone.DeleteGroupCallParticipantMessages | phone.GetGroupCallStars | phone.SaveDefaultSendAs

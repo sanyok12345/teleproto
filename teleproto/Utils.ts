@@ -1006,7 +1006,7 @@ export function getInputMedia(
             correctAnswers = [];
             for (const r of media.results.results) {
                 if (r.correct) {
-                    correctAnswers.push(r.option);
+                    correctAnswers.push(r.option as unknown as number);
                 }
             }
         } else {

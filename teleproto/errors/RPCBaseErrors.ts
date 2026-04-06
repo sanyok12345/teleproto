@@ -97,6 +97,16 @@ export class FloodError extends RPCError {
 }
 
 /**
+ * The account is frozen and cannot use this method.
+ * Clients should call help.getAppConfig to get freeze_since_date,
+ * freeze_until_date, and freeze_appeal_url.
+ */
+export class FrozenError extends RPCError {
+    code = 420;
+    errorMessage = "FROZEN";
+}
+
+/**
  * An internal server error occurred while a request was being processed
  * for example, there was a disruption while accessing a database or file
  * storage

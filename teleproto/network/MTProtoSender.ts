@@ -690,6 +690,12 @@ export class MTProtoSender {
                         // 'AUTH_KEY_UNREGISTERED' for the main sender is thrown when unauthorized and should be ignored
                         this._handleBadAuthKey(true);
                     }
+                } else if (e instanceof TypeNotFoundError) {
+                    // Unknown constructor in an update (e.g. new TL objects not in our schema).
+                    // Safe to skip — no reconnect needed.
+                    this._log.info(
+                        `Unknown constructor ${e.invalidConstructorId} in update, skipping (remaining: ${e.remaining.length} bytes)`
+                    );
                 } else {
                     this._log.error("Unhandled error while receiving data");
                     if (this._client._errorHandler) {

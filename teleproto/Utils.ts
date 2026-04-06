@@ -1017,6 +1017,12 @@ export function getInputMedia(
             correctAnswers: correctAnswers,
             solution: media.results.solution,
             solutionEntities: media.results.solutionEntities,
+            attachedMedia: media.attachedMedia
+                ? getInputMedia(media.attachedMedia)
+                : undefined,
+            solutionMedia: media.results.solutionMedia
+                ? getInputMedia(media.results.solutionMedia)
+                : undefined,
         });
     }
     if (media instanceof Api.Poll) {

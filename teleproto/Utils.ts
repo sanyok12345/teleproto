@@ -1012,8 +1012,40 @@ export function getInputMedia(
         } else {
             correctAnswers = undefined;
         }
+
+        const pollWithInputAnswers = new Api.Poll({
+            id: media.poll.id,
+            question: media.poll.question,
+            answers: media.poll.answers.map((a) => {
+                if (!(a instanceof Api.PollAnswer)) return a;
+                return new Api.PollAnswer({
+                    text: a.text,
+                    option: a.option,
+                    media: a.media
+                        ? (getInputMedia(
+                              a.media
+                          ) as unknown as Api.TypeMessageMedia)
+                        : undefined,
+                    addedBy: a.addedBy,
+                    date: a.date,
+                });
+            }),
+            closed: media.poll.closed,
+            publicVoters: media.poll.publicVoters,
+            multipleChoice: media.poll.multipleChoice,
+            quiz: media.poll.quiz,
+            openAnswers: media.poll.openAnswers,
+            revotingDisabled: media.poll.revotingDisabled,
+            shuffleAnswers: media.poll.shuffleAnswers,
+            hideResultsUntilClose: media.poll.hideResultsUntilClose,
+            creator: media.poll.creator,
+            closePeriod: media.poll.closePeriod,
+            closeDate: media.poll.closeDate,
+            hash: media.poll.hash,
+        });
+        
         return new Api.InputMediaPoll({
-            poll: media.poll,
+            poll: pollWithInputAnswers,
             correctAnswers: correctAnswers,
             solution: media.results.solution,
             solutionEntities: media.results.solutionEntities,

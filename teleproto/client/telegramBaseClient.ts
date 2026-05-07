@@ -494,6 +494,27 @@ export abstract class TelegramBaseClient {
             }
         );
         this._exportedSenderPromises.clear();
+        this._teardownUpdateState();
+    }
+
+    /** @hidden */
+    _teardownUpdateState() {
+        for (const [timer] of this._ALBUMS.values()) {
+            clearTimeout(timer);
+        }
+        this._ALBUMS.clear();
+
+        this._pendingPtsUpdates = [];
+        this._pendingSeqUpdates = [];
+        this._pendingQtsUpdates = [];
+        this._pendingChannelUpdates.clear();
+        this._channelPts.clear();
+        this._fetchingDifference = false;
+        this._fetchingChannelDifference.clear();
+
+        for (const [builder] of this._eventBuilders) {
+            builder.resolved = false;
+        }
     }
 
     get disconnected() {

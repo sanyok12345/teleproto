@@ -963,7 +963,7 @@ export async function _dispatchUpdate(
     client: TelegramClient,
     args: { update: UpdateConnectionState | any }
 ): Promise<void> {
-    for (const [builder, callback] of client._eventBuilders) {
+    for (const [builder, callback] of [...client._eventBuilders]) {
         if (!builder || !callback) {
             continue;
         }

@@ -25,6 +25,7 @@ import {
 import { Semaphore } from "async-mutex";
 import { LogLevel } from "../extensions/Logger";
 import Deferred from "../extensions/Deferred";
+import { UpdateManager } from "./UpdateManager";
 
 const EXPORTED_SENDER_RECONNECT_TIMEOUT = 1000; // 1 sec
 const EXPORTED_SENDER_RELEASE_TIMEOUT = 30000; // 30 sec
@@ -288,24 +289,6 @@ export abstract class TelegramBaseClient {
     /** @hidden */
     _loopStarted: boolean;
     /** @hidden */
-    _updateState?: { pts: number; qts: number; date: number; seq: number };
-    /** @hidden */
-    _channelPts: Map<string, number>;
-    /** @hidden */
-    _fetchingDifference: boolean;
-    /** @hidden */
-    _fetchingChannelDifference: Set<string>;
-    /** @hidden */
-    _pendingPtsUpdates: Array<{ update: any; pts: number; ptsCount: number; others: any; entities?: any; bufferedAt: number }>;
-    /** @hidden */
-    _pendingSeqUpdates: Array<{ update: any; seqStart: number; seq: number; bufferedAt: number }>;
-    /** @hidden */
-    _pendingQtsUpdates: Array<{ update: any; qts: number; others: any; entities?: any; bufferedAt: number }>;
-    /** @hidden */
-    _pendingChannelUpdates: Map<string, Array<{ update: any; pts: number; ptsCount: number; others: any; entities?: any; bufferedAt: number }>>;
-    /** @hidden */
-    _lastUpdateTime: number;
-    /** @hidden */
     _reconnecting: boolean;
     /** @hidden */
     _destroyed: boolean;
@@ -319,6 +302,8 @@ export abstract class TelegramBaseClient {
     _securityChecks: boolean;
     public networkSocket: typeof PromisedNetSockets;
     _connectedDeferred: Deferred<void>;
+    /** Centralised pts/qts/seq tracker and gap recovery driver. */
+    public updateManager!: UpdateManager;
 
     constructor(
         session: string | Session,
@@ -398,14 +383,6 @@ export abstract class TelegramBaseClient {
         // These will be set later
         this._config = undefined;
         this._loopStarted = false;
-        this._channelPts = new Map();
-        this._fetchingDifference = false;
-        this._fetchingChannelDifference = new Set();
-        this._pendingPtsUpdates = [];
-        this._pendingSeqUpdates = [];
-        this._pendingQtsUpdates = [];
-        this._pendingChannelUpdates = new Map();
-        this._lastUpdateTime = Date.now();
         this._reconnecting = false;
         this._destroyed = false;
         this._isSwitchingDc = false;
@@ -413,6 +390,8 @@ export abstract class TelegramBaseClient {
 
         // parse mode
         this._parseMode = MarkdownParser;
+
+        this.updateManager = new UpdateManager(this as unknown as TelegramClient);
     }
 
     get floodSleepThreshold() {
@@ -504,13 +483,7 @@ export abstract class TelegramBaseClient {
         }
         this._ALBUMS.clear();
 
-        this._pendingPtsUpdates = [];
-        this._pendingSeqUpdates = [];
-        this._pendingQtsUpdates = [];
-        this._pendingChannelUpdates.clear();
-        this._channelPts.clear();
-        this._fetchingDifference = false;
-        this._fetchingChannelDifference.clear();
+        this.updateManager.stop();
 
         for (const [builder] of this._eventBuilders) {
             builder.resolved = false;

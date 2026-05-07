@@ -4,13 +4,12 @@ import * as utils from "../Utils";
 import { returnBigInt } from "../Helpers";
 import type { TelegramClient } from "./TelegramClient";
 import { _dispatchUpdate } from "./updates";
+import { PtsWaiter, type PtsWaiterHost } from "./PtsWaiter";
 
 const NO_UPDATES_TIMEOUT_MS = 15 * 60 * 1000;
-const PENDING_UPDATE_TTL_MS = 60_000;
 const FAIL_DIFFERENCE_INITIAL_S = 1;
 const FAIL_DIFFERENCE_CAP_S = 64;
 const CHANNEL_DIFFERENCE_LIMIT = 100;
-const MAX_RECOVERY_ROUNDS = 3;
 
 export interface UpdateState {
     pts: number;
@@ -19,54 +18,22 @@ export interface UpdateState {
     seq: number;
 }
 
-interface PendingPtsUpdate {
-    update: Api.TypeUpdate;
-    pts: number;
-    ptsCount: number;
-    others: Api.TypeUpdate[] | null;
-    entities?: Map<string, Api.TypeUser | Api.TypeChat>;
-    bufferedAt: number;
-}
-
 interface PendingSeqUpdate {
     update: Api.Updates | Api.UpdatesCombined;
     seqStart: number;
     seq: number;
-    bufferedAt: number;
 }
 
-interface PendingQtsUpdate {
-    update: Api.TypeUpdate;
-    qts: number;
+interface ChannelTracker {
+    pts: PtsWaiter;
+    timer?: NodeJS.Timeout;
+    inputChannel?: Api.TypeInputChannel;
+}
+
+type DispatchPayload = {
     others: Api.TypeUpdate[] | null;
     entities?: Map<string, Api.TypeUser | Api.TypeChat>;
-    bufferedAt: number;
-}
-
-interface PendingChannelUpdate {
-    update: Api.TypeUpdate;
-    pts: number;
-    ptsCount: number;
-    others: Api.TypeUpdate[] | null;
-    entities?: Map<string, Api.TypeUser | Api.TypeChat>;
-    bufferedAt: number;
-}
-
-type PtsCheck = "apply" | "duplicate" | "gap";
-
-function checkPts(localPts: number, pts: number, ptsCount: number): PtsCheck {
-    const expected = localPts + ptsCount;
-    if (expected === pts) return "apply";
-    if (expected > pts) return "duplicate";
-    return "gap";
-}
-
-function checkSeq(localSeq: number, seqStart: number): PtsCheck {
-    if (seqStart === 0) return "apply";
-    if (localSeq + 1 === seqStart) return "apply";
-    if (localSeq + 1 > seqStart) return "duplicate";
-    return "gap";
-}
+};
 
 function isCommonPtsUpdate(update: Api.TypeUpdate): boolean {
     return (
@@ -109,15 +76,12 @@ export class UpdateManager {
     lastUpdateTime = 0;
 
     private readonly client: TelegramClient;
-    private readonly pendingPts: PendingPtsUpdate[] = [];
+    private readonly globalPts: PtsWaiter;
+    private globalPtsTimer?: NodeJS.Timeout;
+    private readonly channels = new Map<string, ChannelTracker>();
     private readonly pendingSeq: PendingSeqUpdate[] = [];
-    private readonly pendingQts: PendingQtsUpdate[] = [];
-    private readonly pendingChannel = new Map<string, PendingChannelUpdate[]>();
-    private readonly channelPts = new Map<string, number>();
 
     private fetchingDifference = false;
-    private readonly fetchingChannelDifference = new Set<string>();
-
     private failTimeoutS = FAIL_DIFFERENCE_INITIAL_S;
     private readonly channelFailTimeoutS = new Map<string, number>();
 
@@ -125,6 +89,7 @@ export class UpdateManager {
 
     constructor(client: TelegramClient) {
         this.client = client;
+        this.globalPts = this.makeGlobalWaiter();
     }
 
     start(): void {
@@ -133,13 +98,20 @@ export class UpdateManager {
 
     stop(): void {
         this.running = false;
-        this.pendingPts.length = 0;
+        this.globalPts.clearSkippedUpdates();
+        this.globalPts.setRequesting(false);
+        if (this.globalPtsTimer) {
+            clearTimeout(this.globalPtsTimer);
+            this.globalPtsTimer = undefined;
+        }
+        for (const tracker of this.channels.values()) {
+            if (tracker.timer) clearTimeout(tracker.timer);
+            tracker.pts.clearSkippedUpdates();
+            tracker.pts.setRequesting(false);
+        }
+        this.channels.clear();
         this.pendingSeq.length = 0;
-        this.pendingQts.length = 0;
-        this.pendingChannel.clear();
-        this.channelPts.clear();
         this.fetchingDifference = false;
-        this.fetchingChannelDifference.clear();
         this.failTimeoutS = FAIL_DIFFERENCE_INITIAL_S;
         this.channelFailTimeoutS.clear();
     }
@@ -155,14 +127,14 @@ export class UpdateManager {
                 this.handleContainer(update);
             } else if (update instanceof Api.UpdateShort) {
                 if (this.state) this.state.date = update.date;
-                this.feedUpdate(update.update, null);
+                this.feedUpdate(update.update, { others: null });
             } else if (update instanceof Api.UpdateShortMessage || update instanceof Api.UpdateShortChatMessage) {
                 this.handleShortMessage(update);
             } else if ((update as { className?: string }).className === "UpdatesTooLong") {
-                this.client._log.warn("Received UpdatesTooLong, recovering common gap");
-                this.recoverCommonGap().catch((e) => this.client._log.error(`UpdatesTooLong recovery: ${e}`));
+                this.client._log.warn("Received UpdatesTooLong, requesting common difference");
+                this.scheduleCommonDifference();
             } else {
-                this.feedUpdate(update as Api.TypeUpdate, null);
+                this.feedUpdate(update as Api.TypeUpdate, { others: null });
             }
         } catch (e) {
             this.client._log.error(`Error in onUpdates: ${e}`);
@@ -174,6 +146,7 @@ export class UpdateManager {
             if (!this.state) {
                 const s = await this.client.invoke(new Api.updates.GetState());
                 this.state = { pts: s.pts, qts: s.qts, date: s.date, seq: s.seq };
+                this.globalPts.init(s.pts);
                 this.client._log.debug("Initialized update state");
                 return;
             }
@@ -190,6 +163,7 @@ export class UpdateManager {
         try {
             const s = await this.client.invoke(new Api.updates.GetState());
             this.state = { pts: s.pts, qts: s.qts, date: s.date, seq: s.seq };
+            this.globalPts.init(s.pts);
             this.lastUpdateTime = Date.now();
         } catch {
             // ignore — user may not be authorized yet
@@ -203,8 +177,9 @@ export class UpdateManager {
             this.state.date = state.date;
             this.state.seq = state.seq;
         } else {
-            this.state = { pts: state.pts, qts: state.qts, date: state.date, seq: state.seq };
+            this.state = { ...state };
         }
+        this.globalPts.init(state.pts);
     }
 
     isStale(): boolean {
@@ -215,7 +190,7 @@ export class UpdateManager {
         if (!this.isStale()) return;
         this.client._log.debug("No updates for 15 minutes, fetching difference");
         try {
-            await this.recoverCommonGap();
+            await this.fetchDifferenceLoop();
         } catch (e) {
             this.client._log.error(`Stale-recovery failed: ${e}`);
         }
@@ -225,182 +200,206 @@ export class UpdateManager {
     private handleContainer(update: Api.Updates | Api.UpdatesCombined): void {
         if (this.state && update.seq !== 0) {
             const seqStart = "seqStart" in update ? update.seqStart : update.seq;
-            const result = checkSeq(this.state.seq, seqStart);
-
-            if (result === "duplicate") {
-                this.client._log.debug(`Skipping duplicate Updates container (seq=${seqStart})`);
-                return;
+            const localSeq = this.state.seq;
+            if (seqStart !== 0) {
+                if (localSeq + 1 > seqStart) {
+                    this.client._log.debug(`Skip duplicate Updates container (seq=${seqStart})`);
+                    return;
+                }
+                if (localSeq + 1 < seqStart) {
+                    this.client._log.debug(`Seq gap (local=${localSeq}, start=${seqStart}); requesting difference`);
+                    this.pendingSeq.push({ update, seqStart, seq: update.seq });
+                    this.scheduleCommonDifference();
+                    return;
+                }
             }
-            if (result === "gap") {
-                this.client._log.debug(`Seq gap (local=${this.state.seq}, start=${seqStart}), buffering`);
-                this.pendingSeq.push({ update, seqStart, seq: update.seq, bufferedAt: Date.now() });
-                this.recoverCommonGap().catch((e) => this.client._log.error(`Seq gap recovery: ${e}`));
-                return;
-            }
-
             this.state.seq = update.seq;
             this.state.date = update.date;
         }
 
+        const entities = this.collectEntities(update.users, update.chats);
+        for (const u of update.updates) {
+            this.feedUpdate(u, { others: update.updates, entities });
+        }
+    }
+
+    private handleShortMessage(update: Api.UpdateShortMessage | Api.UpdateShortChatMessage): void {
+        if (!this.state) {
+            this.dispatch(update as unknown as Api.TypeUpdate, { others: null });
+            return;
+        }
+        const applied = this.globalPts.updateAndApply(
+            update.pts,
+            update.ptsCount,
+            { tag: "update", update: update as unknown as Api.TypeUpdate },
+            (u) => {
+                if (this.state) this.state.pts = update.pts;
+                this.dispatch(u, { others: null });
+            },
+            () => {
+                // updates-payload not used at this entry point
+            },
+        );
+        if (applied) {
+            this.state.date = update.date;
+        }
+    }
+
+    private feedUpdate(update: Api.TypeUpdate, payload: DispatchPayload): void {
+        if (!this.state) {
+            this.dispatch(update, payload);
+            return;
+        }
+
+        if (isCommonPtsUpdate(update)) {
+            const u = update as Api.TypeUpdate & { pts: number; ptsCount: number };
+            this.globalPts.updateAndApply(
+                u.pts,
+                u.ptsCount,
+                { tag: "update", update },
+                (applied) => {
+                    if (this.state) this.state.pts = u.pts;
+                    this.dispatch(applied, payload);
+                },
+                () => {},
+            );
+            return;
+        }
+
+        if (isChannelPtsUpdate(update)) {
+            const u = update as Api.TypeUpdate & { pts: number; ptsCount: number };
+            const channelId = getChannelId(update);
+            if (!channelId || !u.pts || !u.ptsCount) {
+                this.dispatch(update, payload);
+                return;
+            }
+            const tracker = this.getOrCreateChannel(channelId);
+            if (!tracker.pts.inited()) {
+                tracker.pts.init(u.pts);
+                this.dispatch(update, payload);
+                return;
+            }
+            tracker.pts.updateAndApply(
+                u.pts,
+                u.ptsCount,
+                { tag: "update", update },
+                (applied) => this.dispatch(applied, payload),
+                () => {},
+            );
+            return;
+        }
+
+        if (hasQts(update)) {
+            const localQts = this.state.qts;
+            const qts = update.qts;
+            if (localQts + 1 > qts) {
+                this.client._log.debug(`Skip duplicate qts (local=${localQts}, qts=${qts})`);
+                return;
+            }
+            if (localQts + 1 < qts) {
+                this.client._log.debug(`Qts gap (local=${localQts}, qts=${qts}); requesting difference`);
+                this.scheduleCommonDifference();
+                return;
+            }
+            this.state.qts = qts;
+        }
+
+        this.dispatch(update, payload);
+    }
+
+    private dispatch(update: Api.TypeUpdate, payload: DispatchPayload): void {
+        (update as unknown as { _entities: Map<string, unknown> })._entities = payload.entities ?? new Map();
+        _dispatchUpdate(this.client, { update }).catch((e) =>
+            this.client._log.error(`Error dispatching update: ${e}`),
+        );
+    }
+
+    private collectEntities(
+        users: Api.TypeUser[],
+        chats: Api.TypeChat[],
+    ): Map<string, Api.TypeUser | Api.TypeChat> {
         const entities = new Map<string, Api.TypeUser | Api.TypeChat>();
-        for (const x of [...update.users, ...update.chats]) {
+        for (const x of [...users, ...chats]) {
             try {
                 entities.set(utils.getPeerId(x), x);
             } catch {
                 // skip unrecognised entity
             }
         }
-        for (const u of update.updates) {
-            this.feedUpdate(u, update.updates, entities);
-        }
+        return entities;
     }
 
-    private handleShortMessage(update: Api.UpdateShortMessage | Api.UpdateShortChatMessage): void {
-        if (this.state) {
-            const result = checkPts(this.state.pts, update.pts, update.ptsCount);
-            if (result === "duplicate") {
-                this.client._log.debug(`Skipping duplicate ShortMessage (pts=${update.pts})`);
-                return;
-            }
-            if (result === "gap") {
-                this.client._log.debug(`Pts gap in ShortMessage (local=${this.state.pts}, pts=${update.pts}), buffering`);
-                this.pendingPts.push({
-                    update: update as unknown as Api.TypeUpdate,
-                    pts: update.pts,
-                    ptsCount: update.ptsCount,
-                    others: null,
-                    bufferedAt: Date.now(),
-                });
-                this.recoverCommonGap().catch((e) => this.client._log.error(`Short pts recovery: ${e}`));
-                return;
-            }
-            this.state.pts = update.pts;
-            this.state.date = update.date;
-        }
-        this.dispatch(update as unknown as Api.TypeUpdate, null);
-    }
-
-    private feedUpdate(
-        update: Api.TypeUpdate,
-        others: Api.TypeUpdate[] | null,
-        entities?: Map<string, Api.TypeUser | Api.TypeChat>,
-    ): void {
-        if (this.state) {
-            if (isCommonPtsUpdate(update)) {
-                const u = update as Api.TypeUpdate & { pts: number; ptsCount: number };
-                const result = checkPts(this.state.pts, u.pts, u.ptsCount);
-                if (result === "duplicate") {
-                    this.client._log.debug(`Skip duplicate ${u.className} (pts=${u.pts})`);
-                    return;
-                }
-                if (result === "gap") {
-                    this.client._log.debug(`Pts gap for ${u.className} (local=${this.state.pts}, pts=${u.pts}), buffering`);
-                    this.pendingPts.push({
-                        update,
-                        pts: u.pts,
-                        ptsCount: u.ptsCount,
-                        others,
-                        entities,
-                        bufferedAt: Date.now(),
-                    });
-                    this.recoverCommonGap().catch((e) => this.client._log.error(`Pts gap recovery: ${e}`));
-                    return;
-                }
-                this.state.pts = u.pts;
-            } else if (isChannelPtsUpdate(update)) {
-                const u = update as Api.TypeUpdate & { pts: number; ptsCount: number };
-                const channelId = getChannelId(update);
-                if (channelId && u.pts && u.ptsCount) {
-                    const localPts = this.channelPts.get(channelId);
-                    if (localPts !== undefined) {
-                        const result = checkPts(localPts, u.pts, u.ptsCount);
-                        if (result === "duplicate") {
-                            this.client._log.debug(`Skip duplicate channel ${u.className} (ch=${channelId})`);
-                            return;
-                        }
-                        if (result === "gap") {
-                            this.client._log.debug(`Channel pts gap for ${u.className} (ch=${channelId}, local=${localPts}, pts=${u.pts}), buffering`);
-                            const pending = this.pendingChannel.get(channelId) ?? [];
-                            pending.push({
-                                update,
-                                pts: u.pts,
-                                ptsCount: u.ptsCount,
-                                others,
-                                entities,
-                                bufferedAt: Date.now(),
-                            });
-                            this.pendingChannel.set(channelId, pending);
-                            this.recoverChannelGap(channelId).catch((e) =>
-                                this.client._log.error(`Channel gap recovery: ${e}`),
-                            );
-                            return;
-                        }
+    private makeGlobalWaiter(): PtsWaiter {
+        const host: PtsWaiterHost = {
+            onWaitForSkipped: (ms) => {
+                if (ms < 0) {
+                    if (this.globalPtsTimer) {
+                        clearTimeout(this.globalPtsTimer);
+                        this.globalPtsTimer = undefined;
                     }
-                    this.channelPts.set(channelId, u.pts);
-                }
-            } else if (hasQts(update)) {
-                const localQts = this.state.qts;
-                const qts = update.qts;
-                if (localQts + 1 > qts) {
-                    this.client._log.debug(`Skip duplicate qts (local=${localQts}, qts=${qts})`);
                     return;
                 }
-                if (localQts + 1 < qts) {
-                    this.client._log.debug(`Qts gap (local=${localQts}, qts=${qts}), buffering`);
-                    this.pendingQts.push({ update, qts, others, entities, bufferedAt: Date.now() });
-                    this.recoverCommonGap().catch((e) => this.client._log.error(`Qts gap recovery: ${e}`));
+                if (this.globalPtsTimer) clearTimeout(this.globalPtsTimer);
+                this.globalPtsTimer = setTimeout(() => {
+                    this.globalPtsTimer = undefined;
+                    this.scheduleCommonDifference();
+                }, ms);
+            },
+            onWaitForShortPoll: () => {
+                // not used; keep no-op
+            },
+        };
+        return new PtsWaiter(host);
+    }
+
+    private getOrCreateChannel(channelId: string): ChannelTracker {
+        let tracker = this.channels.get(channelId);
+        if (tracker) return tracker;
+
+        const host: PtsWaiterHost = {
+            onWaitForSkipped: (ms) => {
+                const t = this.channels.get(channelId);
+                if (!t) return;
+                if (ms < 0) {
+                    if (t.timer) {
+                        clearTimeout(t.timer);
+                        t.timer = undefined;
+                    }
                     return;
                 }
-                this.state.qts = qts;
-            }
-        }
-
-        this.dispatch(update, others, entities);
+                if (t.timer) clearTimeout(t.timer);
+                t.timer = setTimeout(() => {
+                    t.timer = undefined;
+                    void this.fetchChannelDifference(channelId);
+                }, ms);
+            },
+            onWaitForShortPoll: () => {},
+        };
+        tracker = { pts: new PtsWaiter(host) };
+        this.channels.set(channelId, tracker);
+        return tracker;
     }
 
-    private dispatch(
-        update: Api.TypeUpdate,
-        others: Api.TypeUpdate[] | null,
-        entities?: Map<string, Api.TypeUser | Api.TypeChat>,
-    ): void {
-        (update as unknown as { _entities: Map<string, unknown> })._entities = entities ?? new Map();
-        void others;
-        _dispatchUpdate(this.client, { update }).catch((e) =>
-            this.client._log.error(`Error dispatching update: ${e}`),
-        );
+    private scheduleCommonDifference(): void {
+        if (this.fetchingDifference) return;
+        void this.fetchCommonDifference();
     }
 
-    private async recoverCommonGap(): Promise<void> {
+    private async fetchCommonDifference(): Promise<void> {
         if (this.fetchingDifference || !this.state) return;
         this.fetchingDifference = true;
+        this.globalPts.setRequesting(true);
         try {
             await this.fetchDifferenceLoop();
-            this.client._log.debug("Common gap recovery complete; flushing pending");
-            this.flushPendingPts();
-            this.flushPendingSeq();
-            this.flushPendingQts();
-
-            for (let retry = 0; retry < MAX_RECOVERY_ROUNDS - 1; retry++) {
-                const stillHasGaps =
-                    this.pendingPts.length > 0 ||
-                    this.pendingSeq.length > 0 ||
-                    this.pendingQts.length > 0;
-                if (!stillHasGaps) break;
-                this.client._log.debug(
-                    `Pending after flush: ${this.pendingPts.length} pts, ${this.pendingSeq.length} seq, ${this.pendingQts.length} qts; retrying`,
-                );
-                await this.fetchDifferenceLoop();
-                this.flushPendingPts();
-                this.flushPendingSeq();
-                this.flushPendingQts();
-            }
             this.failTimeoutS = FAIL_DIFFERENCE_INITIAL_S;
         } catch (e) {
-            this.client._log.error(`recoverCommonGap: ${e}`);
+            this.client._log.error(`fetchCommonDifference: ${e}`);
             this.bumpFailTimeout();
-            this.forceFlushAllPending();
         } finally {
+            this.globalPts.setRequesting(false);
+            if (this.state) this.globalPts.init(this.state.pts);
             this.fetchingDifference = false;
+            this.drainPendingSeq();
         }
     }
 
@@ -436,22 +435,7 @@ export class UpdateManager {
     }
 
     private async processDifference(diff: Api.updates.Difference | Api.updates.DifferenceSlice): Promise<void> {
-        const entities = new Map<string, Api.TypeUser | Api.TypeChat>();
-        for (const u of diff.users) {
-            try {
-                entities.set(utils.getPeerId(u), u);
-            } catch {
-                // skip
-            }
-        }
-        for (const c of diff.chats) {
-            try {
-                entities.set(utils.getPeerId(c), c);
-            } catch {
-                // skip
-            }
-        }
-
+        const entities = this.collectEntities(diff.users, diff.chats);
         this.client._entityCache.add(diff);
         this.client.session.processEntities(diff);
 
@@ -459,109 +443,94 @@ export class UpdateManager {
             if (message instanceof Api.Message || message instanceof Api.MessageService) {
                 this.dispatch(
                     new Api.UpdateNewMessage({ message, pts: 0, ptsCount: 0 }),
-                    null,
-                    entities,
+                    { others: null, entities },
                 );
             }
         }
         for (const update of diff.otherUpdates) {
-            this.dispatch(update, diff.otherUpdates, entities);
+            this.dispatch(update, { others: diff.otherUpdates, entities });
         }
     }
 
-    private async recoverChannelGap(channelId: string): Promise<void> {
-        if (this.fetchingChannelDifference.has(channelId)) return;
-        this.fetchingChannelDifference.add(channelId);
+    private drainPendingSeq(): void {
+        if (!this.state || this.pendingSeq.length === 0) return;
+        const list = this.pendingSeq.splice(0);
+        list.sort((a, b) => a.seqStart - b.seqStart);
+        for (const entry of list) {
+            if (this.state.seq + 1 === entry.seqStart) {
+                this.onUpdates(entry.update);
+            }
+            // else drop — diff has covered it
+        }
+    }
 
+    private async fetchChannelDifference(channelId: string): Promise<void> {
+        const tracker = this.channels.get(channelId);
+        if (!tracker || tracker.pts.requesting()) return;
+        if (!tracker.pts.inited()) return;
+
+        tracker.pts.setRequesting(true);
         try {
-            for (let round = 0; round < MAX_RECOVERY_ROUNDS; round++) {
-                const localPts = this.channelPts.get(channelId);
-                if (localPts === undefined) {
-                    this.flushPendingChannel(channelId);
-                    return;
-                }
+            const inputChannel = await this.resolveChannel(channelId, tracker);
+            if (!inputChannel) {
+                this.client._log.warn(`Cannot resolve channel ${channelId}; skipping diff`);
+                return;
+            }
+            tracker.inputChannel = inputChannel;
 
-                const inputChannel = await this.resolveChannel(channelId);
-                if (!inputChannel) {
-                    this.client._log.warn(`Cannot resolve channel ${channelId}, flushing pending`);
-                    this.flushPendingChannel(channelId);
-                    return;
-                }
+            let fetching = true;
+            while (fetching) {
+                const diff = await this.client.invoke(
+                    new Api.updates.GetChannelDifference({
+                        channel: inputChannel,
+                        filter: new Api.ChannelMessagesFilterEmpty(),
+                        pts: tracker.pts.current(),
+                        limit: CHANNEL_DIFFERENCE_LIMIT,
+                    }),
+                );
 
-                this.client._log.debug(`Recovering channel gap ${channelId} round ${round + 1}`);
-                let fetching = true;
-                while (fetching) {
-                    const currentPts = this.channelPts.get(channelId) ?? localPts;
-                    const diff = await this.client.invoke(
-                        new Api.updates.GetChannelDifference({
-                            channel: inputChannel,
-                            filter: new Api.ChannelMessagesFilterEmpty(),
-                            pts: currentPts,
-                            limit: CHANNEL_DIFFERENCE_LIMIT,
-                        }),
-                    );
+                if (diff instanceof Api.updates.ChannelDifferenceEmpty) {
+                    if (diff.pts) tracker.pts.init(diff.pts);
+                    fetching = false;
+                } else if (diff instanceof Api.updates.ChannelDifference) {
+                    const entities = this.collectEntities(diff.users, diff.chats);
+                    this.client._entityCache.add(diff);
+                    this.client.session.processEntities(diff);
 
-                    if (diff instanceof Api.updates.ChannelDifferenceEmpty) {
-                        if (diff.pts) this.channelPts.set(channelId, diff.pts);
-                        fetching = false;
-                    } else if (diff instanceof Api.updates.ChannelDifference) {
-                        const entities = new Map<string, Api.TypeUser | Api.TypeChat>();
-                        for (const u of diff.users) {
-                            try {
-                                entities.set(utils.getPeerId(u), u);
-                            } catch {
-                                // skip
-                            }
+                    for (const message of diff.newMessages) {
+                        if (message instanceof Api.Message || message instanceof Api.MessageService) {
+                            this.dispatch(
+                                new Api.UpdateNewChannelMessage({ message, pts: 0, ptsCount: 0 }),
+                                { others: null, entities },
+                            );
                         }
-                        for (const c of diff.chats) {
-                            try {
-                                entities.set(utils.getPeerId(c), c);
-                            } catch {
-                                // skip
-                            }
-                        }
-                        this.client._entityCache.add(diff);
-                        this.client.session.processEntities(diff);
-
-                        for (const message of diff.newMessages) {
-                            if (message instanceof Api.Message || message instanceof Api.MessageService) {
-                                this.dispatch(
-                                    new Api.UpdateNewChannelMessage({ message, pts: 0, ptsCount: 0 }),
-                                    null,
-                                    entities,
-                                );
-                            }
-                        }
-                        for (const update of diff.otherUpdates) {
-                            this.dispatch(update, diff.otherUpdates, entities);
-                        }
-
-                        this.channelPts.set(channelId, diff.pts);
-                        fetching = !diff.final;
-                    } else if (diff instanceof Api.updates.ChannelDifferenceTooLong) {
-                        this.client._log.warn(`Channel ${channelId} difference too long`);
-                        const dialog = diff.dialog as { pts?: number };
-                        if (dialog.pts !== undefined) this.channelPts.set(channelId, dialog.pts);
-                        fetching = false;
                     }
+                    for (const update of diff.otherUpdates) {
+                        this.dispatch(update, { others: diff.otherUpdates, entities });
+                    }
+                    tracker.pts.init(diff.pts);
+                    fetching = !diff.final;
+                } else if (diff instanceof Api.updates.ChannelDifferenceTooLong) {
+                    this.client._log.warn(`Channel ${channelId} difference too long`);
+                    const dialog = diff.dialog as { pts?: number };
+                    if (dialog.pts !== undefined) tracker.pts.init(dialog.pts);
+                    fetching = false;
                 }
-
-                this.flushPendingChannel(channelId);
-                const stillPending = this.pendingChannel.get(channelId);
-                if (!stillPending || stillPending.length === 0) break;
-                this.client._log.debug(`Channel ${channelId} still has ${stillPending.length} pending; retry`);
             }
             this.channelFailTimeoutS.delete(channelId);
         } catch (e) {
-            this.client._log.error(`recoverChannelGap ${channelId}: ${e}`);
+            this.client._log.error(`fetchChannelDifference ${channelId}: ${e}`);
             this.bumpChannelFailTimeout(channelId);
-            this.flushPendingChannel(channelId);
         } finally {
-            this.fetchingChannelDifference.delete(channelId);
+            tracker.pts.setRequesting(false);
         }
     }
 
-    private async resolveChannel(channelId: string): Promise<Api.TypeInputChannel | undefined> {
+    private async resolveChannel(
+        channelId: string,
+        tracker: ChannelTracker,
+    ): Promise<Api.TypeInputChannel | undefined> {
+        if (tracker.inputChannel) return tracker.inputChannel;
         try {
             const peer = new Api.PeerChannel({ channelId: returnBigInt(channelId) });
             const input = await this.client.getInputEntity(peer);
@@ -569,135 +538,9 @@ export class UpdateManager {
                 return new Api.InputChannel({ channelId: input.channelId, accessHash: input.accessHash });
             }
         } catch {
-            // fall through
-        }
-        const pending = this.pendingChannel.get(channelId);
-        if (!pending) return undefined;
-        for (const entry of pending) {
-            if (!entry.entities) continue;
-            for (const [, entity] of entry.entities) {
-                try {
-                    const ip = utils.getInputPeer(entity);
-                    if (ip instanceof Api.InputPeerChannel && ip.channelId.toString() === channelId) {
-                        return new Api.InputChannel({ channelId: ip.channelId, accessHash: ip.accessHash });
-                    }
-                } catch {
-                    // skip
-                }
-            }
+            // ignore
         }
         return undefined;
-    }
-
-    private flushPendingPts(): void {
-        if (!this.state) return;
-        const now = Date.now();
-        this.pendingPts.sort((a, b) => a.pts - b.pts);
-        const remaining: PendingPtsUpdate[] = [];
-        for (const entry of this.pendingPts) {
-            if (now - entry.bufferedAt > PENDING_UPDATE_TTL_MS) {
-                this.client._log.debug(`Drop stale pending pts (age=${now - entry.bufferedAt}ms)`);
-                continue;
-            }
-            const result = checkPts(this.state.pts, entry.pts, entry.ptsCount);
-            if (result === "apply") {
-                this.state.pts = entry.pts;
-                this.dispatch(entry.update, entry.others, entry.entities);
-            } else if (result === "gap") {
-                remaining.push(entry);
-            }
-        }
-        this.pendingPts.length = 0;
-        this.pendingPts.push(...remaining);
-    }
-
-    private flushPendingSeq(): void {
-        if (!this.state) return;
-        const now = Date.now();
-        this.pendingSeq.sort((a, b) => a.seqStart - b.seqStart);
-        const remaining: PendingSeqUpdate[] = [];
-        for (const entry of this.pendingSeq) {
-            if (now - entry.bufferedAt > PENDING_UPDATE_TTL_MS) {
-                this.client._log.debug(`Drop stale pending seq (age=${now - entry.bufferedAt}ms)`);
-                continue;
-            }
-            const result = checkSeq(this.state.seq, entry.seqStart);
-            if (result === "apply") {
-                this.state.seq = entry.seq;
-                this.onUpdates(entry.update);
-            } else if (result === "gap") {
-                remaining.push(entry);
-            }
-        }
-        this.pendingSeq.length = 0;
-        this.pendingSeq.push(...remaining);
-    }
-
-    private flushPendingQts(): void {
-        if (!this.state) return;
-        const now = Date.now();
-        this.pendingQts.sort((a, b) => a.qts - b.qts);
-        const remaining: PendingQtsUpdate[] = [];
-        for (const entry of this.pendingQts) {
-            if (now - entry.bufferedAt > PENDING_UPDATE_TTL_MS) {
-                this.client._log.debug(`Drop stale pending qts (age=${now - entry.bufferedAt}ms)`);
-                continue;
-            }
-            const localQts = this.state.qts;
-            if (localQts + 1 === entry.qts) {
-                this.state.qts = entry.qts;
-                this.dispatch(entry.update, entry.others, entry.entities);
-            } else if (localQts + 1 < entry.qts) {
-                remaining.push(entry);
-            }
-        }
-        this.pendingQts.length = 0;
-        this.pendingQts.push(...remaining);
-    }
-
-    private flushPendingChannel(channelId: string): void {
-        const pending = this.pendingChannel.get(channelId);
-        if (!pending || pending.length === 0) {
-            this.pendingChannel.delete(channelId);
-            return;
-        }
-        const now = Date.now();
-        const localPts = this.channelPts.get(channelId);
-        pending.sort((a, b) => a.pts - b.pts);
-        const remaining: PendingChannelUpdate[] = [];
-        for (const entry of pending) {
-            if (now - entry.bufferedAt > PENDING_UPDATE_TTL_MS) {
-                this.client._log.debug(`Drop stale channel pending ch=${channelId} (age=${now - entry.bufferedAt}ms)`);
-                continue;
-            }
-            if (localPts !== undefined) {
-                const result = checkPts(localPts, entry.pts, entry.ptsCount);
-                if (result === "apply") {
-                    this.channelPts.set(channelId, entry.pts);
-                    this.dispatch(entry.update, entry.others, entry.entities);
-                } else if (result === "gap") {
-                    remaining.push(entry);
-                }
-            } else {
-                this.channelPts.set(channelId, entry.pts);
-                this.dispatch(entry.update, entry.others, entry.entities);
-            }
-        }
-        if (remaining.length > 0) this.pendingChannel.set(channelId, remaining);
-        else this.pendingChannel.delete(channelId);
-    }
-
-    private forceFlushAllPending(): void {
-        for (const entry of this.pendingPts) this.dispatch(entry.update, entry.others, entry.entities);
-        this.pendingPts.length = 0;
-        for (const entry of this.pendingSeq) this.onUpdates(entry.update);
-        this.pendingSeq.length = 0;
-        for (const entry of this.pendingQts) this.dispatch(entry.update, entry.others, entry.entities);
-        this.pendingQts.length = 0;
-        for (const [, entries] of this.pendingChannel) {
-            for (const entry of entries) this.dispatch(entry.update, entry.others, entry.entities);
-        }
-        this.pendingChannel.clear();
     }
 
     private bumpFailTimeout(): void {
@@ -716,7 +559,6 @@ export class UpdateManager {
 
 export const UPDATE_MANAGER_CONSTANTS = {
     NO_UPDATES_TIMEOUT_MS,
-    PENDING_UPDATE_TTL_MS,
     FAIL_DIFFERENCE_INITIAL_S,
     FAIL_DIFFERENCE_CAP_S,
     CHANNEL_DIFFERENCE_LIMIT,

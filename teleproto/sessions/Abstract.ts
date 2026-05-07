@@ -40,6 +40,18 @@ export abstract class Session {
     abstract get port(): number;
 
     /**
+     * Whether this session is bound to Telegram's test environment.
+     * Sessions are not portable between test and production.
+     */
+    private __testServers = false;
+    get testServers(): boolean {
+        return this.__testServers;
+    }
+    set testServers(value: boolean) {
+        this.__testServers = value;
+    }
+
+    /**
      * Returns an ``AuthKey`` instance associated with the saved
      * data center, or `undefined` if a new one should be generated.
      */

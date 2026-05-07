@@ -62,6 +62,10 @@ export class StoreSession extends MemorySession {
         if (serverAddress) {
             this._serverAddress = serverAddress;
         }
+        const testServers = this.store.get(this.sessionName + "testServers");
+        if (testServers != null) {
+            super.testServers = !!testServers;
+        }
     }
 
     setDC(dcId: number, serverAddress: string, port: number) {
@@ -69,6 +73,15 @@ export class StoreSession extends MemorySession {
         this.store.set(this.sessionName + "port", port);
         this.store.set(this.sessionName + "serverAddress", serverAddress);
         super.setDC(dcId, serverAddress, port);
+    }
+
+    set testServers(value: boolean) {
+        super.testServers = value;
+        this.store.set(this.sessionName + "testServers", value);
+    }
+
+    get testServers() {
+        return super.testServers;
     }
 
     set authKey(value: AuthKey | undefined) {

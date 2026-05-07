@@ -29,9 +29,47 @@ import Deferred from "../extensions/Deferred";
 const EXPORTED_SENDER_RECONNECT_TIMEOUT = 1000; // 1 sec
 const EXPORTED_SENDER_RELEASE_TIMEOUT = 30000; // 30 sec
 
-const DEFAULT_DC_ID = 4;
-const DEFAULT_IPV4_IP = "149.154.167.91";
-const DEFAULT_IPV6_IP = "2001:067c:04e8:f004:0000:0000:0000:000a";
+const PROD_DEFAULT_DC_ID = 2;
+const TEST_DEFAULT_DC_ID = 2;
+
+export const PROD_DC_IPV4: { readonly [id: number]: string } = {
+    1: "149.154.175.50",
+    2: "149.154.167.51",
+    3: "149.154.175.100",
+    4: "149.154.167.91",
+    5: "149.154.171.5",
+};
+export const PROD_DC_IPV6: { readonly [id: number]: string } = {
+    1: "2001:0b28:f23d:f001:0000:0000:0000:000a",
+    2: "2001:067c:04e8:f002:0000:0000:0000:000a",
+    3: "2001:0b28:f23d:f003:0000:0000:0000:000a",
+    4: "2001:067c:04e8:f004:0000:0000:0000:000a",
+    5: "2001:0b28:f23f:f005:0000:0000:0000:000a",
+};
+export const TEST_DC_IPV4: { readonly [id: number]: string } = {
+    1: "149.154.175.10",
+    2: "149.154.167.40",
+    3: "149.154.175.117",
+};
+export const TEST_DC_IPV6: { readonly [id: number]: string } = {
+    1: "2001:0b28:f23d:f001:0000:0000:0000:000e",
+    2: "2001:067c:04e8:f002:0000:0000:0000:000e",
+    3: "2001:0b28:f23d:f003:0000:0000:0000:000e",
+};
+const DC_PORT = 443;
+
+/**
+ * Returns `true` if `address` is a known test-DC seed, `false` if it's a known
+ * production-DC seed, and `undefined` if the address isn't recognised (custom
+ * DC, IPv6 we haven't tabulated, post-`help.GetConfig` rebalanced address, etc.).
+ */
+function inferSessionEnv(address: string): boolean | undefined {
+    for (const ip of Object.values(TEST_DC_IPV4)) if (ip === address) return true;
+    for (const ip of Object.values(TEST_DC_IPV6)) if (ip === address) return true;
+    for (const ip of Object.values(PROD_DC_IPV4)) if (ip === address) return false;
+    for (const ip of Object.values(PROD_DC_IPV6)) if (ip === address) return false;
+    return undefined;
+}
 
 /**
  * Interface for creating a new client.
@@ -46,6 +84,20 @@ export interface TelegramClientParams {
      * Whether to connect to the servers through IPv6 or not. By default this is false.
      */
     useIPV6?: boolean;
+    /**
+     * Whether to connect to Telegram's test environment instead of production.
+     *
+     * When `true`:
+     * - The client starts from test DC2 (`149.154.167.40`). DC routing follows the same
+     *   path as production: `help.GetConfig` is the runtime source of truth, with the
+     *   built-in test seed table (DC1/DC2/DC3) used as a fallback.
+     * - You must use a test phone number of the form `99966<dc><4 digits>`; the login
+     *   code is the DC digit repeated 5 times (e.g. `22222` for DC2).
+     * - Test sessions are not interchangeable with production sessions.
+     *
+     * Defaults to `false`.
+     */
+    testServers?: boolean;
     /**
      * The timeout in seconds to be used when connecting. This does nothing for now.
      */
@@ -143,6 +195,7 @@ const clientParamsDefault = {
     connection: ConnectionTCPFull,
     networkSocket: PromisedNetSockets,
     useIPV6: false,
+    testServers: false,
     timeout: 10,
     requestRetries: 5,
     connectionRetries: Infinity,
@@ -204,6 +257,8 @@ export abstract class TelegramBaseClient {
     public _bot?: boolean;
     /** @hidden */
     public _useIPV6: boolean;
+    /** @hidden */
+    public _testServers: boolean;
     /** @hidden */
     public _selfInputPeer?: Api.InputPeerUser;
     /** @hidden */
@@ -294,6 +349,7 @@ export abstract class TelegramBaseClient {
         this.apiId = apiId;
         this.apiHash = apiHash;
         this._useIPV6 = clientParams.useIPV6!;
+        this._testServers = clientParams.testServers!;
         this._requestRetries = clientParams.requestRetries!;
         this._downloadRetries = clientParams.downloadRetries!;
         this._connectionRetries = clientParams.connectionRetries!;
@@ -376,12 +432,32 @@ export abstract class TelegramBaseClient {
     async _initSession() {
         await this.session.load();
         if (!this.session.serverAddress) {
+            this.session.testServers = this._testServers;
+            const dcId = this._testServers
+                ? TEST_DEFAULT_DC_ID
+                : PROD_DEFAULT_DC_ID;
+            const ipv4Table = this._testServers ? TEST_DC_IPV4 : PROD_DC_IPV4;
+            const ipv6Table = this._testServers ? TEST_DC_IPV6 : PROD_DC_IPV6;
             this.session.setDC(
-                DEFAULT_DC_ID,
-                this._useIPV6 ? DEFAULT_IPV6_IP : DEFAULT_IPV4_IP,
-                80
+                dcId,
+                this._useIPV6 ? ipv6Table[dcId] : ipv4Table[dcId],
+                DC_PORT
             );
         } else {
+            // Best-effort environment check: infer the session's environment from its
+            // saved DC IP and warn if it disagrees with `clientParams.testServers`.
+            // We can't do better without persisting the flag, and we don't want to
+            // change the on-disk session format.
+            const sessionEnv = inferSessionEnv(this.session.serverAddress);
+            if (sessionEnv !== undefined && sessionEnv !== this._testServers) {
+                this._log.warn(
+                    `testServers mismatch: client constructed with testServers=${this._testServers}, ` +
+                    `but the session's saved address (${this.session.serverAddress}) looks like ` +
+                    `${sessionEnv ? "test" : "production"}. Sessions are not portable between ` +
+                    `environments — use a separate session for each.`
+                );
+            }
+            this.session.testServers = this._testServers;
             this._useIPV6 = this.session.serverAddress.includes(":");
         }
     }

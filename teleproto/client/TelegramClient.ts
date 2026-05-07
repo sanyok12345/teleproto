@@ -1,4 +1,11 @@
-import { TelegramBaseClient, TelegramClientParams } from "./telegramBaseClient";
+import {
+    PROD_DC_IPV4,
+    PROD_DC_IPV6,
+    TEST_DC_IPV4,
+    TEST_DC_IPV6,
+    TelegramBaseClient,
+    TelegramClientParams,
+} from "./telegramBaseClient";
 
 import * as authMethods from "./auth";
 import * as botMethods from "./bots";
@@ -1653,18 +1660,49 @@ export class TelegramClient extends TelegramBaseClient {
     ): Promise<{ id: number; ipAddress: string; port: number }> {
         this._log.debug(`Getting DC ${dcId}`);
         if (!this._config) {
-            this._config = await this.invoke(new Api.help.GetConfig());
-        }
-        for (const DC of this._config.dcOptions) {
-            if (DC.id === dcId && !!DC.ipv6 === this._useIPV6) {
-                return {
-                    id: DC.id,
-                    ipAddress: DC.ipAddress,
-                    port: 443,
-                };
+            try {
+                this._config = await this.invoke(new Api.help.GetConfig());
+            } catch (e) {
+                this._log.warn(
+                    `help.GetConfig failed, falling back to built-in DC seeds: ${e}`
+                );
             }
         }
+        const lookup = this._lookupDcOption(dcId, downloadDC);
+        if (lookup) {
+            return lookup;
+        }
+        const ipv4Table = this._testServers ? TEST_DC_IPV4 : PROD_DC_IPV4;
+        const ipv6Table = this._testServers ? TEST_DC_IPV6 : PROD_DC_IPV6;
+        const ipAddress = (this._useIPV6 ? ipv6Table : ipv4Table)[dcId];
+        if (ipAddress) {
+            return { id: dcId, ipAddress, port: 443 };
+        }
         throw new Error(`Cannot find the DC with the ID of ${dcId}`);
+    }
+
+    private _lookupDcOption(
+        dcId: number,
+        mediaCluster: boolean
+    ): { id: number; ipAddress: string; port: number } | undefined {
+        if (!this._config) return undefined;
+        let candidates = this._config.dcOptions.filter((DC) => {
+            if (DC.id !== dcId) return false;
+            if (DC.cdn) return false;
+            if (DC.mediaOnly && !mediaCluster) return false;
+            if (DC.secret && DC.secret.length) return false;
+            if (DC.tcpoOnly) return false;
+            return !!DC.ipv6 === this._useIPV6;
+        });
+        if (!candidates.length) return undefined;
+        if (mediaCluster && candidates.some((DC) => DC.mediaOnly)) {
+            candidates = candidates.filter((DC) => DC.mediaOnly);
+        }
+        if (this._proxy && candidates.some((DC) => DC.static)) {
+            candidates = candidates.filter((DC) => DC.static);
+        }
+        const chosen = candidates[0];
+        return { id: chosen.id, ipAddress: chosen.ipAddress, port: 443 };
     }
 
     /** @hidden */

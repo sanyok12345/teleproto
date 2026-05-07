@@ -83,7 +83,9 @@ export class UpdateManager {
 
     private fetchingDifference = false;
     private failTimeoutS = FAIL_DIFFERENCE_INITIAL_S;
+    private failRetryTimer?: NodeJS.Timeout;
     private readonly channelFailTimeoutS = new Map<string, number>();
+    private readonly channelFailRetryTimers = new Map<string, NodeJS.Timeout>();
 
     private running = false;
 
@@ -104,6 +106,12 @@ export class UpdateManager {
             clearTimeout(this.globalPtsTimer);
             this.globalPtsTimer = undefined;
         }
+        if (this.failRetryTimer) {
+            clearTimeout(this.failRetryTimer);
+            this.failRetryTimer = undefined;
+        }
+        for (const t of this.channelFailRetryTimers.values()) clearTimeout(t);
+        this.channelFailRetryTimers.clear();
         for (const tracker of this.channels.values()) {
             if (tracker.timer) clearTimeout(tracker.timer);
             tracker.pts.clearSkippedUpdates();
@@ -251,6 +259,19 @@ export class UpdateManager {
             return;
         }
 
+        if (update instanceof Api.UpdateChannelTooLong) {
+            const channelId = update.channelId.toString();
+            const tracker = this.getOrCreateChannel(channelId);
+            const serverPts = update.pts;
+            if (!tracker.pts.inited()) {
+                if (serverPts !== undefined) tracker.pts.init(serverPts);
+            } else if (serverPts === undefined || tracker.pts.current() < serverPts) {
+                this.client._log.debug(`UpdateChannelTooLong ch=${channelId}; requesting diff`);
+                void this.fetchChannelDifference(channelId);
+            }
+            return;
+        }
+
         if (isCommonPtsUpdate(update)) {
             const u = update as Api.TypeUpdate & { pts: number; ptsCount: number };
             this.globalPts.updateAndApply(
@@ -382,6 +403,7 @@ export class UpdateManager {
 
     private scheduleCommonDifference(): void {
         if (this.fetchingDifference) return;
+        if (this.failRetryTimer) return;
         void this.fetchCommonDifference();
     }
 
@@ -389,17 +411,27 @@ export class UpdateManager {
         if (this.fetchingDifference || !this.state) return;
         this.fetchingDifference = true;
         this.globalPts.setRequesting(true);
+        let failed = false;
         try {
             await this.fetchDifferenceLoop();
             this.failTimeoutS = FAIL_DIFFERENCE_INITIAL_S;
         } catch (e) {
+            failed = true;
             this.client._log.error(`fetchCommonDifference: ${e}`);
-            this.bumpFailTimeout();
         } finally {
             this.globalPts.setRequesting(false);
             if (this.state) this.globalPts.init(this.state.pts);
             this.fetchingDifference = false;
             this.drainPendingSeq();
+        }
+        if (failed && this.running) {
+            const delayMs = this.failTimeoutS * 1000;
+            this.bumpFailTimeout();
+            this.client._log.debug(`Retry common difference in ${delayMs}ms`);
+            this.failRetryTimer = setTimeout(() => {
+                this.failRetryTimer = undefined;
+                this.scheduleCommonDifference();
+            }, delayMs);
         }
     }
 
@@ -468,8 +500,10 @@ export class UpdateManager {
         const tracker = this.channels.get(channelId);
         if (!tracker || tracker.pts.requesting()) return;
         if (!tracker.pts.inited()) return;
+        if (this.channelFailRetryTimers.has(channelId)) return;
 
         tracker.pts.setRequesting(true);
+        let failed = false;
         try {
             const inputChannel = await this.resolveChannel(channelId, tracker);
             if (!inputChannel) {
@@ -519,10 +553,20 @@ export class UpdateManager {
             }
             this.channelFailTimeoutS.delete(channelId);
         } catch (e) {
+            failed = true;
             this.client._log.error(`fetchChannelDifference ${channelId}: ${e}`);
-            this.bumpChannelFailTimeout(channelId);
         } finally {
             tracker.pts.setRequesting(false);
+        }
+        if (failed && this.running) {
+            const delayMs = (this.channelFailTimeoutS.get(channelId) ?? FAIL_DIFFERENCE_INITIAL_S) * 1000;
+            this.bumpChannelFailTimeout(channelId);
+            this.client._log.debug(`Retry channel ${channelId} difference in ${delayMs}ms`);
+            const timer = setTimeout(() => {
+                this.channelFailRetryTimers.delete(channelId);
+                void this.fetchChannelDifference(channelId);
+            }, delayMs);
+            this.channelFailRetryTimers.set(channelId, timer);
         }
     }
 
@@ -556,10 +600,3 @@ export class UpdateManager {
         }
     }
 }
-
-export const UPDATE_MANAGER_CONSTANTS = {
-    NO_UPDATES_TIMEOUT_MS,
-    FAIL_DIFFERENCE_INITIAL_S,
-    FAIL_DIFFERENCE_CAP_S,
-    CHANNEL_DIFFERENCE_LIMIT,
-} as const;

@@ -26,7 +26,7 @@ import type { EventBuilder } from "../events/common";
 import { MTProtoSender } from "../network";
 
 import { LAYER } from "../tl/runtime/registry";
-import { DownloadMediaInterface, IterDownloadFunction } from "./downloads";
+import { DownloadMediaInterface } from "./downloads";
 import { NewMessage, NewMessageEvent } from "../events";
 import { _handleUpdate, _updateLoop, catchUp } from "./updates";
 import { Session } from "../sessions";
@@ -515,33 +515,6 @@ export class TelegramClient extends TelegramBaseClient {
         fileParams: downloadMethods.DownloadFileParams = {}
     ) {
         return downloadMethods.downloadFile(this, inputLocation, fileParams);
-    }
-
-    /**
-     * Iterates over a file download, yielding chunks of the file.
-     * This method can be used to stream files in a more convenient way, since it offers more control (pausing, resuming, etc.)
-     * @param iterFileParams - {@link IterDownloadFunction}
-     * @return a Buffer downloaded from the inputFile.
-     * @example
-     * ```ts
-     * const photo = message.photo;
-     * for await (const chunk of client.iterDownload({
-     *       file: new Api.InputPhotoFileLocation({
-     *          id: photo.id,
-     *          accessHash: photo.accessHash,
-     *          fileReference: photo.fileReference,
-     *          thumbSize: size.type
-     *      }),
-     *      offset: start,
-     *      limit: end,
-     *      requestSize:2048*1024
-     * )){
-     *     console.log("Downloaded chunk of size",chunk.length);
-     * };
-     * ```
-     */
-    iterDownload(iterFileParams: downloadMethods.IterDownloadFunction) {
-        return downloadMethods.iterDownload(this, iterFileParams);
     }
 
     //region download
@@ -1589,7 +1562,6 @@ export class TelegramClient extends TelegramBaseClient {
                 client: this,
                 securityChecks: this._securityChecks,
                 autoReconnectCallback: this._handleReconnect.bind(this),
-                _exportedSenderPromises: this._exportedSenderPromises,
                 reconnectRetries: this._reconnectRetries,
             });
         }
@@ -1635,12 +1607,12 @@ export class TelegramClient extends TelegramBaseClient {
         this._log.info(`Reconnecting to new data center ${newDc}`);
         const DC = await this.getDC(newDc);
         this.session.setDC(newDc, DC.ipAddress, DC.port);
-        // authKey's are associated with a server, which has now changed
-        // so it's not valid anymore. Set to undefined to force recreating it.
         await this._sender!.authKey.setKey(undefined);
         this.session.setAuthKey(undefined);
         this.session.save();
         this._isSwitchingDc = true;
+        await this._filePool.purge();
+        await this._apiSenderPool.purge();
         await this._disconnect();
         this._sender = undefined;
         return await this.connect();
@@ -1738,11 +1710,6 @@ export class TelegramClient extends TelegramBaseClient {
         const smallLimit = this._appConfig?.small_queue_max_active_operations_count ?? 4;
         const largeLimit = this._appConfig?.large_queue_max_active_operations_count ?? 8;
         return fileSize > 20 * 1024 * 1024 ? largeLimit : smallLimit;
-    }
-
-    /** @hidden */
-    _removeSender(dcId: number) {
-        delete this._borrowedSenderPromises[dcId];
     }
 
     /** @hidden */

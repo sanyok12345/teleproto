@@ -1,352 +1,78 @@
 import { Api } from "../tl";
 import type { TelegramClient } from "./TelegramClient";
 import { strippedPhotoToJpg } from "../Utils";
-import { sleep, sha256 } from "../Helpers";
 import { EntityLike, OutFile, ProgressCallback } from "../define";
 import * as utils from "../Utils";
-import { RequestIter } from "../requestIter";
-import { MTProtoSender } from "../network";
-import { FileMigrateError } from "../errors";
 import { createWriteStream } from "fs";
 import { BinaryWriter } from "../extensions";
-import { CTR } from "../crypto/CTR";
 import * as fs from "fs";
 import path from "path";
 import bigInt from "big-integer";
+import {
+    BoundedSemaphore,
+    OrderedWriter,
+} from "../network/OrderedWriter";
+import { FilePoolAbortError } from "../network/FilePool";
 
-/**
- * progress callback that will be called each time a new chunk is downloaded.
- */
 export interface progressCallback {
     (
-        /** How much was downloaded */
         downloaded: bigInt.BigInteger,
-        /** Full size of the file to be downloaded */
         fullSize: bigInt.BigInteger,
-        /** other args to be passed if needed */
         ...args: any[]
     ): void;
-
-    /** When this value is set to true the download will stop */
     isCanceled?: boolean;
-    /** Does nothing for now. */
     acceptsBuffer?: boolean;
 }
 
 export interface DownloadFileParams {
-    /**
-     * The output file path, directory,buffer, or stream-like object.
-     * If the path exists and is a file, it will be overwritten.
-
-     * If the file path is `undefined` or `Buffer`, then the result
-     will be saved in memory and returned as `Buffer`.
-     */
     outputFile?: OutFile;
-    /** The dcId that the file belongs to. Used to borrow a sender from that DC. The library should handle this for you */
     dcId?: number;
-    /** The file size that is about to be downloaded, if known.<br/>
-     Only used if ``progressCallback`` is specified. */
     fileSize?: bigInt.BigInteger;
-    /** How much to download in each chunk. The larger the less requests to be made. (max is 512kb). */
     partSizeKb?: number;
-    /** Progress callback accepting one param. (progress :number) which is a float between 0 and 1 */
     progressCallback?: progressCallback;
     msgData?: [EntityLike, number];
 }
 
-/**
- * contains optional download params for profile photo.
- */
 export interface DownloadProfilePhotoParams {
-    /** Whether to download the big version or the small one of the photo */
     isBig?: boolean;
     outputFile?: OutFile;
 }
 
-// All types
 const sizeTypes = ["w", "y", "d", "x", "c", "m", "b", "a", "s"];
 
-// Chunk sizes for `upload.getFile` must be multiple of the smallest size
 const MIN_CHUNK_SIZE = 4096;
 const ONE_MB = 1024 * 1024;
-const TIMED_OUT_SLEEP = 1000;
-const MAX_CHUNK_SIZE = ONE_MB;
-const MAX_WORKERS = 16;
-
-export interface DirectDownloadIterInterface {
-    fileLocation: Api.TypeInputFileLocation;
-    dcId: number;
-    offset: bigInt.BigInteger;
-    stride: number;
-    chunkSize: number;
-    requestSize: number;
-    fileSize: number;
-    msgData: number;
-}
-
-export interface IterDownloadFunction {
-    file?: Api.TypeMessageMedia | Api.TypeInputFile | Api.TypeInputFileLocation;
-    offset?: bigInt.BigInteger;
-    stride?: number;
-    limit?: number;
-    chunkSize?: number;
-    requestSize: number;
-    fileSize?: bigInt.BigInteger;
-    dcId?: number;
-    msgData?: [EntityLike, number];
-}
-
-export class DirectDownloadIter extends RequestIter {
-    protected request?: Api.upload.GetFile;
-    private _sender?: MTProtoSender;
-    private _timedOut: boolean = false;
-    protected _stride?: number;
-    protected _chunkSize?: number;
-    protected _lastPart?: Buffer;
-    protected buffer: Buffer[] | undefined;
-
-    async _init({
-        fileLocation,
-        dcId,
-        offset,
-        stride,
-        chunkSize,
-        requestSize,
-        fileSize,
-        msgData,
-    }: DirectDownloadIterInterface) {
-        this.request = new Api.upload.GetFile({
-            location: fileLocation,
-            offset,
-            limit: requestSize,
-            precise: true,
-            cdnSupported: false,
-        });
-
-        this.total = fileSize;
-        this._stride = stride;
-        this._chunkSize = chunkSize;
-        this._lastPart = undefined;
-        //this._msgData = msgData;
-        this._timedOut = false;
-
-        this._sender = await this.client.getSender(dcId);
-    }
-
-    async _loadNextChunk(): Promise<boolean | undefined> {
-        const current = await this._request();
-        this.buffer!.push(current);
-        if (current.length < this.request!.limit) {
-            // we finished downloading
-            this.left = this.buffer!.length;
-            await this.close();
-            return true;
-        } else {
-            this.request!.offset = this.request!.offset.add(this._stride!);
-        }
-    }
-
-    async _request(): Promise<Buffer> {
-        try {
-            this._sender = await this.client.getSender(this._sender!.dcId);
-            const result = await this.client.invokeWithSender(
-                this.request!,
-                this._sender
-            );
-            this._timedOut = false;
-            if (result instanceof Api.upload.FileCdnRedirect) {
-                throw new Error(
-                    "CDN Not supported. Please Add an issue in github"
-                );
-            }
-            return result.bytes;
-        } catch (e: any) {
-            if (e.errorMessage == "TIMEOUT") {
-                if (this._timedOut) {
-                    this.client._log.warn(
-                        "Got two timeouts in a row while downloading file"
-                    );
-                    throw e;
-                }
-                this._timedOut = true;
-                this.client._log.info(
-                    "Got timeout while downloading file, retrying once"
-                );
-                await sleep(TIMED_OUT_SLEEP);
-                return await this._request();
-            } else if (e instanceof FileMigrateError) {
-                this.client._log.info("File lives in another DC");
-                this._sender = await this.client.getSender(e.newDc);
-                return await this._request();
-            } else if (e.errorMessage == "FILEREF_UPGRADE_NEEDED") {
-                // TODO later
-                throw e;
-            } else {
-                throw e;
-            }
-        }
-    }
-
-    async close() {
-        this.client._log.debug("Finished downloading file ...");
-    }
-
-    [Symbol.asyncIterator](): AsyncIterator<Buffer, any, undefined> {
-        return super[Symbol.asyncIterator]();
-    }
-}
-
-export class GenericDownloadIter extends DirectDownloadIter {
-    async _loadNextChunk(): Promise<boolean | undefined> {
-        // 1. Fetch enough for one chunk
-        let data = Buffer.alloc(0);
-
-        //  1.1. ``bad`` is how much into the data we have we need to offset
-        const bad = this.request!.offset.mod(this.request!.limit).toJSNumber();
-        const before = this.request!.offset;
-
-        // 1.2. We have to fetch from a valid offset, so remove that bad part
-        this.request!.offset = this.request!.offset.subtract(bad);
-
-        let done = false;
-        while (!done && data.length - bad < this._chunkSize!) {
-            const current = await this._request();
-            this.request!.offset = this.request!.offset.add(
-                this.request!.limit
-            );
-
-            data = Buffer.concat([data, current]);
-            done = current.length < this.request!.limit;
-        }
-        // 1.3 Restore our last desired offset
-        this.request!.offset = before;
-
-        // 2. Fill the buffer with the data we have
-        // 2.1. The current chunk starts at ``bad`` offset into the data,
-        //  and each new chunk is ``stride`` bytes apart of the other
-        for (let i = bad; i < data.length; i += this._stride!) {
-            this.buffer!.push(data.slice(i, i + this._chunkSize!));
-
-            // 2.2. We will yield this offset, so move to the next one
-            this.request!.offset = this.request!.offset.add(this._stride!);
-        }
-
-        // 2.3. If we are in the last chunk, we will return the last partial data
-        if (done) {
-            this.left = this.buffer!.length;
-            await this.close();
-            return;
-        }
-
-        // 2.4 If we are not done, we can't return incomplete chunks.
-        if (this.buffer![this.buffer!.length - 1].length != this._chunkSize) {
-            this._lastPart = this.buffer!.pop();
-            //   3. Be careful with the offsets. Re-fetching a bit of data
-            //   is fine, since it greatly simplifies things.
-            // TODO Try to not re-fetch data
-            this.request!.offset = this.request!.offset.subtract(this._stride!);
-        }
-    }
-}
-
-/** @hidden */
-export function iterDownload(
-    client: TelegramClient,
-    {
-        file,
-        offset = bigInt.zero,
-        stride,
-        limit,
-        chunkSize,
-        requestSize = MAX_CHUNK_SIZE,
-        fileSize,
-        dcId,
-        msgData,
-    }: IterDownloadFunction
-) {
-    // we're ignoring here to make it more flexible (which is probably a bad idea)
-    // @ts-ignore
-    const info = utils.getFileInfo(file);
-    if (info.dcId != undefined) {
-        dcId = info.dcId;
-    }
-    if (fileSize == undefined) {
-        fileSize = info.size;
-    }
-
-    file = info.location;
-
-    if (chunkSize == undefined) {
-        chunkSize = requestSize;
-    }
-
-    if (limit == undefined && fileSize != undefined) {
-        limit = Math.floor(
-            fileSize.add(chunkSize).subtract(1).divide(chunkSize).toJSNumber()
-        );
-    }
-    if (stride == undefined) {
-        stride = chunkSize;
-    } else if (stride < chunkSize) {
-        throw new Error("Stride must be >= chunkSize");
-    }
-
-    requestSize -= requestSize % MIN_CHUNK_SIZE;
-
-    if (requestSize < MIN_CHUNK_SIZE) {
-        requestSize = MIN_CHUNK_SIZE;
-    } else if (requestSize > MAX_CHUNK_SIZE) {
-        requestSize = MAX_CHUNK_SIZE;
-    }
-    let cls;
-    if (
-        chunkSize == requestSize &&
-        offset!.divide(MAX_CHUNK_SIZE).eq(bigInt.zero) &&
-        stride % MIN_CHUNK_SIZE == 0 &&
-        (limit == undefined || offset!.divide(limit).eq(bigInt.zero))
-    ) {
-        cls = DirectDownloadIter;
-        client._log.info(
-            `Starting direct file download in chunks of ${requestSize} at ${offset}, stride ${stride}`
-        );
-    } else {
-        cls = GenericDownloadIter;
-        client._log.info(
-            `Starting indirect file download in chunks of ${requestSize} at ${offset}, stride ${stride}`
-        );
-    }
-    return new cls(
-        client,
-        limit,
-        {},
-        {
-            fileLocation: file,
-            dcId,
-            offset,
-            stride,
-            chunkSize,
-            requestSize,
-            fileSize,
-            msgData,
-        }
-    );
-}
 
 function getWriter(outputFile?: OutFile) {
     if (!outputFile || Buffer.isBuffer(outputFile)) {
         return new BinaryWriter(Buffer.alloc(0));
     } else if (typeof outputFile == "string") {
-        // We want to make sure that the path exists.
         return createWriteStream(outputFile);
     } else {
         return outputFile;
     }
 }
 
-function closeWriter(
-    writer: BinaryWriter | { write: Function; close?: Function }
+async function closeWriter(
+    writer: BinaryWriter | { write: Function; close?: Function; end?: Function },
 ) {
-    if ("close" in writer && writer.close) {
+    if (writer instanceof fs.WriteStream) {
+        await new Promise<void>((resolve, reject) => {
+            const onErr = (err: any) => {
+                writer.removeListener("close", onClose);
+                reject(err);
+            };
+            const onClose = () => {
+                writer.removeListener("error", onErr);
+                resolve();
+            };
+            writer.once("close", onClose);
+            writer.once("error", onErr);
+            writer.end();
+        });
+        return;
+    }
+    if ("close" in writer && typeof writer.close === "function") {
         writer.close();
     }
 }
@@ -364,169 +90,15 @@ function returnWriterValue(writer: any): Buffer | string | undefined {
     }
 }
 
-function getDownloadPartSize(fileSize?: bigInt.BigInteger): number {
-    if (!fileSize) return 256;
-    if (fileSize.lesser(10 * ONE_MB)) return 256;
-    if (fileSize.lesser(100 * ONE_MB)) return 512;
-    return 1024;
-}
-
-function computeCdnIv(initialIv: Buffer, offset: number): Buffer {
-    const iv = Buffer.from(initialIv);
-    let carry = Math.floor(offset / 16);
-    for (let i = 15; i >= 0 && carry > 0; i--) {
-        carry += iv[i];
-        iv[i] = carry & 0xff;
-        carry >>= 8;
+function resolvePartSize(client: TelegramClient, partSizeKb?: number): number {
+    let size = partSizeKb && partSizeKb > 0
+        ? Math.floor(partSizeKb * 1024)
+        : client._filePool.opts.partSize;
+    if (size > ONE_MB) size = ONE_MB;
+    if (size % MIN_CHUNK_SIZE !== 0) {
+        throw new Error("partSizeKb must be a multiple of 4 (KB)");
     }
-    return iv;
-}
-
-async function verifyFileHashes(
-    data: Buffer,
-    offset: number,
-    hashes: Api.TypeFileHash[]
-): Promise<boolean> {
-    for (const hash of hashes) {
-        const hashOffset = typeof hash.offset === "number"
-            ? hash.offset
-            : (hash.offset as any).toJSNumber();
-        const hashLimit = hash.limit;
-        const localOffset = hashOffset - offset;
-        if (localOffset < 0 || localOffset + hashLimit > data.length) continue;
-
-        const chunk = data.subarray(localOffset, localOffset + hashLimit);
-        const computed = await sha256(chunk);
-        if (!computed.equals(hash.hash)) {
-            return false;
-        }
-    }
-    return true;
-}
-
-async function downloadChunk(
-    client: TelegramClient,
-    location: Api.TypeInputFileLocation,
-    offset: bigInt.BigInteger,
-    limit: number,
-    dcId: number | undefined,
-    senderRef: { sender?: MTProtoSender }
-): Promise<Buffer> {
-    let timedOut = false;
-    while (true) {
-        try {
-            if (!senderRef.sender || !senderRef.sender.isConnected()) {
-                senderRef.sender = await client.getSender(senderRef.sender?.dcId ?? dcId ?? 0);
-            }
-            const result = await client.invokeWithSender(
-                new Api.upload.GetFile({
-                    location,
-                    offset,
-                    limit,
-                    precise: true,
-                    cdnSupported: false,
-                }),
-                senderRef.sender
-            );
-
-            if (result instanceof Api.upload.FileCdnRedirect) {
-                return await downloadFromCdn(
-                    client,
-                    senderRef,
-                    result,
-                    location,
-                    offset,
-                    limit
-                );
-            }
-
-            return result.bytes;
-        } catch (e: any) {
-            if (e.errorMessage === "TIMEOUT") {
-                if (timedOut) {
-                    throw e;
-                }
-                timedOut = true;
-                client._log.info("Got timeout while downloading file, retrying once");
-                await sleep(TIMED_OUT_SLEEP);
-                continue;
-            } else if (e instanceof FileMigrateError) {
-                client._log.info("File lives in another DC");
-                senderRef.sender = await client.getSender(e.newDc);
-                continue;
-            } else if (
-                e.errorMessage === "FLOOD_WAIT" ||
-                e.errorMessage?.startsWith("FLOOD_WAIT_")
-            ) {
-                const seconds = e.seconds || parseInt(e.errorMessage.split("_").pop()) || 1;
-                client._log.warn(`Flood wait ${seconds}s during download`);
-                await sleep(seconds * 1000);
-                continue;
-            }
-            throw e;
-        }
-    }
-}
-
-async function downloadFromCdn(
-    client: TelegramClient,
-    originSenderRef: { sender?: MTProtoSender },
-    redirect: Api.upload.FileCdnRedirect,
-    _location: Api.TypeInputFileLocation,
-    offset: bigInt.BigInteger,
-    limit: number
-): Promise<Buffer> {
-    const cdnSender = await client.getSender(redirect.dcId);
-    const offsetNum = typeof offset === "number" ? offset : offset.toJSNumber();
-
-    while (true) {
-        const cdnResult = await client.invokeWithSender(
-            new Api.upload.GetCdnFile({
-                fileToken: redirect.fileToken,
-                offset,
-                limit,
-            }),
-            cdnSender
-        );
-
-        if (cdnResult instanceof Api.upload.CdnFileReuploadNeeded) {
-            const originSender = await client.getSender(
-                originSenderRef.sender?.dcId ?? 0
-            );
-            await client.invokeWithSender(
-                new Api.upload.ReuploadCdnFile({
-                    fileToken: redirect.fileToken,
-                    requestToken: cdnResult.requestToken,
-                }),
-                originSender
-            );
-            continue;
-        }
-
-        const iv = computeCdnIv(redirect.encryptionIv, offsetNum);
-        const ctr = new CTR(redirect.encryptionKey, iv);
-        const decrypted = ctr.encrypt(cdnResult.bytes);
-
-        let hashes = redirect.fileHashes;
-        if (!hashes || hashes.length === 0) {
-            const cdnHashes = await client.invokeWithSender(
-                new Api.upload.GetCdnFileHashes({
-                    fileToken: redirect.fileToken,
-                    offset,
-                }),
-                await client.getSender(originSenderRef.sender?.dcId ?? 0)
-            );
-            hashes = cdnHashes;
-        }
-        if (hashes && hashes.length > 0) {
-            const valid = await verifyFileHashes(decrypted, offsetNum, hashes);
-            if (!valid) {
-                throw new Error("CDN file hash verification failed");
-            }
-        }
-
-        return decrypted;
-    }
+    return size;
 }
 
 /** @hidden */
@@ -539,156 +111,157 @@ export async function downloadFile(
         fileSize = undefined,
         progressCallback = undefined,
         dcId = undefined,
-        msgData = undefined,
     }: DownloadFileParams
-) {
-    if (!partSizeKb) {
-        partSizeKb = getDownloadPartSize(fileSize || undefined);
-    }
-
-    const partSize = Math.floor(partSizeKb * 1024);
-    if (partSize % MIN_CHUNK_SIZE !== 0) {
-        throw new Error("The part size must be evenly divisible by 4096");
-    }
-
-    if (fileSize && fileSize.greater(0)) {
-        const sizeNum = fileSize.toJSNumber();
-        const workers = await client._getDownloadConcurrency(sizeNum);
-        if (workers > 1) {
-            return _downloadParallel(client, inputLocation, {
-                outputFile,
-                partSize,
-                fileSize,
-                workers: Math.min(workers, MAX_WORKERS),
-                dcId,
-                progressCallback,
-            });
-        }
-    }
+): Promise<Buffer | string | undefined> {
+    const info = utils.getFileInfo(inputLocation);
+    const targetDc = dcId ?? info.dcId ?? client.session.dcId;
+    const location = (info.location ?? inputLocation) as Api.TypeInputFileLocation;
+    const totalSize: bigInt.BigInteger | undefined = fileSize ?? info.size;
+    const totalBytes = totalSize ? totalSize.toJSNumber() : 0;
+    const partSize = resolvePartSize(client, partSizeKb);
 
     const writer = getWriter(outputFile);
-    let downloaded = bigInt.zero;
-    try {
-        for await (const chunk of iterDownload(client, {
-            file: inputLocation,
-            requestSize: partSize,
-            dcId: dcId,
-            msgData: msgData,
-        })) {
-            await writer.write(chunk);
-            downloaded = downloaded.add(chunk.length);
-            if (progressCallback) {
-                await progressCallback(
-                    downloaded,
-                    bigInt(fileSize || bigInt.zero)
-                );
-            }
+    const abort = new AbortController();
+    let downloaded = 0;
+
+    const reportProgress = async (bytes: number) => {
+        downloaded += bytes;
+        if (!progressCallback) return;
+        if (progressCallback.isCanceled) {
+            abort.abort();
+            return;
         }
+        await progressCallback(
+            bigInt(downloaded),
+            bigInt(totalBytes || downloaded),
+        );
+    };
+
+    try {
+        if (totalBytes <= 0) {
+            await streamSequential(
+                client,
+                location,
+                targetDc,
+                partSize,
+                writer,
+                abort.signal,
+                reportProgress,
+            );
+        } else {
+            await streamParallel(
+                client,
+                location,
+                targetDc,
+                partSize,
+                totalBytes,
+                writer,
+                abort.signal,
+                reportProgress,
+            );
+        }
+        await closeWriter(writer);
         return returnWriterValue(writer);
-    } finally {
-        closeWriter(writer);
+    } catch (err) {
+        await closeWriter(writer).catch(() => {});
+        throw err;
     }
 }
 
-async function _downloadParallel(
+async function streamSequential(
     client: TelegramClient,
-    inputLocation: Api.TypeInputFileLocation,
-    params: {
-        outputFile?: OutFile;
-        partSize: number;
-        fileSize: bigInt.BigInteger;
-        workers: number;
-        dcId?: number;
-        progressCallback?: progressCallback;
+    location: Api.TypeInputFileLocation,
+    dcId: number,
+    partSize: number,
+    writer: any,
+    signal: AbortSignal,
+    onBytes: (n: number) => Promise<void>,
+): Promise<void> {
+    let idx = 0;
+    while (true) {
+        if (signal.aborted) return;
+        const offset = bigInt(idx).multiply(partSize);
+        const data = await client._filePool.getFile(
+            dcId,
+            location,
+            offset,
+            partSize,
+            signal,
+        );
+        if (data.length > 0) {
+            await writer.write(data);
+            await onBytes(data.length);
+        }
+        if (data.length < partSize) return;
+        idx++;
     }
-) {
-    const { outputFile, partSize, fileSize, workers, dcId, progressCallback } =
-        params;
-    const fileSizeNum = fileSize.toJSNumber();
-    const partCount = Math.ceil(fileSizeNum / partSize);
-    const writer = getWriter(outputFile);
+}
 
-    let downloaded = bigInt.zero;
-    const senderRef: { sender?: MTProtoSender } = {};
-    senderRef.sender = await client.getSender(dcId ?? 0);
-
-    client._log.info(
-        `Starting parallel download: ${partCount} parts, ${workers} workers, ${partSize / 1024}KB chunks`
+async function streamParallel(
+    client: TelegramClient,
+    location: Api.TypeInputFileLocation,
+    dcId: number,
+    partSize: number,
+    totalBytes: number,
+    writer: any,
+    signal: AbortSignal,
+    onBytes: (n: number) => Promise<void>,
+): Promise<void> {
+    const totalParts = Math.max(1, Math.ceil(totalBytes / partSize));
+    const ordered = new OrderedWriter(writer);
+    const inflight = new BoundedSemaphore(
+        Math.max(1, client._filePool.opts.inflightPerDc),
     );
 
-    try {
-        for (let i = 0; i < partCount; i += workers) {
-            const batchEnd = Math.min(i + workers, partCount);
-            const batchPromises: Promise<{ index: number; data: Buffer }>[] = [];
+    let firstError: any;
+    const tasks: Promise<void>[] = [];
 
-            for (let j = i; j < batchEnd; j++) {
-                const offset = bigInt(j).multiply(partSize);
-
-                batchPromises.push(
-                    (async (partIndex: number) => {
-                        const partSenderRef: { sender?: MTProtoSender } = {
-                            sender: senderRef.sender,
-                        };
-                        const data = await downloadChunk(
-                            client,
-                            inputLocation,
-                            offset,
-                            partSize,
-                            dcId,
-                            partSenderRef
-                        );
-                        senderRef.sender = partSenderRef.sender;
-                        return { index: partIndex, data };
-                    })(j)
-                );
-            }
-
-            const results = await Promise.all(batchPromises);
-
-            results.sort((a, b) => a.index - b.index);
-            for (const { data } of results) {
-                await writer.write(data);
-                downloaded = downloaded.add(data.length);
-                if (progressCallback) {
-                    if (progressCallback.isCanceled) {
-                        throw new Error("USER_CANCELED");
-                    }
-                    await progressCallback(downloaded, fileSize);
-                }
-            }
+    for (let i = 0; i < totalParts; i++) {
+        if (signal.aborted || firstError) break;
+        await inflight.acquire();
+        if (signal.aborted || firstError) {
+            inflight.release();
+            break;
         }
+        const idx = i;
+        const offset = bigInt(idx).multiply(partSize);
+        tasks.push((async () => {
+            try {
+                const data = await client._filePool.getFile(
+                    dcId,
+                    location,
+                    offset,
+                    partSize,
+                    signal,
+                );
+                if (!firstError) {
+                    // Always push to the ordered writer, even if the part
+                    // came back empty — otherwise `nextIdx` would stall on
+                    // the gap and every later part would stay stuck in the
+                    // stash, silently truncating the output.
+                    await ordered.write(idx, data, onBytes);
+                }
+            } catch (err: any) {
+                if (!firstError) firstError = err;
+            } finally {
+                // Holding the ticket until after the ordered write keeps the
+                // stash naturally bounded by inflightPerDc parts. The disk
+                // path is non-blocking (WriteStream.write is queued), so this
+                // doesn't choke throughput.
+                inflight.release();
+            }
+        })());
+    }
 
-        return returnWriterValue(writer);
-    } finally {
-        closeWriter(writer);
+    await Promise.all(tasks);
+    if (firstError && !(firstError instanceof FilePoolAbortError)) {
+        throw firstError;
     }
 }
 
-/**
- * All of these are optional and will be calculated automatically if not specified.
- */
 export interface DownloadMediaInterface {
-    /**
-     * The output file location, if left undefined this method will return a buffer
-     */
     outputFile?: OutFile;
-    /**
-     * Which thumbnail size from the document or photo to download, instead of downloading the document or photo itself.<br/>
-     <br/>
-     If it's specified but the file does not have a thumbnail, this method will return `undefined`.<br/>
-     <br/>
-     The parameter should be an integer index between ``0`` and ``sizes.length``.<br/>
-     ``0`` will download the smallest thumbnail, and ``sizes.length - 1`` will download the largest thumbnail.<br/>
-     <br/>
-     You can also pass the `Api.PhotoSize` instance to use.  Alternatively, the thumb size type `string` may be used.<br/>
-     <br/>
-     In short, use ``thumb=0`` if you want the smallest thumbnail and ``thumb=sizes.length`` if you want the largest thumbnail.
-     */
     thumb?: number | Api.TypePhotoSize;
-    /**
-     *  A callback function accepting two parameters:
-     * ``(received bytes, total)``.
-     */
     progressCallback?: ProgressCallback;
 }
 
@@ -700,11 +273,6 @@ export async function downloadMedia(
     thumb?: number | Api.TypePhotoSize,
     progressCallback?: ProgressCallback
 ): Promise<Buffer | string | undefined> {
-    /*
-      Downloading large documents may be slow enough to require a new file reference
-      to be obtained mid-download. Store (input chat, message id) so that the message
-      can be re-fetched.
-     */
     let msgData: [EntityLike, number] | undefined;
     let date;
     let media;
@@ -817,18 +385,18 @@ export async function _downloadDocument(
 
 /** @hidden */
 export async function _downloadContact(
-    client: TelegramClient,
-    media: Api.MessageMediaContact,
-    args: DownloadMediaInterface
+    _client: TelegramClient,
+    _media: Api.MessageMediaContact,
+    _args: DownloadMediaInterface
 ): Promise<Buffer> {
     throw new Error("not implemented");
 }
 
 /** @hidden */
 export async function _downloadWebDocument(
-    client: TelegramClient,
-    media: Api.WebDocument | Api.WebDocumentNoProxy,
-    args: DownloadMediaInterface
+    _client: TelegramClient,
+    _media: Api.WebDocument | Api.WebDocumentNoProxy,
+    _args: DownloadMediaInterface
 ): Promise<Buffer> {
     throw new Error("not implemented");
 }
@@ -904,7 +472,6 @@ export async function _downloadCachedPhotoSize(
     size: Api.PhotoCachedSize | Api.PhotoStrippedSize,
     outputFile?: OutFile
 ) {
-    // No need to download anything, simply write the bytes
     let data: Buffer;
     if (size instanceof Api.PhotoStrippedSize) {
         data = strippedPhotoToJpg(size.bytes);
@@ -914,14 +481,13 @@ export async function _downloadCachedPhotoSize(
     const writer = getWriter(outputFile);
     try {
         await writer.write(data);
-    } finally {
-        closeWriter(writer);
+        await closeWriter(writer);
+    } catch (err) {
+        await closeWriter(writer).catch(() => {});
+        throw err;
     }
-
     return returnWriterValue(writer);
 }
-
-/** @hidden */
 
 function getProperFilename(
     file: OutFile | undefined,

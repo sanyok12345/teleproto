@@ -24,6 +24,13 @@ export class MemorySession extends Session {
     protected _entities: Map<string, any>;
     protected _updateStates: {};
     protected _authKey?: AuthKey;
+    /**
+     * Auth keys for non-main DCs (file/media). Keyed by DC id. Sharing one
+     * key per (account, DC) is what Telegram expects — fresh DH for every
+     * connection eventually trips the server's per-account auth-key limit
+     * and downloads start getting dropped.
+     */
+    protected _dcAuthKeys: Map<number, AuthKey> = new Map();
 
     constructor() {
         super();
@@ -72,21 +79,22 @@ export class MemorySession extends Session {
     }
 
     getAuthKey(dcId?: number) {
-        if (dcId && dcId !== this.dcId) {
-            // Not supported.
-            return undefined;
+        if (dcId === undefined || dcId === this.dcId) {
+            return this.authKey;
         }
-
-        return this.authKey;
+        return this._dcAuthKeys.get(dcId);
     }
 
     setAuthKey(authKey?: AuthKey, dcId?: number) {
-        if (dcId && dcId !== this.dcId) {
-            // Not supported.
-            return undefined;
+        if (dcId === undefined || dcId === this.dcId) {
+            this.authKey = authKey;
+            return;
         }
-
-        this.authKey = authKey;
+        if (authKey) {
+            this._dcAuthKeys.set(dcId, authKey);
+        } else {
+            this._dcAuthKeys.delete(dcId);
+        }
     }
 
     close() {}

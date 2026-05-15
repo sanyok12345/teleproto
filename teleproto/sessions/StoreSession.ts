@@ -66,6 +66,38 @@ export class StoreSession extends MemorySession {
         if (testServers != null) {
             super.testServers = !!testServers;
         }
+
+        // Reload cached per-DC (non-main) auth keys so we don't have to do a
+        // fresh DH handshake every process start.
+        const dcKeys = this.store.get(this.sessionName + "dcAuthKeys");
+        if (dcKeys && typeof dcKeys === "object") {
+            for (const [k, v] of Object.entries(dcKeys)) {
+                const id = Number(k);
+                if (!Number.isFinite(id) || !v || typeof v !== "object") continue;
+                let buf: Buffer | undefined;
+                if (Buffer.isBuffer(v)) buf = v as Buffer;
+                else if ("data" in (v as any)) buf = Buffer.from((v as any).data);
+                if (!buf) continue;
+                const key = new AuthKey();
+                await key.setKey(buf);
+                this._dcAuthKeys.set(id, key);
+            }
+        }
+    }
+
+    setAuthKey(authKey?: AuthKey, dcId?: number) {
+        super.setAuthKey(authKey, dcId);
+        if (dcId !== undefined && dcId !== this._dcId) {
+            // Persist non-main DC keys as a plain {dcId: Buffer} map so a
+            // later process can reuse them and avoid hitting Telegram's
+            // per-account auth-key cap.
+            const snapshot: Record<string, Buffer | undefined> = {};
+            for (const [id, k] of this._dcAuthKeys) {
+                const raw = k.getKey();
+                if (raw) snapshot[String(id)] = raw;
+            }
+            this.store.set(this.sessionName + "dcAuthKeys", snapshot);
+        }
     }
 
     setDC(dcId: number, serverAddress: string, port: number) {

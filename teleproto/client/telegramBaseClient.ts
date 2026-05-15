@@ -17,6 +17,8 @@ import type { ParseInterface } from "./messageParse";
 import type { EventBuilder } from "../events/common";
 import { MarkdownParser } from "../extensions/markdown";
 import { MTProtoSender } from "../network";
+import { ApiSenderPool } from "../network/ApiSenderPool";
+import { FilePool, FilePoolOptions } from "../network/FilePool";
 import { LAYER } from "../tl/runtime/registry";
 import {
     ConnectionTCPMTProxyAbridged,
@@ -27,8 +29,8 @@ import { LogLevel } from "../extensions/Logger";
 import Deferred from "../extensions/Deferred";
 import { UpdateManager } from "./UpdateManager";
 
-const EXPORTED_SENDER_RECONNECT_TIMEOUT = 1000; // 1 sec
-const EXPORTED_SENDER_RELEASE_TIMEOUT = 30000; // 30 sec
+const API_SENDER_IDLE_TIMEOUT_MS = 30000;
+const FILE_POOL_CLOSE_GRACE_MS = 5000;
 
 const PROD_DEFAULT_DC_ID = 2;
 const TEST_DEFAULT_DC_ID = 2;
@@ -190,6 +192,11 @@ export interface TelegramClientParams {
      * It should return the token obtained after solving the CAPTCHA.
      */
     reCaptchaCallback?: (siteKey: string) => Promise<string>;
+    /**
+     * File-download pool tuning. Defaults follow tdesktop: 1→8 sessions per DC,
+     * 128 KB parts, 15 s idle release. See {@link FilePoolOptions}.
+     */
+    downloadPool?: Partial<FilePoolOptions>;
 }
 
 const clientParamsDefault = {
@@ -253,8 +260,6 @@ export abstract class TelegramBaseClient {
     /** @hidden */
     public _floodWaitedRequests: any;
     /** @hidden */
-    public _borrowedSenderPromises: any;
-    /** @hidden */
     public _bot?: boolean;
     /** @hidden */
     public _useIPV6: boolean;
@@ -280,12 +285,9 @@ export abstract class TelegramBaseClient {
         [ReturnType<typeof setTimeout>, Api.TypeUpdate[]]
     >();
     /** @hidden */
-    public _exportedSenderPromises = new Map<number, Promise<MTProtoSender>>();
+    public _apiSenderPool!: ApiSenderPool;
     /** @hidden */
-    private _exportedSenderReleaseTimeouts = new Map<
-        number,
-        ReturnType<typeof setTimeout>
-    >();
+    public _filePool!: FilePool;
     /** @hidden */
     _loopStarted: boolean;
     /** @hidden */
@@ -375,12 +377,10 @@ export abstract class TelegramBaseClient {
         this._eventBuilders = [];
 
         this._floodWaitedRequests = {};
-        this._borrowedSenderPromises = {};
         this._bot = undefined;
         this._selfInputPeer = undefined;
         this._securityChecks = !!clientParams.securityChecks;
         this._entityCache = new EntityCache();
-        // These will be set later
         this._config = undefined;
         this._loopStarted = false;
         this._reconnecting = false;
@@ -388,10 +388,14 @@ export abstract class TelegramBaseClient {
         this._isSwitchingDc = false;
         this._connectedDeferred = new Deferred();
 
-        // parse mode
         this._parseMode = MarkdownParser;
 
         this.updateManager = new UpdateManager(this as unknown as TelegramClient);
+
+        this._apiSenderPool = new ApiSenderPool(this, {
+            idleTimeoutMs: API_SENDER_IDLE_TIMEOUT_MS,
+        });
+        this._filePool = new FilePool(this, clientParams.downloadPool);
     }
 
     get floodSleepThreshold() {
@@ -447,32 +451,8 @@ export abstract class TelegramBaseClient {
 
     async disconnect() {
         await this._disconnect();
-        await Promise.all(
-            Object.values(this._exportedSenderPromises)
-                .map((promises) => {
-                    return Object.values(promises).map((promise: any) => {
-                        return (
-                            promise &&
-                            promise.then((sender: MTProtoSender) => {
-                                if (sender) {
-                                    return sender.disconnect();
-                                }
-                                return undefined;
-                            })
-                        );
-                    });
-                })
-                .flat()
-        );
-
-        Object.values(this._exportedSenderReleaseTimeouts).forEach(
-            (timeouts) => {
-                Object.values(timeouts).forEach((releaseTimeout: any) => {
-                    clearTimeout(releaseTimeout);
-                });
-            }
-        );
-        this._exportedSenderPromises.clear();
+        await this._filePool.close({ waitMs: FILE_POOL_CLOSE_GRACE_MS });
+        await this._apiSenderPool.close();
         this._teardownUpdateState();
     }
 
@@ -505,15 +485,7 @@ export abstract class TelegramBaseClient {
      */
     async destroy() {
         this._destroyed = true;
-        await Promise.all([
-            this.disconnect(),
-            ...Object.values(this._borrowedSenderPromises).map(
-                (promise: any) => {
-                    return promise.then((sender: any) => sender.disconnect());
-                }
-            ),
-        ]);
-
+        await this.disconnect();
         this._eventBuilders = [];
     }
 
@@ -521,16 +493,6 @@ export abstract class TelegramBaseClient {
     async _authKeyCallback(authKey: AuthKey, dcId: number) {
         this.session.setAuthKey(authKey, dcId);
         await this.session.save();
-    }
-
-    /** @hidden */
-    async _cleanupExportedSender(dcId: number) {
-        if (this.session.dcId !== dcId) {
-            this.session.setAuthKey(undefined, dcId);
-        }
-        let sender = await this._exportedSenderPromises.get(dcId);
-        this._exportedSenderPromises.delete(dcId);
-        await sender?.disconnect();
     }
 
     /** @hidden */
@@ -552,25 +514,48 @@ export abstract class TelegramBaseClient {
                     false
                 );
 
-                if (this.session.dcId !== dcId && !sender._authenticated) {
+                // Every fresh TCP connection needs an `InvokeWithLayer(InitConnection(...))`
+                // before any other API request — otherwise the server rejects subsequent
+                // calls with CONNECTION_NOT_INITED (or, on some media DCs, silently drops
+                // the connection). For non-main DCs without a granted authorization we
+                // piggy-back `auth.ImportAuthorization` on the init; otherwise we send a
+                // cheap `help.GetConfig` as a no-op carrier.
+                const needAuth =
+                    this.session.dcId !== dcId && !sender._authenticated;
+                let innerQuery: Api.AnyRequest;
+                if (needAuth) {
                     this._log.info(
                         `Exporting authorization for data center ${dc.ipAddress} with layer ${LAYER}`
                     );
                     const auth = await this.invoke(
                         new Api.auth.ExportAuthorization({ dcId: dcId })
                     );
-                    this._initRequest.query = new Api.auth.ImportAuthorization({
+                    innerQuery = new Api.auth.ImportAuthorization({
                         id: auth.id,
                         bytes: auth.bytes,
                     });
-
-                    const req = new Api.InvokeWithLayer({
-                        layer: LAYER,
-                        query: this._initRequest,
-                    });
-                    await sender.send(req);
-                    sender._authenticated = true;
+                } else {
+                    innerQuery = new Api.help.GetConfig();
                 }
+                // Build a fresh InitConnection per call — the client-level
+                // `_initRequest` instance is shared across DCs and must not
+                // be mutated concurrently.
+                const initConn = new Api.InitConnection({
+                    apiId: this._initRequest.apiId,
+                    deviceModel: this._initRequest.deviceModel,
+                    systemVersion: this._initRequest.systemVersion,
+                    appVersion: this._initRequest.appVersion,
+                    langCode: this._initRequest.langCode,
+                    langPack: this._initRequest.langPack,
+                    systemLangCode: this._initRequest.systemLangCode,
+                    proxy: this._initRequest.proxy,
+                    query: innerQuery,
+                });
+                await sender.send(
+                    new Api.InvokeWithLayer({ layer: LAYER, query: initConn })
+                );
+                sender._authenticated = true;
+                sender._needsInitConnection = false;
                 sender.dcId = dcId;
                 sender.userDisconnected = false;
 
@@ -594,70 +579,12 @@ export abstract class TelegramBaseClient {
     }
 
     /** @hidden */
-    async _borrowExportedSender(
+    _makeSender(
         dcId: number,
-        shouldReconnect?: boolean,
-        existingSender?: MTProtoSender
-    ): Promise<MTProtoSender> {
-        if (!this._exportedSenderPromises.get(dcId) || shouldReconnect) {
-            this._exportedSenderPromises.set(
-                dcId,
-                this._connectSender(
-                    existingSender || this._createExportedSender(dcId),
-                    dcId
-                )
-            );
-        }
-
-        let sender: MTProtoSender;
-        try {
-            sender = await this._exportedSenderPromises.get(dcId)!;
-
-            if (!sender.isConnected()) {
-                if (sender.isConnecting) {
-                    await sleep(EXPORTED_SENDER_RECONNECT_TIMEOUT);
-                    return this._borrowExportedSender(dcId, false, sender);
-                } else {
-                    return this._borrowExportedSender(dcId, true, sender);
-                }
-            }
-        } catch (err) {
-            if (this._errorHandler) {
-                await this._errorHandler(err as Error);
-            }
-            if (this._log.canSend(LogLevel.ERROR)) {
-                console.error(err);
-            }
-            return this._borrowExportedSender(dcId, true);
-        }
-
-        if (this._exportedSenderReleaseTimeouts.get(dcId)) {
-            clearTimeout(this._exportedSenderReleaseTimeouts.get(dcId)!);
-            this._exportedSenderReleaseTimeouts.delete(dcId);
-        }
-
-        this._exportedSenderReleaseTimeouts.set(
-            dcId,
-            setTimeout(() => {
-                this._exportedSenderReleaseTimeouts.delete(dcId);
-                if (sender._pendingState.values().length) {
-                    console.log(
-                        "sender already has some hanging states. reconnecting"
-                    );
-                    sender._reconnect();
-                    this._borrowExportedSender(dcId, false, sender);
-                } else {
-                    sender.disconnect();
-                }
-            }, EXPORTED_SENDER_RELEASE_TIMEOUT)
-        );
-
-        return sender;
-    }
-
-    /** @hidden */
-    _createExportedSender(dcId: number) {
-        return new MTProtoSender(this.session.getAuthKey(dcId), {
+        onBreak: (dcId: number) => void,
+        authKey?: AuthKey,
+    ): MTProtoSender {
+        return new MTProtoSender(authKey ?? this.session.getAuthKey(dcId), {
             logger: this._log,
             dcId,
             retries: this._connectionRetries,
@@ -666,10 +593,9 @@ export abstract class TelegramBaseClient {
             connectTimeout: this._timeout,
             authKeyCallback: this._authKeyCallback.bind(this),
             isMainSender: dcId === this.session.dcId,
-            onConnectionBreak: this._cleanupExportedSender.bind(this),
+            onConnectionBreak: onBreak,
             client: this as unknown as TelegramClient,
             securityChecks: this._securityChecks,
-            _exportedSenderPromises: this._exportedSenderPromises,
             reconnectRetries: this._reconnectRetries,
         });
     }
@@ -677,7 +603,7 @@ export abstract class TelegramBaseClient {
     /** @hidden */
     getSender(dcId: number): Promise<MTProtoSender> {
         return dcId
-            ? this._borrowExportedSender(dcId)
+            ? this._apiSenderPool.borrow(dcId)
             : Promise.resolve(this._sender!);
     }
 

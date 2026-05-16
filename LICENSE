@@ -1,10 +1,7 @@
 MIT License
 
-Copyright (c) 2025 sanyok12345. All rights reserved.
-
-This project, teleproto, is an independent work originally derived from GramJS.
-GramJS is an open source project licensed under the MIT License.
-Portions of teleproto are adapted from GramJS and remain subject to the MIT terms.
+Copyright (c) 2019 GramJS
+Copyright (c) 2025-present sanyok12345
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

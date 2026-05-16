@@ -1,150 +1,99 @@
-# teleproto
+[![npm](https://img.shields.io/npm/v/teleproto)](https://www.npmjs.com/package/teleproto)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue)](./LICENSE)
 
-<p align="center">
-  <img src="https://img.shields.io/npm/v/teleproto" alt="npm version">
-  <img src="https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen" alt="node version">
-  <img src="https://img.shields.io/badge/language-TypeScript-3178c6" alt="typescript">
-  <img src="https://img.shields.io/badge/license-MIT-blue" alt="license">
-  <a href="https://t.me/teleproto"><img src="https://img.shields.io/badge/Telegram-Chat-26A5E4?logo=telegram" alt="telegram chat"></a>
-</p>
+This project was forked from the open source GramJS project in 2025 and is now developed independently.
 
-Modern Telegram MTProto client for Node.js, written in TypeScript.
-`teleproto` is a high-performance fork of GramJS focused on clean API ergonomics, runtime reliability, and up-to-date Telegram layers.
+This README is just a fast *quick start*. Ongoing discussion happens in the [Telegram chat](https://t.me/teleproto).
 
-## Features
+# What is teleproto?
 
-- **MTProto-first**: Full Telegram API access through high-level client methods and raw `Api` calls.
-- **TypeScript-friendly**: Strong typings across client methods, events, sessions, and TL objects.
-- **Session options**: Use `StringSession` for portability or `StoreSession` for local persistence.
-- **Event system**: Handle updates with builders like `NewMessage`, `EditedMessage`, `CallbackQuery`, and more.
-- **Examples included**: Ready-to-run scripts in `teleproto_examples`.
+teleproto is a TypeScript client for Telegram's MTProto API — the same protocol Telegram's own apps speak. Through it, your code gets the full account surface: userbots, multi-account automation, file transfer, raw TL invocation when you need it. If you only need to push notifications from a bot, the official Bot API is simpler; teleproto exists for everything *beyond* that.
 
-## Installation
+# Installing teleproto
 
-```bash 
-npm i teleproto
-```
+    % npm install teleproto
 
-## Quick Start
+Pure JavaScript, no native build step — installs cleanly on Alpine, ARM, and serverless runtimes.
 
-1. Open https://my.telegram.org
-2. Create an app in **API development tools**
-3. Copy your `api_id` and `api_hash`
+# Connecting to Telegram
+
+You need an `api_id` and `api_hash` from <https://my.telegram.org>. Then:
 
 ```ts
 import { TelegramClient } from "teleproto";
 import { StringSession } from "teleproto/sessions";
-import readline from "readline";
+import { createInterface } from "node:readline/promises";
 
-const apiId = 123456;
-const apiHash = "0123456789abcdef0123456789abcdef";
+const rl = createInterface({ input: process.stdin, output: process.stdout });
+
+const apiId = 0;     // from https://my.telegram.org
+const apiHash = "";  // from https://my.telegram.org
 const session = new StringSession("");
 
-const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout,
+const client = new TelegramClient(session, apiId, apiHash, {
+  connectionRetries: 5,
 });
 
-const ask = (q: string) =>
-  new Promise<string>((resolve) => rl.question(q, resolve));
+await client.start({
+  phoneNumber: () => rl.question("Phone: "),
+  password:    () => rl.question("2FA password: "),
+  phoneCode:   () => rl.question("Code: "),
+  onError: console.error,
+});
 
-async function main() {
-  const client = new TelegramClient(session, apiId, apiHash, {
-    connectionRetries: 5,
-  });
+console.log(await client.getMe());
+console.log("Session string:", client.session.save());
 
-  await client.start({
-    phoneNumber: async () => await ask("Phone number: "),
-    password: async () => await ask("2FA password (if enabled): "),
-    phoneCode: async () => await ask("Code from Telegram: "),
-    onError: (err) => console.error(err),
-  });
-
-  console.log("Connected as:", (await client.getMe())?.username || "unknown");
-  console.log("String session:\n", client.session.save());
-
-  await client.sendMessage("me", { message: "Hello from teleproto!" });
-  await client.disconnect();
-  rl.close();
-}
-
-main().catch(console.error);
+rl.close();
 ```
 
-## Sessions
+The session string is your saved login. Drop it back into `new StringSession(saved)` next time and skip the auth flow entirely.
 
-Use `StringSession` when you want to store auth as a single string:
+# Sending and receiving
 
-```ts
-import { StringSession } from "teleproto/sessions";
-const session = new StringSession("");
-```
-
-Use `StoreSession` when you want local folder-based persistence:
-
-```ts
-import { StoreSession } from "teleproto/sessions";
-const session = new StoreSession("teleproto_session");
-```
-
-## Events
+Send a message, listen for incoming ones:
 
 ```ts
 import { NewMessage } from "teleproto/events";
 
+await client.sendMessage("me", { message: "hello from teleproto" });
+
 client.addEventHandler(
-  async (event) => {
-    const text = event.message.message || "";
-    if (/^hello$/i.test(text.trim())) {
-      await event.message.reply({ message: "Hi there!" });
-    }
-  },
-  new NewMessage({})
+  (event) => console.log(event.message.message),
+  new NewMessage({}),
 );
 ```
 
-## Raw API
+# Raw MTProto API
+
+Every method in Telegram's TL schema is callable directly through `Api.*`. teleproto follows the schema layer-for-layer, so what Telegram adds is usually available here within days.
 
 ```ts
 import { Api } from "teleproto";
 
-const result = await client.invoke(
-  new Api.help.GetConfig()
-);
-console.log(result);
+const config = await client.invoke(new Api.help.GetConfig());
 ```
 
-## Examples
+# Examples
 
-Practical scripts are available in `teleproto_examples`:
+Runnable scripts live in [teleproto_examples/](teleproto_examples/):
 
-- `print_updates.ts`
-- `print_messages.ts`
-- `replier.ts`
-- `interactive_terminal.ts`
+- `print_updates.ts` — log every update the client receives
+- `print_messages.ts` — listen for new messages only
+- `replier.ts` — auto-reply pattern for bots and userbots
+- `interactive_terminal.ts` — REPL against a live client
 
-Run any example from the project root:
+Each is self-contained. Set your credentials at the top and run:
 
-```bash
-npx ts-node --transpile-only teleproto_examples/print_updates.ts
-```
+    % npx ts-node --transpile-only teleproto_examples/print_updates.ts
 
-## Community
+# Code contributions
 
-- [Telegram Chat](https://t.me/teleproto) — questions, discussions, updates
-- [GitHub Issues](https://github.com/sanyok12345/teleproto/issues) — bug reports and feature requests
+Please see [CONTRIBUTING.md][1].
 
-## Support the project ☕
+# License
 
-If teleproto saves you time or powers your product — consider buying me a coffee.
-Every donation keeps the lights on and the commits flowing.
+teleproto is distributed under the [MIT License][2].
 
-| Network | Address |
-|---------|---------|
-|  **TON** | `sanyok12345.ton` |
-|  **TRX** | `TXCtN1UrxST9ovq5tDN3Zb96eNF4164nK5` |
-|  **SOL** | `B3XcKmAR9aG2nBiWSMDe76GGa55hPNgLQ92QR2SjRR6F` |
-
-## License
-
-MIT
+[1]: ./CONTRIBUTING.md
+[2]: ./LICENSE

@@ -27,11 +27,9 @@
   "keywords": [
     "telegram",
     "mtproto",
-    "teleproto",
-    "client",
-    "nodejs",
+    "userbot",
     "typescript",
-    "api"
+    "nodejs"
   ],
   "homepage": "https://github.com/sanyok12345/teleproto#readme",
   "devDependencies": {

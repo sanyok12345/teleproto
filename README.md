@@ -74,6 +74,22 @@ import { Api } from "teleproto";
 const config = await client.invoke(new Api.help.GetConfig());
 ```
 
+# Versioning
+
+teleproto uses a three-part version `MAJOR.LAYER.PATCH`:
+
+- **MAJOR** — bumped on breaking API changes in teleproto itself.
+- **LAYER** — the Telegram TL schema layer the release ships against
+  (e.g. `1.225.x` ships layer 225).
+- **PATCH** — fixes and non-breaking improvements within the same layer.
+
+This stays compatible with npm's range syntax:
+
+- `^1.225.0` accepts new layers and patches — recommended default.
+- `~1.225.0` sticks to layer 225 only; useful if you depend on
+  schema specifics that newer layers might change.
+- `1.225.1` is an exact pin.
+
 # Examples
 
 Runnable scripts live in [teleproto_examples/](teleproto_examples/):

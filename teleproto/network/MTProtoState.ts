@@ -23,26 +23,22 @@ export class MTProtoState {
 
     /**
      *
-     `telethon.network.mtprotosender.MTProtoSender` needs to hold a state
-     in order to be able to encrypt and decrypt incoming/outgoing messages,
-     as well as generating the message IDs. Instances of this class hold
-     together all the required information.
+     `MTProtoSender` needs to hold a state in order to encrypt and decrypt
+     incoming/outgoing messages, as well as generate message IDs. Instances
+     of this class hold together all the required information.
 
-     It doesn't make sense to use `telethon.sessions.abstract.Session` for
-     the sender because the sender should *not* be concerned about storing
-     this information to disk, as one may create as many senders as they
-     desire to any other data center, or some CDN. Using the same session
-     for all these is not a good idea as each need their own authkey, and
-     the concept of "copying" sessions with the unnecessary entities or
-     updates state for these connections doesn't make sense.
+     A `Session` is intentionally not used here: the sender should *not* be
+     concerned with persisting this state to disk. Multiple senders may
+     exist for different data centers or CDNs, each requiring its own
+     authkey — "copying" a session along with unrelated entities or update
+     state would make no sense.
 
-     While it would be possible to have a `MTProtoPlainState` that does no
-     encryption so that it was usable through the `MTProtoLayer` and thus
-     avoid the need for a `MTProtoPlainSender`, the `MTProtoLayer` is more
-     focused to efficiency and this state is also more advanced (since it
-     supports gzipping and invoking after other message IDs). There are too
-     many methods that would be needed to make it convenient to use for the
-     authentication process, at which point the `MTProtoPlainSender` is better
+     A `MTProtoPlainState` doing no encryption could in principle be used
+     through `MTProtoLayer` and remove the need for `MTProtoPlainSender`,
+     but `MTProtoLayer` targets efficient throughput and this state class
+     is also more advanced (gzipping, invoking after other message IDs).
+     Too many helper methods would be needed to make it convenient during
+     authentication, where `MTProtoPlainSender` is the better fit.
      * @param authKey
      * @param loggers
      * @param securityChecks

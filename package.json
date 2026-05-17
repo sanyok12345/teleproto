@@ -31,7 +31,7 @@
     "typescript",
     "nodejs"
   ],
-  "homepage": "https://github.com/sanyok12345/teleproto#readme",
+  "homepage": "https://docs.teleproto.dev",
   "devDependencies": {
     "@types/mime": "^2.0.3",
     "@types/node": "^22.15.18",

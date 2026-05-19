@@ -85,7 +85,7 @@ export abstract class Session {
      * to suit several purposes (e.g. user only provided its ID or wishes
      * to use a cached username to avoid extra RPC).
      */
-    abstract getInputEntity(key: EntityLike): Api.TypeInputPeer;
+    abstract getInputEntity(key: EntityLike): Api.TypeInputPeer | Promise<Api.TypeInputPeer>;
 
     /**
      * Returns an ID of the takeout process initialized for this session,

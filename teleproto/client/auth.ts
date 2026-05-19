@@ -147,6 +147,20 @@ export async function checkAuthorization(client: TelegramClient) {
 }
 
 /** @hidden */
+export async function logOut(client: TelegramClient): Promise<boolean> {
+    let success = true;
+    try {
+        await client.invoke(new Api.auth.LogOut());
+    } catch (e) {
+        client._log.warn("auth.LogOut failed: " + (e as Error).message);
+        success = false;
+    }
+    await client.disconnect();
+    await client.session.delete();
+    return success;
+}
+
+/** @hidden */
 export async function signInUser(
     client: TelegramClient,
     apiCredentials: ApiCredentials,

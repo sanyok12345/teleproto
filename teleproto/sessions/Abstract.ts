@@ -148,11 +148,11 @@ export abstract class Session {
     abstract save(): void;
 
     /**
-     * Called upon client.log_out(). Should delete the stored
+     * Called upon client.logOut(). Should delete the stored
      * information from disk since it's not valid anymore.
      */
 
-    abstract delete(): void;
+    abstract delete(): void | Promise<void>;
 
     /**
      * Processes the input ``TLObject`` or ``list`` and saves

@@ -103,7 +103,15 @@ export class MemorySession extends Session {
 
     async load() {}
 
-    delete() {}
+    delete() {
+        this._authKey = undefined;
+        this._dcId = 0;
+        this._serverAddress = undefined;
+        this._port = undefined;
+        this._dcAuthKeys.clear();
+        this._entities.clear();
+        this._updateStates = {};
+    }
 
     _entityValuesToRow(
         id: bigInt.BigInteger | string,

@@ -125,6 +125,11 @@ export class StoreSession extends MemorySession {
         return this._authKey;
     }
 
+    delete() {
+        this.store.clearAll();
+        super.delete();
+    }
+
     processEntities(tlo: any) {
         const rows = this._entitiesToRows(tlo);
         if (!rows) {

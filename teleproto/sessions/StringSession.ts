@@ -92,6 +92,11 @@ export class StringSession extends MemorySession {
         }
     }
 
+    delete() {
+        this._key = undefined;
+        super.delete();
+    }
+
     save() {
         if (!this.authKey || !this.serverAddress || !this.port) {
             return "";

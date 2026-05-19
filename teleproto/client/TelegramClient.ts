@@ -119,6 +119,25 @@ export class TelegramClient extends TelegramBaseClient {
     }
 
     /**
+     * Logs out the currently authenticated user/bot. Invalidates the session
+     * on Telegram's side (via `auth.LogOut`), disconnects the client and wipes
+     * local session data so a subsequent `session.save()` returns nothing.
+     *
+     * After this call the client is disconnected and event handlers stop
+     * firing; reconnecting requires going through `start`/`signInUser` again.
+     *
+     * @returns `true` if the server-side log out succeeded, `false` if the
+     * `auth.LogOut` call failed. Local session data is wiped in both cases.
+     * @example
+     * ```ts
+     * await client.logOut();
+     * ```
+     */
+    logOut() {
+        return authMethods.logOut(this);
+    }
+
+    /**
      * Logs in as a user. Should only be used when not already logged in.<br/>
      * This method will send a code when needed.<br/>
      * This will also sign up if needed.

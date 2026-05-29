@@ -136,7 +136,6 @@ export class StoreSession extends MemorySession {
             return;
         }
         for (const row of rows) {
-            row.push(new Date().getTime().toString());
             this.store.set(this.sessionName + row[0], row);
         }
     }

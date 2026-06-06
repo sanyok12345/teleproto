@@ -10,6 +10,7 @@ const NO_UPDATES_TIMEOUT_MS = 15 * 60 * 1000;
 const FAIL_DIFFERENCE_INITIAL_S = 1;
 const FAIL_DIFFERENCE_CAP_S = 64;
 const CHANNEL_DIFFERENCE_LIMIT = 100;
+const RECENT_MESSAGE_BUFFER_SIZE = 1000;
 
 export interface UpdateState {
     pts: number;
@@ -80,6 +81,8 @@ export class UpdateManager {
     private globalPtsTimer?: NodeJS.Timeout;
     private readonly channels = new Map<string, ChannelTracker>();
     private readonly pendingSeq: PendingSeqUpdate[] = [];
+    private readonly recentMessageKeys = new Set<string>();
+    private readonly recentMessageQueue: string[] = [];
 
     private fetchingDifference = false;
     private failTimeoutS = FAIL_DIFFERENCE_INITIAL_S;
@@ -329,10 +332,40 @@ export class UpdateManager {
     }
 
     private dispatch(update: Api.TypeUpdate, payload: DispatchPayload): void {
+        if (this.isDuplicateMessage(update)) {
+            this.client._log.debug("Skip duplicate message update (already dispatched)");
+            return;
+        }
         (update as unknown as { _entities: Map<string, unknown> })._entities = payload.entities ?? new Map();
         _dispatchUpdate(this.client, { update }).catch((e) =>
             this.client._log.error(`Error dispatching update: ${e}`),
         );
+    }
+
+    private isDuplicateMessage(update: Api.TypeUpdate): boolean {
+        if (
+            !(update instanceof Api.UpdateNewMessage) &&
+            !(update instanceof Api.UpdateNewChannelMessage)
+        ) {
+            return false;
+        }
+        const message = update.message as { id?: number; peerId?: Api.TypePeer };
+        if (message?.id == undefined || message.peerId == undefined) return false;
+        let peerId: string;
+        try {
+            peerId = utils.getPeerId(message.peerId);
+        } catch {
+            return false;
+        }
+        const key = `${peerId}:${message.id}`;
+        if (this.recentMessageKeys.has(key)) return true;
+        this.recentMessageKeys.add(key);
+        this.recentMessageQueue.push(key);
+        if (this.recentMessageQueue.length > RECENT_MESSAGE_BUFFER_SIZE) {
+            const old = this.recentMessageQueue.shift()!;
+            this.recentMessageKeys.delete(old);
+        }
+        return false;
     }
 
     private collectEntities(

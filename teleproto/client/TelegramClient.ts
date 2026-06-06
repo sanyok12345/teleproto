@@ -173,11 +173,18 @@ export class TelegramClient extends TelegramBaseClient {
     /**
      * logs the user using a QR code to be scanned.<br/>
      * this function generates the QR code that needs to be scanned by mobile.
+     *
+     * The flow can be cancelled at any time (e.g. the user closed the page) by
+     * passing an `abortSignal`; once aborted it stops polling for tokens and
+     * rejects with an `AbortError`.
      * @example
      * '''ts
      * await client.connect();
-     * const user = await client.signInUserWithQrCode({ apiId, apiHash },
-     * {
+     * const controller = new AbortController();
+     * // call controller.abort() to cancel the QR login at any time
+     * try {
+     *   const user = await client.signInUserWithQrCode({ apiId, apiHash },
+     *   {
      *       onError: async function(p1: Error) {
      *           console.log("error", p1);
      *           // true = stop the authentication processes
@@ -192,14 +199,19 @@ export class TelegramClient extends TelegramBaseClient {
      *       password: async (hint) => {
      *           // password if needed
      *           return "1111";
-     *       }
+     *       },
+     *       abortSignal: controller.signal,
      *   }
-     * );
-     * console.log("user is", user);
+     *   );
+     *   console.log("user is", user);
+     * } catch (err) {
+     *   if (err.name === "AbortError") console.log("QR login cancelled");
+     *   else throw err;
+     * }
      *
      * '''
      * @param apiCredentials - credentials to be used.
-     * @param authParams - user auth params.
+     * @param authParams - user auth params. Pass `abortSignal` to cancel the flow.
      */
     signInUserWithQrCode(
         apiCredentials: authMethods.ApiCredentials,

@@ -84,6 +84,9 @@ export interface QrCodeAuthParams extends UserPasswordAuthParams {
     /** when an error happens during auth this function will be called with the error.<br/>
      *  if this returns true the auth operation will stop. */
     onError: (err: Error) => Promise<boolean> | void;
+    /** an AbortSignal to cancel the QR login flow (e.g. the user closed the page).<br/>
+     *  when aborted, the flow stops polling and rejects with an `AbortError`. */
+    abortSignal?: AbortSignal;
 }
 
 interface ReturnString {
@@ -380,23 +383,30 @@ export async function signInUser(
     return client.signInUser(apiCredentials, authParams);
 }
 
+function qrAbortError(): Error {
+    const err = new Error("QR login aborted");
+    err.name = "AbortError";
+    return err;
+}
+
 /** @hidden */
 export async function signInUserWithQrCode(
     client: TelegramClient,
     apiCredentials: ApiCredentials,
     authParams: QrCodeAuthParams
 ): Promise<Api.TypeUser> {
-    let isScanningComplete = false;
-
     if (authParams.qrCode == undefined) {
         throw new Error("qrCode callback not defined");
     }
-    const inputPromise = (async () => {
-        while (1) {
-            if (isScanningComplete) {
-                break;
-            }
 
+    const { abortSignal } = authParams;
+    if (abortSignal?.aborted) throw qrAbortError();
+
+    let isScanningComplete = false;
+    const stopped = () => isScanningComplete || !!abortSignal?.aborted;
+
+    const inputPromise = (async () => {
+        while (!stopped()) {
             const result = await client.invoke(
                 new Api.auth.ExportLoginToken({
                     apiId: Number(apiCredentials.apiId),
@@ -417,20 +427,26 @@ export async function signInUserWithQrCode(
         }
     })();
 
-    const updatePromise = new Promise((resolve) => {
-        client.addEventHandler((update: Api.TypeUpdate) => {
-            if (update instanceof Api.UpdateLoginToken) {
-                resolve(undefined);
-            }
-        });
-    });
+    const Raw = require("../events/Raw").Raw;
+    const rawEvent = new Raw({});
+    const onUpdate = (update: Api.TypeUpdate) => {
+        if (update instanceof Api.UpdateLoginToken) resolveUpdate();
+    };
+    let resolveUpdate!: () => void;
+    const updatePromise = new Promise<void>((resolve) => (resolveUpdate = resolve));
+    client.addEventHandler(onUpdate, rawEvent);
+
+    const abortPromise = new Promise<never>((_, reject) =>
+        abortSignal?.addEventListener("abort", () => reject(qrAbortError()), {
+            once: true,
+        })
+    );
 
     try {
-        await Promise.race([updatePromise, inputPromise]);
-    } catch (err) {
-        throw err;
+        await Promise.race([updatePromise, inputPromise, abortPromise]);
     } finally {
         isScanningComplete = true;
+        client.removeEventHandler(onUpdate, rawEvent);
     }
 
     try {

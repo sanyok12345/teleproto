@@ -84,9 +84,12 @@ function loadTlDefinitions(apiTlContent: string, schemaTlContent: string): TlDef
 
 function main(): void {
     const root = __dirname;
-    const apiTl = fs.readFileSync(path.resolve(root, "static/api.tl"), "utf-8");
+    const apiTl = fs.readFileSync(
+        path.resolve(root, "static/tl/api.tl"),
+        "utf-8"
+    );
     const schemaTl = fs.readFileSync(
-        path.resolve(root, "static/schema.tl"),
+        path.resolve(root, "static/tl/schema.tl"),
         "utf-8"
     );
 

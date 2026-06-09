@@ -97,7 +97,7 @@ export class TelegramClient extends TelegramBaseClient {
      *
      * You can now use the client instance to call other api requests.
      */
-    start(authParams: authMethods.UserAuthParams | authMethods.BotAuthParams) {
+    start(authParams?: authMethods.UserAuthParams | authMethods.BotAuthParams) {
         return authMethods.start(this, authParams);
     }
 

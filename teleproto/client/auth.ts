@@ -2,6 +2,7 @@ import { Api } from "../tl";
 import * as utils from "../Utils";
 import { sleep } from "../Helpers";
 import { computeCheck as computePasswordSrpCheck } from "../Password";
+import { UnauthorizedError } from "../errors";
 import type { TelegramClient } from "./TelegramClient";
 
 /**
@@ -121,14 +122,36 @@ const QR_CODE_TIMEOUT = 30000;
 /** @hidden */
 export async function start(
     client: TelegramClient,
-    authParams: UserAuthParams | BotAuthParams
+    authParams?: UserAuthParams | BotAuthParams
 ) {
     if (!client.connected) {
         await client.connect();
     }
 
-    if (await client.checkAuthorization()) {
+    // Probe authorization inline (instead of checkAuthorization) so we can keep
+    // the actual error the server returned — e.g. AuthKeyUnregisteredError or
+    // SessionRevokedError on a revoked session — rather than discarding it.
+    let authError: Error | undefined;
+    try {
+        await client.invoke(new Api.updates.GetState());
         return;
+    } catch (e: any) {
+        authError = e;
+    }
+
+    // Not authorized and no way to (re)login: surface the real reason instead
+    // of crashing on `"phoneNumber" in undefined` further down in _authFlow.
+    if (
+        !authParams ||
+        (!("phoneNumber" in authParams) && !("botAuthToken" in authParams))
+    ) {
+        throw (
+            authError ??
+            new UnauthorizedError(
+                "Not authorized and no auth parameters were provided to log in.",
+                undefined as any
+            )
+        );
     }
 
     const apiCredentials = {

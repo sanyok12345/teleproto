@@ -7,20 +7,38 @@
 import { Api } from "../tl";
 
 import { RPCError } from "./RPCBaseErrors";
-import { rpcErrorRe } from "./RPCErrorList";
+import { rpcErrorsDict, rpcErrorsRe, baseErrors } from "./RPCErrorList";
 
 export function RPCMessageToError(
     rpcError: Api.RpcError,
     request: Api.AnyRequest
 ) {
-    for (const [msgRegex, Cls] of rpcErrorRe) {
-        const m = rpcError.errorMessage.match(msgRegex);
-        if (m) {
-            const capture = m.length === 2 ? parseInt(m[1]) : null;
-            return new Cls({ request: request, capture: capture });
+    const message = rpcError.errorMessage;
+
+    let error: RPCError;
+    const ExactCls = rpcErrorsDict.get(message);
+    if (ExactCls) {
+        error = new ExactCls({ request });
+    } else {
+        let matched = false;
+        for (const [msgRegex, Cls] of rpcErrorsRe) {
+            const m = message.match(msgRegex);
+            if (m) {
+                const capture = m.length >= 2 ? parseInt(m[1]) : null;
+                error = new Cls({ request, capture });
+                matched = true;
+                break;
+            }
+        }
+        if (!matched) {
+            const BaseCls =
+                baseErrors.get(Math.abs(rpcError.errorCode)) || RPCError;
+            error = new BaseCls(message, request, rpcError.errorCode);
         }
     }
-    return new RPCError(rpcError.errorMessage, request, rpcError.errorCode);
+
+    error!.errorMessage = message;
+    return error!;
 }
 
 export * from "./Common";

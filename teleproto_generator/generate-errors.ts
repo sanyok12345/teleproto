@@ -27,7 +27,6 @@ const BASE_IMPORTS = [
     "NotFoundError",
     "AuthKeyError",
     "FloodError",
-    "FrozenError",
     "ServerError",
     "TimedOutError",
 ];
@@ -36,13 +35,7 @@ const NAME_OVERRIDES: Record<string, string> = {
     "2FA_CONFIRM_WAIT_%d": "TwoFaConfirmWait",
     SLOWMODE_WAIT_d: "SlowModeWait",
     "FLOOD_PREMIUM_WAIT_%d": "FloodWait",
-    FROZEN_METHOD_INVALID: "FrozenMethod",
-    FROZEN_PARTICIPANT_MISSING: "FrozenParticipant",
     MSG_WAIT_FAILED: "MsgWait",
-};
-
-const BASE_OVERRIDES: Record<string, string> = {
-    FROZEN_METHOD_INVALID: "FrozenError",
 };
 
 const ATTR_OVERRIDES: Record<string, string> = {
@@ -143,7 +136,7 @@ function buildDefs(data: ErrorsJson): BuildResult {
         const key = normKey(raw);
         const parametrized = raw.includes("%d");
 
-        let base = BASE_OVERRIDES[raw] || CODE_TO_BASE[code];
+        let base = CODE_TO_BASE[code];
         if (!base) {
             console.warn(`  ! unknown code ${code} for ${raw}, using RPCError`);
             base = "RPCError";

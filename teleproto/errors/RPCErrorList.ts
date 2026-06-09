@@ -8,7 +8,6 @@ import {
     NotFoundError,
     AuthKeyError,
     FloodError,
-    FrozenError,
     ServerError,
     TimedOutError,
 } from "./RPCBaseErrors";
@@ -2100,7 +2099,7 @@ export class FromPeerInvalidError extends BadRequestError {
 }
 
 /** The current account is [frozen](https://core.telegram.org/api/auth#frozen-accounts), and cannot access the specified peer. */
-export class FrozenParticipantError extends BadRequestError {
+export class FrozenParticipantMissingError extends BadRequestError {
     constructor(args: ErrorArgs) {
         const message = "The current account is [frozen](https://core.telegram.org/api/auth#frozen-accounts), and cannot access the specified peer." + RPCError._fmtRequest(args.request);
         super(message, args.request);
@@ -7043,7 +7042,7 @@ export class FloodWaitError extends FloodError {
 }
 
 /** The current account is [frozen](https://core.telegram.org/api/auth#frozen-accounts), and thus cannot execute the specified action. */
-export class FrozenMethodError extends FrozenError {
+export class FrozenMethodInvalidError extends FloodError {
     constructor(args: ErrorArgs) {
         const message = "The current account is [frozen](https://core.telegram.org/api/auth#frozen-accounts), and thus cannot execute the specified action." + RPCError._fmtRequest(args.request);
         super(message, args.request);
@@ -7431,7 +7430,7 @@ export const rpcErrorsDict: Map<string, any> = new Map<string, any>([
     ["FRESH_CHANGE_ADMINS_FORBIDDEN", FreshChangeAdminsForbiddenError],
     ["FROM_MESSAGE_BOT_DISABLED", FromMessageBotDisabledError],
     ["FROM_PEER_INVALID", FromPeerInvalidError],
-    ["FROZEN_PARTICIPANT_MISSING", FrozenParticipantError],
+    ["FROZEN_PARTICIPANT_MISSING", FrozenParticipantMissingError],
     ["GAME_BOT_INVALID", GameBotInvalidError],
     ["GENERAL_MODIFY_ICON_FORBIDDEN", GeneralModifyIconForbiddenError],
     ["GEO_POINT_INVALID", GeoPointInvalidError],
@@ -7912,7 +7911,7 @@ export const rpcErrorsDict: Map<string, any> = new Map<string, any>([
     ["UPDATE_APP_TO_LOGIN", UpdateAppToLoginError],
     ["USERPIC_PRIVACY_REQUIRED", UserpicPrivacyRequiredError],
     ["AUTH_KEY_DUPLICATED", AuthKeyDuplicatedError],
-    ["FROZEN_METHOD_INVALID", FrozenMethodError],
+    ["FROZEN_METHOD_INVALID", FrozenMethodInvalidError],
     ["AUTH_KEY_UNSYNCHRONIZED", AuthKeyUnsynchronizedError],
     ["AUTH_RESTART", AuthRestartError],
     ["CDN_UPLOAD_TIMEOUT", CdnUploadTimeoutError],

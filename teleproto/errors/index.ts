@@ -44,3 +44,4 @@ export function RPCMessageToError(
 export * from "./Common";
 export * from "./RPCBaseErrors";
 export * from "./RPCErrorList";
+export * from "./aliases";

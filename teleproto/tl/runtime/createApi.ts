@@ -1,9 +1,8 @@
-import bigInt, { BigInteger } from "big-integer";
+import { BigInteger } from "big-integer";
 
 import {
     generateRandomBytes,
     readBigIntFromBuffer,
-    isArrayLike,
     toSignedLittleBuffer,
 } from "../../Helpers";
 import { serializeBytes, serializeDate } from "./helpers";
@@ -88,26 +87,6 @@ const AUTO_CASTS = new Set([
     "InputChatPhoto",
 ]);
 
-class CastError extends Error {
-    constructor(objectName: string, expected: string, actual: unknown) {
-        super(
-            "Found wrong type for " +
-                objectName +
-                ". expected " +
-                expected +
-                " but received " +
-                String(actual) +
-                ".If you think this is a mistake please report it."
-        );
-
-        if (Error.captureStackTrace) {
-            Error.captureStackTrace(this, CastError);
-        }
-
-        this.name = "CastError";
-    }
-}
-
 function generateRandomBigInt(): BigInteger {
     return readBigIntFromBuffer(generateRandomBytes(8), false, true);
 }
@@ -190,37 +169,6 @@ async function getInputFromResolve(
             return client.getPeerId(peer, false);
         default:
             throw new Error("unsupported peer type : " + peerType);
-    }
-}
-
-function compareType(value: unknown, type: string): boolean {
-    switch (type) {
-        case "number":
-            return typeof value === "number" || value === undefined;
-        case "string":
-            return typeof value === "string";
-        case "boolean":
-            return typeof value === "boolean";
-        case "bigInt":
-            return (
-                bigInt.isInstance(value) ||
-                typeof value === "bigint" ||
-                typeof value === "number" ||
-                typeof value === "string" ||
-                value === undefined
-            );
-        case "true":
-            return true;
-        case "buffer":
-            return Buffer.isBuffer(value);
-        case "date":
-            return (
-                ((value as Date | undefined) instanceof Date &&
-                    !Number.isNaN((value as Date).getTime())) ||
-                typeof value === "number"
-            );
-        default:
-            return true;
     }
 }
 
@@ -368,71 +316,7 @@ function createClasses(
                 return new this(args);
             }
 
-            validate(): void {
-                for (const arg in argsConfig) {
-                    if (!Object.prototype.hasOwnProperty.call(argsConfig, arg)) {
-                        continue;
-                    }
-                    if (argsConfig[arg].flagIndicator || argsConfig[arg].isFlag) {
-                        continue;
-                    }
-                    const currentValue = (this as Record<string, unknown>)[arg];
-                    this.assertType(arg, argsConfig[arg], currentValue);
-                }
-            }
-
-            assertType(objectName: string, object: ArgConfig, value: unknown): void {
-                let expected: string;
-                if (object.isVector) {
-                    if (!isArrayLike(value)) {
-                        console.error(new CastError(objectName, "array", value));
-                    }
-                    const vectorValue = value ?? [];
-                    for (const item of vectorValue as unknown[]) {
-                        this.assertType(objectName, { ...object, isVector: false }, item);
-                    }
-                    return;
-                }
-
-                switch (object.type) {
-                    case "int":
-                    case "double":
-                        expected = "number";
-                        break;
-                    case "long":
-                    case "int128":
-                    case "int256":
-                        expected = "bigInt";
-                        break;
-                    case "string":
-                        expected = "string";
-                        break;
-                    case "Bool":
-                        expected = "boolean";
-                        break;
-                    case "true":
-                        expected = "true";
-                        break;
-                    case "bytes":
-                        expected = "buffer";
-                        break;
-                    case "date":
-                        expected = "date";
-                        break;
-                    default:
-                        expected = "object";
-                }
-
-                if (expected !== "object" && !compareType(value, expected)) {
-                    console.error(new CastError(objectName, expected, value));
-                }
-            }
-
             getBytes(): Buffer {
-                try {
-                    this.validate();
-                } catch {}
-
                 const constructorBuffer = Buffer.alloc(4);
                 constructorBuffer.writeUInt32LE(this.CONSTRUCTOR_ID, 0);
                 const buffers: Buffer[] = [constructorBuffer];

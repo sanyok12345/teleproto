@@ -451,8 +451,8 @@ export abstract class TelegramBaseClient {
 
     async disconnect() {
         await this._disconnect();
-        await this._filePool.close({ waitMs: FILE_POOL_CLOSE_GRACE_MS });
-        await this._apiSenderPool.close();
+        await this._filePool.purge();
+        await this._apiSenderPool.purge();
         this._teardownUpdateState();
     }
 
@@ -486,6 +486,8 @@ export abstract class TelegramBaseClient {
     async destroy() {
         this._destroyed = true;
         await this.disconnect();
+        await this._filePool.close({ waitMs: FILE_POOL_CLOSE_GRACE_MS });
+        await this._apiSenderPool.close();
         this._eventBuilders = [];
     }
 

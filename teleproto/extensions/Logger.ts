@@ -1,5 +1,3 @@
-// let _level: string | undefined = undefined;
-
 export enum LogLevel {
     NONE = "none",
     ERROR = "error",
@@ -8,144 +6,105 @@ export enum LogLevel {
     DEBUG = "debug",
 }
 
-const NodeColors = {
-    reset: "\x1b[0m",
-    red: "\x1b[31m",
-    green: "\x1b[32m",
-    yellow: "\x1b[33m",
-    blue: "\x1b[34m",
-    magenta: "\x1b[35m",
-    cyan: "\x1b[36m",
-    white: "\x1b[37m",
-    bold: "\x1b[1m",
-    dim: "\x1b[2m",
-    underline: "\x1b[4m",
+export interface LogRecord {
+    readonly level: LogLevel;
+    readonly message: string;
+    readonly error?: unknown;
+    readonly date: Date;
+}
+
+export type LogHandler = (record: LogRecord) => void;
+
+const SEVERITY = {
+    none: 0,
+    error: 1,
+    warn: 2,
+    info: 3,
+    debug: 4,
+} satisfies Record<LogLevel, number>;
+
+const COLOR: Partial<Record<LogLevel, string>> = {
+    error: "\x1b[31m",
+    warn: "\x1b[35m",
+    info: "\x1b[33m",
+    debug: "\x1b[36m",
 };
+const RESET = "\x1b[0m";
 
 export class Logger {
-    private levels = ["error", "warn", "info", "debug"];
-    private nodeColors: {
-        warn: string;
-        debug: string;
-        error: string;
-        info: string;
-        reset: string;
-    };
-    public messageFormat: string;
+    handler?: LogHandler;
+    messageFormat = "[%t] [%l] - [%m]";
+    tzOffset = new Date().getTimezoneOffset() * 60000;
     private _logLevel: LogLevel;
-    public tzOffset: number;
 
-    constructor(level?: LogLevel) {
-        this._logLevel = level || LogLevel.INFO;
-        this.nodeColors = {
-            warn: NodeColors.magenta,
-            info: NodeColors.yellow,
-            debug: NodeColors.cyan,
-            error: NodeColors.red,
-            reset: NodeColors.reset
-        };
-        this.messageFormat = "[%t] [%l] - [%m]";
-        this.tzOffset = new Date().getTimezoneOffset() * 60000;
+    constructor(level: LogLevel = LogLevel.INFO) {
+        this._logLevel = level;
     }
 
-    /**
-     *
-     * @param level {string}
-     * @returns {boolean}
-     */
-    canSend(level: LogLevel) {
-        return this._logLevel
-            ? this.levels.indexOf(this._logLevel) >= this.levels.indexOf(level)
-            : false;
+    canSend(level: LogLevel): boolean {
+        return SEVERITY[this._logLevel] >= SEVERITY[level];
     }
 
-    /**
-     * @param message {string}
-     */
-    warn(message: string) {
-        this._log(LogLevel.WARN, message);
+    error(message: string, error?: unknown): void {
+        this._log(LogLevel.ERROR, message, error);
     }
 
-    /**
-     * @param message {string}
-     */
-    info(message: string) {
-        this._log(LogLevel.INFO, message);
+    warn(message: string, error?: unknown): void {
+        this._log(LogLevel.WARN, message, error);
     }
 
-    /**
-     * @param message {string}
-     */
-    debug(message: string) {
-        this._log(LogLevel.DEBUG, message);
+    info(message: string, error?: unknown): void {
+        this._log(LogLevel.INFO, message, error);
     }
 
-    /**
-     * @param message {string}
-     */
-    error(message: string) {
-        this._log(LogLevel.ERROR, message);
+    debug(message: string, error?: unknown): void {
+        this._log(LogLevel.DEBUG, message, error);
     }
 
-    format(message: string, level: string) {
+    format(message: string, level: string): string {
         return this.messageFormat
             .replace("%t", this.getDateTime())
             .replace("%l", level.toUpperCase())
             .replace("%m", message);
     }
 
-    get logLevel() {
+    getDateTime(): string {
+        return new Date(Date.now() - this.tzOffset).toISOString().slice(0, -1);
+    }
+
+    get logLevel(): LogLevel {
         return this._logLevel;
     }
 
-    setLevel(level: LogLevel) {
+    setLevel(level: LogLevel): void {
         this._logLevel = level;
     }
 
-    static setLevel(level: string) {
+    static setLevel(level: string): void {
         console.log(
             "Logger.setLevel is deprecated, it will has no effect. Please, use client.setLogLevel instead."
         );
     }
 
-    /**
-     * @param level {string}
-     * @param message {string}
-     */
-    _log(level: LogLevel, message: string) {
+    _log(level: LogLevel, message: string, error?: unknown): void {
         if (this.canSend(level)) {
-            this.log(level, message);
+            this.log(level, message, error);
         }
     }
 
-    /**
-     * Override this function for custom Logger. <br />
-     *
-     * @param level {string}
-     * @param message {string}
-     */
-    log(level: LogLevel, message: string) {
-        let nodeColor: string;
-        switch (level) {
-            case LogLevel.ERROR:
-                nodeColor = this.nodeColors.error;
-                break;
-            case LogLevel.WARN:
-                nodeColor = this.nodeColors.warn;
-                break;
-            case LogLevel.INFO:
-                nodeColor = this.nodeColors.info;
-                break;
-            case LogLevel.DEBUG:
-                nodeColor = this.nodeColors.debug;
-                break;
-            default:
-                nodeColor = "";
+    log(level: LogLevel, message: string, error?: unknown): void {
+        if (this.handler) {
+            this.handler({
+                level,
+                message,
+                error,
+                date: new Date(Date.now() - this.tzOffset),
+            });
+            return;
         }
-        console.log(nodeColor + this.format(message, level) + this.nodeColors.reset);
-    }
-
-    getDateTime() {
-        return new Date(Date.now() - this.tzOffset).toISOString().slice(0, -1);
+        console.log((COLOR[level] ?? "") + this.format(message, level) + RESET);
+        if (error !== undefined) {
+            console.error(error);
+        }
     }
 }

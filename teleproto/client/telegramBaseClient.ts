@@ -570,8 +570,8 @@ export abstract class TelegramBaseClient {
                 }
                 if (this._errorHandler) {
                     await this._errorHandler(err as Error);
-                } else if (this._log.canSend(LogLevel.ERROR)) {
-                    console.error(err);
+                } else {
+                    this._log.error("Error while connecting sender", err);
                 }
 
                 await sleep(1000);
@@ -643,10 +643,8 @@ export abstract class TelegramBaseClient {
             try {
                 await handler(error);
             } catch (e: any) {
-                if (this._log.canSend(LogLevel.ERROR)) {
-                    e.message = `Error ${e.message} thrown while handling top-level error: ${error.message}`;
-                    console.error(e);
-                }
+                e.message = `Error ${e.message} thrown while handling top-level error: ${error.message}`;
+                this._log.error(e.message, e);
             }
         };
     }

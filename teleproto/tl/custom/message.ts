@@ -15,7 +15,6 @@ import { DownloadMediaInterface } from "../../client/downloads";
 import { returnBigInt } from "../../Helpers";
 import { _selfId } from "../../client/users";
 import bigInt, { BigInteger } from "big-integer";
-import { LogLevel } from "../../extensions/Logger";
 import { MessageButton } from "./messageButton";
 
 interface MessageBaseInterface {
@@ -609,13 +608,11 @@ export class CustomMessage extends SenderGetter {
         } catch (e) {
             this._client._log.error(
                 "Got error while trying to finish init message with id " +
-                    this.id
+                    this.id,
+                e
             );
             if (this._client._errorHandler) {
                 await this._client._errorHandler(e as Error);
-            }
-            if (this._client._log.canSend(LogLevel.ERROR)) {
-                console.error(e);
             }
         }
         if (msg == undefined) return;

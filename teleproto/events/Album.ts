@@ -2,7 +2,6 @@ import { DefaultEventInterface, EventBuilder, EventCommon } from "./common";
 import { Entity, EntityLike } from "../define";
 import { Api } from "../tl";
 import type { TelegramClient } from "../client/TelegramClient";
-import { LogLevel } from "../extensions/Logger";
 
 const _ALBUM_DELAY = 500; // 0.5 sec
 
@@ -106,13 +105,11 @@ export class AlbumEvent extends EventCommon {
             } catch (e) {
                 client._log.error(
                     "Got error while trying to finish init message with id " +
-                        this.messages[i].id
+                        this.messages[i].id,
+                    e
                 );
                 if (client._errorHandler) {
                     client._errorHandler(e as Error);
-                }
-                if (client._log.canSend(LogLevel.ERROR)) {
-                    console.error(e);
                 }
             }
         }

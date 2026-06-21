@@ -34,7 +34,6 @@ import { Album, AlbumEvent } from "../events/Album";
 import { CallbackQuery, CallbackQueryEvent } from "../events/CallbackQuery";
 import { EditedMessage, EditedMessageEvent } from "../events/EditedMessage";
 import { DeletedMessage, DeletedMessageEvent } from "../events/DeletedMessage";
-import { LogLevel } from "../extensions/Logger";
 
 /**
  * The TelegramClient uses several methods in different files to provide all the common functionality in a nice interface.</br>
@@ -1559,12 +1558,9 @@ export class TelegramClient extends TelegramBaseClient {
         try {
             const res = await this.getMe();
         } catch (e) {
-            this._log.error(`Error while trying to reconnect`);
+            this._log.error(`Error while trying to reconnect`, e);
             if (this._errorHandler) {
                 await this._errorHandler(e as Error);
-            }
-            if (this._log.canSend(LogLevel.ERROR)) {
-                console.error(e);
             }
         }
         // Restart update loop if it was stopped during reconnect

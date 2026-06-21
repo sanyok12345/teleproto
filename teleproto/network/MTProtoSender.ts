@@ -34,7 +34,6 @@ import { Connection } from "./connection";
 import { UpdateConnectionState } from "./UpdateConnectionState";
 import type { TelegramClient } from "../client/TelegramClient";
 import { LAYER } from "../tl/runtime/registry";
-import { LogLevel } from "../extensions/Logger";
 import { Mutex } from "async-mutex";
 import { PendingState } from "../extensions/PendingState";
 import MsgsAck = Api.MsgsAck;
@@ -283,13 +282,11 @@ export class MTProtoSender {
                     );
                 }
                 this._log.error(
-                    `Connection failed attempt: ${attempt + 1}`
+                    `Connection failed attempt: ${attempt + 1}`,
+                    err
                 );
                 if (this._client._errorHandler) {
                     await this._client._errorHandler(err as Error);
-                }
-                if (this._log.canSend(LogLevel.ERROR)) {
-                    console.error(err);
                 }
                 await sleep(this._delay);
             }
@@ -559,12 +556,9 @@ export class MTProtoSender {
                 /** when the server disconnects us we want to reconnect */
                 if (!this.userDisconnected) {
                     this._log.debug(
-                        `Connection closed while sending data ${e}`
+                        `Connection closed while sending data ${e}`,
+                        e
                     );
-
-                    if (this._log.canSend(LogLevel.DEBUG)) {
-                        console.error(e);
-                    }
                     this.reconnect();
                 }
                 this._sendLoopHandle = undefined;
@@ -617,11 +611,7 @@ export class MTProtoSender {
 
                 /** when the server disconnects us we want to reconnect */
                 if (!this.userDisconnected) {
-                    this._log.warn("Connection closed while receiving data");
-
-                    if (this._log.canSend(LogLevel.WARN)) {
-                        console.error(e);
-                    }
+                    this._log.warn("Connection closed while receiving data", e);
                     this.reconnect();
                 }
                 this._recvLoopHandle = undefined;
@@ -666,12 +656,9 @@ export class MTProtoSender {
                     this._recvLoopHandle = undefined;
                     return;
                 } else {
-                    this._log.error("Unhandled error while receiving data");
+                    this._log.error("Unhandled error while receiving data", e);
                     if (this._client._errorHandler) {
                         await this._client._errorHandler(e as Error);
-                    }
-                    if (this._log.canSend(LogLevel.ERROR)) {
-                        console.log(e);
                     }
                     this.reconnect();
                     this._recvLoopHandle = undefined;
@@ -698,12 +685,9 @@ export class MTProtoSender {
                         `Unknown constructor ${e.invalidConstructorId} in update, skipping (remaining: ${e.remaining.length} bytes)`
                     );
                 } else {
-                    this._log.error("Unhandled error while receiving data");
+                    this._log.error("Unhandled error while receiving data", e);
                     if (this._client._errorHandler) {
                         await this._client._errorHandler(e as Error);
-                    }
-                    if (this._log.canSend(LogLevel.ERROR)) {
-                        console.log(e);
                     }
                 }
             }
@@ -1098,12 +1082,9 @@ export class MTProtoSender {
             this._log.warn("[Reconnect] Closing current connection...");
             await this._disconnect();
         } catch (err) {
-            this._log.warn("Error happened while disconnecting");
+            this._log.warn("Error happened while disconnecting", err);
             if (this._client._errorHandler) {
                 await this._client._errorHandler(err as Error);
-            }
-            if (this._log.canSend(LogLevel.ERROR)) {
-                console.error(err);
             }
         }
         this._log.debug(

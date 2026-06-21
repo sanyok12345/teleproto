@@ -8,7 +8,6 @@ import type { Entity, EntityLike } from "../define";
 import type { TelegramClient } from "../client/TelegramClient";
 import { Api } from "../tl";
 import bigInt from "big-integer";
-import { LogLevel } from "../extensions/Logger";
 
 export interface NewMessageInterface extends DefaultEventInterface {
     func?: { (event: NewMessageEvent): boolean };
@@ -255,13 +254,11 @@ export class NewMessageEvent extends EventCommon {
             );
         } catch (e) {
             client._log.error(
-                "Got error while trying to finish init message with id " + m.id
+                "Got error while trying to finish init message with id " + m.id,
+                e
             );
             if (client._errorHandler) {
                 client._errorHandler(e as Error);
-            }
-            if (client._log.canSend(LogLevel.ERROR)) {
-                console.error(e);
             }
         }
     }

@@ -1,12 +1,8 @@
 import bigInt from "big-integer";
 import mime from "mime";
-import type { ParseInterface } from "./client/messageParse";
 import { CustomFile } from "./client/uploads";
 import type { Entity, EntityLike, MessageIDLike } from "./define";
 import { EntityCache } from "./entityCache";
-import { HTMLParser } from "./extensions/html";
-import { MarkdownParser } from "./extensions/markdown";
-import { MarkdownV2Parser } from "./extensions/markdownv2";
 import { returnBigInt } from "./Helpers";
 import { Api } from "./tl";
 
@@ -1140,27 +1136,6 @@ export function getPeer(peer: EntityLike | any) {
         }
     } catch (e) {}
     _raiseCastFail(peer, "peer");
-}
-
-export function sanitizeParseMode(
-    mode: string | ParseInterface
-): ParseInterface {
-    if (mode === "md" || mode === "markdown") {
-        return MarkdownParser;
-    }
-
-    if (mode === "md2" || mode === "markdownv2") {
-        return MarkdownV2Parser;
-    }
-    if (mode == "html") {
-        return HTMLParser;
-    }
-    if (typeof mode == "object") {
-        if ("parse" in mode && "unparse" in mode) {
-            return mode;
-        }
-    }
-    throw new Error(`Invalid parse mode type ${mode}`);
 }
 
 /**

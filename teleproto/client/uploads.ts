@@ -9,7 +9,6 @@ import { promises as fs } from "fs";
 import * as errors from "../errors";
 import * as utils from "../Utils";
 import { _parseMessageText } from "./messageParse";
-import { getCommentData } from "./messages";
 import bigInt, { BigInteger } from "big-integer";
 
 interface OnProgress {
@@ -563,7 +562,7 @@ export async function _sendAlbum(
         }
     }
     if (commentTo != undefined) {
-        const discussionData = await getCommentData(client, entity, commentTo);
+        const discussionData = await client.getCommentData(entity, commentTo);
         entity = discussionData.entity;
         replyTo = discussionData.replyTo;
     } else {
@@ -698,7 +697,7 @@ export async function sendFile(
     }
     entity = await client.getInputEntity(entity);
     if (commentTo != undefined) {
-        const discussionData = await getCommentData(client, entity, commentTo);
+        const discussionData = await client.getCommentData(entity, commentTo);
         entity = discussionData.entity;
         replyTo = discussionData.replyTo;
     } else {

@@ -21,7 +21,9 @@ import * as dialogMethods from "./dialogs";
 import * as twoFA from "./2fa";
 import type { ButtonLike, Entity, EntityLike, MessageIDLike } from "../define";
 import { Api } from "../tl";
-import { sanitizeParseMode } from "../Utils";
+import { HTMLParser } from "../extensions/html";
+import { MarkdownParser } from "../extensions/markdown";
+import { MarkdownV2Parser } from "../extensions/markdownv2";
 import type { EventBuilder } from "../events/common";
 import { MTProtoSender } from "../network";
 
@@ -656,10 +658,29 @@ export class TelegramClient extends TelegramBaseClient {
             | undefined
     ) {
         if (mode) {
-            this._parseMode = sanitizeParseMode(mode);
+            this._parseMode = this._sanitizeParseMode(mode);
         } else {
             this._parseMode = undefined;
         }
+    }
+
+    /** @hidden */
+    _sanitizeParseMode(
+        mode: string | parseMethods.ParseInterface
+    ): parseMethods.ParseInterface {
+        if (mode === "md" || mode === "markdown") {
+            return MarkdownParser;
+        }
+        if (mode === "md2" || mode === "markdownv2") {
+            return MarkdownV2Parser;
+        }
+        if (mode == "html") {
+            return HTMLParser;
+        }
+        if (typeof mode == "object" && "parse" in mode && "unparse" in mode) {
+            return mode;
+        }
+        throw new Error(`Invalid parse mode type ${mode}`);
     }
 
     //endregion
@@ -746,6 +767,11 @@ export class TelegramClient extends TelegramBaseClient {
         getMessagesParams: Partial<messageMethods.IterMessagesParams> = {}
     ) {
         return messageMethods.getMessages(this, entity, getMessagesParams);
+    }
+
+    /** @hidden */
+    getCommentData(entity: EntityLike, message: number | Api.Message) {
+        return messageMethods.getCommentData(this, entity, message);
     }
 
     /**

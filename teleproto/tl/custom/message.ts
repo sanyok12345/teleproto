@@ -13,7 +13,6 @@ import {
 } from "../../client/messages";
 import { DownloadMediaInterface } from "../../client/downloads";
 import { returnBigInt } from "../../Helpers";
-import { _selfId } from "../../client/users";
 import bigInt, { BigInteger } from "big-integer";
 import { MessageButton } from "./messageButton";
 
@@ -825,7 +824,7 @@ export class CustomMessage extends SenderGetter {
     get toId() {
         if (this._client && !this.out && this.isPrivate) {
             return new Api.PeerUser({
-                userId: _selfId(this._client)!,
+                userId: this._client._selfInputPeer?.userId!,
             });
         }
         return this.peerId;

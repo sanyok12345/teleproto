@@ -1,26 +1,10 @@
-import { getPeerId, sanitizeParseMode } from "../Utils";
+import { getPeerId } from "../Utils";
 import { Api } from "../tl";
 import type { EntityLike } from "../define";
 import type { TelegramClient } from "./TelegramClient";
 import * as utils from "../Utils";
 import { _EntityType, _entityType, isArrayLike } from "../Helpers";
 import bigInt from "big-integer";
-
-export type messageEntities =
-    | typeof Api.MessageEntityBold
-    | typeof Api.MessageEntityItalic
-    | typeof Api.MessageEntityStrike
-    | typeof Api.MessageEntityCode
-    | typeof Api.MessageEntityPre;
-export const DEFAULT_DELIMITERS: {
-    [key: string]: messageEntities;
-} = {
-    "**": Api.MessageEntityBold,
-    __: Api.MessageEntityItalic,
-    "~~": Api.MessageEntityStrike,
-    "`": Api.MessageEntityCode,
-    "```": Api.MessageEntityPre,
-};
 
 export interface ParseInterface {
     parse: (message: string) => [string, Api.TypeMessageEntity[]];
@@ -63,7 +47,7 @@ export async function _parseMessageText(
         }
         parseMode = client.parseMode;
     } else if (typeof parseMode === "string") {
-        parseMode = sanitizeParseMode(parseMode);
+        parseMode = client._sanitizeParseMode(parseMode);
     }
     const [rawMessage, msgEntities] = parseMode.parse(message);
     for (let i = msgEntities.length - 1; i >= 0; i--) {

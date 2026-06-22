@@ -50,7 +50,7 @@ export class BinaryReader {
      * @param signed
      * @returns {BigInteger}
      */
-    readLong(signed = true) {
+    readLong(signed = true): bigInt.BigInteger {
         return this.readLargeInt(64, signed);
     }
 

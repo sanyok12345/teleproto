@@ -81,7 +81,7 @@ export class ChatGetter {
         return this._inputChat;
     }
 
-    get chatId() {
+    get chatId(): bigInt.BigInteger | undefined {
         return this._chatPeer
             ? returnBigInt(getPeerId(this._chatPeer))
             : undefined;

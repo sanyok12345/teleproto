@@ -62,7 +62,7 @@ export class File {
         return this._fromAttr(Api.DocumentAttributeSticker, "stickerset");
     }
 
-    get size() {
+    get size(): bigInt.BigInteger | undefined | number {
         if (this.media instanceof Api.Photo) {
             return _photoSizeByteCount(
                 this.media.sizes[this.media.sizes.length - 1]

@@ -155,7 +155,7 @@ export class CallbackQueryEvent extends EventCommonSender {
         this._inputSender = inputSender;
     }
 
-    get id() {
+    get id(): bigInt.BigInteger {
         return this.query.queryId;
     }
 

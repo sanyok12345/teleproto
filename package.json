@@ -12,6 +12,7 @@
     "clean": "rm -rf dist",
     "build": "tsc -p tsconfig.json && cp teleproto/tl/generated/api.js dist/tl/generated/api.js && cp teleproto/tl/generated/api.d.ts dist/tl/generated/api.d.ts",
     "typecheck": "tsc --noEmit",
+    "postinstall": "npm run build",
     "generate:tl": "ts-node --transpile-only teleproto_generator/generate.ts",
     "generate:errors": "ts-node --transpile-only teleproto_generator/generate-errors.ts",
     "generate": "npm run generate:tl && npm run generate:errors",

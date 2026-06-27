@@ -3,6 +3,7 @@
 import { BigInteger } from 'big-integer';
 import {EntityLike,MessageIDLike} from "../../define";
 import { CustomMessage } from "../custom/message";
+import type * as RpcErrors from "../../errors";
 
 
 export namespace Api {
@@ -24965,7 +24966,7 @@ export namespace Api {
       otherUids: long[];
     }
     export class UpdateNotifySettings extends Request<Partial<{
-      peer: Api.TypeInputNotifyPeer;
+      peer: Api.TypeEntityLike;
       settings: Api.TypeInputPeerNotifySettings;
     }>, Bool> {
     CONSTRUCTOR_ID: 2227067795;
@@ -24973,18 +24974,18 @@ export namespace Api {
     classType: "request";
     className: "account.UpdateNotifySettings";
     static fromReader(reader: Reader): UpdateNotifySettings;
-      peer: Api.TypeInputNotifyPeer;
+      peer: Api.TypeEntityLike;
       settings: Api.TypeInputPeerNotifySettings;
     }
     export class GetNotifySettings extends Request<Partial<{
-      peer: Api.TypeInputNotifyPeer;
+      peer: Api.TypeEntityLike;
     }>, Api.TypePeerNotifySettings> {
     CONSTRUCTOR_ID: 313765169;
     SUBCLASS_OF_ID: 3475030132;
     classType: "request";
     className: "account.GetNotifySettings";
     static fromReader(reader: Reader): GetNotifySettings;
-      peer: Api.TypeInputNotifyPeer;
+      peer: Api.TypeEntityLike;
     }
     export class ResetNotifySettings extends Request<void, Bool> {
     CONSTRUCTOR_ID: 3682473799;
@@ -25460,7 +25461,7 @@ export namespace Api {
       // flags: Api.Typeunknown;
       compareSound?: boolean;
       compareStories?: boolean;
-      peer?: Api.TypeInputNotifyPeer;
+      peer?: Api.TypeEntityLike;
     }>, Api.TypeUpdates> {
     CONSTRUCTOR_ID: 1398240377;
     SUBCLASS_OF_ID: 2331323052;
@@ -25470,7 +25471,7 @@ export namespace Api {
       // flags: Api.Typeunknown;
       compareSound?: boolean;
       compareStories?: boolean;
-      peer?: Api.TypeInputNotifyPeer;
+      peer?: Api.TypeEntityLike;
     }
     export class GetWallPaper extends Request<Partial<{
       wallpaper: Api.TypeInputWallPaper;
@@ -27894,14 +27895,14 @@ export namespace Api {
       cacheTime: int;
     }
     export class GetPeerDialogs extends Request<Partial<{
-      peers: Api.TypeInputDialogPeer[];
+      peers: Api.TypeEntityLike[];
     }>, messages.TypePeerDialogs> {
     CONSTRUCTOR_ID: 3832593661;
     SUBCLASS_OF_ID: 986120498;
     classType: "request";
     className: "messages.GetPeerDialogs";
     static fromReader(reader: Reader): GetPeerDialogs;
-      peers: Api.TypeInputDialogPeer[];
+      peers: Api.TypeEntityLike[];
     }
     export class SaveDraft extends Request<Partial<{
       // flags: Api.Typeunknown;
@@ -28137,7 +28138,7 @@ export namespace Api {
     export class ToggleDialogPin extends Request<Partial<{
       // flags: Api.Typeunknown;
       pinned?: boolean;
-      peer: Api.TypeInputDialogPeer;
+      peer: Api.TypeEntityLike;
     }>, Bool> {
     CONSTRUCTOR_ID: 2805064279;
     SUBCLASS_OF_ID: 4122188204;
@@ -28146,13 +28147,13 @@ export namespace Api {
     static fromReader(reader: Reader): ToggleDialogPin;
       // flags: Api.Typeunknown;
       pinned?: boolean;
-      peer: Api.TypeInputDialogPeer;
+      peer: Api.TypeEntityLike;
     }
     export class ReorderPinnedDialogs extends Request<Partial<{
       // flags: Api.Typeunknown;
       force?: boolean;
       folderId: int;
-      order: Api.TypeInputDialogPeer[];
+      order: Api.TypeEntityLike[];
     }>, Bool> {
     CONSTRUCTOR_ID: 991616823;
     SUBCLASS_OF_ID: 4122188204;
@@ -28162,7 +28163,7 @@ export namespace Api {
       // flags: Api.Typeunknown;
       force?: boolean;
       folderId: int;
-      order: Api.TypeInputDialogPeer[];
+      order: Api.TypeEntityLike[];
     }
     export class GetPinnedDialogs extends Request<Partial<{
       folderId: int;
@@ -28389,7 +28390,7 @@ export namespace Api {
       // flags: Api.Typeunknown;
       unread?: boolean;
       parentPeer?: Api.TypeEntityLike;
-      peer: Api.TypeInputDialogPeer;
+      peer: Api.TypeEntityLike;
     }>, Bool> {
     CONSTRUCTOR_ID: 2354054904;
     SUBCLASS_OF_ID: 4122188204;
@@ -28399,7 +28400,7 @@ export namespace Api {
       // flags: Api.Typeunknown;
       unread?: boolean;
       parentPeer?: Api.TypeEntityLike;
-      peer: Api.TypeInputDialogPeer;
+      peer: Api.TypeEntityLike;
     }
     export class GetDialogUnreadMarks extends Request<Partial<{
       // flags: Api.Typeunknown;
@@ -29840,7 +29841,7 @@ export namespace Api {
     export class ToggleSavedDialogPin extends Request<Partial<{
       // flags: Api.Typeunknown;
       pinned?: boolean;
-      peer: Api.TypeInputDialogPeer;
+      peer: Api.TypeEntityLike;
     }>, Bool> {
     CONSTRUCTOR_ID: 2894183390;
     SUBCLASS_OF_ID: 4122188204;
@@ -29849,12 +29850,12 @@ export namespace Api {
     static fromReader(reader: Reader): ToggleSavedDialogPin;
       // flags: Api.Typeunknown;
       pinned?: boolean;
-      peer: Api.TypeInputDialogPeer;
+      peer: Api.TypeEntityLike;
     }
     export class ReorderPinnedSavedDialogs extends Request<Partial<{
       // flags: Api.Typeunknown;
       force?: boolean;
-      order: Api.TypeInputDialogPeer[];
+      order: Api.TypeEntityLike[];
     }>, Bool> {
     CONSTRUCTOR_ID: 2339464583;
     SUBCLASS_OF_ID: 4122188204;
@@ -29863,7 +29864,7 @@ export namespace Api {
     static fromReader(reader: Reader): ReorderPinnedSavedDialogs;
       // flags: Api.Typeunknown;
       force?: boolean;
-      order: Api.TypeInputDialogPeer[];
+      order: Api.TypeEntityLike[];
     }
     export class GetSavedReactionTags extends Request<Partial<{
       // flags: Api.Typeunknown;
@@ -35251,6 +35252,15329 @@ export namespace Api {
       tone: Api.TypeInputAiComposeTone;
       num: int;
     }
+  }
+  export interface ApiCallOptions {
+    /** Route this single call to a specific DC. */
+    dcId?: number;
+    /** Abort the in-flight request (reserved). */
+    abortSignal?: AbortSignal;
+    /** Auto-sleep & retry on FLOOD_WAIT up to this many seconds (reserved). */
+    floodSleepThreshold?: number;
+  }
+
+  export interface InvokeAfterMsgParams {
+    /** Message identifier on which a current query depends */
+    msgId: long;
+    /** The query itself */
+    query: X;
+  }
+  export interface InvokeAfterMsgsParams {
+    /** List of messages on which a current query depends */
+    msgIds: long[];
+    /** The query itself */
+    query: X;
+  }
+  export interface InitConnectionParams {
+    /** Application identifier (see. App configuration ) */
+    apiId: int;
+    /** Device model */
+    deviceModel: string;
+    /** Operation system version */
+    systemVersion: string;
+    /** Application version */
+    appVersion: string;
+    /** Code for the language used on the device's OS, ISO 639-1 standard */
+    systemLangCode: string;
+    /** Platform identifier (i.e. android , tdesktop , etc). */
+    langPack: string;
+    /** Either an ISO 639-1 language code or a language pack name obtained from a language pack link . */
+    langCode: string;
+    /** Info about an MTProto proxy */
+    proxy?: InputClientProxyIn;
+    /** Additional initConnection parameters. For now, only the tz_offset field is supported, for specifying the timezone offset in seconds. */
+    params?: JSONValueIn;
+    /** The query itself */
+    query: X;
+  }
+  export interface InvokeWithLayerParams {
+    /** The layer to use */
+    layer: int;
+    /** The query */
+    query: X;
+  }
+  export interface InvokeWithoutUpdatesParams {
+    /** The query */
+    query: X;
+  }
+  export interface InvokeWithMessagesRangeParams {
+    /** Message range */
+    range: MessageRangeIn;
+    /** Query */
+    query: X;
+  }
+  export interface InvokeWithTakeoutParams {
+    /** Takeout session ID » */
+    takeoutId: long;
+    /** Query */
+    query: X;
+  }
+  export interface InvokeWithBusinessConnectionParams {
+    /** Business connection ID. */
+    connectionId: string;
+    /** The actual query. */
+    query: X;
+  }
+  export interface InvokeWithGooglePlayIntegrityParams {
+    /** Nonce. */
+    nonce: string;
+    /** Token. */
+    token: string;
+    /** Query. */
+    query: X;
+  }
+  export interface InvokeWithApnsSecretParams {
+    /** Nonce. */
+    nonce: string;
+    /** Secret. */
+    secret: string;
+    /** Query. */
+    query: X;
+  }
+  export interface InvokeWithReCaptchaParams {
+    /** reCAPTCHA token received after verification. */
+    token: string;
+    /** The original method call. */
+    query: X;
+  }
+  export interface AuthSendCodeParams {
+    /** Phone number in international format */
+    phoneNumber: string;
+    /** Application identifier (see App configuration ) */
+    apiId: int;
+    /** Application secret hash (see App configuration ) */
+    apiHash: string;
+    /** Settings for the code type to send */
+    settings: CodeSettingsIn;
+  }
+  export interface AuthSignUpParams {
+    /** If set, users on Telegram that have already added phone_number to their contacts will not receive signup notifications about this user. */
+    noJoinedNotifications?: boolean;
+    /** Phone number in the international format */
+    phoneNumber: string;
+    /** SMS-message ID */
+    phoneCodeHash: string;
+    /** New user first name */
+    firstName: string;
+    /** New user last name */
+    lastName: string;
+  }
+  export interface AuthSignInParams {
+    /** Phone number in the international format */
+    phoneNumber: string;
+    /** SMS-message ID, obtained from auth.sendCode */
+    phoneCodeHash: string;
+    /** Valid numerical code from the SMS-message */
+    phoneCode?: string;
+    /** Email verification code or token */
+    emailVerification?: EmailVerificationIn;
+  }
+  export interface AuthExportAuthorizationParams {
+    /** Number of a target data-center */
+    dcId: int;
+  }
+  export interface AuthImportAuthorizationParams {
+    /** User ID */
+    id: long;
+    /** Authorization key */
+    bytes: bytes;
+  }
+  export interface AuthBindTempAuthKeyParams {
+    /** Permanent auth_key_id to bind to */
+    permAuthKeyId: long;
+    /** Random long from Binding message contents */
+    nonce: long;
+    /** Unix timestamp to invalidate temporary key, see Binding message contents */
+    expiresAt: int;
+    /** See Generating encrypted_message */
+    encryptedMessage: bytes;
+  }
+  export interface AuthImportBotAuthorizationParams {
+    flags: int;
+    /** Application identifier (see. App configuration ) */
+    apiId: int;
+    /** Application identifier hash (see. App configuration ) */
+    apiHash: string;
+    /** Bot token (see bots ) */
+    botAuthToken: string;
+  }
+  export interface AuthCheckPasswordParams {
+    /** The account's password (see SRP ) */
+    password: InputCheckPasswordSRPIn;
+  }
+  export interface AuthRecoverPasswordParams {
+    /** Code received via email */
+    code: string;
+    /** New password */
+    newSettings?: AccountPasswordInputSettingsIn;
+  }
+  export interface AuthResendCodeParams {
+    /** The phone number */
+    phoneNumber: string;
+    /** The phone code hash obtained from auth.sendCode */
+    phoneCodeHash: string;
+    /** Official clients only, used if the device integrity verification failed, and no secret could be obtained to invoke auth.requestFirebaseSms : in this case, the device integrity verification failure reason must be passed here. */
+    reason?: string;
+  }
+  export interface AuthCancelCodeParams {
+    /** Phone number */
+    phoneNumber: string;
+    /** Phone code hash from auth.sendCode */
+    phoneCodeHash: string;
+  }
+  export interface AuthDropTempAuthKeysParams {
+    /** The auth keys that shouldn't be dropped. */
+    exceptAuthKeys: long[];
+  }
+  export interface AuthExportLoginTokenParams {
+    /** Application identifier (see. App configuration ) */
+    apiId: int;
+    /** Application identifier hash (see. App configuration ) */
+    apiHash: string;
+    /** List of already logged-in user IDs, to prevent logging in twice with the same user */
+    exceptIds: long[];
+  }
+  export interface AuthImportLoginTokenParams {
+    /** Login token */
+    token: bytes;
+  }
+  export interface AuthAcceptLoginTokenParams {
+    /** Login token embedded in QR code, for more info, see login via QR code . */
+    token: bytes;
+  }
+  export interface AuthCheckRecoveryPasswordParams {
+    /** Code received via email */
+    code: string;
+  }
+  export interface AuthImportWebTokenAuthorizationParams {
+    /** API ID */
+    apiId: int;
+    /** API hash */
+    apiHash: string;
+    /** The authorization token */
+    webAuthToken: string;
+  }
+  export interface AuthRequestFirebaseSmsParams {
+    /** Phone number */
+    phoneNumber: string;
+    /** Phone code hash returned by auth.sendCode */
+    phoneCodeHash: string;
+    /** On Android, a JWS object obtained as described in the auth documentation » */
+    safetyNetToken?: string;
+    /** On Android, an object obtained as described in the auth documentation » */
+    playIntegrityToken?: string;
+    /** Secret token received via an apple push notification */
+    iosPushSecret?: string;
+  }
+  export interface AuthResetLoginEmailParams {
+    /** Phone number of the account */
+    phoneNumber: string;
+    /** Phone code hash, obtained as described in the documentation » */
+    phoneCodeHash: string;
+  }
+  export interface AuthReportMissingCodeParams {
+    /** Phone number where we were supposed to receive the code */
+    phoneNumber: string;
+    /** The phone code hash obtained from auth.sendCode */
+    phoneCodeHash: string;
+    /** MNC of the current network operator. */
+    mnc: string;
+  }
+  export interface AuthCheckPaidAuthParams {
+    phoneNumber: string;
+    phoneCodeHash: string;
+    formId: long;
+  }
+  export interface AuthInitPasskeyLoginParams {
+    apiId: int;
+    apiHash: string;
+  }
+  export interface AuthFinishPasskeyLoginParams {
+    credential: InputPasskeyCredentialIn;
+    fromDcId?: int;
+    fromAuthKeyId?: long;
+  }
+  export interface AccountRegisterDeviceParams {
+    /** Avoid receiving (silent and invisible background) notifications. Useful to save battery. */
+    noMuted?: boolean;
+    /** Device token type, see PUSH updates for the possible values. */
+    tokenType: int;
+    /** Device token, see PUSH updates for the possible values. */
+    token: string;
+    /** If (boolTrue) is transmitted, a sandbox-certificate will be used during transmission. */
+    appSandbox: Bool;
+    /** For FCM and APNS VoIP, optional encryption key used to encrypt push notifications */
+    secret: bytes;
+    /** List of user identifiers of other users currently using the client */
+    otherUids: long[];
+  }
+  export interface AccountUnregisterDeviceParams {
+    /** Device token type, see PUSH updates for the possible values. */
+    tokenType: int;
+    /** Device token, see PUSH updates for the possible values. */
+    token: string;
+    /** List of user identifiers of other users currently using the client */
+    otherUids: long[];
+  }
+  export interface AccountUpdateNotifySettingsParams {
+    /** Notification source */
+    peer: Api.TypeEntityLike;
+    /** Notification settings */
+    settings: InputPeerNotifySettingsIn;
+  }
+  export interface AccountGetNotifySettingsParams {
+    /** Notification source */
+    peer: Api.TypeEntityLike;
+  }
+  export interface AccountUpdateProfileParams {
+    /** New user first name */
+    firstName?: string;
+    /** New user last name */
+    lastName?: string;
+    /** New bio */
+    about?: string;
+  }
+  export interface AccountUpdateStatusParams {
+    /** If (boolTrue) is transmitted, user status will change to (userStatusOffline) . */
+    offline: Bool;
+  }
+  export interface AccountGetWallPapersParams {
+    /** Hash used for caching, for more info click here . */
+    hash: long;
+  }
+  export interface AccountReportPeerParams {
+    /** The peer to report */
+    peer: Api.TypeEntityLike;
+    /** The reason why this peer is being reported */
+    reason: ReportReasonIn;
+    /** Comment for report moderation */
+    message: string;
+  }
+  export interface AccountCheckUsernameParams {
+    /** username Accepted characters: A-z (case-insensitive), 0-9 and underscores. Length: 5-32 characters. */
+    username: string;
+  }
+  export interface AccountUpdateUsernameParams {
+    /** username or empty string if username is to be removed Accepted characters: a-z (case-insensitive), 0-9 and underscores. Length: 5-32 characters. */
+    username: string;
+  }
+  export interface AccountGetPrivacyParams {
+    /** Peer category whose privacy settings should be fetched */
+    key: InputPrivacyKeyIn;
+  }
+  export interface AccountSetPrivacyParams {
+    /** New privacy rule */
+    key: InputPrivacyKeyIn;
+    /** Peers to which the privacy rule will apply. */
+    rules: InputPrivacyRuleIn[];
+  }
+  export interface AccountDeleteAccountParams {
+    /** Why is the account being deleted, can be empty */
+    reason: string;
+    /** 2FA password : this field can be omitted even for accounts with 2FA enabled: in this case account account deletion will be delayed by 7 days as specified in the docs » */
+    password?: InputCheckPasswordSRPIn;
+  }
+  export interface AccountSetAccountTTLParams {
+    /** Time to live in days */
+    ttl: AccountDaysTTLIn;
+  }
+  export interface AccountSendChangePhoneCodeParams {
+    /** New phone number */
+    phoneNumber: string;
+    /** Phone code settings */
+    settings: CodeSettingsIn;
+  }
+  export interface AccountChangePhoneParams {
+    /** New phone number */
+    phoneNumber: string;
+    /** Phone code hash received when calling account.sendChangePhoneCode */
+    phoneCodeHash: string;
+    /** Phone code received when calling account.sendChangePhoneCode */
+    phoneCode: string;
+  }
+  export interface AccountUpdateDeviceLockedParams {
+    /** Inactivity period after which to start hiding message texts in PUSH notifications . */
+    period: int;
+  }
+  export interface AccountResetAuthorizationParams {
+    /** Session hash */
+    hash: long;
+  }
+  export interface AccountGetPasswordSettingsParams {
+    /** The password (see SRP ) */
+    password: InputCheckPasswordSRPIn;
+  }
+  export interface AccountUpdatePasswordSettingsParams {
+    /** The old password (see SRP ) */
+    password: InputCheckPasswordSRPIn;
+    /** The new password (see SRP ) */
+    newSettings: AccountPasswordInputSettingsIn;
+  }
+  export interface AccountSendConfirmPhoneCodeParams {
+    /** The hash from the service notification, for more info click here » */
+    hash: string;
+    /** Phone code settings */
+    settings: CodeSettingsIn;
+  }
+  export interface AccountConfirmPhoneParams {
+    /** Phone code hash, for more info click here » */
+    phoneCodeHash: string;
+    /** SMS code, for more info click here » */
+    phoneCode: string;
+  }
+  export interface AccountGetTmpPasswordParams {
+    /** SRP password parameters */
+    password: InputCheckPasswordSRPIn;
+    /** Time during which the temporary password will be valid, in seconds; should be between 60 and 86400 */
+    period: int;
+  }
+  export interface AccountResetWebAuthorizationParams {
+    /** Session hash */
+    hash: long;
+  }
+  export interface AccountGetSecureValueParams {
+    /** Requested value types */
+    types: SecureValueTypeIn[];
+  }
+  export interface AccountSaveSecureValueParams {
+    /** Secure value, for more info see the passport docs » */
+    value: InputSecureValueIn;
+    /** Passport secret hash, for more info see the passport docs » */
+    secureSecretId: long;
+  }
+  export interface AccountDeleteSecureValueParams {
+    /** Document types to delete */
+    types: SecureValueTypeIn[];
+  }
+  export interface AccountGetAuthorizationFormParams {
+    /** User identifier of the service's bot */
+    botId: long;
+    /** Telegram Passport element types requested by the service */
+    scope: string;
+    /** Service's public key */
+    publicKey: string;
+  }
+  export interface AccountAcceptAuthorizationParams {
+    /** Bot ID */
+    botId: long;
+    /** Telegram Passport element types requested by the service */
+    scope: string;
+    /** Service's public key */
+    publicKey: string;
+    /** Types of values sent and their hashes */
+    valueHashes: SecureValueHashIn[];
+    /** Encrypted values */
+    credentials: SecureCredentialsEncryptedIn;
+  }
+  export interface AccountSendVerifyPhoneCodeParams {
+    /** The phone number to verify */
+    phoneNumber: string;
+    /** Phone code settings */
+    settings: CodeSettingsIn;
+  }
+  export interface AccountVerifyPhoneParams {
+    /** Phone number */
+    phoneNumber: string;
+    /** Phone code hash received from the call to account.sendVerifyPhoneCode */
+    phoneCodeHash: string;
+    /** Code received after the call to account.sendVerifyPhoneCode */
+    phoneCode: string;
+  }
+  export interface AccountSendVerifyEmailCodeParams {
+    /** Verification purpose. */
+    purpose: EmailVerifyPurposeIn;
+    /** The email where to send the code. */
+    email: string;
+  }
+  export interface AccountVerifyEmailParams {
+    /** Verification purpose */
+    purpose: EmailVerifyPurposeIn;
+    /** Email verification code or token */
+    verification: EmailVerificationIn;
+  }
+  export interface AccountInitTakeoutSessionParams {
+    /** Whether to export contacts */
+    contacts?: boolean;
+    /** Whether to export messages in private chats */
+    messageUsers?: boolean;
+    /** Whether to export messages in basic groups */
+    messageChats?: boolean;
+    /** Whether to export messages in supergroups */
+    messageMegagroups?: boolean;
+    /** Whether to export messages in channels */
+    messageChannels?: boolean;
+    /** Whether to export files */
+    files?: boolean;
+    /** Maximum size of files to export */
+    fileMaxSize?: long;
+  }
+  export interface AccountFinishTakeoutSessionParams {
+    /** Data exported successfully */
+    success?: boolean;
+  }
+  export interface AccountConfirmPasswordEmailParams {
+    /** The phone code that was received after setting a recovery email */
+    code: string;
+  }
+  export interface AccountSetContactSignUpNotificationParams {
+    /** Whether to disable contact sign up notifications */
+    silent: Bool;
+  }
+  export interface AccountGetNotifyExceptionsParams {
+    /** If set, chats with non-default sound will be returned */
+    compareSound?: boolean;
+    /** If set, chats with non-default notification settings for stories will be returned */
+    compareStories?: boolean;
+    /** If specified, only chats of the specified category will be returned */
+    peer?: Api.TypeEntityLike;
+  }
+  export interface AccountGetWallPaperParams {
+    /** The wallpaper to get info about */
+    wallpaper: InputWallPaperIn;
+  }
+  export interface AccountUploadWallPaperParams {
+    /** Set this flag when uploading wallpapers to be passed to messages.setChatWallPaper . */
+    forChat?: boolean;
+    /** The JPG/PNG wallpaper */
+    file: InputFileIn;
+    /** MIME type of uploaded wallpaper */
+    mimeType: string;
+    /** Wallpaper settings */
+    settings: WallPaperSettingsIn;
+  }
+  export interface AccountSaveWallPaperParams {
+    /** Wallpaper to install or uninstall */
+    wallpaper: InputWallPaperIn;
+    /** Uninstall wallpaper? */
+    unsave: Bool;
+    /** Wallpaper settings */
+    settings: WallPaperSettingsIn;
+  }
+  export interface AccountInstallWallPaperParams {
+    /** Wallpaper to install */
+    wallpaper: InputWallPaperIn;
+    /** Wallpaper settings */
+    settings: WallPaperSettingsIn;
+  }
+  export interface AccountSaveAutoDownloadSettingsParams {
+    /** Whether to save media in the low data usage preset */
+    low?: boolean;
+    /** Whether to save media in the high data usage preset */
+    high?: boolean;
+    /** Media autodownload settings */
+    settings: AutoDownloadSettingsIn;
+  }
+  export interface AccountUploadThemeParams {
+    /** Previously uploaded theme file with platform-specific colors for UI components, can be left unset when creating themes that only modify the wallpaper or accent colors. */
+    file: InputFileIn;
+    /** Thumbnail */
+    thumb?: InputFileIn;
+    /** File name */
+    fileName: string;
+    /** MIME type, must be application/x-tgtheme-{format} , where format depends on the client */
+    mimeType: string;
+  }
+  export interface AccountCreateThemeParams {
+    /** Unique theme ID used to generate theme deep links , can be empty to autogenerate a random ID. */
+    slug: string;
+    /** Theme name */
+    title: string;
+    /** Theme file */
+    document?: InputDocumentIn;
+    /** Theme settings, multiple values can be provided for the different base themes (day/night mode, etc). */
+    settings?: InputThemeSettingsIn[];
+  }
+  export interface AccountUpdateThemeParams {
+    /** Theme format, a string that identifies the theming engines supported by the client */
+    format: string;
+    /** Theme to update */
+    theme: InputThemeIn;
+    /** Unique theme ID */
+    slug?: string;
+    /** Theme name */
+    title?: string;
+    /** Theme file */
+    document?: InputDocumentIn;
+    /** Theme settings */
+    settings?: InputThemeSettingsIn[];
+  }
+  export interface AccountSaveThemeParams {
+    /** Theme to save */
+    theme: InputThemeIn;
+    /** Unsave */
+    unsave: Bool;
+  }
+  export interface AccountInstallThemeParams {
+    /** Whether to install the dark version */
+    dark?: boolean;
+    /** Theme to install */
+    theme?: InputThemeIn;
+    /** Theme format, a string that identifies the theming engines supported by the client */
+    format?: string;
+    /** Indicates a basic theme provided by all clients */
+    baseTheme?: BaseThemeIn;
+  }
+  export interface AccountGetThemeParams {
+    /** Theme format, a string that identifies the theming engines supported by the client */
+    format: string;
+    /** Theme */
+    theme: InputThemeIn;
+  }
+  export interface AccountGetThemesParams {
+    /** Theme format, a string that identifies the theming engines supported by the client */
+    format: string;
+    /** Hash used for caching, for more info click here . */
+    hash: long;
+  }
+  export interface AccountSetContentSettingsParams {
+    /** Enable NSFW content */
+    sensitiveEnabled?: boolean;
+  }
+  export interface AccountGetMultiWallPapersParams {
+    /** Wallpapers to fetch info about */
+    wallpapers: InputWallPaperIn[];
+  }
+  export interface AccountSetGlobalPrivacySettingsParams {
+    /** Global privacy settings */
+    settings: GlobalPrivacySettingsIn;
+  }
+  export interface AccountReportProfilePhotoParams {
+    /** The dialog */
+    peer: Api.TypeEntityLike;
+    /** Dialog photo ID */
+    photoId: InputPhotoIn;
+    /** Report reason */
+    reason: ReportReasonIn;
+    /** Comment for report moderation */
+    message: string;
+  }
+  export interface AccountGetChatThemesParams {
+    /** Hash used for caching, for more info click here . */
+    hash: long;
+  }
+  export interface AccountSetAuthorizationTTLParams {
+    /** Time-to-live of current session in days */
+    authorizationTtlDays: int;
+  }
+  export interface AccountChangeAuthorizationSettingsParams {
+    /** If set, confirms a newly logged in session » . */
+    confirmed?: boolean;
+    /** Session ID from the authorization constructor, fetchable using account.getAuthorizations */
+    hash: long;
+    /** Whether to enable or disable receiving encrypted chats: if the flag is not set, the previous setting is not changed */
+    encryptedRequestsDisabled?: Bool;
+    /** Whether to enable or disable receiving calls: if the flag is not set, the previous setting is not changed */
+    callRequestsDisabled?: Bool;
+  }
+  export interface AccountGetSavedRingtonesParams {
+    /** Hash used for caching, for more info click here . */
+    hash: long;
+  }
+  export interface AccountSaveRingtoneParams {
+    /** Notification sound uploaded using account.uploadRingtone */
+    id: InputDocumentIn;
+    /** Whether to add or delete the notification sound */
+    unsave: Bool;
+  }
+  export interface AccountUploadRingtoneParams {
+    /** Notification sound */
+    file: InputFileIn;
+    /** File name */
+    fileName: string;
+    /** MIME type of file */
+    mimeType: string;
+  }
+  export interface AccountUpdateEmojiStatusParams {
+    /** Emoji status to set */
+    emojiStatus: EmojiStatusIn;
+  }
+  export interface AccountGetDefaultEmojiStatusesParams {
+    /** Hash used for caching, for more info click here . */
+    hash: long;
+  }
+  export interface AccountGetRecentEmojiStatusesParams {
+    /** Hash used for caching, for more info click here . */
+    hash: long;
+  }
+  export interface AccountReorderUsernamesParams {
+    /** The new order for active usernames. All active usernames must be specified. */
+    order: string[];
+  }
+  export interface AccountToggleUsernameParams {
+    /** Username */
+    username: string;
+    /** Whether to activate or deactivate it */
+    active: Bool;
+  }
+  export interface AccountGetDefaultProfilePhotoEmojisParams {
+    /** Hash used for caching, for more info click here . */
+    hash: long;
+  }
+  export interface AccountGetDefaultGroupPhotoEmojisParams {
+    /** Hash used for caching, for more info click here . */
+    hash: long;
+  }
+  export interface AccountSaveAutoSaveSettingsParams {
+    /** Whether the new settings should affect all private chats */
+    users?: boolean;
+    /** Whether the new settings should affect all groups */
+    chats?: boolean;
+    /** Whether the new settings should affect all channels */
+    broadcasts?: boolean;
+    /** Whether the new settings should affect a specific peer */
+    peer?: Api.TypeEntityLike;
+    /** The new autosave settings */
+    settings: AutoSaveSettingsIn;
+  }
+  export interface AccountInvalidateSignInCodesParams {
+    /** The login codes to invalidate. */
+    codes: string[];
+  }
+  export interface AccountUpdateColorParams {
+    /** Whether to change the accent color emoji pattern of the profile page; otherwise, the accent color and emoji pattern of messages will be changed. */
+    forProfile?: boolean;
+    /** ID of the accent color palette » to use (not RGB24, see here » for more info). */
+    color?: PeerColorIn;
+  }
+  export interface AccountGetDefaultBackgroundEmojisParams {
+    /** Hash used for caching, for more info click here . */
+    hash: long;
+  }
+  export interface AccountGetChannelDefaultEmojiStatusesParams {
+    /** Hash used for caching, for more info click here . */
+    hash: long;
+  }
+  export interface AccountGetChannelRestrictedStatusEmojisParams {
+    /** Hash used for caching, for more info click here . */
+    hash: long;
+  }
+  export interface AccountUpdateBusinessWorkHoursParams {
+    /** Opening hours (optional, if not set removes all opening hours). */
+    businessWorkHours?: BusinessWorkHoursIn;
+  }
+  export interface AccountUpdateBusinessLocationParams {
+    /** Optional, contains a set of geographical coordinates. */
+    geoPoint?: InputGeoPointIn;
+    /** Mandatory when setting/updating the location, contains a textual description of the address (max 96 UTF-8 chars). */
+    address?: string;
+  }
+  export interface AccountUpdateBusinessGreetingMessageParams {
+    /** Greeting message configuration and contents. */
+    message?: InputBusinessGreetingMessageIn;
+  }
+  export interface AccountUpdateBusinessAwayMessageParams {
+    /** Away message configuration and contents. */
+    message?: InputBusinessAwayMessageIn;
+  }
+  export interface AccountUpdateConnectedBotParams {
+    /** Whether to fully disconnect the bot from the current account. */
+    deleted?: boolean;
+    /** Business bot rights. */
+    rights?: BusinessBotRightsIn;
+    /** The bot to connect or disconnect */
+    bot: Api.TypeEntityLike;
+    /** Configuration for the business connection */
+    recipients: InputBusinessBotRecipientsIn;
+  }
+  export interface AccountGetBotBusinessConnectionParams {
+    /** Business connection ID » . */
+    connectionId: string;
+  }
+  export interface AccountUpdateBusinessIntroParams {
+    /** Telegram Business introduction, to remove it call the method without setting this flag. */
+    intro?: InputBusinessIntroIn;
+  }
+  export interface AccountToggleConnectedBotPausedParams {
+    /** The chat to pause */
+    peer: Api.TypeEntityLike;
+    /** Whether to pause or unpause the chat */
+    paused: Bool;
+  }
+  export interface AccountDisablePeerConnectedBotParams {
+    /** The chat to disconnect */
+    peer: Api.TypeEntityLike;
+  }
+  export interface AccountUpdateBirthdayParams {
+    /** Birthday. */
+    birthday?: BirthdayIn;
+  }
+  export interface AccountCreateBusinessChatLinkParams {
+    /** Info about the link to create. */
+    link: InputBusinessChatLinkIn;
+  }
+  export interface AccountEditBusinessChatLinkParams {
+    /** Slug of the link, obtained as specified here » . */
+    slug: string;
+    /** New link information. */
+    link: InputBusinessChatLinkIn;
+  }
+  export interface AccountDeleteBusinessChatLinkParams {
+    /** Slug of the link, obtained as specified here » . */
+    slug: string;
+  }
+  export interface AccountResolveBusinessChatLinkParams {
+    /** Slug of the link, obtained as specified here » . */
+    slug: string;
+  }
+  export interface AccountUpdatePersonalChannelParams {
+    /** The channel, pass inputChannelEmpty to remove it. */
+    channel: Api.TypeEntityLike;
+  }
+  export interface AccountToggleSponsoredMessagesParams {
+    /** Enable or disable ads. */
+    enabled: Bool;
+  }
+  export interface AccountSetReactionsNotifySettingsParams {
+    /** New reaction notification settings. */
+    settings: ReactionsNotifySettingsIn;
+  }
+  export interface AccountGetCollectibleEmojiStatusesParams {
+    /** Hash for pagination */
+    hash: long;
+  }
+  export interface AccountGetPaidMessagesRevenueParams {
+    /** If set, can contain the ID of a monoforum (channel direct messages) to obtain the number of stars the user has spent to send us direct messages via the channel. */
+    parentPeer?: Api.TypeEntityLike;
+    /** The user that paid to send us messages. */
+    userId: Api.TypeEntityLike;
+  }
+  export interface AccountToggleNoPaidMessagesExceptionParams {
+    /** If set and require_payment is not set, refunds the amounts the user has already paid us to send us messages (directly or via a monoforum). */
+    refundCharged?: boolean;
+    /** If set, requires the user to pay in order to send us messages. Can only be set by monoforums, not users, i.e. parent_peer must be set if this flag is set; users must instead use the inputPrivacyKeyNoPaidMessages privacy setting to remove a previously added exemption. If not set, allows the user to send us messages without paying (can be unset by both monoforums and users). */
+    requirePayment?: boolean;
+    /** If set, applies the setting within the monoforum aka direct messages » (pass the ID of the monoforum, not the ID of the associated channel). */
+    parentPeer?: Api.TypeEntityLike;
+    /** The user to exempt or unexempt. */
+    userId: Api.TypeEntityLike;
+  }
+  export interface AccountSetMainProfileTabParams {
+    /** The tab to set as main tab. */
+    tab: ProfileTabIn;
+  }
+  export interface AccountSaveMusicParams {
+    /** If set, removes the song. */
+    unsave?: boolean;
+    /** The song to add or remove; can be an already added song when reordering songs with after_id . Adding an already added song will never re-add it, only move it to the top of the song list (or after the song passed in after_id ). */
+    id: InputDocumentIn;
+    /** If set, the song will be added after the passed song (must be already pinned on the profile). */
+    afterId?: InputDocumentIn;
+  }
+  export interface AccountGetSavedMusicIdsParams {
+    /** Hash generated » from the previously returned list of IDs. */
+    hash: long;
+  }
+  export interface AccountGetUniqueGiftChatThemesParams {
+    /** Offset for pagination . */
+    offset: string;
+    /** Maximum number of results to return, see pagination */
+    limit: int;
+    /** Hash from a previously returned account.chatThemes constructor, to avoid returning any result if the theme list hasn't changed. */
+    hash: long;
+  }
+  export interface AccountRegisterPasskeyParams {
+    credential: InputPasskeyCredentialIn;
+  }
+  export interface AccountDeletePasskeyParams {
+    id: string;
+  }
+  export interface AccountConfirmBotConnectionParams {
+    botId: Api.TypeEntityLike;
+  }
+  export interface AccountGetWebBrowserSettingsParams {
+    hash: long;
+  }
+  export interface AccountUpdateWebBrowserSettingsParams {
+    openExternalBrowser?: boolean;
+    displayCloseButton?: boolean;
+  }
+  export interface AccountToggleWebBrowserSettingsExceptionParams {
+    delete?: boolean;
+    openExternalBrowser?: Bool;
+    url: string;
+  }
+  export interface UsersGetUsersParams {
+    /** List of user identifiers */
+    id: Api.TypeEntityLike[];
+  }
+  export interface UsersGetFullUserParams {
+    /** User ID */
+    id: Api.TypeEntityLike;
+  }
+  export interface UsersSetSecureValueErrorsParams {
+    /** The user */
+    id: Api.TypeEntityLike;
+    /** Errors */
+    errors: SecureValueErrorIn[];
+  }
+  export interface UsersGetRequirementsToContactParams {
+    /** Users to check. */
+    id: Api.TypeEntityLike[];
+  }
+  export interface UsersGetSavedMusicParams {
+    /** The ID of the user. */
+    id: Api.TypeEntityLike;
+    /** Offset for pagination. */
+    offset: int;
+    /** Maximum number of results to return, see pagination */
+    limit: int;
+    /** Hash » of the IDs of previously added songs, to avoid returning any result if there was no change. */
+    hash: long;
+  }
+  export interface UsersGetSavedMusicByIDParams {
+    /** The ID of the user. */
+    id: Api.TypeEntityLike;
+    /** The songs (here, file_reference can be empty to refresh file references). */
+    documents: InputDocumentIn[];
+  }
+  export interface UsersSuggestBirthdayParams {
+    id: Api.TypeEntityLike;
+    birthday: BirthdayIn;
+  }
+  export interface ContactsGetContactIDsParams {
+    /** Hash used for caching, for more info click here */
+    hash: long;
+  }
+  export interface ContactsGetContactsParams {
+    /** Hash used for caching, for more info click here . Note that the hash is computed using the usual algorithm , passing to the algorithm first the previously returned contacts.contacts . saved_count field, then max 100000 sorted user IDs from the contact list, including the ID of the currently logged in user if it is saved as a contact. Example: tdlib implementation . */
+    hash: long;
+  }
+  export interface ContactsImportContactsParams {
+    /** List of contacts to import */
+    contacts: InputContactIn[];
+  }
+  export interface ContactsDeleteContactsParams {
+    /** User ID list */
+    id: Api.TypeEntityLike[];
+  }
+  export interface ContactsDeleteByPhonesParams {
+    /** Phone numbers */
+    phones: string[];
+  }
+  export interface ContactsBlockParams {
+    /** Whether the peer should be added to the story blocklist; if not set, the peer will be added to the main blocklist, see here » for more info. */
+    myStoriesFrom?: boolean;
+    /** Peer */
+    id: Api.TypeEntityLike;
+  }
+  export interface ContactsUnblockParams {
+    /** Whether the peer should be removed from the story blocklist; if not set, the peer will be removed from the main blocklist, see here » for more info. */
+    myStoriesFrom?: boolean;
+    /** Peer */
+    id: Api.TypeEntityLike;
+  }
+  export interface ContactsGetBlockedParams {
+    /** Whether to fetch the story blocklist; if not set, will fetch the main blocklist. See here » for differences between the two. */
+    myStoriesFrom?: boolean;
+    /** The number of list elements to be skipped */
+    offset: int;
+    /** The number of list elements to be returned */
+    limit: int;
+  }
+  export interface ContactsSearchParams {
+    broadcasts?: boolean;
+    bots?: boolean;
+    /** Target substring */
+    q: string;
+    /** Maximum number of users to be returned */
+    limit: int;
+  }
+  export interface ContactsResolveUsernameParams {
+    /** @username to resolve */
+    username: string;
+    /** Referrer ID from referral links » . */
+    referer?: string;
+  }
+  export interface ContactsGetTopPeersParams {
+    /** Users we've chatted most frequently with */
+    correspondents?: boolean;
+    /** Most used bots */
+    botsPm?: boolean;
+    /** Most used inline bots */
+    botsInline?: boolean;
+    /** Most frequently called users */
+    phoneCalls?: boolean;
+    /** Users to which the users often forwards messages to */
+    forwardUsers?: boolean;
+    /** Chats to which the users often forwards messages to */
+    forwardChats?: boolean;
+    /** Often-opened groups and supergroups */
+    groups?: boolean;
+    /** Most frequently visited channels */
+    channels?: boolean;
+    /** Most frequently used Main Mini Bot Apps . */
+    botsApp?: boolean;
+    botsGuestchat?: boolean;
+    /** Offset for pagination */
+    offset: int;
+    /** Maximum number of results to return, see pagination */
+    limit: int;
+    /** Hash used for caching, for more info click here */
+    hash: long;
+  }
+  export interface ContactsResetTopPeerRatingParams {
+    /** Top peer category */
+    category: TopPeerCategoryIn;
+    /** Peer whose rating should be reset */
+    peer: Api.TypeEntityLike;
+  }
+  export interface ContactsToggleTopPeersParams {
+    /** Enable/disable */
+    enabled: Bool;
+  }
+  export interface ContactsAddContactParams {
+    /** Allow the other user to see our phone number? */
+    addPhonePrivacyException?: boolean;
+    /** Telegram ID of the other user */
+    id: Api.TypeEntityLike;
+    /** First name */
+    firstName: string;
+    /** Last name */
+    lastName: string;
+    /** User's phone number, may be omitted to simply add the user to the contact list, without a phone number. */
+    phone: string;
+    note?: TextWithEntitiesIn;
+  }
+  export interface ContactsAcceptContactParams {
+    /** The user to add as contact */
+    id: Api.TypeEntityLike;
+  }
+  export interface ContactsGetLocatedParams {
+    /** While the geolocation of the current user is public, clients should update it in the background every half-an-hour or so, while setting this flag. Do this only if the new location is more than 1 KM away from the previous one, or if the previous location is unknown. */
+    background?: boolean;
+    /** Geolocation */
+    geoPoint: InputGeoPointIn;
+    /** If set, the geolocation of the current user will be public for the specified number of seconds; pass 0x7fffffff to disable expiry, 0 to make the current geolocation private; if the flag isn't set, no changes will be applied. */
+    selfExpires?: int;
+  }
+  export interface ContactsBlockFromRepliesParams {
+    /** Whether to delete the specified message as well */
+    deleteMessage?: boolean;
+    /** Whether to delete all @replies messages from this user as well */
+    deleteHistory?: boolean;
+    /** Whether to also report this user for spam */
+    reportSpam?: boolean;
+    /** ID of the message in the @replies chat */
+    msgId: MessageIDLike;
+  }
+  export interface ContactsResolvePhoneParams {
+    /** Phone number in international format, possibly obtained from a phone number deep link . */
+    phone: string;
+  }
+  export interface ContactsImportContactTokenParams {
+    /** The token extracted from the temporary profile link . */
+    token: string;
+  }
+  export interface ContactsEditCloseFriendsParams {
+    /** Full list of user IDs of close friends, see here for more info. */
+    id: long[];
+  }
+  export interface ContactsSetBlockedParams {
+    /** Whether to edit the story blocklist; if not set, will edit the main blocklist. See here » for differences between the two. */
+    myStoriesFrom?: boolean;
+    /** Full content of the blocklist. */
+    id: Api.TypeEntityLike[];
+    /** Maximum number of results to return, see pagination */
+    limit: int;
+  }
+  export interface ContactsGetSponsoredPeersParams {
+    /** The query */
+    q: string;
+  }
+  export interface ContactsUpdateContactNoteParams {
+    id: Api.TypeEntityLike;
+    note: TextWithEntitiesIn;
+  }
+  export interface MessagesGetMessagesParams {
+    /** Message ID list */
+    id: InputMessageIn[];
+  }
+  export interface MessagesGetDialogsParams {
+    /** Exclude pinned dialogs */
+    excludePinned?: boolean;
+    /** Peer folder ID, for more info click here */
+    folderId?: int;
+    /** Offsets for pagination, for more info click here */
+    offsetDate: int;
+    /** Offsets for pagination, for more info click here ( top_message ID used for pagination) */
+    offsetId: int;
+    /** Offset peer for pagination */
+    offsetPeer: Api.TypeEntityLike;
+    /** Number of list elements to be returned */
+    limit: int;
+    /** Hash used for caching, for more info click here */
+    hash: long;
+  }
+  export interface MessagesGetHistoryParams {
+    /** Target peer */
+    peer: Api.TypeEntityLike;
+    /** Only return messages starting from the specified message ID */
+    offsetId: int;
+    /** Only return messages sent before the specified date */
+    offsetDate: int;
+    /** Number of list elements to be skipped, negative values are also accepted. */
+    addOffset: int;
+    /** Number of results to return */
+    limit: int;
+    /** If a positive value was transferred, the method will return only messages with IDs less than max_id */
+    maxId: int;
+    /** If a positive value was transferred, the method will return only messages with IDs more than min_id */
+    minId: int;
+    /** Result hash */
+    hash: long;
+  }
+  export interface MessagesSearchParams {
+    /** User or chat, histories with which are searched, or (inputPeerEmpty) constructor to search in all private chats and normal groups (not channels) » . Use messages.searchGlobal to search globally in all chats, groups, supergroups and channels. */
+    peer: Api.TypeEntityLike;
+    /** Text search request */
+    q: string;
+    /** Only return messages sent by the specified user ID */
+    fromId?: Api.TypeEntityLike;
+    /** Search within the saved message dialog » with this ID. */
+    savedPeerId?: Api.TypeEntityLike;
+    /** You may search for saved messages tagged » with one or more reactions using this flag. */
+    savedReaction?: ReactionIn[];
+    /** Thread ID */
+    topMsgId?: MessageIDLike;
+    /** Filter to return only specified message types */
+    filter: MessagesFilterIn;
+    /** If a positive value was transferred, only messages with a sending date bigger than the transferred one will be returned */
+    minDate: int;
+    /** If a positive value was transferred, only messages with a sending date smaller than the transferred one will be returned */
+    maxDate: int;
+    /** Only return messages starting from the specified message ID */
+    offsetId: int;
+    /** Additional offset */
+    addOffset: int;
+    /** Number of results to return , can be 0 to only return the message counter. */
+    limit: int;
+    /** Maximum message ID to return */
+    maxId: int;
+    /** Minimum message ID to return */
+    minId: int;
+    /** Hash */
+    hash: long;
+  }
+  export interface MessagesReadHistoryParams {
+    /** Target user or group */
+    peer: Api.TypeEntityLike;
+    /** If a positive value is passed, only messages with identifiers less or equal than the given one will be read */
+    maxId: int;
+  }
+  export interface MessagesDeleteHistoryParams {
+    /** Just clear history for the current user, without actually removing messages for every chat user */
+    justClear?: boolean;
+    /** Whether to delete the message history for all chat participants */
+    revoke?: boolean;
+    /** User or chat, communication history of which will be deleted */
+    peer: Api.TypeEntityLike;
+    /** Maximum ID of message to delete */
+    maxId: int;
+    /** Delete all messages newer than this UNIX timestamp */
+    minDate?: int;
+    /** Delete all messages older than this UNIX timestamp */
+    maxDate?: int;
+  }
+  export interface MessagesDeleteMessagesParams {
+    /** Whether to delete messages for all participants of the chat */
+    revoke?: boolean;
+    /** Message ID list */
+    id: int[];
+  }
+  export interface MessagesReceivedMessagesParams {
+    /** Maximum message ID available in a client. */
+    maxId: int;
+  }
+  export interface MessagesSetTypingParams {
+    /** Target user or group */
+    peer: Api.TypeEntityLike;
+    /** Topic ID */
+    topMsgId?: MessageIDLike;
+    /** Type of action */
+    action: SendMessageActionIn;
+  }
+  export interface MessagesSendMessageParams {
+    /** Set this flag to disable generation of the webpage preview */
+    noWebpage?: boolean;
+    /** Send this message silently (no notifications for the receivers) */
+    silent?: boolean;
+    /** Send this message as background message */
+    background?: boolean;
+    /** Clear the draft field */
+    clearDraft?: boolean;
+    /** Only for bots, disallows forwarding and saving of the messages, even if the destination chat doesn't have content protection enabled */
+    noforwards?: boolean;
+    /** Whether to move used stickersets to top, see here for more info on this flag » */
+    updateStickersetsOrder?: boolean;
+    /** If set, any eventual webpage preview will be shown on top of the message instead of at the bottom. */
+    invertMedia?: boolean;
+    /** Bots only: if set, allows sending up to 1000 messages per second, ignoring broadcasting limits for a fee of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance. */
+    allowPaidFloodskip?: boolean;
+    /** The destination where the message will be sent */
+    peer: Api.TypeEntityLike;
+    /** If set, indicates that the message should be sent in reply to the specified message or story. Also used to quote other messages. */
+    replyTo?: InputReplyToIn;
+    /** The message */
+    message: string;
+    /** Unique client message ID required to prevent message resending */
+    randomId?: long;
+    /** Reply markup for sending bot buttons */
+    replyMarkup?: ReplyMarkupIn;
+    /** Message entities for sending styled text */
+    entities?: MessageEntityIn[];
+    /** Scheduled message date for scheduled messages */
+    scheduleDate?: int;
+    scheduleRepeatPeriod?: int;
+    /** Send this message as the specified peer */
+    sendAs?: Api.TypeEntityLike;
+    /** Add the message to the specified quick reply shortcut » , instead. */
+    quickReplyShortcut?: InputQuickReplyShortcutIn;
+    /** Specifies a message effect » to use for the message. */
+    effect?: long;
+    /** For paid messages » , specifies the amount of Telegram Stars the user has agreed to pay in order to send the message. */
+    allowPaidStars?: long;
+    /** Used to suggest a post to a channel, see here » for more info on the full flow. */
+    suggestedPost?: SuggestedPostIn;
+    richMessage?: InputRichMessageIn;
+  }
+  export interface MessagesSendMediaParams {
+    /** Send message silently (no notification should be triggered) */
+    silent?: boolean;
+    /** Send message in background */
+    background?: boolean;
+    /** Clear the draft */
+    clearDraft?: boolean;
+    /** Only for bots, disallows forwarding and saving of the messages, even if the destination chat doesn't have content protection enabled */
+    noforwards?: boolean;
+    /** Whether to move used stickersets to top, see here for more info on this flag » */
+    updateStickersetsOrder?: boolean;
+    /** If set, any eventual webpage preview will be shown on top of the message instead of at the bottom. */
+    invertMedia?: boolean;
+    /** Bots only: if set, allows sending up to 1000 messages per second, ignoring broadcasting limits for a fee of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance. */
+    allowPaidFloodskip?: boolean;
+    /** Destination */
+    peer: Api.TypeEntityLike;
+    /** If set, indicates that the message should be sent in reply to the specified message or story. */
+    replyTo?: InputReplyToIn;
+    /** Attached media */
+    media: InputMediaIn;
+    /** Caption */
+    message: string;
+    /** Random ID to avoid resending the same message */
+    randomId?: long;
+    /** Reply markup for bot keyboards */
+    replyMarkup?: ReplyMarkupIn;
+    /** Message entities for styled text */
+    entities?: MessageEntityIn[];
+    /** Scheduled message date for scheduled messages */
+    scheduleDate?: int;
+    scheduleRepeatPeriod?: int;
+    /** Send this message as the specified peer */
+    sendAs?: Api.TypeEntityLike;
+    /** Add the message to the specified quick reply shortcut » , instead. */
+    quickReplyShortcut?: InputQuickReplyShortcutIn;
+    /** Specifies a message effect » to use for the message. */
+    effect?: long;
+    /** For paid messages » , specifies the amount of Telegram Stars the user has agreed to pay in order to send the message. */
+    allowPaidStars?: long;
+    /** Used to suggest a post to a channel, see here » for more info on the full flow. */
+    suggestedPost?: SuggestedPostIn;
+  }
+  export interface MessagesForwardMessagesParams {
+    /** Whether to send messages silently (no notification will be triggered on the destination clients) */
+    silent?: boolean;
+    /** Whether to send the message in background */
+    background?: boolean;
+    /** When forwarding games, whether to include your score in the game */
+    withMyScore?: boolean;
+    /** Whether to forward messages without quoting the original author */
+    dropAuthor?: boolean;
+    /** Whether to strip captions from media */
+    dropMediaCaptions?: boolean;
+    /** Only for bots, disallows further re-forwarding and saving of the messages, even if the destination chat doesn't have content protection enabled */
+    noforwards?: boolean;
+    /** Bots only: if set, allows sending up to 1000 messages per second, ignoring broadcasting limits for a fee of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance. */
+    allowPaidFloodskip?: boolean;
+    /** Source of messages */
+    fromPeer: Api.TypeEntityLike;
+    /** IDs of messages */
+    id: int[];
+    /** Random ID to prevent resending of messages */
+    randomId: long[];
+    /** Destination peer */
+    toPeer: Api.TypeEntityLike;
+    /** Destination forum topic */
+    topMsgId?: MessageIDLike;
+    /** Can only contain an inputReplyToMonoForum , to forward messages to a monoforum topic (mutually exclusive with top_msg_id ). */
+    replyTo?: InputReplyToIn;
+    /** Scheduled message date for scheduled messages */
+    scheduleDate?: int;
+    scheduleRepeatPeriod?: int;
+    /** Forward the messages as the specified peer */
+    sendAs?: Api.TypeEntityLike;
+    /** Add the messages to the specified quick reply shortcut » , instead. */
+    quickReplyShortcut?: InputQuickReplyShortcutIn;
+    effect?: long;
+    /** Start playing the video at the specified timestamp (seconds). */
+    videoTimestamp?: int;
+    /** For paid messages » , specifies the amount of Telegram Stars the user has agreed to pay in order to send the message. */
+    allowPaidStars?: long;
+    /** Used to suggest a post to a channel, see here » for more info on the full flow. */
+    suggestedPost?: SuggestedPostIn;
+  }
+  export interface MessagesReportSpamParams {
+    /** Peer to report */
+    peer: Api.TypeEntityLike;
+  }
+  export interface MessagesGetPeerSettingsParams {
+    /** The peer */
+    peer: Api.TypeEntityLike;
+  }
+  export interface MessagesReportParams {
+    /** Peer */
+    peer: Api.TypeEntityLike;
+    /** IDs of messages to report */
+    id: int[];
+    /** Menu option, intially empty */
+    option: bytes;
+    /** Comment for report moderation */
+    message: string;
+  }
+  export interface MessagesGetChatsParams {
+    /** List of chat IDs */
+    id: long[];
+  }
+  export interface MessagesGetFullChatParams {
+    /** Basic group ID. */
+    chatId: long;
+  }
+  export interface MessagesEditChatTitleParams {
+    /** Chat ID */
+    chatId: long;
+    /** New chat name, different from the old one */
+    title: string;
+  }
+  export interface MessagesEditChatPhotoParams {
+    /** Chat ID */
+    chatId: long;
+    /** Photo to be set */
+    photo: InputChatPhotoIn;
+  }
+  export interface MessagesAddChatUserParams {
+    /** Chat ID */
+    chatId: long;
+    /** User ID to be added */
+    userId: Api.TypeEntityLike;
+    /** Number of last messages to be forwarded */
+    fwdLimit: int;
+  }
+  export interface MessagesDeleteChatUserParams {
+    /** Remove the entire chat history of the specified user in this chat. */
+    revokeHistory?: boolean;
+    /** Chat ID */
+    chatId: long;
+    /** User ID to be deleted */
+    userId: Api.TypeEntityLike;
+  }
+  export interface MessagesCreateChatParams {
+    /** List of user IDs to be invited */
+    users: Api.TypeEntityLike[];
+    /** Chat name */
+    title: string;
+    /** Time-to-live of all messages that will be sent in the chat: once message.date+message.ttl_period === time(), the message will be deleted on the server, and must be deleted locally as well. You can use messages.setDefaultHistoryTTL to edit this value later. */
+    ttlPeriod?: int;
+  }
+  export interface MessagesGetDhConfigParams {
+    /** Value of the version parameter from messages.dhConfig , available at the client */
+    version: int;
+    /** Length of the required random sequence */
+    randomLength: int;
+  }
+  export interface MessagesRequestEncryptionParams {
+    /** User ID */
+    userId: Api.TypeEntityLike;
+    /** Unique client request ID required to prevent resending. This also doubles as the chat ID. */
+    randomId: int;
+    /** A = g ^ a mod p , see Wikipedia */
+    gA: bytes;
+  }
+  export interface MessagesAcceptEncryptionParams {
+    /** Secret chat ID */
+    peer: InputEncryptedChatIn;
+    /** B = g ^ b mod p , see Wikipedia */
+    gB: bytes;
+    /** 64-bit fingerprint of the received key */
+    keyFingerprint: long;
+  }
+  export interface MessagesDiscardEncryptionParams {
+    /** Whether to delete the entire chat history for the other user as well */
+    deleteHistory?: boolean;
+    /** Secret chat ID */
+    chatId: int;
+  }
+  export interface MessagesSetEncryptedTypingParams {
+    /** Secret chat ID */
+    peer: InputEncryptedChatIn;
+    /** Typing. Possible values : (boolTrue) , if the user started typing and more than 5 seconds have passed since the last request (boolFalse) , if the user stopped typing */
+    typing: Bool;
+  }
+  export interface MessagesReadEncryptedHistoryParams {
+    /** Secret chat ID */
+    peer: InputEncryptedChatIn;
+    /** Maximum date value for received messages in history */
+    maxDate: int;
+  }
+  export interface MessagesSendEncryptedParams {
+    /** Send encrypted message without a notification */
+    silent?: boolean;
+    /** Secret chat ID */
+    peer: InputEncryptedChatIn;
+    /** Unique client message ID, necessary to avoid message resending */
+    randomId?: long;
+    /** TL-serialization of DecryptedMessage type, encrypted with a key that was created during chat initialization */
+    data: bytes;
+  }
+  export interface MessagesSendEncryptedFileParams {
+    /** Whether to send the file without triggering a notification */
+    silent?: boolean;
+    /** Secret chat ID */
+    peer: InputEncryptedChatIn;
+    /** Unique client message ID necessary to prevent message resending */
+    randomId?: long;
+    /** TL-serialization of DecryptedMessage type, encrypted with a key generated during chat initialization */
+    data: bytes;
+    /** File attachment for the secret chat */
+    file: InputEncryptedFileIn;
+  }
+  export interface MessagesSendEncryptedServiceParams {
+    /** Secret chat ID */
+    peer: InputEncryptedChatIn;
+    /** Unique client message ID required to prevent message resending */
+    randomId?: long;
+    /** TL-serialization of DecryptedMessage type, encrypted with a key generated during chat initialization */
+    data: bytes;
+  }
+  export interface MessagesReceivedQueueParams {
+    /** Maximum qts value available at the client */
+    maxQts: int;
+  }
+  export interface MessagesReportEncryptedSpamParams {
+    /** The secret chat to report */
+    peer: InputEncryptedChatIn;
+  }
+  export interface MessagesReadMessageContentsParams {
+    /** Message ID list */
+    id: int[];
+  }
+  export interface MessagesGetStickersParams {
+    /** The emoji */
+    emoticon: string;
+    /** Hash used for caching, for more info click here . */
+    hash: long;
+  }
+  export interface MessagesGetAllStickersParams {
+    /** Hash used for caching, for more info click here . */
+    hash: long;
+  }
+  export interface MessagesGetWebPagePreviewParams {
+    /** Message from which to extract the preview */
+    message: string;
+    /** Message entities for styled text */
+    entities?: MessageEntityIn[];
+  }
+  export interface MessagesExportChatInviteParams {
+    /** Legacy flag, reproducing legacy behavior of this method: if set, revokes all previous links before creating a new one. Kept for bot API BC, should not be used by modern clients. */
+    legacyRevokePermanent?: boolean;
+    /** Whether admin confirmation is required before admitting each separate user into the chat */
+    requestNeeded?: boolean;
+    /** Chat */
+    peer: Api.TypeEntityLike;
+    /** Expiration date */
+    expireDate?: int;
+    /** Maximum number of users that can join using this link */
+    usageLimit?: int;
+    /** Description of the invite link, visible only to administrators */
+    title?: string;
+    /** For Telegram Star subscriptions » , contains the pricing of the subscription the user must activate to join the private channel. */
+    subscriptionPricing?: StarsSubscriptionPricingIn;
+  }
+  export interface MessagesCheckChatInviteParams {
+    /** Invite hash from chat invite deep link » . */
+    hash: string;
+  }
+  export interface MessagesImportChatInviteParams {
+    /** hash from a chat invite deep link */
+    hash: string;
+  }
+  export interface MessagesGetStickerSetParams {
+    /** Stickerset */
+    stickerset: InputStickerSetIn;
+    /** Hash used for caching, for more info click here */
+    hash: int;
+  }
+  export interface MessagesInstallStickerSetParams {
+    /** Stickerset to install */
+    stickerset: InputStickerSetIn;
+    /** Whether to archive stickerset */
+    archived: Bool;
+  }
+  export interface MessagesUninstallStickerSetParams {
+    /** The stickerset to uninstall */
+    stickerset: InputStickerSetIn;
+  }
+  export interface MessagesStartBotParams {
+    /** The bot */
+    bot: Api.TypeEntityLike;
+    /** The chat where to start the bot, can be the bot's private chat or a group */
+    peer: Api.TypeEntityLike;
+    /** Random ID to avoid resending the same message */
+    randomId?: long;
+    /** Deep linking parameter */
+    startParam: string;
+  }
+  export interface MessagesGetMessagesViewsParams {
+    /** Peer where the message was found */
+    peer: Api.TypeEntityLike;
+    /** ID of message */
+    id: int[];
+    /** Whether to mark the message as viewed and increment the view counter */
+    increment: Bool;
+  }
+  export interface MessagesEditChatAdminParams {
+    /** The ID of the group */
+    chatId: long;
+    /** The user to make admin */
+    userId: Api.TypeEntityLike;
+    /** Whether to make them admin */
+    isAdmin: Bool;
+  }
+  export interface MessagesMigrateChatParams {
+    /** Basic group to migrate */
+    chatId: long;
+  }
+  export interface MessagesSearchGlobalParams {
+    /** If set, only returns results from channels (used in the global channel search tab » ). */
+    broadcastsOnly?: boolean;
+    /** Whether to search only in groups */
+    groupsOnly?: boolean;
+    /** Whether to search only in private chats */
+    usersOnly?: boolean;
+    /** Peer folder ID, for more info click here */
+    folderId?: int;
+    /** Query */
+    q: string;
+    /** Global search filter */
+    filter: MessagesFilterIn;
+    /** If a positive value was specified, the method will return only messages with date bigger than min_date */
+    minDate: int;
+    /** If a positive value was transferred, the method will return only messages with date smaller than max_date */
+    maxDate: int;
+    /** Initially 0, then set to the next_rate parameter of messages.messagesSlice , or if that is absent, the date of the last returned message. */
+    offsetRate: int;
+    /** Offsets for pagination, for more info click here */
+    offsetPeer: Api.TypeEntityLike;
+    /** Offsets for pagination, for more info click here */
+    offsetId: int;
+    /** Offsets for pagination, for more info click here */
+    limit: int;
+  }
+  export interface MessagesReorderStickerSetsParams {
+    /** Reorder mask stickersets */
+    masks?: boolean;
+    /** Reorder custom emoji stickersets */
+    emojis?: boolean;
+    /** New stickerset order by stickerset IDs */
+    order: long[];
+  }
+  export interface MessagesGetDocumentByHashParams {
+    /** SHA256 of file */
+    sha256: bytes;
+    /** Size of the file in bytes */
+    size: long;
+    /** Mime type */
+    mimeType: string;
+  }
+  export interface MessagesGetSavedGifsParams {
+    /** Hash used for caching, for more info click here . */
+    hash: long;
+  }
+  export interface MessagesSaveGifParams {
+    /** GIF to save */
+    id: InputDocumentIn;
+    /** Whether to remove GIF from saved gifs list */
+    unsave: Bool;
+  }
+  export interface MessagesGetInlineBotResultsParams {
+    /** The bot to query */
+    bot: Api.TypeEntityLike;
+    /** The currently opened chat */
+    peer: Api.TypeEntityLike;
+    /** The geolocation, if requested */
+    geoPoint?: InputGeoPointIn;
+    /** The query */
+    query: string;
+    /** The offset within the results, will be passed directly as-is to the bot. */
+    offset: string;
+  }
+  export interface MessagesSetInlineBotResultsParams {
+    /** Set this flag if the results are composed of media files */
+    gallery?: boolean;
+    /** Set this flag if results may be cached on the server side only for the user that sent the query. By default, results may be returned to any user who sends the same query */
+    private?: boolean;
+    /** Unique identifier for the answered query */
+    queryId: long;
+    /** Vector of results for the inline query */
+    results: InputBotInlineResultIn[];
+    /** The maximum amount of time in seconds that the result of the inline query may be cached on the server. Defaults to 300. */
+    cacheTime: int;
+    /** Pass the offset that a client should send in the next query with the same text to receive more results. Pass an empty string if there are no more results or if you don't support pagination. Offset length can't exceed 64 bytes. */
+    nextOffset?: string;
+    /** If passed, clients will display a button on top of the remaining inline result list with the specified text, that switches the user to a private chat with the bot and sends the bot a start message with a certain parameter. */
+    switchPm?: InlineBotSwitchPMIn;
+    /** If passed, clients will display a button on top of the remaining inline result list with the specified text, that switches the user to the specified inline mode mini app . */
+    switchWebview?: InlineBotWebViewIn;
+  }
+  export interface MessagesSendInlineBotResultParams {
+    /** Whether to send the message silently (no notification will be triggered on the other client) */
+    silent?: boolean;
+    /** Whether to send the message in background */
+    background?: boolean;
+    /** Whether to clear the draft */
+    clearDraft?: boolean;
+    /** Whether to hide the via @botname in the resulting message (only for bot usernames encountered in the config ) */
+    hideVia?: boolean;
+    /** Destination */
+    peer: Api.TypeEntityLike;
+    /** If set, indicates that the message should be sent in reply to the specified message or story. */
+    replyTo?: InputReplyToIn;
+    /** Random ID to avoid resending the same query */
+    randomId?: long;
+    /** Query ID from messages.getInlineBotResults */
+    queryId: long;
+    /** Result ID from messages.getInlineBotResults */
+    id: string;
+    /** Scheduled message date for scheduled messages */
+    scheduleDate?: int;
+    /** Send this message as the specified peer */
+    sendAs?: Api.TypeEntityLike;
+    /** Add the message to the specified quick reply shortcut » , instead. */
+    quickReplyShortcut?: InputQuickReplyShortcutIn;
+    /** For paid messages » , specifies the amount of Telegram Stars the user has agreed to pay in order to send the message. */
+    allowPaidStars?: long;
+  }
+  export interface MessagesGetMessageEditDataParams {
+    /** Peer where the media was sent */
+    peer: Api.TypeEntityLike;
+    /** ID of message */
+    id: int;
+  }
+  export interface MessagesEditMessageParams {
+    /** Disable webpage preview */
+    noWebpage?: boolean;
+    /** If set, any eventual webpage preview will be shown on top of the message instead of at the bottom. */
+    invertMedia?: boolean;
+    /** Where was the message sent */
+    peer: Api.TypeEntityLike;
+    /** ID of the message to edit */
+    id: int;
+    /** New message */
+    message?: string;
+    /** New attached media */
+    media?: InputMediaIn;
+    /** Reply markup for inline keyboards */
+    replyMarkup?: ReplyMarkupIn;
+    /** Message entities for styled text */
+    entities?: MessageEntityIn[];
+    /** Scheduled message date for scheduled messages */
+    scheduleDate?: int;
+    scheduleRepeatPeriod?: int;
+    /** If specified, edits a quick reply shortcut message, instead » . */
+    quickReplyShortcutId?: int;
+    richMessage?: InputRichMessageIn;
+  }
+  export interface MessagesEditInlineBotMessageParams {
+    /** Disable webpage preview */
+    noWebpage?: boolean;
+    /** If set, any eventual webpage preview will be shown on top of the message instead of at the bottom. */
+    invertMedia?: boolean;
+    /** Sent inline message ID */
+    id: InputBotInlineMessageIDIn;
+    /** Message */
+    message?: string;
+    /** Media */
+    media?: InputMediaIn;
+    /** Reply markup for inline keyboards */
+    replyMarkup?: ReplyMarkupIn;
+    /** Message entities for styled text */
+    entities?: MessageEntityIn[];
+    richMessage?: InputRichMessageIn;
+  }
+  export interface MessagesGetBotCallbackAnswerParams {
+    /** Whether this is a "play game" button */
+    game?: boolean;
+    /** Where was the inline keyboard sent */
+    peer: Api.TypeEntityLike;
+    /** ID of the Message with the inline keyboard */
+    msgId: MessageIDLike;
+    /** Callback data */
+    data?: bytes;
+    /** For buttons requiring you to verify your identity with your 2FA password , the SRP payload generated using SRP . */
+    password?: InputCheckPasswordSRPIn;
+  }
+  export interface MessagesSetBotCallbackAnswerParams {
+    /** Whether to show the message as a popup instead of a toast notification */
+    alert?: boolean;
+    /** Query ID */
+    queryId: long;
+    /** Popup to show */
+    message?: string;
+    /** URL to open */
+    url?: string;
+    /** Cache validity */
+    cacheTime: int;
+  }
+  export interface MessagesGetPeerDialogsParams {
+    /** Peers */
+    peers: Api.TypeEntityLike[];
+  }
+  export interface MessagesSaveDraftParams {
+    /** Disable generation of the webpage preview */
+    noWebpage?: boolean;
+    /** If set, any eventual webpage preview will be shown on top of the message instead of at the bottom. */
+    invertMedia?: boolean;
+    /** If set, indicates that the message should be sent in reply to the specified message or story. */
+    replyTo?: InputReplyToIn;
+    /** Destination of the message that should be sent */
+    peer: Api.TypeEntityLike;
+    /** The draft */
+    message: string;
+    /** Message entities for styled text */
+    entities?: MessageEntityIn[];
+    /** Attached media */
+    media?: InputMediaIn;
+    /** Specifies a message effect » to use for the message. */
+    effect?: long;
+    /** Used to suggest a post to a channel, see here » for more info on the full flow. */
+    suggestedPost?: SuggestedPostIn;
+    richMessage?: InputRichMessageIn;
+  }
+  export interface MessagesGetFeaturedStickersParams {
+    /** Hash used for caching, for more info click here . */
+    hash: long;
+  }
+  export interface MessagesReadFeaturedStickersParams {
+    /** IDs of stickersets to mark as read */
+    id: long[];
+  }
+  export interface MessagesGetRecentStickersParams {
+    /** Get stickers recently attached to photo or video files */
+    attached?: boolean;
+    /** Hash used for caching, for more info click here . */
+    hash: long;
+  }
+  export interface MessagesSaveRecentStickerParams {
+    /** Whether to add/remove stickers recently attached to photo or video files */
+    attached?: boolean;
+    /** Sticker */
+    id: InputDocumentIn;
+    /** Whether to save or unsave the sticker */
+    unsave: Bool;
+  }
+  export interface MessagesClearRecentStickersParams {
+    /** Set this flag to clear the list of stickers recently attached to photo or video files */
+    attached?: boolean;
+  }
+  export interface MessagesGetArchivedStickersParams {
+    /** Get mask stickers */
+    masks?: boolean;
+    /** Get custom emoji stickers */
+    emojis?: boolean;
+    /** Offsets for pagination, for more info click here */
+    offsetId: long;
+    /** Maximum number of results to return, see pagination */
+    limit: int;
+  }
+  export interface MessagesGetMaskStickersParams {
+    /** Hash used for caching, for more info click here . */
+    hash: long;
+  }
+  export interface MessagesGetAttachedStickersParams {
+    /** Stickered media */
+    media: InputStickeredMediaIn;
+  }
+  export interface MessagesSetGameScoreParams {
+    /** Set this flag if the game message should be automatically edited to include the current scoreboard */
+    editMessage?: boolean;
+    /** Set this flag if the high score is allowed to decrease. This can be useful when fixing mistakes or banning cheaters */
+    force?: boolean;
+    /** Unique identifier of target chat */
+    peer: Api.TypeEntityLike;
+    /** Identifier of the sent message */
+    id: int;
+    /** User identifier */
+    userId: Api.TypeEntityLike;
+    /** New score */
+    score: int;
+  }
+  export interface MessagesSetInlineGameScoreParams {
+    /** Set this flag if the game message should be automatically edited to include the current scoreboard */
+    editMessage?: boolean;
+    /** Set this flag if the high score is allowed to decrease. This can be useful when fixing mistakes or banning cheaters */
+    force?: boolean;
+    /** ID of the inline message */
+    id: InputBotInlineMessageIDIn;
+    /** User identifier */
+    userId: Api.TypeEntityLike;
+    /** New score */
+    score: int;
+  }
+  export interface MessagesGetGameHighScoresParams {
+    /** Where was the game sent */
+    peer: Api.TypeEntityLike;
+    /** ID of message with game media attachment */
+    id: int;
+    /** Get high scores made by a certain user */
+    userId: Api.TypeEntityLike;
+  }
+  export interface MessagesGetInlineGameHighScoresParams {
+    /** ID of inline message */
+    id: InputBotInlineMessageIDIn;
+    /** Get high scores of a certain user */
+    userId: Api.TypeEntityLike;
+  }
+  export interface MessagesGetCommonChatsParams {
+    /** User ID */
+    userId: Api.TypeEntityLike;
+    /** Maximum ID of chat to return (see pagination ) */
+    maxId: long;
+    /** Maximum number of results to return, see pagination */
+    limit: int;
+  }
+  export interface MessagesGetWebPageParams {
+    /** URL of IV page to fetch */
+    url: string;
+    /** Hash used for caching, for more info click here . Note : the usual hash generation algorithm cannot be used in this case, please re-use the webPage . hash field returned by a previous call to the method, or pass 0 if this is the first call or if the previous call did not return a webPage . */
+    hash: int;
+  }
+  export interface MessagesToggleDialogPinParams {
+    /** Whether to pin or unpin the dialog */
+    pinned?: boolean;
+    /** The dialog to pin */
+    peer: Api.TypeEntityLike;
+  }
+  export interface MessagesReorderPinnedDialogsParams {
+    /** If set, dialogs pinned server-side but not present in the order field will be unpinned. */
+    force?: boolean;
+    /** Peer folder ID, for more info click here */
+    folderId: int;
+    /** New dialog order */
+    order: Api.TypeEntityLike[];
+  }
+  export interface MessagesGetPinnedDialogsParams {
+    /** Peer folder ID, for more info click here */
+    folderId: int;
+  }
+  export interface MessagesSetBotShippingResultsParams {
+    /** Unique identifier for the query to be answered */
+    queryId: long;
+    /** Error message in human readable form that explains why it is impossible to complete the order (e.g. "Sorry, delivery to your desired address is unavailable"). Telegram will display this message to the user. */
+    error?: string;
+    /** A vector of available shipping options. */
+    shippingOptions?: ShippingOptionIn[];
+  }
+  export interface MessagesSetBotPrecheckoutResultsParams {
+    /** Set this flag if everything is alright (goods are available, etc.) and the bot is ready to proceed with the order, otherwise do not set it, and set the error field, instead */
+    success?: boolean;
+    /** Unique identifier for the query to be answered */
+    queryId: long;
+    /** Required if the success isn't set. Error message in human readable form that explains the reason for failure to proceed with the checkout (e.g. "Sorry, somebody just bought the last of our amazing black T-shirts while you were busy filling out your payment details. Please choose a different color or garment!"). Telegram will display this message to the user. */
+    error?: string;
+  }
+  export interface MessagesUploadMediaParams {
+    /** Whether the media will be used only in the specified business connection » , and not directly by the bot. */
+    businessConnectionId?: string;
+    /** The chat, can be inputPeerEmpty for bots and inputPeerSelf for users. */
+    peer: Api.TypeEntityLike;
+    /** File uploaded in chunks as described in files » */
+    media: InputMediaIn;
+  }
+  export interface MessagesSendScreenshotNotificationParams {
+    /** Other user */
+    peer: Api.TypeEntityLike;
+    /** Indicates the message that was screenshotted (the specified message ID can also be 0 to avoid indicating any specific message). */
+    replyTo: InputReplyToIn;
+    /** Random ID to avoid message resending */
+    randomId?: long;
+  }
+  export interface MessagesGetFavedStickersParams {
+    /** Hash used for caching, for more info click here . */
+    hash: long;
+  }
+  export interface MessagesFaveStickerParams {
+    /** Sticker in question */
+    id: InputDocumentIn;
+    /** Whether to add or remove a sticker from favorites */
+    unfave: Bool;
+  }
+  export interface MessagesGetUnreadMentionsParams {
+    /** Peer where to look for mentions */
+    peer: Api.TypeEntityLike;
+    /** If set, considers only messages within the specified forum topic */
+    topMsgId?: MessageIDLike;
+    /** Offsets for pagination, for more info click here */
+    offsetId: int;
+    /** Offsets for pagination, for more info click here */
+    addOffset: int;
+    /** Maximum number of results to return, see pagination */
+    limit: int;
+    /** Maximum message ID to return, see pagination */
+    maxId: int;
+    /** Minimum message ID to return, see pagination */
+    minId: int;
+  }
+  export interface MessagesReadMentionsParams {
+    /** Dialog */
+    peer: Api.TypeEntityLike;
+    /** Mark as read only mentions within the specified forum topic */
+    topMsgId?: MessageIDLike;
+  }
+  export interface MessagesGetRecentLocationsParams {
+    /** User */
+    peer: Api.TypeEntityLike;
+    /** Maximum number of results to return, see pagination */
+    limit: int;
+    /** Hash used for caching, for more info click here */
+    hash: long;
+  }
+  export interface MessagesSendMultiMediaParams {
+    /** Whether to send the album silently (no notification triggered) */
+    silent?: boolean;
+    /** Send in background? */
+    background?: boolean;
+    /** Whether to clear drafts */
+    clearDraft?: boolean;
+    /** Only for bots, disallows forwarding and saving of the messages, even if the destination chat doesn't have content protection enabled */
+    noforwards?: boolean;
+    /** Whether to move used stickersets to top, see here for more info on this flag » */
+    updateStickersetsOrder?: boolean;
+    /** If set, any eventual webpage preview will be shown on top of the message instead of at the bottom. */
+    invertMedia?: boolean;
+    /** Bots only: if set, allows sending up to 1000 messages per second, ignoring broadcasting limits for a fee of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance. */
+    allowPaidFloodskip?: boolean;
+    /** The destination chat */
+    peer: Api.TypeEntityLike;
+    /** If set, indicates that the message should be sent in reply to the specified message or story. */
+    replyTo?: InputReplyToIn;
+    /** The medias to send: note that they must be separately uploaded using messages.uploadMedia first, using raw inputMediaUploaded* constructors is not supported. */
+    multiMedia: InputSingleMediaIn[];
+    /** Scheduled message date for scheduled messages */
+    scheduleDate?: int;
+    /** Send this message as the specified peer */
+    sendAs?: Api.TypeEntityLike;
+    /** Add the message to the specified quick reply shortcut » , instead. */
+    quickReplyShortcut?: InputQuickReplyShortcutIn;
+    /** Specifies a message effect » to use for the message. */
+    effect?: long;
+    /** For paid messages » , specifies the amount of Telegram Stars the user has agreed to pay in order to send the message. */
+    allowPaidStars?: long;
+  }
+  export interface MessagesUploadEncryptedFileParams {
+    /** The secret chat to associate the file to */
+    peer: InputEncryptedChatIn;
+    /** The file */
+    file: InputEncryptedFileIn;
+  }
+  export interface MessagesSearchStickerSetsParams {
+    /** Exclude featured stickersets from results */
+    excludeFeatured?: boolean;
+    /** Query string */
+    q: string;
+    /** Hash used for caching, for more info click here . */
+    hash: long;
+  }
+  export interface MessagesMarkDialogUnreadParams {
+    /** Mark as unread/read */
+    unread?: boolean;
+    /** If set, must be equal to the ID of a monoforum , and will affect the monoforum topic passed in peer . */
+    parentPeer?: Api.TypeEntityLike;
+    /** Dialog */
+    peer: Api.TypeEntityLike;
+  }
+  export interface MessagesGetDialogUnreadMarksParams {
+    /** Can be equal to the ID of a monoforum, to fetch monoforum topics manually marked as unread. */
+    parentPeer?: Api.TypeEntityLike;
+  }
+  export interface MessagesUpdatePinnedMessageParams {
+    /** Pin the message silently, without triggering a notification */
+    silent?: boolean;
+    /** Whether the message should unpinned or pinned */
+    unpin?: boolean;
+    /** Whether the message should only be pinned on the local side of a one-to-one chat */
+    pmOneside?: boolean;
+    /** The peer where to pin the message */
+    peer: Api.TypeEntityLike;
+    /** The message to pin or unpin */
+    id: int;
+  }
+  export interface MessagesSendVoteParams {
+    /** The chat where the poll was sent */
+    peer: Api.TypeEntityLike;
+    /** The message ID of the poll */
+    msgId: MessageIDLike;
+    /** The options that were chosen */
+    options: bytes[];
+  }
+  export interface MessagesGetPollResultsParams {
+    /** Peer where the poll was found */
+    peer: Api.TypeEntityLike;
+    /** Message ID of poll message */
+    msgId: MessageIDLike;
+    pollHash: long;
+  }
+  export interface MessagesGetOnlinesParams {
+    /** The chat */
+    peer: Api.TypeEntityLike;
+  }
+  export interface MessagesEditChatAboutParams {
+    /** The group/supergroup/channel . */
+    peer: Api.TypeEntityLike;
+    /** The new description */
+    about: string;
+  }
+  export interface MessagesEditChatDefaultBannedRightsParams {
+    /** The peer */
+    peer: Api.TypeEntityLike;
+    /** The new global rights */
+    bannedRights: ChatBannedRightsIn;
+  }
+  export interface MessagesGetEmojiKeywordsParams {
+    /** Language code */
+    langCode: string;
+  }
+  export interface MessagesGetEmojiKeywordsDifferenceParams {
+    /** Language code */
+    langCode: string;
+    /** Previous stored emoji keyword list version */
+    fromVersion: int;
+  }
+  export interface MessagesGetEmojiKeywordsLanguagesParams {
+    /** The user's language codes */
+    langCodes: string[];
+  }
+  export interface MessagesGetEmojiURLParams {
+    /** Language code for which the emoji keywords will be suggested */
+    langCode: string;
+  }
+  export interface MessagesGetSearchCountersParams {
+    /** Peer where to search */
+    peer: Api.TypeEntityLike;
+    /** Search within the saved message dialog » with this ID. */
+    savedPeerId?: Api.TypeEntityLike;
+    /** If set, consider only messages within the specified forum topic */
+    topMsgId?: MessageIDLike;
+    /** Search filters */
+    filters: MessagesFilterIn[];
+  }
+  export interface MessagesRequestUrlAuthParams {
+    /** Peer where the message is located */
+    peer?: Api.TypeEntityLike;
+    /** The message */
+    msgId?: MessageIDLike;
+    /** The ID of the button with the authorization request */
+    buttonId?: int;
+    /** URL used for link URL authorization, click here for more info » */
+    url?: string;
+    inAppOrigin?: string;
+  }
+  export interface MessagesAcceptUrlAuthParams {
+    /** Set this flag to allow the bot to send messages to you (if requested) */
+    writeAllowed?: boolean;
+    sharePhoneNumber?: boolean;
+    /** The location of the message */
+    peer?: Api.TypeEntityLike;
+    /** Message ID of the message with the login button */
+    msgId?: MessageIDLike;
+    /** ID of the login button */
+    buttonId?: int;
+    /** URL used for link URL authorization, click here for more info » */
+    url?: string;
+    matchCode?: string;
+  }
+  export interface MessagesHidePeerSettingsBarParams {
+    /** Peer */
+    peer: Api.TypeEntityLike;
+  }
+  export interface MessagesGetScheduledHistoryParams {
+    /** Peer */
+    peer: Api.TypeEntityLike;
+    /** Hash used for caching, for more info click here . To generate the hash, populate the ids array with the id , edit_date (0 if unedited) and date (in this order) of the previously returned messages (in order, i.e. ids = [id1, (edit_date1 ?? 0), date1, id2, (edit_date2 ?? 0), date2, ...] ). */
+    hash: long;
+  }
+  export interface MessagesGetScheduledMessagesParams {
+    /** Peer */
+    peer: Api.TypeEntityLike;
+    /** IDs of scheduled messages */
+    id: int[];
+  }
+  export interface MessagesSendScheduledMessagesParams {
+    /** Peer */
+    peer: Api.TypeEntityLike;
+    /** Scheduled message IDs */
+    id: int[];
+  }
+  export interface MessagesDeleteScheduledMessagesParams {
+    /** Peer */
+    peer: Api.TypeEntityLike;
+    /** Scheduled message IDs */
+    id: int[];
+  }
+  export interface MessagesGetPollVotesParams {
+    /** Chat where the poll was sent */
+    peer: Api.TypeEntityLike;
+    /** Message ID */
+    id: int;
+    /** Get only results for the specified poll option */
+    option?: bytes;
+    /** Offset for results, taken from the next_offset field of messages.votesList , initially an empty string. Note: if no more results are available, the method call will return an empty next_offset ; thus, avoid providing the next_offset returned in messages.votesList if it is empty, to avoid an infinite loop. */
+    offset?: string;
+    /** Number of results to return */
+    limit: int;
+  }
+  export interface MessagesToggleStickerSetsParams {
+    /** Uninstall the specified stickersets */
+    uninstall?: boolean;
+    /** Archive the specified stickersets */
+    archive?: boolean;
+    /** Unarchive the specified stickersets */
+    unarchive?: boolean;
+    /** Stickersets to act upon */
+    stickersets: InputStickerSetIn[];
+  }
+  export interface MessagesUpdateDialogFilterParams {
+    /** Folder ID */
+    id: int;
+    /** Folder info */
+    filter?: DialogFilterIn;
+  }
+  export interface MessagesUpdateDialogFiltersOrderParams {
+    /** New folder order */
+    order: int[];
+  }
+  export interface MessagesGetOldFeaturedStickersParams {
+    /** Offset */
+    offset: int;
+    /** Maximum number of results to return, see pagination */
+    limit: int;
+    /** Hash used for caching, for more info click here . */
+    hash: long;
+  }
+  export interface MessagesGetRepliesParams {
+    /** Peer */
+    peer: Api.TypeEntityLike;
+    /** Message ID */
+    msgId: MessageIDLike;
+    /** Offsets for pagination, for more info click here */
+    offsetId: int;
+    /** Offsets for pagination, for more info click here */
+    offsetDate: int;
+    /** Offsets for pagination, for more info click here */
+    addOffset: int;
+    /** Maximum number of results to return, see pagination */
+    limit: int;
+    /** If a positive value was transferred, the method will return only messages with ID smaller than max_id */
+    maxId: int;
+    /** If a positive value was transferred, the method will return only messages with ID bigger than min_id */
+    minId: int;
+    /** Hash used for caching, for more info click here */
+    hash: long;
+  }
+  export interface MessagesGetDiscussionMessageParams {
+    /** Channel ID */
+    peer: Api.TypeEntityLike;
+    /** Message ID */
+    msgId: MessageIDLike;
+  }
+  export interface MessagesReadDiscussionParams {
+    /** Group ID */
+    peer: Api.TypeEntityLike;
+    /** ID of message that started the thread */
+    msgId: MessageIDLike;
+    /** ID up to which thread messages were read */
+    readMaxId: int;
+  }
+  export interface MessagesUnpinAllMessagesParams {
+    /** Chat where to unpin */
+    peer: Api.TypeEntityLike;
+    /** Forum topic where to unpin */
+    topMsgId?: MessageIDLike;
+    /** If set, must be equal to the ID of a monoforum topic , and will unpin all messages pinned in the passed monoforum topic. */
+    savedPeerId?: Api.TypeEntityLike;
+  }
+  export interface MessagesDeleteChatParams {
+    /** Chat ID */
+    chatId: long;
+  }
+  export interface MessagesDeletePhoneCallHistoryParams {
+    /** Whether to remove phone call history for participants as well */
+    revoke?: boolean;
+  }
+  export interface MessagesCheckHistoryImportParams {
+    /** Beginning of the message file; up to 100 lines. */
+    importHead: string;
+  }
+  export interface MessagesInitHistoryImportParams {
+    /** The Telegram chat where the history should be imported . */
+    peer: Api.TypeEntityLike;
+    /** File with messages to import. */
+    file: InputFileIn;
+    /** Number of media files associated with the chat that will be uploaded using messages.uploadImportedMedia . */
+    mediaCount: int;
+  }
+  export interface MessagesUploadImportedMediaParams {
+    /** The Telegram chat where the media will be imported */
+    peer: Api.TypeEntityLike;
+    /** Identifier of a history import session , returned by messages.initHistoryImport */
+    importId: long;
+    /** File name */
+    fileName: string;
+    /** Media metadata */
+    media: InputMediaIn;
+  }
+  export interface MessagesStartHistoryImportParams {
+    /** The Telegram chat where the messages should be imported, click here for more info » */
+    peer: Api.TypeEntityLike;
+    /** Identifier of a history import session, returned by messages.initHistoryImport . */
+    importId: long;
+  }
+  export interface MessagesGetExportedChatInvitesParams {
+    /** Whether to fetch revoked chat invites */
+    revoked?: boolean;
+    /** Chat */
+    peer: Api.TypeEntityLike;
+    /** Whether to only fetch chat invites from this admin */
+    adminId: Api.TypeEntityLike;
+    /** Offsets for pagination, for more info click here */
+    offsetDate?: int;
+    /** Offsets for pagination, for more info click here */
+    offsetLink?: string;
+    /** Maximum number of results to return, see pagination */
+    limit: int;
+  }
+  export interface MessagesGetExportedChatInviteParams {
+    /** Chat */
+    peer: Api.TypeEntityLike;
+    /** Invite link */
+    link: string;
+  }
+  export interface MessagesEditExportedChatInviteParams {
+    /** Whether to revoke the chat invite */
+    revoked?: boolean;
+    /** Chat */
+    peer: Api.TypeEntityLike;
+    /** Invite link */
+    link: string;
+    /** New expiration date */
+    expireDate?: int;
+    /** Maximum number of users that can join using this link */
+    usageLimit?: int;
+    /** Whether admin confirmation is required before admitting each separate user into the chat */
+    requestNeeded?: Bool;
+    /** Description of the invite link, visible only to administrators */
+    title?: string;
+  }
+  export interface MessagesDeleteRevokedExportedChatInvitesParams {
+    /** Chat */
+    peer: Api.TypeEntityLike;
+    /** ID of the admin that originally generated the revoked chat invites */
+    adminId: Api.TypeEntityLike;
+  }
+  export interface MessagesDeleteExportedChatInviteParams {
+    /** Peer */
+    peer: Api.TypeEntityLike;
+    /** Invite link */
+    link: string;
+  }
+  export interface MessagesGetAdminsWithInvitesParams {
+    /** Chat */
+    peer: Api.TypeEntityLike;
+  }
+  export interface MessagesGetChatInviteImportersParams {
+    /** If set, only returns info about users with pending join requests » */
+    requested?: boolean;
+    /** Set this flag if the link is a Telegram Star subscription link » and only members with already expired subscription must be returned. */
+    subscriptionExpired?: boolean;
+    /** Chat */
+    peer: Api.TypeEntityLike;
+    /** Invite link */
+    link?: string;
+    /** Search for a user in the pending join requests » list: only available when the requested flag is set, cannot be used together with a specific link . */
+    q?: string;
+    /** Offsets for pagination, for more info click here */
+    offsetDate: int;
+    /** User ID for pagination : if set, offset_date must also be set. */
+    offsetUser: Api.TypeEntityLike;
+    /** Maximum number of results to return, see pagination */
+    limit: int;
+  }
+  export interface MessagesSetHistoryTTLParams {
+    /** The dialog */
+    peer: Api.TypeEntityLike;
+    /** Automatically delete all messages sent in the chat after this many seconds */
+    period: int;
+  }
+  export interface MessagesCheckHistoryImportPeerParams {
+    /** The chat where we want to import history » . */
+    peer: Api.TypeEntityLike;
+  }
+  export interface MessagesSetChatThemeParams {
+    /** Private chat where to change theme */
+    peer: Api.TypeEntityLike;
+    /** The theme to set. */
+    theme: InputChatThemeIn;
+  }
+  export interface MessagesGetMessageReadParticipantsParams {
+    /** Dialog */
+    peer: Api.TypeEntityLike;
+    /** Message ID */
+    msgId: MessageIDLike;
+  }
+  export interface MessagesGetSearchResultsCalendarParams {
+    /** Peer where to search */
+    peer: Api.TypeEntityLike;
+    /** Search within the saved message dialog » with this ID. */
+    savedPeerId?: Api.TypeEntityLike;
+    /** Message filter, inputMessagesFilterEmpty , inputMessagesFilterMyMentions filters are not supported by this method. */
+    filter: MessagesFilterIn;
+    /** Offsets for pagination, for more info click here */
+    offsetId: int;
+    /** Offsets for pagination, for more info click here */
+    offsetDate: int;
+  }
+  export interface MessagesGetSearchResultsPositionsParams {
+    /** Peer where to search */
+    peer: Api.TypeEntityLike;
+    /** Search within the saved message dialog » with this ID. */
+    savedPeerId?: Api.TypeEntityLike;
+    /** Message filter, inputMessagesFilterEmpty , inputMessagesFilterMyMentions filters are not supported by this method. */
+    filter: MessagesFilterIn;
+    /** Offsets for pagination, for more info click here */
+    offsetId: int;
+    /** Maximum number of results to return, see pagination */
+    limit: int;
+  }
+  export interface MessagesHideChatJoinRequestParams {
+    /** Whether to dismiss or approve the chat join request » */
+    approved?: boolean;
+    /** The chat or channel */
+    peer: Api.TypeEntityLike;
+    /** The user whose join request » should be dismissed or approved */
+    userId: Api.TypeEntityLike;
+  }
+  export interface MessagesHideAllChatJoinRequestsParams {
+    /** Whether to dismiss or approve all chat join requests » */
+    approved?: boolean;
+    /** The chat or channel */
+    peer: Api.TypeEntityLike;
+    /** Only dismiss or approve join requests » initiated using this invite link */
+    link?: string;
+  }
+  export interface MessagesToggleNoForwardsParams {
+    /** The chat or channel */
+    peer: Api.TypeEntityLike;
+    /** Enable or disable content protection */
+    enabled: Bool;
+    requestMsgId?: MessageIDLike;
+  }
+  export interface MessagesSaveDefaultSendAsParams {
+    /** Group */
+    peer: Api.TypeEntityLike;
+    /** The default peer that should be used when sending messages to the group */
+    sendAs: Api.TypeEntityLike;
+  }
+  export interface MessagesSendReactionParams {
+    /** Whether a bigger and longer reaction should be shown */
+    big?: boolean;
+    /** Whether to add this reaction to the recent reactions list » . */
+    addToRecent?: boolean;
+    /** Peer */
+    peer: Api.TypeEntityLike;
+    /** Message ID to react to */
+    msgId: MessageIDLike;
+    /** A list of reactions (doesn't accept reactionPaid constructors, use messages.sendPaidReaction to send paid reactions, instead). */
+    reaction?: ReactionIn[];
+  }
+  export interface MessagesGetMessagesReactionsParams {
+    /** Peer */
+    peer: Api.TypeEntityLike;
+    /** Message IDs */
+    id: int[];
+  }
+  export interface MessagesGetMessageReactionsListParams {
+    /** Peer */
+    peer: Api.TypeEntityLike;
+    /** Message ID */
+    id: int;
+    /** Get only reactions of this type */
+    reaction?: ReactionIn;
+    /** Offset for pagination (taken from the next_offset field of the returned messages.MessageReactionsList ); empty in the first request. */
+    offset?: string;
+    /** Maximum number of results to return, see pagination */
+    limit: int;
+  }
+  export interface MessagesSetChatAvailableReactionsParams {
+    /** Group where to apply changes */
+    peer: Api.TypeEntityLike;
+    /** Allowed reaction emojis */
+    availableReactions: ChatReactionsIn;
+    /** This flag may be used to impose a custom limit of unique reactions (i.e. a customizable version of appConfig.reactions_uniq_max ); this field and the other info set by the method will then be available to users in channelFull and chatFull . If this flag is not set, the previously configured reactions_limit will not be altered. */
+    reactionsLimit?: int;
+    /** If this flag is set and a Bool is passed, the method will enable or disable paid message reactions » . If this flag is not set, the previously stored setting will not be changed. */
+    paidEnabled?: Bool;
+  }
+  export interface MessagesGetAvailableReactionsParams {
+    /** Hash used for caching, for more info click here . */
+    hash: int;
+  }
+  export interface MessagesSetDefaultReactionParams {
+    /** New emoji reaction */
+    reaction: ReactionIn;
+  }
+  export interface MessagesTranslateTextParams {
+    /** If the text is a chat message, the peer ID */
+    peer?: Api.TypeEntityLike;
+    /** A list of message IDs to translate */
+    id?: int[];
+    /** A list of styled messages to translate */
+    text?: TextWithEntitiesIn[];
+    /** Two-letter ISO 639-1 language code of the language to which the message is translated */
+    toLang: string;
+    tone?: string;
+  }
+  export interface MessagesGetUnreadReactionsParams {
+    /** Peer */
+    peer: Api.TypeEntityLike;
+    /** If set, considers only reactions to messages within the specified forum topic */
+    topMsgId?: MessageIDLike;
+    /** If set, must be equal to the ID of a monoforum topic : will affect that topic in the monoforum passed in peer . */
+    savedPeerId?: Api.TypeEntityLike;
+    /** Offsets for pagination, for more info click here */
+    offsetId: int;
+    /** Offsets for pagination, for more info click here */
+    addOffset: int;
+    /** Maximum number of results to return, see pagination */
+    limit: int;
+    /** Only return reactions for messages up until this message ID */
+    maxId: int;
+    /** Only return reactions for messages starting from this message ID */
+    minId: int;
+  }
+  export interface MessagesReadReactionsParams {
+    /** Peer */
+    peer: Api.TypeEntityLike;
+    /** Mark as read only reactions to messages within the specified forum topic */
+    topMsgId?: MessageIDLike;
+    /** If set, must be equal to the ID of a monoforum topic : will affect that topic in the monoforum passed in peer . */
+    savedPeerId?: Api.TypeEntityLike;
+  }
+  export interface MessagesSearchSentMediaParams {
+    /** Optional search query */
+    q: string;
+    /** Message filter */
+    filter: MessagesFilterIn;
+    /** Maximum number of results to return (max 100). */
+    limit: int;
+  }
+  export interface MessagesGetAttachMenuBotsParams {
+    /** Hash used for caching, for more info click here . */
+    hash: long;
+  }
+  export interface MessagesGetAttachMenuBotParams {
+    /** Bot ID */
+    bot: Api.TypeEntityLike;
+  }
+  export interface MessagesToggleBotInAttachMenuParams {
+    /** Whether the user authorizes the bot to write messages to them, if requested by attachMenuBot . request_write_access */
+    writeAllowed?: boolean;
+    /** Bot ID */
+    bot: Api.TypeEntityLike;
+    /** Toggle */
+    enabled: Bool;
+  }
+  export interface MessagesRequestWebViewParams {
+    /** Whether the webview was opened by clicking on the bot's menu button » . */
+    fromBotMenu?: boolean;
+    /** Whether the inline message that will be sent by the bot on behalf of the user once the web app interaction is terminated should be sent silently (no notifications for the receivers). */
+    silent?: boolean;
+    /** If set, requests to open the mini app in compact mode (as opposed to normal or fullscreen mode). Must be set if the mode parameter of the attachment menu deep link is equal to compact . */
+    compact?: boolean;
+    /** If set, requests to open the mini app in fullscreen mode (as opposed to normal or compact mode). Must be set if the mode parameter of the attachment menu deep link is equal to fullscreen . */
+    fullscreen?: boolean;
+    /** Dialog where the web app is being opened, and where the resulting message will be sent (see the docs for more info » ). */
+    peer: Api.TypeEntityLike;
+    /** Bot that owns the web app */
+    bot: Api.TypeEntityLike;
+    /** Web app URL */
+    url?: string;
+    /** If the web app was opened from the attachment menu using a attachment menu deep link , start_param should contain the data from the startattach parameter. */
+    startParam?: string;
+    /** Theme parameters » */
+    themeParams?: DataJSONIn;
+    /** Short name of the application; 0-64 English letters, digits, and underscores */
+    platform: string;
+    /** If set, indicates that the inline message that will be sent by the bot on behalf of the user once the web app interaction is terminated should be sent in reply to the specified message or story. */
+    replyTo?: InputReplyToIn;
+    /** Open the web app as the specified peer, sending the resulting the message as the specified peer. */
+    sendAs?: Api.TypeEntityLike;
+  }
+  export interface MessagesProlongWebViewParams {
+    /** Whether the inline message that will be sent by the bot on behalf of the user once the web app interaction is terminated should be sent silently (no notifications for the receivers). */
+    silent?: boolean;
+    /** Dialog where the web app was opened. */
+    peer: Api.TypeEntityLike;
+    /** Bot that owns the web app */
+    bot: Api.TypeEntityLike;
+    /** Web app interaction ID obtained from messages.requestWebView */
+    queryId: long;
+    /** If set, indicates that the inline message that will be sent by the bot on behalf of the user once the web app interaction is terminated should be sent in reply to the specified message or story. */
+    replyTo?: InputReplyToIn;
+    /** Open the web app as the specified peer */
+    sendAs?: Api.TypeEntityLike;
+  }
+  export interface MessagesRequestSimpleWebViewParams {
+    /** Whether the webapp was opened by clicking on the switch_webview button shown on top of the inline results list returned by messages.getInlineBotResults . */
+    fromSwitchWebview?: boolean;
+    /** Set this flag if opening the Mini App from the installed side menu entry » . */
+    fromSideMenu?: boolean;
+    /** Deprecated. */
+    compact?: boolean;
+    /** Requests to open the app in fullscreen mode. */
+    fullscreen?: boolean;
+    /** Bot that owns the mini app */
+    bot: Api.TypeEntityLike;
+    /** Web app URL, if opening from a keyboard button or inline result */
+    url?: string;
+    /** Deprecated. */
+    startParam?: string;
+    /** Theme parameters » */
+    themeParams?: DataJSONIn;
+    /** Short name of the application; 0-64 English letters, digits, and underscores */
+    platform: string;
+  }
+  export interface MessagesSendWebViewResultMessageParams {
+    /** Webview interaction ID obtained from messages.requestWebView */
+    botQueryId: string;
+    /** Message to send */
+    result: InputBotInlineResultIn;
+  }
+  export interface MessagesSendWebViewDataParams {
+    /** Bot that owns the web app */
+    bot: Api.TypeEntityLike;
+    /** Unique client message ID to prevent duplicate sending of the same event */
+    randomId?: long;
+    /** Text of the keyboardButtonSimpleWebView that was pressed to open the web app. */
+    buttonText: string;
+    /** Data to relay to the bot, obtained from a web_app_data_send JS event . */
+    data: string;
+  }
+  export interface MessagesTranscribeAudioParams {
+    /** Peer ID where the voice message was sent */
+    peer: Api.TypeEntityLike;
+    /** Voice message ID */
+    msgId: MessageIDLike;
+  }
+  export interface MessagesRateTranscribedAudioParams {
+    /** Peer where the voice message was sent */
+    peer: Api.TypeEntityLike;
+    /** Message ID */
+    msgId: MessageIDLike;
+    /** Transcription ID */
+    transcriptionId: long;
+    /** Whether the transcription was correct */
+    good: Bool;
+  }
+  export interface MessagesGetCustomEmojiDocumentsParams {
+    /** Custom emoji IDs from a messageEntityCustomEmoji . */
+    documentId: long[];
+  }
+  export interface MessagesGetEmojiStickersParams {
+    /** Hash used for caching, for more info click here . */
+    hash: long;
+  }
+  export interface MessagesGetFeaturedEmojiStickersParams {
+    /** Hash used for caching, for more info click here . */
+    hash: long;
+  }
+  export interface MessagesReportReactionParams {
+    /** Peer where the message was sent */
+    peer: Api.TypeEntityLike;
+    /** Message ID */
+    id: int;
+    /** Peer that sent the reaction */
+    reactionPeer: Api.TypeEntityLike;
+  }
+  export interface MessagesGetTopReactionsParams {
+    /** Maximum number of results to return, see pagination */
+    limit: int;
+    /** Hash used for caching, for more info click here . */
+    hash: long;
+  }
+  export interface MessagesGetRecentReactionsParams {
+    /** Maximum number of results to return, see pagination */
+    limit: int;
+    /** Hash used for caching, for more info click here . */
+    hash: long;
+  }
+  export interface MessagesGetExtendedMediaParams {
+    /** Peer with visible paid media messages. */
+    peer: Api.TypeEntityLike;
+    /** IDs of currently visible messages containing paid media. */
+    id: int[];
+  }
+  export interface MessagesSetDefaultHistoryTTLParams {
+    /** The new default Time-To-Live of all messages sent in new chats, in seconds. */
+    period: int;
+  }
+  export interface MessagesSendBotRequestedPeerParams {
+    /** The bot that sent the keyboardButtonRequestPeer button. */
+    peer: Api.TypeEntityLike;
+    /** ID of the message that contained the reply keyboard with the keyboardButtonRequestPeer button. */
+    msgId?: MessageIDLike;
+    webappReqId?: string;
+    /** The button_id field from the keyboardButtonRequestPeer constructor. */
+    buttonId: int;
+    /** The chosen peers. */
+    requestedPeers: Api.TypeEntityLike[];
+  }
+  export interface MessagesGetEmojiGroupsParams {
+    /** Hash used for caching, for more info click here . */
+    hash: int;
+  }
+  export interface MessagesGetEmojiStatusGroupsParams {
+    /** Hash used for caching, for more info click here . */
+    hash: int;
+  }
+  export interface MessagesGetEmojiProfilePhotoGroupsParams {
+    /** Hash used for caching, for more info click here . */
+    hash: int;
+  }
+  export interface MessagesSearchCustomEmojiParams {
+    /** The emoji */
+    emoticon: string;
+    /** Hash used for caching, for more info click here . */
+    hash: long;
+  }
+  export interface MessagesTogglePeerTranslationsParams {
+    /** Whether to disable or enable the real-time chat translation popup */
+    disabled?: boolean;
+    /** The peer */
+    peer: Api.TypeEntityLike;
+  }
+  export interface MessagesGetBotAppParams {
+    /** Bot app information obtained from a Direct Mini App deep link » . */
+    app: InputBotAppIn;
+    /** Hash used for caching, for more info click here */
+    hash: long;
+  }
+  export interface MessagesRequestAppWebViewParams {
+    /** Set this flag if the bot is asking permission to send messages to the user as specified in the direct Mini App deep link docs, and the user agreed. */
+    writeAllowed?: boolean;
+    /** If set, requests to open the mini app in compact mode (as opposed to normal or fullscreen mode). Must be set if the mode parameter of the direct Mini App deep link is equal to compact . */
+    compact?: boolean;
+    /** If set, requests to open the mini app in fullscreen mode (as opposed to compact or normal mode). Must be set if the mode parameter of the direct Mini App deep link is equal to fullscreen . */
+    fullscreen?: boolean;
+    /** If the client has clicked on the link in a Telegram chat, pass the chat's peer information; otherwise pass the bot's peer information, instead. */
+    peer: Api.TypeEntityLike;
+    /** The app obtained by invoking messages.getBotApp as specified in the direct Mini App deep link docs. */
+    app: InputBotAppIn;
+    /** If the startapp query string parameter is present in the direct Mini App deep link , pass it to start_param . */
+    startParam?: string;
+    /** Theme parameters » */
+    themeParams?: DataJSONIn;
+    /** Short name of the application; 0-64 English letters, digits, and underscores */
+    platform: string;
+  }
+  export interface MessagesSetChatWallPaperParams {
+    /** Only for Premium users, sets the specified wallpaper for both users of the chat, without requiring confirmation from the other user. */
+    forBoth?: boolean;
+    /** If we don't like the new wallpaper the other user of the chat has chosen for us using the for_both flag, we can re-set our previous wallpaper just on our side using this flag. */
+    revert?: boolean;
+    /** The private chat where the wallpaper will be set */
+    peer: Api.TypeEntityLike;
+    /** The wallpaper » , obtained as described in the wallpaper documentation » ; must not be provided when installing a wallpaper obtained from a messageActionSetChatWallPaper service message ( id must be provided, instead). */
+    wallpaper?: InputWallPaperIn;
+    /** Wallpaper settings, obtained as described in the wallpaper documentation » or from messageActionSetChatWallPaper . wallpaper . settings . */
+    settings?: WallPaperSettingsIn;
+    /** If the wallpaper was obtained from a messageActionSetChatWallPaper service message, must contain the ID of that message. */
+    id?: int;
+  }
+  export interface MessagesSearchEmojiStickerSetsParams {
+    /** Exclude featured stickersets from results */
+    excludeFeatured?: boolean;
+    /** Query string */
+    q: string;
+    /** Hash used for caching, for more info click here . */
+    hash: long;
+  }
+  export interface MessagesGetSavedDialogsParams {
+    /** Exclude pinned dialogs */
+    excludePinned?: boolean;
+    /** If set, fetches the topic list of the passed monoforum, otherwise fetches the saved dialog list. */
+    parentPeer?: Api.TypeEntityLike;
+    /** Offsets for pagination, for more info click here */
+    offsetDate: int;
+    /** Offsets for pagination, for more info click here ( top_message ID used for pagination) */
+    offsetId: int;
+    /** Offset peer for pagination */
+    offsetPeer: Api.TypeEntityLike;
+    /** Number of list elements to be returned */
+    limit: int;
+    /** Hash used for caching, for more info click here */
+    hash: long;
+  }
+  export interface MessagesGetSavedHistoryParams {
+    /** If set, fetches messages from the specified monoforum, otherwise fetches from saved messages. */
+    parentPeer?: Api.TypeEntityLike;
+    /** Target peer (or topic) */
+    peer: Api.TypeEntityLike;
+    /** Only return messages starting from the specified message ID */
+    offsetId: int;
+    /** Only return messages sent before the specified date */
+    offsetDate: int;
+    /** Number of list elements to be skipped, negative values are also accepted. */
+    addOffset: int;
+    /** Number of results to return */
+    limit: int;
+    /** If a positive value was transferred, the method will return only messages with IDs less than max_id */
+    maxId: int;
+    /** If a positive value was transferred, the method will return only messages with IDs more than min_id */
+    minId: int;
+    /** Result hash */
+    hash: long;
+  }
+  export interface MessagesDeleteSavedHistoryParams {
+    /** If set, affects the messages of the passed monoforum topic » , otherwise affects saved messages » . */
+    parentPeer?: Api.TypeEntityLike;
+    /** Peer, whose messages will be deleted from saved messages » , or the ID of the topic. */
+    peer: Api.TypeEntityLike;
+    /** Maximum ID of message to delete */
+    maxId: int;
+    /** Delete all messages newer than this UNIX timestamp */
+    minDate?: int;
+    /** Delete all messages older than this UNIX timestamp */
+    maxDate?: int;
+  }
+  export interface MessagesToggleSavedDialogPinParams {
+    /** Whether to pin or unpin the dialog */
+    pinned?: boolean;
+    /** The dialog to pin */
+    peer: Api.TypeEntityLike;
+  }
+  export interface MessagesReorderPinnedSavedDialogsParams {
+    /** If set, dialogs pinned server-side but not present in the order field will be unpinned. */
+    force?: boolean;
+    /** New dialog order */
+    order: Api.TypeEntityLike[];
+  }
+  export interface MessagesGetSavedReactionTagsParams {
+    /** If set, returns tags only used in the specified saved message dialog . */
+    peer?: Api.TypeEntityLike;
+    /** Hash used for caching, for more info click here . */
+    hash: long;
+  }
+  export interface MessagesUpdateSavedReactionTagParams {
+    /** Reaction associated to the tag */
+    reaction: ReactionIn;
+    /** Tag description, max 12 UTF-8 characters; to remove the description call the method without setting this flag. */
+    title?: string;
+  }
+  export interface MessagesGetDefaultTagReactionsParams {
+    /** Hash used for caching, for more info click here . */
+    hash: long;
+  }
+  export interface MessagesGetOutboxReadDateParams {
+    /** The user to whom we sent the message. */
+    peer: Api.TypeEntityLike;
+    /** The message ID. */
+    msgId: MessageIDLike;
+  }
+  export interface MessagesGetQuickRepliesParams {
+    /** Hash for pagination, generated as specified here » (not the usual algorithm used for hash generation.) */
+    hash: long;
+  }
+  export interface MessagesReorderQuickRepliesParams {
+    /** IDs of all created quick reply shortcuts , in the desired order. */
+    order: int[];
+  }
+  export interface MessagesCheckQuickReplyShortcutParams {
+    /** Shorcut name (not ID!). */
+    shortcut: string;
+  }
+  export interface MessagesEditQuickReplyShortcutParams {
+    /** Shortcut ID . */
+    shortcutId: int;
+    /** New shortcut name. */
+    shortcut: string;
+  }
+  export interface MessagesDeleteQuickReplyShortcutParams {
+    /** Shortcut ID */
+    shortcutId: int;
+  }
+  export interface MessagesGetQuickReplyMessagesParams {
+    /** Quick reply shortcut ID. */
+    shortcutId: int;
+    /** IDs of the messages to fetch, if empty fetches all of them. */
+    id?: int[];
+    /** Hash for pagination, generated as specified here » (not the usual algorithm used for hash generation). */
+    hash: long;
+  }
+  export interface MessagesSendQuickReplyMessagesParams {
+    /** The peer where to send the shortcut (users only, for now). */
+    peer: Api.TypeEntityLike;
+    /** The ID of the quick reply shortcut to send. */
+    shortcutId: int;
+    /** Specify a subset of messages from the shortcut to send; if empty, defaults to all of them. */
+    id: int[];
+    /** Unique client IDs required to prevent message resending, one for each message we're sending, may be empty (but not recommended). */
+    randomId: long[];
+  }
+  export interface MessagesDeleteQuickReplyMessagesParams {
+    /** Shortcut ID . */
+    shortcutId: int;
+    /** IDs of shortcut messages to delete. */
+    id: int[];
+  }
+  export interface MessagesToggleDialogFilterTagsParams {
+    /** Enable or disable folder tags. */
+    enabled: Bool;
+  }
+  export interface MessagesGetMyStickersParams {
+    /** Offsets for pagination, for more info click here */
+    offsetId: long;
+    /** Maximum number of results to return, see pagination */
+    limit: int;
+  }
+  export interface MessagesGetEmojiStickerGroupsParams {
+    /** Hash used for caching, for more info click here . */
+    hash: int;
+  }
+  export interface MessagesGetAvailableEffectsParams {
+    /** Hash used for caching, for more info click here . */
+    hash: int;
+  }
+  export interface MessagesEditFactCheckParams {
+    /** Peer where the message was sent */
+    peer: Api.TypeEntityLike;
+    /** Message ID */
+    msgId: MessageIDLike;
+    /** Fact-check (maximum UTF-8 length specified in appConfig.factcheck_length_limit ). */
+    text: TextWithEntitiesIn;
+  }
+  export interface MessagesDeleteFactCheckParams {
+    /** Peer where the message was sent. */
+    peer: Api.TypeEntityLike;
+    /** Message ID */
+    msgId: MessageIDLike;
+  }
+  export interface MessagesGetFactCheckParams {
+    /** Peer where the messages were sent. */
+    peer: Api.TypeEntityLike;
+    /** Messages that have associated factCheck constructors with the need_check flag set. */
+    msgId: MessageIDLike[];
+  }
+  export interface MessagesRequestMainWebViewParams {
+    /** If set, requests to open the mini app in compact mode (as opposed to normal or fullscreen mode). Must be set if the mode parameter of the Main Mini App link is equal to compact . */
+    compact?: boolean;
+    /** If set, requests to open the mini app in fullscreen mode (as opposed to compact or normal mode). Must be set if the mode parameter of the Main Mini App link is equal to fullscreen . */
+    fullscreen?: boolean;
+    /** Currently open chat, may be inputPeerEmpty if no chat is currently open. */
+    peer: Api.TypeEntityLike;
+    /** Bot that owns the main mini app. */
+    bot: Api.TypeEntityLike;
+    /** Start parameter, if opening from a Main Mini App link » . */
+    startParam?: string;
+    /** Theme parameters » */
+    themeParams?: DataJSONIn;
+    /** Short name of the application; 0-64 English letters, digits, and underscores */
+    platform: string;
+  }
+  export interface MessagesSendPaidReactionParams {
+    /** The channel */
+    peer: Api.TypeEntityLike;
+    /** The message to react to */
+    msgId: MessageIDLike;
+    /** The number of stars to send (each will increment the reaction counter by one). */
+    count: int;
+    /** Unique client message ID required to prevent message resending. Note : this argument must be composed of a 64-bit integer where the lower 32 bits are random, and the higher 32 bits are equal to the current unixtime , i.e. uint64_t random_id = (time() << 32) | ((uint64_t)random_uint32_t()) : this differs from the random_id format of all other methods in the API, which just take 64 random bits. */
+    randomId?: long;
+    /** Each post with star reactions has a leaderboard with the top senders, but users can opt out of appearing there if they prefer more privacy. Not populating this field will use the default reaction privacy, stored on the server and synced to clients using updatePaidReactionPrivacy (see here for more info). */
+    private?: PaidReactionPrivacyIn;
+  }
+  export interface MessagesTogglePaidReactionPrivacyParams {
+    /** The channel */
+    peer: Api.TypeEntityLike;
+    /** The ID of the message to which we sent the paid reactions */
+    msgId: MessageIDLike;
+    /** If true, makes the current anonymous in the top sender leaderboard for this message; otherwise, does the opposite. */
+    private: PaidReactionPrivacyIn;
+  }
+  export interface MessagesViewSponsoredMessageParams {
+    /** The ad's unique ID. */
+    randomId: bytes;
+  }
+  export interface MessagesClickSponsoredMessageParams {
+    /** The user clicked on the media */
+    media?: boolean;
+    /** The user expanded the video to full screen, and then clicked on it. */
+    fullscreen?: boolean;
+    /** The ad's unique ID. */
+    randomId: bytes;
+  }
+  export interface MessagesReportSponsoredMessageParams {
+    /** The ad's unique ID. */
+    randomId: bytes;
+    /** Chosen report option, initially an empty string, see here » for more info on the full flow. */
+    option: bytes;
+  }
+  export interface MessagesGetSponsoredMessagesParams {
+    /** The currently open channel/bot. */
+    peer: Api.TypeEntityLike;
+    /** Must be set when fetching sponsored messages to show on channel videos » . */
+    msgId?: MessageIDLike;
+  }
+  export interface MessagesSavePreparedInlineMessageParams {
+    /** The message */
+    result: InputBotInlineResultIn;
+    /** The user to whom the web_app_send_prepared_message event event will be sent */
+    userId: Api.TypeEntityLike;
+    /** Types of chats where this message can be sent */
+    peerTypes?: InlineQueryPeerTypeIn[];
+  }
+  export interface MessagesGetPreparedInlineMessageParams {
+    /** The bot that owns the mini app that emitted the web_app_send_prepared_message event */
+    bot: Api.TypeEntityLike;
+    /** The id from the web_app_send_prepared_message event */
+    id: string;
+  }
+  export interface MessagesSearchStickersParams {
+    /** If set, returns custom emoji stickers */
+    emojis?: boolean;
+    /** The search term */
+    q: string;
+    /** Space-separated list of emojis to search for */
+    emoticon: string;
+    /** List of possible IETF language tags of the user's input language; may be empty if unknown */
+    langCode: string[];
+    /** Offset for pagination */
+    offset: int;
+    /** Maximum number of results to return, see pagination */
+    limit: int;
+    /** Hash used for caching, for more info click here . The hash may be generated locally by using the id s of the returned or stored sticker document s. */
+    hash: long;
+  }
+  export interface MessagesReportMessagesDeliveryParams {
+    /** Must be set if the messages were received from a push notification . */
+    push?: boolean;
+    /** The peer where the messages were received. */
+    peer: Api.TypeEntityLike;
+    /** The IDs of the received messages. */
+    id: int[];
+  }
+  export interface MessagesGetSavedDialogsByIDParams {
+    /** If set, fetches monoforum topics » , otherwise fetches saved message dialogs » . */
+    parentPeer?: Api.TypeEntityLike;
+    /** IDs of dialogs (topics) to fetch. */
+    ids: Api.TypeEntityLike[];
+  }
+  export interface MessagesReadSavedHistoryParams {
+    /** ID of the monoforum group. */
+    parentPeer: Api.TypeEntityLike;
+    /** ID of the topic. */
+    peer: Api.TypeEntityLike;
+    /** If a positive value is passed, only messages with identifiers less or equal than the given one will be read. */
+    maxId: int;
+  }
+  export interface MessagesToggleTodoCompletedParams {
+    /** Peer where the todo list was posted. */
+    peer: Api.TypeEntityLike;
+    /** ID of the message with the todo list. */
+    msgId: MessageIDLike;
+    /** Items to mark as completed. */
+    completed: int[];
+    /** Items to mark as not completed. */
+    incompleted: int[];
+  }
+  export interface MessagesAppendTodoListParams {
+    /** Peer where the todo list was posted. */
+    peer: Api.TypeEntityLike;
+    /** ID of the message with the todo list. */
+    msgId: MessageIDLike;
+    /** Items to append. */
+    list: TodoItemIn[];
+  }
+  export interface MessagesToggleSuggestedPostApprovalParams {
+    /** Reject the suggested post. */
+    reject?: boolean;
+    /** Both for users and channels, must contain the ID of the direct messages monoforum » (for channels, the topic ID is extracted automatically from the msg_id ). */
+    peer: Api.TypeEntityLike;
+    /** ID of the suggestion message. */
+    msgId: MessageIDLike;
+    /** Custom scheduling date. */
+    scheduleDate?: int;
+    /** Optional comment for rejections (can only be used if reject is set). */
+    rejectComment?: string;
+  }
+  export interface MessagesGetForumTopicsParams {
+    peer: Api.TypeEntityLike;
+    q?: string;
+    offsetDate: int;
+    offsetId: int;
+    offsetTopic: int;
+    limit: int;
+  }
+  export interface MessagesGetForumTopicsByIDParams {
+    peer: Api.TypeEntityLike;
+    topics: int[];
+  }
+  export interface MessagesEditForumTopicParams {
+    peer: Api.TypeEntityLike;
+    topicId: int;
+    title?: string;
+    iconEmojiId?: long;
+    closed?: Bool;
+    hidden?: Bool;
+  }
+  export interface MessagesUpdatePinnedForumTopicParams {
+    peer: Api.TypeEntityLike;
+    topicId: int;
+    pinned: Bool;
+  }
+  export interface MessagesReorderPinnedForumTopicsParams {
+    force?: boolean;
+    peer: Api.TypeEntityLike;
+    order: int[];
+  }
+  export interface MessagesCreateForumTopicParams {
+    titleMissing?: boolean;
+    peer: Api.TypeEntityLike;
+    title: string;
+    iconColor?: int;
+    iconEmojiId?: long;
+    randomId?: long;
+    sendAs?: Api.TypeEntityLike;
+  }
+  export interface MessagesDeleteTopicHistoryParams {
+    peer: Api.TypeEntityLike;
+    topMsgId: MessageIDLike;
+  }
+  export interface MessagesSummarizeTextParams {
+    peer: Api.TypeEntityLike;
+    id: int;
+    toLang?: string;
+    tone?: string;
+  }
+  export interface MessagesEditChatCreatorParams {
+    peer: Api.TypeEntityLike;
+    userId: Api.TypeEntityLike;
+    password: InputCheckPasswordSRPIn;
+  }
+  export interface MessagesGetFutureChatCreatorAfterLeaveParams {
+    peer: Api.TypeEntityLike;
+  }
+  export interface MessagesEditChatParticipantRankParams {
+    peer: Api.TypeEntityLike;
+    participant: Api.TypeEntityLike;
+    rank: string;
+  }
+  export interface MessagesDeclineUrlAuthParams {
+    url: string;
+  }
+  export interface MessagesCheckUrlAuthMatchCodeParams {
+    url: string;
+    matchCode: string;
+  }
+  export interface MessagesComposeMessageWithAIParams {
+    proofread?: boolean;
+    emojify?: boolean;
+    text: TextWithEntitiesIn;
+    translateToLang?: string;
+    tone?: InputAiComposeToneIn;
+  }
+  export interface MessagesReportReadMetricsParams {
+    peer: Api.TypeEntityLike;
+    metrics: InputMessageReadMetricIn[];
+  }
+  export interface MessagesReportMusicListenParams {
+    id: InputDocumentIn;
+    listenedDuration: int;
+  }
+  export interface MessagesAddPollAnswerParams {
+    peer: Api.TypeEntityLike;
+    msgId: MessageIDLike;
+    answer: PollAnswerIn;
+  }
+  export interface MessagesDeletePollAnswerParams {
+    peer: Api.TypeEntityLike;
+    msgId: MessageIDLike;
+    option: bytes;
+  }
+  export interface MessagesGetUnreadPollVotesParams {
+    peer: Api.TypeEntityLike;
+    topMsgId?: MessageIDLike;
+    offsetId: int;
+    addOffset: int;
+    limit: int;
+    maxId: int;
+    minId: int;
+  }
+  export interface MessagesReadPollVotesParams {
+    peer: Api.TypeEntityLike;
+    topMsgId?: MessageIDLike;
+  }
+  export interface MessagesSetBotGuestChatResultParams {
+    queryId: long;
+    result: InputBotInlineResultIn;
+  }
+  export interface MessagesDeleteParticipantReactionsParams {
+    peer: Api.TypeEntityLike;
+    participant: Api.TypeEntityLike;
+  }
+  export interface MessagesDeleteParticipantReactionParams {
+    peer: Api.TypeEntityLike;
+    msgId: MessageIDLike;
+    participant: Api.TypeEntityLike;
+  }
+  export interface MessagesGetPersonalChannelHistoryParams {
+    userId: Api.TypeEntityLike;
+    limit: int;
+    maxId: int;
+    minId: int;
+    hash: long;
+  }
+  export interface MessagesGetRichMessageParams {
+    peer: Api.TypeEntityLike;
+    id: int;
+  }
+  export interface UpdatesGetDifferenceParams {
+    /** PTS, see updates . */
+    pts: int;
+    /** PTS limit */
+    ptsLimit?: int;
+    /** For fast updating: if provided and pts + pts_total_limit < remote pts , updates.differenceTooLong will be returned. Simply tells the server to not return the difference if it is bigger than pts_total_limit If the remote pts is too big (> ~4000000), this field will default to 1000000 */
+    ptsTotalLimit?: int;
+    /** date, see updates . */
+    date: int;
+    /** QTS, see updates . */
+    qts: int;
+    /** QTS limit */
+    qtsLimit?: int;
+  }
+  export interface UpdatesGetChannelDifferenceParams {
+    /** Set to true to skip some possibly unneeded updates and reduce server-side load */
+    force?: boolean;
+    /** The channel */
+    channel: Api.TypeEntityLike;
+    /** Messsage filter */
+    filter: ChannelMessagesFilterIn;
+    /** Persistent timestamp (see updates ) */
+    pts: int;
+    /** How many updates to fetch, max 100000 Ordinary (non-bot) users are supposed to pass 10-100 */
+    limit: int;
+  }
+  export interface PhotosUpdateProfilePhotoParams {
+    /** If set, the chosen profile photo will be shown to users that can't display your main profile photo due to your privacy settings. */
+    fallback?: boolean;
+    /** Can contain info of a bot we own, to change the profile photo of that bot, instead of the current user. */
+    bot?: Api.TypeEntityLike;
+    /** Input photo */
+    id: InputPhotoIn;
+  }
+  export interface PhotosUploadProfilePhotoParams {
+    /** If set, the chosen profile photo will be shown to users that can't display your main profile photo due to your privacy settings. */
+    fallback?: boolean;
+    /** Can contain info of a bot we own, to change the profile photo of that bot, instead of the current user. */
+    bot?: Api.TypeEntityLike;
+    /** Profile photo */
+    file?: InputFileIn;
+    /** Animated profile picture video */
+    video?: InputFileIn;
+    /** Floating point UNIX timestamp in seconds, indicating the frame of the video/sticker that should be used as static preview; can only be used if video or video_emoji_markup is set. */
+    videoStartTs?: double;
+    /** Animated sticker profile picture, must contain either a videoSizeEmojiMarkup or a videoSizeStickerMarkup constructor. */
+    videoEmojiMarkup?: VideoSizeIn;
+  }
+  export interface PhotosDeletePhotosParams {
+    /** Input photos to delete */
+    id: InputPhotoIn[];
+  }
+  export interface PhotosGetUserPhotosParams {
+    /** User ID */
+    userId: Api.TypeEntityLike;
+    /** Number of list elements to be skipped */
+    offset: int;
+    /** If a positive value was transferred, the method will return only photos with IDs less than the set one. This parameter is often useful when refetching file references » , as in conjuction with limit=1 and offset=-1 the photo object with the id specified in max_id can be fetched. */
+    maxId: long;
+    /** Number of list elements to be returned */
+    limit: int;
+  }
+  export interface PhotosUploadContactProfilePhotoParams {
+    /** If set, will send a messageActionSuggestProfilePhoto service message to user_id , suggesting them to use the specified profile picture; otherwise, will set a personal profile picture for the user (only visible to the current user). */
+    suggest?: boolean;
+    /** If set, removes a previously set personal profile picture (does not affect suggested profile pictures, to remove them simply delete the messageActionSuggestProfilePhoto service message with messages.deleteMessages ). */
+    save?: boolean;
+    /** The contact */
+    userId: Api.TypeEntityLike;
+    /** Profile photo */
+    file?: InputFileIn;
+    /** Animated profile picture video */
+    video?: InputFileIn;
+    /** Floating point UNIX timestamp in seconds, indicating the frame of the video/sticker that should be used as static preview; can only be used if video or video_emoji_markup is set. */
+    videoStartTs?: double;
+    /** Animated sticker profile picture, must contain either a videoSizeEmojiMarkup or a videoSizeStickerMarkup constructor. */
+    videoEmojiMarkup?: VideoSizeIn;
+  }
+  export interface UploadSaveFilePartParams {
+    /** Random file identifier created by the client */
+    fileId: long;
+    /** Numerical order of a part */
+    filePart: int;
+    /** Binary data, content of a part */
+    bytes: bytes;
+  }
+  export interface UploadGetFileParams {
+    /** Disable some checks on limit and offset values, useful for example to stream videos by keyframes */
+    precise?: boolean;
+    /** Whether the current client supports CDN downloads */
+    cdnSupported?: boolean;
+    /** File location */
+    location: InputFileLocationIn;
+    /** Number of bytes to be skipped */
+    offset: long;
+    /** Number of bytes to be returned */
+    limit: int;
+  }
+  export interface UploadSaveBigFilePartParams {
+    /** Random file id, created by the client */
+    fileId: long;
+    /** Part sequence number */
+    filePart: int;
+    /** Total number of parts */
+    fileTotalParts: int;
+    /** Binary data, part contents */
+    bytes: bytes;
+  }
+  export interface UploadGetWebFileParams {
+    /** The file to download */
+    location: InputWebFileLocationIn;
+    /** Number of bytes to be skipped */
+    offset: int;
+    /** Number of bytes to be returned */
+    limit: int;
+  }
+  export interface UploadGetCdnFileParams {
+    /** File token */
+    fileToken: bytes;
+    /** Offset of chunk to download */
+    offset: long;
+    /** Length of chunk to download */
+    limit: int;
+  }
+  export interface UploadReuploadCdnFileParams {
+    /** File token */
+    fileToken: bytes;
+    /** Request token */
+    requestToken: bytes;
+  }
+  export interface UploadGetCdnFileHashesParams {
+    /** File */
+    fileToken: bytes;
+    /** Offset from which to start getting hashes */
+    offset: long;
+  }
+  export interface UploadGetFileHashesParams {
+    /** File */
+    location: InputFileLocationIn;
+    /** Offset from which to get file hashes */
+    offset: long;
+  }
+  export interface HelpGetAppUpdateParams {
+    /** Source */
+    source: string;
+  }
+  export interface HelpSetBotUpdatesStatusParams {
+    /** Number of pending updates */
+    pendingUpdatesCount: int;
+    /** Error message, if present */
+    message: string;
+  }
+  export interface HelpGetRecentMeUrlsParams {
+    /** Referrer */
+    referer: string;
+  }
+  export interface HelpAcceptTermsOfServiceParams {
+    /** ID of terms of service */
+    id: DataJSONIn;
+  }
+  export interface HelpGetDeepLinkInfoParams {
+    /** Path component of a tg: link */
+    path: string;
+  }
+  export interface HelpGetAppConfigParams {
+    /** Hash used for caching, for more info click here . */
+    hash: int;
+  }
+  export interface HelpSaveAppLogParams {
+    /** List of input events */
+    events: InputAppEventIn[];
+  }
+  export interface HelpGetPassportConfigParams {
+    /** Hash used for caching, for more info click here . */
+    hash: int;
+  }
+  export interface HelpGetUserInfoParams {
+    /** User ID */
+    userId: Api.TypeEntityLike;
+  }
+  export interface HelpEditUserInfoParams {
+    /** User */
+    userId: Api.TypeEntityLike;
+    /** Message */
+    message: string;
+    /** Message entities for styled text */
+    entities: MessageEntityIn[];
+  }
+  export interface HelpHidePromoDataParams {
+    /** Peer to hide */
+    peer: Api.TypeEntityLike;
+  }
+  export interface HelpDismissSuggestionParams {
+    /** In the case of pending suggestions in channels , the channel ID. */
+    peer: Api.TypeEntityLike;
+    /** Suggestion, see here for more info » . */
+    suggestion: string;
+  }
+  export interface HelpGetCountriesListParams {
+    /** Language code of the current user */
+    langCode: string;
+    /** Hash used for caching, for more info click here . */
+    hash: int;
+  }
+  export interface HelpGetPeerColorsParams {
+    /** Hash used for caching, for more info click here . */
+    hash: int;
+  }
+  export interface HelpGetPeerProfileColorsParams {
+    /** Hash used for caching, for more info click here . */
+    hash: int;
+  }
+  export interface HelpGetTimezonesListParams {
+    /** Hash used for caching, for more info click here . */
+    hash: int;
+  }
+  export interface ChannelsReadHistoryParams {
+    /** Channel/supergroup */
+    channel: Api.TypeEntityLike;
+    /** ID of message up to which messages should be marked as read */
+    maxId: int;
+  }
+  export interface ChannelsDeleteMessagesParams {
+    /** Channel/supergroup */
+    channel: Api.TypeEntityLike;
+    /** IDs of messages to delete */
+    id: int[];
+  }
+  export interface ChannelsReportSpamParams {
+    /** Supergroup */
+    channel: Api.TypeEntityLike;
+    /** Participant whose messages should be reported */
+    participant: Api.TypeEntityLike;
+    /** IDs of spam messages */
+    id: int[];
+  }
+  export interface ChannelsGetMessagesParams {
+    /** Channel/supergroup */
+    channel: Api.TypeEntityLike;
+    /** IDs of messages to get */
+    id: InputMessageIn[];
+  }
+  export interface ChannelsGetParticipantsParams {
+    /** Channel */
+    channel: Api.TypeEntityLike;
+    /** Which participant types to fetch */
+    filter: ChannelParticipantsFilterIn;
+    /** Offset */
+    offset: int;
+    /** Limit */
+    limit: int;
+    /** Hash */
+    hash: long;
+  }
+  export interface ChannelsGetParticipantParams {
+    /** Channel/supergroup */
+    channel: Api.TypeEntityLike;
+    /** Participant to get info about */
+    participant: Api.TypeEntityLike;
+  }
+  export interface ChannelsGetChannelsParams {
+    /** IDs of channels/supergroups to get info about */
+    id: Api.TypeEntityLike[];
+  }
+  export interface ChannelsGetFullChannelParams {
+    /** The channel , supergroup or gigagroup to get info about */
+    channel: Api.TypeEntityLike;
+  }
+  export interface ChannelsCreateChannelParams {
+    /** Whether to create a channel */
+    broadcast?: boolean;
+    /** Whether to create a supergroup */
+    megagroup?: boolean;
+    /** Whether the supergroup is being created to import messages from a foreign chat service using messages.initHistoryImport */
+    forImport?: boolean;
+    /** Whether to create a forum */
+    forum?: boolean;
+    /** Channel title */
+    title: string;
+    /** Channel description */
+    about: string;
+    /** Geogroup location, see here » for more info on geogroups. */
+    geoPoint?: InputGeoPointIn;
+    /** Geogroup address, see here » for more info on geogroups. */
+    address?: string;
+    /** Time-to-live of all messages that will be sent in the supergroup: once message.date+message.ttl_period === time(), the message will be deleted on the server, and must be deleted locally as well. You can use messages.setDefaultHistoryTTL to edit this value later. */
+    ttlPeriod?: int;
+  }
+  export interface ChannelsEditAdminParams {
+    /** The supergroup/channel . */
+    channel: Api.TypeEntityLike;
+    /** The ID of the user whose admin rights should be modified */
+    userId: Api.TypeEntityLike;
+    /** The admin rights */
+    adminRights: ChatAdminRightsIn;
+    /** Indicates the role (rank) of the admin in the group: just an arbitrary string */
+    rank?: string;
+  }
+  export interface ChannelsEditTitleParams {
+    /** Channel/supergroup */
+    channel: Api.TypeEntityLike;
+    /** New name */
+    title: string;
+  }
+  export interface ChannelsEditPhotoParams {
+    /** Channel/supergroup whose photo should be edited */
+    channel: Api.TypeEntityLike;
+    /** New photo */
+    photo: InputChatPhotoIn;
+  }
+  export interface ChannelsCheckUsernameParams {
+    /** The channel/supergroup that will assigned the specified username */
+    channel: Api.TypeEntityLike;
+    /** The username to check */
+    username: string;
+  }
+  export interface ChannelsUpdateUsernameParams {
+    /** Channel */
+    channel: Api.TypeEntityLike;
+    /** New username, pass an empty string to remove the username */
+    username: string;
+  }
+  export interface ChannelsJoinChannelParams {
+    /** Channel/supergroup to join */
+    channel: Api.TypeEntityLike;
+  }
+  export interface ChannelsLeaveChannelParams {
+    /** Channel/supergroup to leave */
+    channel: Api.TypeEntityLike;
+  }
+  export interface ChannelsInviteToChannelParams {
+    /** Channel/supergroup */
+    channel: Api.TypeEntityLike;
+    /** Users to invite */
+    users: Api.TypeEntityLike[];
+  }
+  export interface ChannelsDeleteChannelParams {
+    /** Channel/supergroup to delete */
+    channel: Api.TypeEntityLike;
+  }
+  export interface ChannelsExportMessageLinkParams {
+    /** Whether to include other grouped media (for albums) */
+    grouped?: boolean;
+    /** Whether to also include a thread ID, if available, inside of the link */
+    thread?: boolean;
+    /** Channel */
+    channel: Api.TypeEntityLike;
+    /** Message ID */
+    id: int;
+  }
+  export interface ChannelsToggleSignaturesParams {
+    /** If set, enables message signatures. */
+    signaturesEnabled?: boolean;
+    /** If set, messages from channel admins will link to their profiles, just like for group messages: can only be set if the signatures_enabled flag is set. */
+    profilesEnabled?: boolean;
+    /** Channel */
+    channel: Api.TypeEntityLike;
+  }
+  export interface ChannelsGetAdminedPublicChannelsParams {
+    /** Get geogroups */
+    byLocation?: boolean;
+    /** If set and the user has reached the limit of owned public channels/supergroups/geogroups , instead of returning the channel list one of the specified errors will be returned. Useful to check if a new public channel can indeed be created, even before asking the user to enter a channel username to use in channels.checkUsername / channels.updateUsername . */
+    checkLimit?: boolean;
+    /** Set this flag to only fetch the full list of channels that may be passed to account.updatePersonalChannel to display them on our profile page . */
+    forPersonal?: boolean;
+  }
+  export interface ChannelsEditBannedParams {
+    /** The supergroup/channel . */
+    channel: Api.TypeEntityLike;
+    /** Participant to ban */
+    participant: Api.TypeEntityLike;
+    /** The banned rights */
+    bannedRights: ChatBannedRightsIn;
+  }
+  export interface ChannelsGetAdminLogParams {
+    /** Channel */
+    channel: Api.TypeEntityLike;
+    /** Search query, can be empty */
+    q: string;
+    /** Event filter */
+    eventsFilter?: ChannelAdminLogEventsFilterIn;
+    /** Only show events from these admins */
+    admins?: Api.TypeEntityLike[];
+    /** Maximum ID of message to return (see pagination ) */
+    maxId: long;
+    /** Minimum ID of message to return (see pagination ) */
+    minId: long;
+    /** Maximum number of results to return, see pagination */
+    limit: int;
+  }
+  export interface ChannelsSetStickersParams {
+    /** Supergroup */
+    channel: Api.TypeEntityLike;
+    /** The stickerset to associate */
+    stickerset: InputStickerSetIn;
+  }
+  export interface ChannelsReadMessageContentsParams {
+    /** Channel/supergroup */
+    channel: Api.TypeEntityLike;
+    /** IDs of messages whose contents should be marked as read */
+    id: int[];
+  }
+  export interface ChannelsDeleteHistoryParams {
+    /** Whether the history should be deleted for everyone */
+    forEveryone?: boolean;
+    /** Supergroup whose history must be deleted */
+    channel: Api.TypeEntityLike;
+    /** ID of message up to which the history must be deleted */
+    maxId: int;
+  }
+  export interface ChannelsTogglePreHistoryHiddenParams {
+    /** Channel/supergroup */
+    channel: Api.TypeEntityLike;
+    /** Hide/unhide */
+    enabled: Bool;
+  }
+  export interface ChannelsGetLeftChannelsParams {
+    /** Offset for pagination */
+    offset: int;
+  }
+  export interface ChannelsSetDiscussionGroupParams {
+    /** Channel */
+    broadcast: Api.TypeEntityLike;
+    /** Discussion group to associate to the channel */
+    group: Api.TypeEntityLike;
+  }
+  export interface ChannelsEditLocationParams {
+    /** Geogroup */
+    channel: Api.TypeEntityLike;
+    /** New geolocation */
+    geoPoint: InputGeoPointIn;
+    /** Address string */
+    address: string;
+  }
+  export interface ChannelsToggleSlowModeParams {
+    /** The supergroup */
+    channel: Api.TypeEntityLike;
+    /** Users will only be able to send one message every seconds seconds, 0 to disable the limitation */
+    seconds: int;
+  }
+  export interface ChannelsConvertToGigagroupParams {
+    /** The supergroup to convert */
+    channel: Api.TypeEntityLike;
+  }
+  export interface ChannelsGetSendAsParams {
+    /** If set, fetches the list of peers that can be used to send paid reactions to messages of a specific peer. */
+    forPaidReactions?: boolean;
+    forLiveStories?: boolean;
+    /** The group where we intend to send messages */
+    peer: Api.TypeEntityLike;
+  }
+  export interface ChannelsDeleteParticipantHistoryParams {
+    /** Supergroup */
+    channel: Api.TypeEntityLike;
+    /** The participant whose messages should be deleted */
+    participant: Api.TypeEntityLike;
+  }
+  export interface ChannelsToggleJoinToSendParams {
+    /** Discussion group */
+    channel: Api.TypeEntityLike;
+    /** Toggle */
+    enabled: Bool;
+  }
+  export interface ChannelsToggleJoinRequestParams {
+    applyToInvites?: boolean;
+    /** Group */
+    channel: Api.TypeEntityLike;
+    /** Toggle */
+    enabled: Bool;
+    guardBot?: Api.TypeEntityLike;
+  }
+  export interface ChannelsReorderUsernamesParams {
+    /** The supergroup or channel */
+    channel: Api.TypeEntityLike;
+    /** The new order for active usernames. All active usernames must be specified. */
+    order: string[];
+  }
+  export interface ChannelsToggleUsernameParams {
+    /** Supergroup or channel */
+    channel: Api.TypeEntityLike;
+    /** Username */
+    username: string;
+    /** Whether to activate or deactivate the username */
+    active: Bool;
+  }
+  export interface ChannelsDeactivateAllUsernamesParams {
+    /** Supergroup or channel */
+    channel: Api.TypeEntityLike;
+  }
+  export interface ChannelsToggleForumParams {
+    /** Supergroup ID */
+    channel: Api.TypeEntityLike;
+    /** Enable or disable forum functionality */
+    enabled: Bool;
+    /** If true enables the tabbed forum UI, otherwise enables the list-based forum UI. */
+    tabs: Bool;
+  }
+  export interface ChannelsToggleAntiSpamParams {
+    /** Supergroup ID. The specified supergroup must have at least telegram_antispam_group_size_min members to enable antispam functionality, as specified by the client configuration parameters . */
+    channel: Api.TypeEntityLike;
+    /** Enable or disable the native antispam system. */
+    enabled: Bool;
+  }
+  export interface ChannelsReportAntiSpamFalsePositiveParams {
+    /** Supergroup ID */
+    channel: Api.TypeEntityLike;
+    /** Message ID that was mistakenly deleted by the native antispam system, taken from the admin log */
+    msgId: MessageIDLike;
+  }
+  export interface ChannelsToggleParticipantsHiddenParams {
+    /** Supergroup ID */
+    channel: Api.TypeEntityLike;
+    /** If true, will hide the participants list; otherwise will unhide it. */
+    enabled: Bool;
+  }
+  export interface ChannelsUpdateColorParams {
+    /** Whether to change the accent color emoji pattern of the profile page; otherwise, the accent color and emoji pattern of messages will be changed. Channels can change both message and profile palettes; supergroups can only change the profile palette, of course after reaching the appropriate boost level . */
+    forProfile?: boolean;
+    /** Channel whose accent color should be changed. */
+    channel: Api.TypeEntityLike;
+    /** ID of the accent color palette » to use (not RGB24, see here » for more info); if not set, the default palette is used. */
+    color?: int;
+    /** Custom emoji ID used in the accent color pattern. */
+    backgroundEmojiId?: long;
+  }
+  export interface ChannelsToggleViewForumAsMessagesParams {
+    /** The forum */
+    channel: Api.TypeEntityLike;
+    /** The new value of the view_forum_as_messages flag. */
+    enabled: Bool;
+  }
+  export interface ChannelsGetChannelRecommendationsParams {
+    /** The method will return channels related to the passed channel . If not set, the method will returns channels related to channels the user has joined. */
+    channel?: Api.TypeEntityLike;
+  }
+  export interface ChannelsUpdateEmojiStatusParams {
+    /** The channel/supergroup, must have at least channel_emoji_status_level_min / group_emoji_status_level_min boosts. */
+    channel: Api.TypeEntityLike;
+    /** Emoji status to set */
+    emojiStatus: EmojiStatusIn;
+  }
+  export interface ChannelsSetBoostsToUnblockRestrictionsParams {
+    /** The supergroup. */
+    channel: Api.TypeEntityLike;
+    /** The number of required boosts (1-8, 0 to disable). */
+    boosts: int;
+  }
+  export interface ChannelsSetEmojiStickersParams {
+    /** The supergroup */
+    channel: Api.TypeEntityLike;
+    /** The custom emoji stickerset to associate to the supergroup */
+    stickerset: InputStickerSetIn;
+  }
+  export interface ChannelsRestrictSponsoredMessagesParams {
+    /** The channel. */
+    channel: Api.TypeEntityLike;
+    /** Whether to disable or re-enable ads. */
+    restricted: Bool;
+  }
+  export interface ChannelsSearchPostsParams {
+    /** The hashtag to search, without the # character. */
+    hashtag?: string;
+    /** The full text query: each user has a limited amount of free full text search slots, after which payment is required, see here » for more info on the full flow. */
+    query?: string;
+    /** Initially 0, then set to the next_rate parameter of messages.messagesSlice , or if that is absent, the date of the last returned message. */
+    offsetRate: int;
+    /** Offsets for pagination, for more info click here */
+    offsetPeer: Api.TypeEntityLike;
+    /** Offsets for pagination, for more info click here */
+    offsetId: int;
+    /** Maximum number of results to return, see pagination */
+    limit: int;
+    /** For full text post searches ( query ), allows payment of the specified amount of Stars for the search, see here » for more info on the full flow. */
+    allowPaidStars?: long;
+  }
+  export interface ChannelsUpdatePaidMessagesPriceParams {
+    /** Only usable for channels, enables or disables the associated monoforum aka direct messages . */
+    broadcastMessagesAllowed?: boolean;
+    /** Pass the supergroup ID for supergroups and the ID of the channel to modify the setting in the associated monoforum. */
+    channel: Api.TypeEntityLike;
+    /** Specifies the required amount of Telegram Stars users must pay to send messages to the supergroup or monoforum. */
+    sendPaidMessagesStars: long;
+  }
+  export interface ChannelsToggleAutotranslationParams {
+    /** The channel where to toggle autotranslation. */
+    channel: Api.TypeEntityLike;
+    /** Whether to enable or disable autotranslation. */
+    enabled: Bool;
+  }
+  export interface ChannelsGetMessageAuthorParams {
+    /** ID of the monoforum. */
+    channel: Api.TypeEntityLike;
+    /** ID of the message sent by a monoforum admin. */
+    id: int;
+  }
+  export interface ChannelsCheckSearchPostsFloodParams {
+    /** The query. */
+    query?: string;
+  }
+  export interface ChannelsSetMainProfileTabParams {
+    /** The channel. */
+    channel: Api.TypeEntityLike;
+    /** The tab to set as main tab. */
+    tab: ProfileTabIn;
+  }
+  export interface BotsSendCustomRequestParams {
+    /** The method name */
+    customMethod: string;
+    /** JSON-serialized method parameters */
+    params: DataJSONIn;
+  }
+  export interface BotsAnswerWebhookJSONQueryParams {
+    /** Identifier of a custom query */
+    queryId: long;
+    /** JSON-serialized answer to the query */
+    data: DataJSONIn;
+  }
+  export interface BotsSetBotCommandsParams {
+    /** Command scope */
+    scope: BotCommandScopeIn;
+    /** Language code */
+    langCode: string;
+    /** Bot commands */
+    commands: BotCommandIn[];
+  }
+  export interface BotsResetBotCommandsParams {
+    /** Command scope */
+    scope: BotCommandScopeIn;
+    /** Language code */
+    langCode: string;
+  }
+  export interface BotsGetBotCommandsParams {
+    /** Command scope */
+    scope: BotCommandScopeIn;
+    /** Language code */
+    langCode: string;
+  }
+  export interface BotsSetBotMenuButtonParams {
+    /** User ID */
+    userId: Api.TypeEntityLike;
+    /** Bot menu button action */
+    button: BotMenuButtonIn;
+  }
+  export interface BotsGetBotMenuButtonParams {
+    /** User ID or empty for the default menu button. */
+    userId: Api.TypeEntityLike;
+  }
+  export interface BotsSetBotBroadcastDefaultAdminRightsParams {
+    /** Admin rights */
+    adminRights: ChatAdminRightsIn;
+  }
+  export interface BotsSetBotGroupDefaultAdminRightsParams {
+    /** Admin rights */
+    adminRights: ChatAdminRightsIn;
+  }
+  export interface BotsSetBotInfoParams {
+    /** If called by a user, must contain the peer of a bot we own. */
+    bot?: Api.TypeEntityLike;
+    /** Language code, if left empty update the fallback about text and description */
+    langCode: string;
+    /** New bot name */
+    name?: string;
+    /** New about text */
+    about?: string;
+    /** New description */
+    description?: string;
+  }
+  export interface BotsGetBotInfoParams {
+    /** If called by a user, must contain the peer of a bot we own. */
+    bot?: Api.TypeEntityLike;
+    /** Language code, if left empty this method will return the fallback about text and description. */
+    langCode: string;
+  }
+  export interface BotsReorderUsernamesParams {
+    /** The bot */
+    bot: Api.TypeEntityLike;
+    /** The new order for active usernames. All active usernames must be specified. */
+    order: string[];
+  }
+  export interface BotsToggleUsernameParams {
+    /** The bot */
+    bot: Api.TypeEntityLike;
+    /** Username */
+    username: string;
+    /** Whether to activate or deactivate it */
+    active: Bool;
+  }
+  export interface BotsCanSendMessageParams {
+    /** The bot */
+    bot: Api.TypeEntityLike;
+  }
+  export interface BotsAllowSendMessageParams {
+    /** The bot */
+    bot: Api.TypeEntityLike;
+  }
+  export interface BotsInvokeWebViewCustomMethodParams {
+    /** Identifier of the bot associated to the mini bot app */
+    bot: Api.TypeEntityLike;
+    /** Identifier of the custom method to invoke */
+    customMethod: string;
+    /** Method parameters */
+    params: DataJSONIn;
+  }
+  export interface BotsGetPopularAppBotsParams {
+    /** Offset for pagination , initially an empty string, then re-use the next_offset returned by the previous query. */
+    offset: string;
+    /** Maximum number of results to return, see pagination */
+    limit: int;
+  }
+  export interface BotsAddPreviewMediaParams {
+    /** The bot that owns the Main Mini App. */
+    bot: Api.TypeEntityLike;
+    /** ISO 639-1 language code, indicating the localization of the preview to add. */
+    langCode: string;
+    /** The photo/video preview, uploaded using messages.uploadMedia . */
+    media: InputMediaIn;
+  }
+  export interface BotsEditPreviewMediaParams {
+    /** The bot that owns the Main Mini App. */
+    bot: Api.TypeEntityLike;
+    /** ISO 639-1 language code, indicating the localization of the preview to edit. */
+    langCode: string;
+    /** The photo/video preview to replace, previously fetched as specified here » . */
+    media: InputMediaIn;
+    /** The new photo/video preview, uploaded using messages.uploadMedia . */
+    newMedia: InputMediaIn;
+  }
+  export interface BotsDeletePreviewMediaParams {
+    /** The bot that owns the Main Mini App. */
+    bot: Api.TypeEntityLike;
+    /** ISO 639-1 language code, indicating the localization of the preview to delete. */
+    langCode: string;
+    /** The photo/video preview to delete, previously fetched as specified here » . */
+    media: InputMediaIn[];
+  }
+  export interface BotsReorderPreviewMediasParams {
+    /** The bot that owns the Main Mini App. */
+    bot: Api.TypeEntityLike;
+    /** ISO 639-1 language code, indicating the localization of the previews to reorder. */
+    langCode: string;
+    /** New order of the previews. */
+    order: InputMediaIn[];
+  }
+  export interface BotsGetPreviewInfoParams {
+    /** The bot that owns the Main Mini App. */
+    bot: Api.TypeEntityLike;
+    /** Fetch previews for the specified ISO 639-1 language code. */
+    langCode: string;
+  }
+  export interface BotsGetPreviewMediasParams {
+    /** The bot that owns the Main Mini App. */
+    bot: Api.TypeEntityLike;
+  }
+  export interface BotsUpdateUserEmojiStatusParams {
+    /** The user whose emoji status should be changed */
+    userId: Api.TypeEntityLike;
+    /** The emoji status */
+    emojiStatus: EmojiStatusIn;
+  }
+  export interface BotsToggleUserEmojiStatusPermissionParams {
+    /** The bot */
+    bot: Api.TypeEntityLike;
+    /** Whether to allow or prevent the bot from changing our emoji status */
+    enabled: Bool;
+  }
+  export interface BotsCheckDownloadFileParamsParams {
+    /** The bot that owns the mini app that requested the download */
+    bot: Api.TypeEntityLike;
+    /** The filename from the web_app_request_file_download event » */
+    fileName: string;
+    /** The url from the web_app_request_file_download event » */
+    url: string;
+  }
+  export interface BotsUpdateStarRefProgramParams {
+    /** The bot */
+    bot: Api.TypeEntityLike;
+    /** The permille commission rate: it indicates the share of Telegram Stars received by affiliates for every transaction made by users they referred inside of the bot. The minimum and maximum values for this parameter are contained in the starref_min_commission_permille and starref_max_commission_permille client configuration parameters. Can be 0 to terminate the affiliate program. Both the duration and the commission may only be raised after creation of the program: to lower them, the program must first be terminated and a new one created. */
+    commissionPermille: int;
+    /** Indicates the duration of the affiliate program; if not set, there is no expiration date. */
+    durationMonths?: int;
+  }
+  export interface BotsSetCustomVerificationParams {
+    /** If set, adds the verification; otherwise removes verification. */
+    enabled?: boolean;
+    /** Must not be set if invoked by a bot, must be set to the ID of an owned bot if invoked by a user. */
+    bot?: Api.TypeEntityLike;
+    /** The peer to verify */
+    peer: Api.TypeEntityLike;
+    /** Custom description for the verification, the UTF-8 length limit for this field is contained in bot_verification_description_length_limit » . If not set, Was verified by organization "organization_name" will be used as description. */
+    customDescription?: string;
+  }
+  export interface BotsGetBotRecommendationsParams {
+    /** The method will return bots related to the passed bot. */
+    bot: Api.TypeEntityLike;
+  }
+  export interface BotsCheckUsernameParams {
+    username: string;
+  }
+  export interface BotsCreateBotParams {
+    viaDeeplink?: boolean;
+    name: string;
+    username: string;
+    managerId: Api.TypeEntityLike;
+  }
+  export interface BotsExportBotTokenParams {
+    bot: Api.TypeEntityLike;
+    revoke: Bool;
+  }
+  export interface BotsRequestWebViewButtonParams {
+    userId: Api.TypeEntityLike;
+    button: KeyboardButtonIn;
+  }
+  export interface BotsGetRequestedWebViewButtonParams {
+    bot: Api.TypeEntityLike;
+    webappReqId: string;
+  }
+  export interface BotsGetAccessSettingsParams {
+    bot: Api.TypeEntityLike;
+  }
+  export interface BotsEditAccessSettingsParams {
+    restricted?: boolean;
+    bot: Api.TypeEntityLike;
+    addUsers?: Api.TypeEntityLike[];
+  }
+  export interface BotsSetJoinChatResultsParams {
+    queryId: long;
+    result: JoinChatBotResultIn;
+  }
+  export interface PaymentsGetPaymentFormParams {
+    /** Invoice */
+    invoice: InputInvoiceIn;
+    /** Theme parameters » */
+    themeParams?: DataJSONIn;
+  }
+  export interface PaymentsGetPaymentReceiptParams {
+    /** The peer where the payment receipt was sent */
+    peer: Api.TypeEntityLike;
+    /** Message ID of receipt */
+    msgId: MessageIDLike;
+  }
+  export interface PaymentsValidateRequestedInfoParams {
+    /** Save order information to re-use it for future orders */
+    save?: boolean;
+    /** Invoice */
+    invoice: InputInvoiceIn;
+    /** Requested order information */
+    info: PaymentRequestedInfoIn;
+  }
+  export interface PaymentsSendPaymentFormParams {
+    /** Form ID */
+    formId: long;
+    /** Invoice */
+    invoice: InputInvoiceIn;
+    /** ID of saved and validated order info */
+    requestedInfoId?: string;
+    /** Chosen shipping option ID */
+    shippingOptionId?: string;
+    /** Payment credentials */
+    credentials: InputPaymentCredentialsIn;
+    /** Tip, in the smallest units of the currency (integer, not float/double). For example, for a price of US$ 1.45 pass amount = 145 . See the exp parameter in currencies.json , it shows the number of digits past the decimal point for each currency (2 for the majority of currencies). */
+    tipAmount?: long;
+  }
+  export interface PaymentsClearSavedInfoParams {
+    /** Remove saved payment credentials */
+    credentials?: boolean;
+    /** Clear the last order settings saved by the user */
+    info?: boolean;
+  }
+  export interface PaymentsGetBankCardDataParams {
+    /** Credit card number */
+    number: string;
+  }
+  export interface PaymentsExportInvoiceParams {
+    /** Invoice */
+    invoiceMedia: InputMediaIn;
+  }
+  export interface PaymentsAssignAppStoreTransactionParams {
+    /** Receipt */
+    receipt: bytes;
+    /** Payment purpose */
+    purpose: InputStorePaymentPurposeIn;
+  }
+  export interface PaymentsAssignPlayMarketTransactionParams {
+    /** Receipt */
+    receipt: DataJSONIn;
+    /** Payment purpose */
+    purpose: InputStorePaymentPurposeIn;
+  }
+  export interface PaymentsGetPremiumGiftCodeOptionsParams {
+    /** The channel that will start the giveaway */
+    boostPeer?: Api.TypeEntityLike;
+  }
+  export interface PaymentsCheckGiftCodeParams {
+    /** The giftcode to check */
+    slug: string;
+  }
+  export interface PaymentsApplyGiftCodeParams {
+    /** The code to apply */
+    slug: string;
+  }
+  export interface PaymentsGetGiveawayInfoParams {
+    /** The peer where the giveaway was posted. */
+    peer: Api.TypeEntityLike;
+    /** Message ID of the messageActionGiveawayLaunch service message */
+    msgId: MessageIDLike;
+  }
+  export interface PaymentsLaunchPrepaidGiveawayParams {
+    /** The peer where to launch the giveaway. */
+    peer: Api.TypeEntityLike;
+    /** The prepaid giveaway ID. */
+    giveawayId: long;
+    /** Giveway parameters */
+    purpose: InputStorePaymentPurposeIn;
+  }
+  export interface PaymentsGetStarsStatusParams {
+    /** If set, returns the channel/ad revenue balance in nanotons. */
+    ton?: boolean;
+    /** Peer of which to get the balance. */
+    peer: Api.TypeEntityLike;
+  }
+  export interface PaymentsGetStarsTransactionsParams {
+    /** If set, fetches only incoming transactions. */
+    inbound?: boolean;
+    /** If set, fetches only outgoing transactions. */
+    outbound?: boolean;
+    /** Return transactions in ascending order by date (instead of descending order by date). */
+    ascending?: boolean;
+    /** If set, returns the channel/ad revenue transactions in nanotons, instead. */
+    ton?: boolean;
+    /** If set, fetches only transactions for the specified Telegram Star subscription » . */
+    subscriptionId?: string;
+    /** Fetch the transaction history of the peer ( inputPeerSelf or a bot we own). */
+    peer: Api.TypeEntityLike;
+    /** Offset for pagination, obtained from the returned next_offset , initially an empty string » . */
+    offset: string;
+    /** Maximum number of results to return, see pagination */
+    limit: int;
+  }
+  export interface PaymentsSendStarsFormParams {
+    /** Payment form ID */
+    formId: long;
+    /** Invoice */
+    invoice: InputInvoiceIn;
+  }
+  export interface PaymentsRefundStarsChargeParams {
+    /** User to refund. */
+    userId: Api.TypeEntityLike;
+    /** Transaction ID. */
+    chargeId: string;
+  }
+  export interface PaymentsGetStarsRevenueStatsParams {
+    /** Whether to enable dark theme for graph colors */
+    dark?: boolean;
+    /** If set, fetches channel/bot ad revenue statistics in TON. */
+    ton?: boolean;
+    /** Get statistics for the specified bot, channel or ourselves ( inputPeerSelf ). */
+    peer: Api.TypeEntityLike;
+  }
+  export interface PaymentsGetStarsRevenueWithdrawalUrlParams {
+    /** If set, withdraws channel/ad revenue in TON. */
+    ton?: boolean;
+    /** Channel or bot from which to withdraw funds. */
+    peer: Api.TypeEntityLike;
+    /** The amount of stars or nanotons to withdraw. */
+    amount?: long;
+    /** 2FA password, see here » for more info. */
+    password: InputCheckPasswordSRPIn;
+  }
+  export interface PaymentsGetStarsRevenueAdsAccountUrlParams {
+    /** Channel or bot that owns the stars. */
+    peer: Api.TypeEntityLike;
+  }
+  export interface PaymentsGetStarsTransactionsByIDParams {
+    /** If set, returns channel/bot ad revenue transactions in nanotons. */
+    ton?: boolean;
+    /** Channel or bot. */
+    peer: Api.TypeEntityLike;
+    /** Transaction IDs. */
+    id: InputStarsTransactionIn[];
+  }
+  export interface PaymentsGetStarsGiftOptionsParams {
+    /** Receiver of the gift (optional). */
+    userId?: Api.TypeEntityLike;
+  }
+  export interface PaymentsGetStarsSubscriptionsParams {
+    /** Whether to return only subscriptions expired due to an excessively low Telegram Star balance. */
+    missingBalance?: boolean;
+    /** Always pass inputPeerSelf . */
+    peer: Api.TypeEntityLike;
+    /** Offset for pagination, taken from payments.starsStatus . subscriptions_next_offset . */
+    offset: string;
+  }
+  export interface PaymentsChangeStarsSubscriptionParams {
+    /** Always pass inputPeerSelf . */
+    peer: Api.TypeEntityLike;
+    /** ID of the subscription. */
+    subscriptionId: string;
+    /** Whether to cancel or reactivate the subscription. */
+    canceled?: Bool;
+  }
+  export interface PaymentsFulfillStarsSubscriptionParams {
+    /** Always pass inputPeerSelf . */
+    peer: Api.TypeEntityLike;
+    /** ID of the subscription. */
+    subscriptionId: string;
+  }
+  export interface PaymentsGetStarGiftsParams {
+    /** Hash used for caching, for more info click here . The hash may be generated locally by using the id s of the returned or stored sticker starGift s. */
+    hash: int;
+  }
+  export interface PaymentsSaveStarGiftParams {
+    /** If set, hides the gift from our profile. */
+    unsave?: boolean;
+    /** The gift to display or remove. */
+    stargift: InputSavedStarGiftIn;
+  }
+  export interface PaymentsConvertStarGiftParams {
+    /** The gift to convert. */
+    stargift: InputSavedStarGiftIn;
+  }
+  export interface PaymentsBotCancelStarsSubscriptionParams {
+    /** If not set, disables autorenewal of the subscriptions, and prevents the user from reactivating the subscription once the current period expires: a subscription cancelled by the bot will have the starsSubscription . bot_canceled flag set. The bot can can partially undo this operation by setting this flag: this will allow the user to reactivate the subscription. */
+    restore?: boolean;
+    /** The ID of the user whose subscription should be (un)cancelled */
+    userId: Api.TypeEntityLike;
+    /** The provider_charge_id from the messageActionPaymentSentMe service message sent to the bot for the first subscription payment. */
+    chargeId: string;
+  }
+  export interface PaymentsGetConnectedStarRefBotsParams {
+    /** The affiliated peer */
+    peer: Api.TypeEntityLike;
+    /** If set, returns only results older than the specified unixtime */
+    offsetDate?: int;
+    /** Offset for pagination , taken from the last returned connectedBotStarRef . url (initially empty) */
+    offsetLink?: string;
+    /** Maximum number of results to return, see pagination */
+    limit: int;
+  }
+  export interface PaymentsGetConnectedStarRefBotParams {
+    /** The affiliated peer */
+    peer: Api.TypeEntityLike;
+    /** The bot that offers the affiliate program */
+    bot: Api.TypeEntityLike;
+  }
+  export interface PaymentsGetSuggestedStarRefBotsParams {
+    /** If set, orders results by the expected revenue */
+    orderByRevenue?: boolean;
+    /** If set, orders results by the creation date of the affiliate program */
+    orderByDate?: boolean;
+    /** The peer that will become the affiliate: star commissions will be transferred to this peer's star balance. */
+    peer: Api.TypeEntityLike;
+    /** Offset for pagination, taken from payments.suggestedStarRefBots . next_offset , initially empty. */
+    offset: string;
+    /** Maximum number of results to return, see pagination */
+    limit: int;
+  }
+  export interface PaymentsConnectStarRefBotParams {
+    /** The peer that will become the affiliate: star commissions will be transferred to this peer's star balance. */
+    peer: Api.TypeEntityLike;
+    /** The bot that offers the affiliate program */
+    bot: Api.TypeEntityLike;
+  }
+  export interface PaymentsEditConnectedStarRefBotParams {
+    /** If set, leaves the bot's affiliate program */
+    revoked?: boolean;
+    /** The peer that was affiliated */
+    peer: Api.TypeEntityLike;
+    /** The affiliate link to revoke */
+    link: string;
+  }
+  export interface PaymentsGetStarGiftUpgradePreviewParams {
+    /** The gift to upgrade. */
+    giftId: long;
+  }
+  export interface PaymentsUpgradeStarGiftParams {
+    /** Set this flag to keep the original gift text, sender and receiver in the upgraded gift as a starGiftAttributeOriginalDetails attribute. */
+    keepOriginalDetails?: boolean;
+    /** The gift to upgrade */
+    stargift: InputSavedStarGiftIn;
+  }
+  export interface PaymentsTransferStarGiftParams {
+    /** The gift to transfer. */
+    stargift: InputSavedStarGiftIn;
+    /** Destination peer. */
+    toId: Api.TypeEntityLike;
+  }
+  export interface PaymentsGetUniqueStarGiftParams {
+    /** The slug. */
+    slug: string;
+  }
+  export interface PaymentsGetSavedStarGiftsParams {
+    /** Exclude gifts not pinned on the profile. */
+    excludeUnsaved?: boolean;
+    /** Exclude gifts pinned on the profile. */
+    excludeSaved?: boolean;
+    /** Exclude gifts that do not have the starGift . limited flag set. */
+    excludeUnlimited?: boolean;
+    /** Exclude collectible gifts » . */
+    excludeUnique?: boolean;
+    /** If set, sorts the gifts by price instead of reception date. */
+    sortByValue?: boolean;
+    /** Exclude gifts that can be upgraded to collectible gifts » . */
+    excludeUpgradable?: boolean;
+    /** Exclude gifts that cannot be upgraded to collectible gifts » . */
+    excludeUnupgradable?: boolean;
+    peerColorAvailable?: boolean;
+    excludeHosted?: boolean;
+    /** Fetch only gifts owned by the specified peer, such as: a user, with peer= inputPeerUser ; a channel, with peer= inputPeerChannel ; a connected business user (when executing the method as a bot, over the business connection), with peer= inputPeerUser . */
+    peer: Api.TypeEntityLike;
+    /** Only returns gifts within the specified collection » . */
+    collectionId?: int;
+    /** Offset for pagination . */
+    offset: string;
+    /** Maximum number of results to return, see pagination */
+    limit: int;
+  }
+  export interface PaymentsGetSavedStarGiftParams {
+    /** List of gifts to fetch info about. */
+    stargift: InputSavedStarGiftIn[];
+  }
+  export interface PaymentsGetStarGiftWithdrawalUrlParams {
+    /** The collectible gift to export. */
+    stargift: InputSavedStarGiftIn;
+    /** The current user's 2FA password, passed as specified here » . */
+    password: InputCheckPasswordSRPIn;
+  }
+  export interface PaymentsToggleChatStarGiftNotificationsParams {
+    /** Whether to enable or disable reception of notifications in the form of messageActionStarGiftUnique and messageActionStarGift service messages from the channel. */
+    enabled?: boolean;
+    /** The channel for which to receive or not receive notifications. */
+    peer: Api.TypeEntityLike;
+  }
+  export interface PaymentsToggleStarGiftsPinnedToTopParams {
+    /** The peer where to pin the gift. */
+    peer: Api.TypeEntityLike;
+    /** The gift to pin. */
+    stargift: InputSavedStarGiftIn[];
+  }
+  export interface PaymentsCanPurchaseStoreParams {
+    /** Payment purpose. */
+    purpose: InputStorePaymentPurposeIn;
+  }
+  export interface PaymentsGetResaleStarGiftsParams {
+    /** Sort gifts by price (ascending). */
+    sortByPrice?: boolean;
+    /** Sort gifts by number (ascending). */
+    sortByNum?: boolean;
+    forCraft?: boolean;
+    starsOnly?: boolean;
+    /** If a previous call to the method was made and payments.resaleStarGifts . attributes_hash was set, pass it here to avoid returning any results if they haven't changed. Otherwise, set this flag and pass 0 to return payments.resaleStarGifts . attributes_hash and payments.resaleStarGifts . attributes , these two fields will not be set if this flag is not set. */
+    attributesHash?: long;
+    /** Mandatory identifier of the base gift from which the collectible gift was upgraded. */
+    giftId: long;
+    /** Optionally filter gifts with the specified attributes. If no attributes of a specific type are specified, all attributes of that type are allowed. */
+    attributes?: StarGiftAttributeIdIn[];
+    /** Offset for pagination. If not equal to an empty string, payments.resaleStarGifts . counters will not be set to avoid returning the counters every time a new page is fetched. */
+    offset: string;
+    /** Maximum number of results to return, see pagination */
+    limit: int;
+  }
+  export interface PaymentsUpdateStarGiftPriceParams {
+    /** The gift to resell. */
+    stargift: InputSavedStarGiftIn;
+    /** Resale price of the gift. */
+    resellAmount: StarsAmountIn;
+  }
+  export interface PaymentsCreateStarGiftCollectionParams {
+    /** Peer where to create the collection. */
+    peer: Api.TypeEntityLike;
+    /** Title of the collection. */
+    title: string;
+    /** Gifts added to the collection. */
+    stargift: InputSavedStarGiftIn[];
+  }
+  export interface PaymentsUpdateStarGiftCollectionParams {
+    /** Peer that owns the collection. */
+    peer: Api.TypeEntityLike;
+    /** Collection ID. */
+    collectionId: int;
+    /** Title of the collection, to rename the collection. */
+    title?: string;
+    /** Can contain a list of gifts to remove from the collection. */
+    deleteStargift?: InputSavedStarGiftIn[];
+    /** Can contain a list of gifts to add to the collection. */
+    addStargift?: InputSavedStarGiftIn[];
+    /** Can contain the new gift order. */
+    order?: InputSavedStarGiftIn[];
+  }
+  export interface PaymentsReorderStarGiftCollectionsParams {
+    /** The owned peer. */
+    peer: Api.TypeEntityLike;
+    /** New collection order. */
+    order: int[];
+  }
+  export interface PaymentsDeleteStarGiftCollectionParams {
+    /** Peer that owns the collection. */
+    peer: Api.TypeEntityLike;
+    /** ID of the collection. */
+    collectionId: int;
+  }
+  export interface PaymentsGetStarGiftCollectionsParams {
+    /** The peer. */
+    peer: Api.TypeEntityLike;
+    /** Hash ( generated as specified here » ) using the starGiftCollection . hash field ( not the collection_id field) of all collections returned by a previous method call, to avoid refetching the result if it hasn't changed. */
+    hash: long;
+  }
+  export interface PaymentsGetUniqueStarGiftValueInfoParams {
+    /** slug from a starGiftUnique . */
+    slug: string;
+  }
+  export interface PaymentsCheckCanSendGiftParams {
+    /** Gift ID. */
+    giftId: long;
+  }
+  export interface PaymentsGetStarGiftAuctionStateParams {
+    auction: InputStarGiftAuctionIn;
+    version: int;
+  }
+  export interface PaymentsGetStarGiftAuctionAcquiredGiftsParams {
+    giftId: long;
+  }
+  export interface PaymentsGetStarGiftActiveAuctionsParams {
+    hash: long;
+  }
+  export interface PaymentsResolveStarGiftOfferParams {
+    decline?: boolean;
+    offerMsgId: MessageIDLike;
+  }
+  export interface PaymentsSendStarGiftOfferParams {
+    peer: Api.TypeEntityLike;
+    slug: string;
+    price: StarsAmountIn;
+    duration: int;
+    randomId?: long;
+    allowPaidStars?: long;
+  }
+  export interface PaymentsGetStarGiftUpgradeAttributesParams {
+    giftId: long;
+  }
+  export interface PaymentsGetCraftStarGiftsParams {
+    giftId: long;
+    offset: string;
+    limit: int;
+  }
+  export interface PaymentsCraftStarGiftParams {
+    stargift: InputSavedStarGiftIn[];
+  }
+  export interface StickersCreateStickerSetParams {
+    /** Whether this is a mask stickerset */
+    masks?: boolean;
+    /** Whether this is a custom emoji stickerset. */
+    emojis?: boolean;
+    /** Whether the color of TGS custom emojis contained in this set should be changed to the text color when used in messages, the accent color if used as emoji status, white on chat photos, or another appropriate color based on context. For custom emoji stickersets only. */
+    textColor?: boolean;
+    /** Stickerset owner */
+    userId: Api.TypeEntityLike;
+    /** Stickerset name, 1-64 chars */
+    title: string;
+    /** Short name of sticker set, to be used in sticker deep links » . Can contain only english letters, digits and underscores. Must begin with a letter, can't contain consecutive underscores and, if called by a bot , must end in "_by_<bot_username>" . <bot_username> is case insensitive. 1-64 characters. */
+    shortName: string;
+    /** Thumbnail */
+    thumb?: InputDocumentIn;
+    /** Stickers */
+    stickers: InputStickerSetItemIn[];
+    /** Used when importing stickers using the sticker import SDKs , specifies the name of the software that created the stickers */
+    software?: string;
+  }
+  export interface StickersRemoveStickerFromSetParams {
+    /** The sticker to remove */
+    sticker: InputDocumentIn;
+  }
+  export interface StickersChangeStickerPositionParams {
+    /** The sticker */
+    sticker: InputDocumentIn;
+    /** The new position of the sticker, zero-based */
+    position: int;
+  }
+  export interface StickersAddStickerToSetParams {
+    /** The stickerset */
+    stickerset: InputStickerSetIn;
+    /** The sticker */
+    sticker: InputStickerSetItemIn;
+  }
+  export interface StickersSetStickerSetThumbParams {
+    /** Stickerset */
+    stickerset: InputStickerSetIn;
+    /** Thumbnail (only for normal stickersets, not custom emoji stickersets). */
+    thumb?: InputDocumentIn;
+    /** Only for custom emoji stickersets , ID of a custom emoji present in the set to use as thumbnail; pass 0 to fallback to the first custom emoji of the set. */
+    thumbDocumentId?: long;
+  }
+  export interface StickersCheckShortNameParams {
+    /** Short name */
+    shortName: string;
+  }
+  export interface StickersSuggestShortNameParams {
+    /** Sticker pack name */
+    title: string;
+  }
+  export interface StickersChangeStickerParams {
+    /** The sticker */
+    sticker: InputDocumentIn;
+    /** If set, updates the emoji list associated to the sticker */
+    emoji?: string;
+    /** If set, updates the mask coordinates */
+    maskCoords?: MaskCoordsIn;
+    /** If set, updates the sticker keywords (separated by commas). Can't be provided for mask stickers. */
+    keywords?: string;
+  }
+  export interface StickersRenameStickerSetParams {
+    /** Stickerset to rename */
+    stickerset: InputStickerSetIn;
+    /** New stickerset title */
+    title: string;
+  }
+  export interface StickersDeleteStickerSetParams {
+    /** Stickerset to delete */
+    stickerset: InputStickerSetIn;
+  }
+  export interface StickersReplaceStickerParams {
+    /** Old sticker document. */
+    sticker: InputDocumentIn;
+    /** New sticker. */
+    newSticker: InputStickerSetItemIn;
+  }
+  export interface PhoneRequestCallParams {
+    /** Whether to start a video call */
+    video?: boolean;
+    /** Destination of the phone call */
+    userId: Api.TypeEntityLike;
+    /** Random ID to avoid resending the same object */
+    randomId: int;
+    /** Parameter for E2E encryption key exchange » */
+    gAHash: bytes;
+    /** Phone call settings */
+    protocol: PhoneCallProtocolIn;
+  }
+  export interface PhoneAcceptCallParams {
+    /** The call to accept */
+    peer: InputPhoneCallIn;
+    /** Parameter for E2E encryption key exchange » */
+    gB: bytes;
+    /** Phone call settings */
+    protocol: PhoneCallProtocolIn;
+  }
+  export interface PhoneConfirmCallParams {
+    /** The phone call */
+    peer: InputPhoneCallIn;
+    /** Parameter for E2E encryption key exchange » */
+    gA: bytes;
+    /** Key fingerprint */
+    keyFingerprint: long;
+    /** Phone call settings */
+    protocol: PhoneCallProtocolIn;
+  }
+  export interface PhoneReceivedCallParams {
+    /** The phone call we're currently in */
+    peer: InputPhoneCallIn;
+  }
+  export interface PhoneDiscardCallParams {
+    /** Whether this is a video call */
+    video?: boolean;
+    /** The phone call */
+    peer: InputPhoneCallIn;
+    /** Call duration */
+    duration: int;
+    /** Why was the call discarded */
+    reason: PhoneCallDiscardReasonIn;
+    /** Preferred libtgvoip relay ID */
+    connectionId: long;
+  }
+  export interface PhoneSetCallRatingParams {
+    /** Whether the user decided on their own initiative to rate the call */
+    userInitiative?: boolean;
+    /** The call to rate */
+    peer: InputPhoneCallIn;
+    /** Rating in 1-5 stars */
+    rating: int;
+    /** An additional comment */
+    comment: string;
+  }
+  export interface PhoneSaveCallDebugParams {
+    /** Phone call */
+    peer: InputPhoneCallIn;
+    /** Debug statistics obtained from libtgvoip */
+    debug: DataJSONIn;
+  }
+  export interface PhoneSendSignalingDataParams {
+    /** Phone call */
+    peer: InputPhoneCallIn;
+    /** Signaling payload */
+    data: bytes;
+  }
+  export interface PhoneCreateGroupCallParams {
+    /** Whether RTMP stream support should be enabled: only the group/supergroup/channel owner can use this flag. */
+    rtmpStream?: boolean;
+    /** Associate the group call or livestream to the provided group/supergroup/channel */
+    peer: Api.TypeEntityLike;
+    /** Unique client message ID required to prevent creation of duplicate group calls */
+    randomId: int;
+    /** Call title */
+    title?: string;
+    /** For scheduled group call or livestreams, the absolute date when the group call will start */
+    scheduleDate?: int;
+  }
+  export interface PhoneJoinGroupCallParams {
+    /** If set, the user will be muted by default upon joining. */
+    muted?: boolean;
+    /** If set, the user's video will be disabled by default upon joining. */
+    videoStopped?: boolean;
+    /** The group call */
+    call: InputGroupCallIn;
+    /** Join the group call, presenting yourself as the specified user/channel */
+    joinAs: Api.TypeEntityLike;
+    /** The invitation hash from the invite link » , if provided allows speaking in a livestream or muted group chat. */
+    inviteHash?: string;
+    /** For conference calls, your public key. */
+    publicKey?: int256;
+    /** The block containing an appropriate e2e.chain.changeSetGroupState event . */
+    block?: bytes;
+    /** WebRTC parameters */
+    params: DataJSONIn;
+  }
+  export interface PhoneLeaveGroupCallParams {
+    /** The group call */
+    call: InputGroupCallIn;
+    /** Your source ID */
+    source: int;
+  }
+  export interface PhoneInviteToGroupCallParams {
+    /** The group call */
+    call: InputGroupCallIn;
+    /** The users to invite. */
+    users: Api.TypeEntityLike[];
+  }
+  export interface PhoneDiscardGroupCallParams {
+    /** The group call to terminate */
+    call: InputGroupCallIn;
+  }
+  export interface PhoneToggleGroupCallSettingsParams {
+    /** Invalidate existing invite links */
+    resetInviteHash?: boolean;
+    /** Group call */
+    call: InputGroupCallIn;
+    /** Whether all users will that join this group call are muted by default upon joining the group call */
+    joinMuted?: Bool;
+    messagesEnabled?: Bool;
+    sendPaidMessagesStars?: long;
+  }
+  export interface PhoneGetGroupCallParams {
+    /** The group call */
+    call: InputGroupCallIn;
+    /** Maximum number of results to return, see pagination */
+    limit: int;
+  }
+  export interface PhoneGetGroupParticipantsParams {
+    /** Group call */
+    call: InputGroupCallIn;
+    /** If specified, will fetch group participant info about the specified peers */
+    ids: Api.TypeEntityLike[];
+    /** If specified, will fetch group participant info about the specified WebRTC source IDs */
+    sources: int[];
+    /** Offset for results, taken from the next_offset field of phone.groupParticipants , initially an empty string. Note: if no more results are available, the method call will return an empty next_offset ; thus, avoid providing the next_offset returned in phone.groupParticipants if it is empty, to avoid an infinite loop. */
+    offset: string;
+    /** Maximum number of results to return, see pagination */
+    limit: int;
+  }
+  export interface PhoneCheckGroupCallParams {
+    /** Group call */
+    call: InputGroupCallIn;
+    /** Source IDs */
+    sources: int[];
+  }
+  export interface PhoneToggleGroupCallRecordParams {
+    /** Whether to start or stop recording */
+    start?: boolean;
+    /** Whether to also record video streams */
+    video?: boolean;
+    /** The group call or livestream */
+    call: InputGroupCallIn;
+    /** Recording title */
+    title?: string;
+    /** If video stream recording is enabled, whether to record in portrait or landscape mode */
+    videoPortrait?: Bool;
+  }
+  export interface PhoneEditGroupCallParticipantParams {
+    /** The group call */
+    call: InputGroupCallIn;
+    /** The group call participant (can also be the user itself) */
+    participant: Api.TypeEntityLike;
+    /** Whether to mute or unmute the specified participant */
+    muted?: Bool;
+    /** New volume */
+    volume?: int;
+    /** Raise or lower hand */
+    raiseHand?: Bool;
+    /** Start or stop the video stream */
+    videoStopped?: Bool;
+    /** Pause or resume the video stream */
+    videoPaused?: Bool;
+    /** Pause or resume the screen sharing stream */
+    presentationPaused?: Bool;
+  }
+  export interface PhoneEditGroupCallTitleParams {
+    /** Group call */
+    call: InputGroupCallIn;
+    /** New title */
+    title: string;
+  }
+  export interface PhoneGetGroupCallJoinAsParams {
+    /** The dialog whose group call or livestream we're trying to join */
+    peer: Api.TypeEntityLike;
+  }
+  export interface PhoneExportGroupCallInviteParams {
+    /** For livestreams or muted group chats, if set, users that join using this link will be able to speak without explicitly requesting permission by (for example by raising their hand). */
+    canSelfUnmute?: boolean;
+    /** The group call */
+    call: InputGroupCallIn;
+  }
+  export interface PhoneToggleGroupCallStartSubscriptionParams {
+    /** Scheduled group call */
+    call: InputGroupCallIn;
+    /** Enable or disable subscription */
+    subscribed: Bool;
+  }
+  export interface PhoneStartScheduledGroupCallParams {
+    /** The scheduled group call */
+    call: InputGroupCallIn;
+  }
+  export interface PhoneSaveDefaultGroupCallJoinAsParams {
+    /** The dialog */
+    peer: Api.TypeEntityLike;
+    /** The default peer that will be used to join group calls in this dialog, presenting yourself as a specific user/channel. */
+    joinAs: Api.TypeEntityLike;
+  }
+  export interface PhoneJoinGroupCallPresentationParams {
+    /** The group call */
+    call: InputGroupCallIn;
+    /** WebRTC parameters */
+    params: DataJSONIn;
+  }
+  export interface PhoneLeaveGroupCallPresentationParams {
+    /** The group call */
+    call: InputGroupCallIn;
+  }
+  export interface PhoneGetGroupCallStreamChannelsParams {
+    /** Group call or livestream */
+    call: InputGroupCallIn;
+  }
+  export interface PhoneGetGroupCallStreamRtmpUrlParams {
+    liveStory?: boolean;
+    /** Peer to livestream into */
+    peer: Api.TypeEntityLike;
+    /** Whether to revoke the previous stream key or simply return the existing one */
+    revoke: Bool;
+  }
+  export interface PhoneSaveCallLogParams {
+    /** Phone call */
+    peer: InputPhoneCallIn;
+    /** Logs */
+    file: InputFileIn;
+  }
+  export interface PhoneCreateConferenceCallParams {
+    /** If set, mute our microphone when joining the call (can only be used if join is set). */
+    muted?: boolean;
+    /** If set, our video stream is disabled (can only be used if join is set). */
+    videoStopped?: boolean;
+    /** If set, also join the call, otherwise just create the call link. */
+    join?: boolean;
+    /** Unique client message ID required to prevent creation of duplicate group calls. */
+    randomId: int;
+    /** Public key (can only be used if join is set). */
+    publicKey?: int256;
+    /** Initial blockchain block (can only be used if join is set). */
+    block?: bytes;
+    /** Parameters from tgcalls (can only be used if join is set). */
+    params?: DataJSONIn;
+  }
+  export interface PhoneDeleteConferenceCallParticipantsParams {
+    /** Whether this is a removal of members that already left the conference call. */
+    onlyLeft?: boolean;
+    /** Whether this is a forced removal of active members in a conference call. */
+    kick?: boolean;
+    /** The conference call. */
+    call: InputGroupCallIn;
+    /** IDs of users to remove. */
+    ids: long[];
+    /** The block containing an appropriate e2e.chain.changeSetGroupState event */
+    block: bytes;
+  }
+  export interface PhoneSendConferenceCallBroadcastParams {
+    /** The conference where to broadcast the block. */
+    call: InputGroupCallIn;
+    /** The block to broadcast. */
+    block: bytes;
+  }
+  export interface PhoneInviteConferenceCallParticipantParams {
+    /** Invite the user to also turn on their video feed. */
+    video?: boolean;
+    /** The conference call. */
+    call: InputGroupCallIn;
+    /** The user to invite. */
+    userId: Api.TypeEntityLike;
+  }
+  export interface PhoneDeclineConferenceCallInviteParams {
+    /** The ID of the messageActionConferenceCall to decline. */
+    msgId: MessageIDLike;
+  }
+  export interface PhoneGetGroupCallChainBlocksParams {
+    /** The conference. */
+    call: InputGroupCallIn;
+    /** Subchain ID. */
+    subChainId: int;
+    /** Offset for pagination. */
+    offset: int;
+    /** Maximum number of blocks to return in this call, see pagination */
+    limit: int;
+  }
+  export interface PhoneSendGroupCallMessageParams {
+    call: InputGroupCallIn;
+    randomId?: long;
+    message: TextWithEntitiesIn;
+    allowPaidStars?: long;
+    sendAs?: Api.TypeEntityLike;
+  }
+  export interface PhoneSendGroupCallEncryptedMessageParams {
+    call: InputGroupCallIn;
+    encryptedMessage: bytes;
+  }
+  export interface PhoneDeleteGroupCallMessagesParams {
+    reportSpam?: boolean;
+    call: InputGroupCallIn;
+    messages: int[];
+  }
+  export interface PhoneDeleteGroupCallParticipantMessagesParams {
+    reportSpam?: boolean;
+    call: InputGroupCallIn;
+    participant: Api.TypeEntityLike;
+  }
+  export interface PhoneGetGroupCallStarsParams {
+    call: InputGroupCallIn;
+  }
+  export interface PhoneSaveDefaultSendAsParams {
+    call: InputGroupCallIn;
+    sendAs: Api.TypeEntityLike;
+  }
+  export interface LangpackGetLangPackParams {
+    /** Platform identifier (i.e. android , tdesktop , etc). */
+    langPack: string;
+    /** Either an ISO 639-1 language code or a language pack name obtained from a language pack link . */
+    langCode: string;
+  }
+  export interface LangpackGetStringsParams {
+    /** Platform identifier (i.e. android , tdesktop , etc). */
+    langPack: string;
+    /** Either an ISO 639-1 language code or a language pack name obtained from a language pack link . */
+    langCode: string;
+    /** Strings to get */
+    keys: string[];
+  }
+  export interface LangpackGetDifferenceParams {
+    /** Platform identifier (i.e. android , tdesktop , etc). */
+    langPack: string;
+    /** Either an ISO 639-1 language code or a language pack name obtained from a language pack link . */
+    langCode: string;
+    /** Previous localization pack version */
+    fromVersion: int;
+  }
+  export interface LangpackGetLanguagesParams {
+    /** Platform identifier (i.e. android , tdesktop , etc). */
+    langPack: string;
+  }
+  export interface LangpackGetLanguageParams {
+    /** Platform identifier (i.e. android , tdesktop , etc). */
+    langPack: string;
+    /** Either an ISO 639-1 language code or a language pack name obtained from a language pack link . */
+    langCode: string;
+  }
+  export interface FoldersEditPeerFoldersParams {
+    /** New peer list */
+    folderPeers: InputFolderPeerIn[];
+  }
+  export interface StatsGetBroadcastStatsParams {
+    /** Whether to enable dark theme for graph colors */
+    dark?: boolean;
+    /** The channel */
+    channel: Api.TypeEntityLike;
+  }
+  export interface StatsLoadAsyncGraphParams {
+    /** Graph token from statsGraphAsync constructor */
+    token: string;
+    /** Zoom value, if required */
+    x?: long;
+  }
+  export interface StatsGetMegagroupStatsParams {
+    /** Whether to enable dark theme for graph colors */
+    dark?: boolean;
+    /** Supergroup ID */
+    channel: Api.TypeEntityLike;
+  }
+  export interface StatsGetMessagePublicForwardsParams {
+    /** Source channel */
+    channel: Api.TypeEntityLike;
+    /** Source message ID */
+    msgId: MessageIDLike;
+    /** Offset for pagination , empty string on first call, then use the next_offset field of the returned constructor (if present, otherwise no more results are available). */
+    offset: string;
+    /** Maximum number of results to return, see pagination */
+    limit: int;
+  }
+  export interface StatsGetMessageStatsParams {
+    /** Whether to enable dark theme for graph colors */
+    dark?: boolean;
+    /** Channel ID */
+    channel: Api.TypeEntityLike;
+    /** Message ID */
+    msgId: MessageIDLike;
+  }
+  export interface StatsGetStoryStatsParams {
+    /** Whether to enable the dark theme for graph colors */
+    dark?: boolean;
+    /** The peer that posted the story */
+    peer: Api.TypeEntityLike;
+    /** Story ID */
+    id: int;
+  }
+  export interface StatsGetStoryPublicForwardsParams {
+    /** Peer where the story was originally posted */
+    peer: Api.TypeEntityLike;
+    /** Story ID */
+    id: int;
+    /** Offset for pagination, from stats.PublicForwards . next_offset . */
+    offset: string;
+    /** Maximum number of results to return, see pagination */
+    limit: int;
+  }
+  export interface StatsGetPollStatsParams {
+    dark?: boolean;
+    peer: Api.TypeEntityLike;
+    msgId: MessageIDLike;
+  }
+  export interface ChatlistsExportChatlistInviteParams {
+    /** The folder to export */
+    chatlist: InputChatlistIn;
+    /** An optional name for the link */
+    title: string;
+    /** The list of channels, group and supergroups to share with the link. Basic groups will automatically be converted to supergroups when invoking the method. */
+    peers: Api.TypeEntityLike[];
+  }
+  export interface ChatlistsDeleteExportedInviteParams {
+    /** The related folder */
+    chatlist: InputChatlistIn;
+    /** slug obtained from the chat folder deep link » . */
+    slug: string;
+  }
+  export interface ChatlistsEditExportedInviteParams {
+    /** Folder ID */
+    chatlist: InputChatlistIn;
+    /** slug obtained from the chat folder deep link » . */
+    slug: string;
+    /** If set, sets a new name for the link */
+    title?: string;
+    /** If set, changes the list of peers shared with the link */
+    peers?: Api.TypeEntityLike[];
+  }
+  export interface ChatlistsGetExportedInvitesParams {
+    /** The folder */
+    chatlist: InputChatlistIn;
+  }
+  export interface ChatlistsCheckChatlistInviteParams {
+    /** slug obtained from the chat folder deep link » */
+    slug: string;
+  }
+  export interface ChatlistsJoinChatlistInviteParams {
+    /** slug obtained from a chat folder deep link » . */
+    slug: string;
+    /** List of new chats to join, fetched using chatlists.checkChatlistInvite and filtered as specified in the documentation » . */
+    peers: Api.TypeEntityLike[];
+  }
+  export interface ChatlistsGetChatlistUpdatesParams {
+    /** The folder */
+    chatlist: InputChatlistIn;
+  }
+  export interface ChatlistsJoinChatlistUpdatesParams {
+    /** The folder */
+    chatlist: InputChatlistIn;
+    /** List of new chats to join, fetched using chatlists.getChatlistUpdates and filtered as specified in the documentation » . */
+    peers: Api.TypeEntityLike[];
+  }
+  export interface ChatlistsHideChatlistUpdatesParams {
+    /** The folder */
+    chatlist: InputChatlistIn;
+  }
+  export interface ChatlistsGetLeaveChatlistSuggestionsParams {
+    /** Folder ID */
+    chatlist: InputChatlistIn;
+  }
+  export interface ChatlistsLeaveChatlistParams {
+    /** Folder ID */
+    chatlist: InputChatlistIn;
+    /** Also leave the specified channels and groups */
+    peers: Api.TypeEntityLike[];
+  }
+  export interface StoriesCanSendStoryParams {
+    /** The peer from which we wish to post stories. */
+    peer: Api.TypeEntityLike;
+  }
+  export interface StoriesSendStoryParams {
+    /** Whether to add the story to the profile automatically upon expiration. If not set, the story will only be added to the archive, see here » for more info. */
+    pinned?: boolean;
+    /** If set, disables forwards, screenshots, and downloads. */
+    noforwards?: boolean;
+    /** Set this flag when reposting stories with fwd_from_id + fwd_from_id , if the media was modified before reposting. */
+    fwdModified?: boolean;
+    /** The peer to send the story as. */
+    peer: Api.TypeEntityLike;
+    /** The story media. */
+    media: InputMediaIn;
+    /** Media areas associated to the story, see here » for more info. */
+    mediaAreas?: MediaAreaIn[];
+    /** Story caption. */
+    caption?: string;
+    /** Message entities for styled text , if allowed by the stories_entities client configuration parameter » . */
+    entities?: MessageEntityIn[];
+    /** Privacy rules for the story, indicating who can or can't view the story. */
+    privacyRules: InputPrivacyRuleIn[];
+    /** Unique client message ID required to prevent message resending. */
+    randomId?: long;
+    /** Period after which the story is moved to archive (and to the profile if pinned is set), in seconds; must be one of 6 * 3600 , 12 * 3600 , 86400 , or 2 * 86400 for Telegram Premium users, and 86400 otherwise. */
+    period?: int;
+    /** If set, indicates that this story is a repost of story with ID fwd_from_story posted by the peer in fwd_from_id . */
+    fwdFromId?: Api.TypeEntityLike;
+    /** If set, indicates that this story is a repost of story with ID fwd_from_story posted by the peer in fwd_from_id . */
+    fwdFromStory?: int;
+    /** If set, adds the story to the specified albums. */
+    albums?: int[];
+    music?: InputDocumentIn;
+  }
+  export interface StoriesEditStoryParams {
+    /** Peer where the story was posted. */
+    peer: Api.TypeEntityLike;
+    /** ID of story to edit. */
+    id: int;
+    /** If specified, replaces the story media. */
+    media?: InputMediaIn;
+    /** Media areas associated to the story, see here » for more info. */
+    mediaAreas?: MediaAreaIn[];
+    /** If specified, replaces the story caption. */
+    caption?: string;
+    /** Message entities for styled text in the caption , if allowed by the stories_entities client configuration parameter » . */
+    entities?: MessageEntityIn[];
+    /** If specified, alters the privacy settings » of the story, changing who can or can't view the story. */
+    privacyRules?: InputPrivacyRuleIn[];
+    music?: InputDocumentIn;
+  }
+  export interface StoriesDeleteStoriesParams {
+    /** Channel/user from where to delete stories. */
+    peer: Api.TypeEntityLike;
+    /** IDs of stories to delete. */
+    id: int[];
+  }
+  export interface StoriesTogglePinnedParams {
+    /** Peer where to pin or unpin stories */
+    peer: Api.TypeEntityLike;
+    /** IDs of stories to pin or unpin */
+    id: int[];
+    /** Whether to pin or unpin the stories */
+    pinned: Bool;
+  }
+  export interface StoriesGetAllStoriesParams {
+    /** If next and state are both set, uses the passed state to paginate to the next results; if neither state nor next are set, fetches the initial page; if state is set and next is not set, check for changes in the active/hidden peerset, see here » for more info on the full flow. */
+    next?: boolean;
+    /** If set, fetches the hidden active story list, otherwise fetches the active story list, see here » for more info on the full flow. */
+    hidden?: boolean;
+    /** If next and state are both set, uses the passed state to paginate to the next results; if neither state nor next are set, fetches the initial page; if state is set and next is not set, check for changes in the active/hidden peerset, see here » for more info on the full flow. */
+    state?: string;
+  }
+  export interface StoriesGetPinnedStoriesParams {
+    /** Peer whose pinned stories should be fetched */
+    peer: Api.TypeEntityLike;
+    /** Offsets for pagination, for more info click here */
+    offsetId: int;
+    /** Maximum number of results to return, see pagination */
+    limit: int;
+  }
+  export interface StoriesGetStoriesArchiveParams {
+    /** Peer whose archived stories should be fetched */
+    peer: Api.TypeEntityLike;
+    /** Offsets for pagination, for more info click here */
+    offsetId: int;
+    /** Maximum number of results to return, see pagination */
+    limit: int;
+  }
+  export interface StoriesGetStoriesByIDParams {
+    /** Peer where the stories were posted */
+    peer: Api.TypeEntityLike;
+    /** Story IDs */
+    id: int[];
+  }
+  export interface StoriesToggleAllStoriesHiddenParams {
+    /** Whether to hide or unhide all active stories of the peer */
+    hidden: Bool;
+  }
+  export interface StoriesReadStoriesParams {
+    /** The peer whose stories should be marked as read. */
+    peer: Api.TypeEntityLike;
+    /** Mark all stories up to and including this ID as read */
+    maxId: int;
+  }
+  export interface StoriesIncrementStoryViewsParams {
+    /** Peer where the stories were posted. */
+    peer: Api.TypeEntityLike;
+    /** IDs of the stories (maximum 200 at a time). */
+    id: int[];
+  }
+  export interface StoriesGetStoryViewsListParams {
+    /** Whether to only fetch view reaction/views made by our contacts */
+    justContacts?: boolean;
+    /** Whether to return storyView info about users that reacted to the story (i.e. if set, the server will first sort results by view date as usual, and then also additionally sort the list by putting storyView s with an associated reaction first in the list). Ignored if forwards_first is set. */
+    reactionsFirst?: boolean;
+    /** If set, returns forwards and reposts first, then reactions, then other views; otherwise returns interactions sorted just by interaction date. */
+    forwardsFirst?: boolean;
+    /** Peer where the story was posted */
+    peer: Api.TypeEntityLike;
+    /** Search for specific peers */
+    q?: string;
+    /** Story ID */
+    id: int;
+    /** Offset for pagination, obtained from stories.storyViewsList . next_offset */
+    offset: string;
+    /** Maximum number of results to return, see pagination */
+    limit: int;
+  }
+  export interface StoriesGetStoriesViewsParams {
+    /** Peer whose stories should be fetched */
+    peer: Api.TypeEntityLike;
+    /** Story IDs */
+    id: int[];
+  }
+  export interface StoriesExportStoryLinkParams {
+    /** Peer where the story was posted */
+    peer: Api.TypeEntityLike;
+    /** Story ID */
+    id: int;
+  }
+  export interface StoriesReportParams {
+    /** The peer that uploaded the story. */
+    peer: Api.TypeEntityLike;
+    /** IDs of the stories to report. */
+    id: int[];
+    /** Menu option, intially empty */
+    option: bytes;
+    /** Comment for report moderation */
+    message: string;
+  }
+  export interface StoriesActivateStealthModeParams {
+    /** Whether to erase views from any stories opened in the past stories_stealth_past_period seconds » , as specified by the client configuration . */
+    past?: boolean;
+    /** Whether to hide future story views for the next stories_stealth_future_period seconds » , as specified by the client configuration . */
+    future?: boolean;
+  }
+  export interface StoriesSendReactionParams {
+    /** Whether to add this reaction to the recent reactions list » . */
+    addToRecent?: boolean;
+    /** The peer that sent the story */
+    peer: Api.TypeEntityLike;
+    /** ID of the story to react to */
+    storyId: int;
+    /** Reaction */
+    reaction: ReactionIn;
+  }
+  export interface StoriesGetPeerStoriesParams {
+    /** Peer whose stories should be fetched */
+    peer: Api.TypeEntityLike;
+  }
+  export interface StoriesGetPeerMaxIDsParams {
+    /** Peers */
+    id: Api.TypeEntityLike[];
+  }
+  export interface StoriesTogglePeerStoriesHiddenParams {
+    /** Peer whose stories should be (un)hidden. */
+    peer: Api.TypeEntityLike;
+    /** Whether to hide or unhide stories. */
+    hidden: Bool;
+  }
+  export interface StoriesGetStoryReactionsListParams {
+    /** If set, returns forwards and reposts first, then reactions, then other views; otherwise returns interactions sorted just by interaction date. */
+    forwardsFirst?: boolean;
+    /** Channel */
+    peer: Api.TypeEntityLike;
+    /** Story ID */
+    id: int;
+    /** Get only reactions of this type */
+    reaction?: ReactionIn;
+    /** Offset for pagination (taken from the next_offset field of the returned stories.StoryReactionsList ); empty in the first request. */
+    offset?: string;
+    /** Maximum number of results to return, see pagination */
+    limit: int;
+  }
+  export interface StoriesTogglePinnedToTopParams {
+    /** Peer where to pin stories. */
+    peer: Api.TypeEntityLike;
+    /** IDs of the stories to pin (max stories_pinned_to_top_count_max ). */
+    id: int[];
+  }
+  export interface StoriesSearchPostsParams {
+    /** Hashtag (without the # ) */
+    hashtag?: string;
+    /** A mediaAreaGeoPoint or a mediaAreaVenue . Note mediaAreaGeoPoint areas may be searched only if they have an associated address . */
+    area?: MediaAreaIn;
+    /** If set, returns only stories posted by this peer. */
+    peer?: Api.TypeEntityLike;
+    /** Offset for pagination : initially an empty string, then the next_offset from the previously returned stories.foundStories . */
+    offset: string;
+    /** Maximum number of results to return, see pagination */
+    limit: int;
+  }
+  export interface StoriesCreateAlbumParams {
+    /** The owned peer where to create the album. */
+    peer: Api.TypeEntityLike;
+    /** Album name. */
+    title: string;
+    /** Stories to add to the album. */
+    stories: int[];
+  }
+  export interface StoriesUpdateAlbumParams {
+    /** Peer where the album is posted. */
+    peer: Api.TypeEntityLike;
+    /** Album ID. */
+    albumId: int;
+    /** New album title. */
+    title?: string;
+    /** If set, deletes the specified stories from the album. */
+    deleteStories?: int[];
+    /** If set, adds the specified stories to the album. */
+    addStories?: int[];
+    /** If set, reorders the stories in the album by their IDs. */
+    order?: int[];
+  }
+  export interface StoriesReorderAlbumsParams {
+    /** Peer where the albums are located. */
+    peer: Api.TypeEntityLike;
+    /** New order of the albums. */
+    order: int[];
+  }
+  export interface StoriesDeleteAlbumParams {
+    /** Owned peer where the album is located. */
+    peer: Api.TypeEntityLike;
+    /** ID of the album to delete. */
+    albumId: int;
+  }
+  export interface StoriesGetAlbumsParams {
+    /** The peer. */
+    peer: Api.TypeEntityLike;
+    /** The hash from a previously returned stories.albums , to avoid returning any results if they haven't changed. */
+    hash: long;
+  }
+  export interface StoriesGetAlbumStoriesParams {
+    /** Peer where the album is posted. */
+    peer: Api.TypeEntityLike;
+    /** ID of the album. */
+    albumId: int;
+    /** Offset for pagination . */
+    offset: int;
+    /** Maximum number of results to return, see pagination */
+    limit: int;
+  }
+  export interface StoriesStartLiveParams {
+    pinned?: boolean;
+    noforwards?: boolean;
+    rtmpStream?: boolean;
+    peer: Api.TypeEntityLike;
+    caption?: string;
+    entities?: MessageEntityIn[];
+    privacyRules: InputPrivacyRuleIn[];
+    randomId?: long;
+    messagesEnabled?: Bool;
+    sendPaidMessagesStars?: long;
+  }
+  export interface PremiumGetBoostsListParams {
+    /** Whether to return only info about boosts received from gift codes and giveaways created by the channel/supergroup » */
+    gifts?: boolean;
+    /** The channel/supergroup */
+    peer: Api.TypeEntityLike;
+    /** Offset for pagination, obtained from premium.boostsList . next_offset */
+    offset: string;
+    /** Maximum number of results to return, see pagination */
+    limit: int;
+  }
+  export interface PremiumApplyBoostParams {
+    /** Which boost slots to assign to this peer. */
+    slots?: int[];
+    /** The peer to boost. */
+    peer: Api.TypeEntityLike;
+  }
+  export interface PremiumGetBoostsStatusParams {
+    /** The peer. */
+    peer: Api.TypeEntityLike;
+  }
+  export interface PremiumGetUserBoostsParams {
+    /** The channel/supergroup */
+    peer: Api.TypeEntityLike;
+    /** The user */
+    userId: Api.TypeEntityLike;
+  }
+  export interface SmsjobsUpdateSettingsParams {
+    /** Allow international numbers? */
+    allowInternational?: boolean;
+  }
+  export interface SmsjobsGetSmsJobParams {
+    /** Job ID */
+    jobId: string;
+  }
+  export interface SmsjobsFinishJobParams {
+    /** Job ID. */
+    jobId: string;
+    /** If failed, the error. */
+    error?: string;
+  }
+  export interface FragmentGetCollectibleInfoParams {
+    /** Collectible to fetch info about. */
+    collectible: InputCollectibleIn;
+  }
+  export interface AicomposeCreateToneParams {
+    displayAuthor?: boolean;
+    emojiId: long;
+    title: string;
+    prompt: string;
+  }
+  export interface AicomposeUpdateToneParams {
+    tone: InputAiComposeToneIn;
+    displayAuthor?: Bool;
+    emojiId?: long;
+    title?: string;
+    prompt?: string;
+  }
+  export interface AicomposeSaveToneParams {
+    tone: InputAiComposeToneIn;
+    unsave: Bool;
+  }
+  export interface AicomposeDeleteToneParams {
+    tone: InputAiComposeToneIn;
+  }
+  export interface AicomposeGetToneParams {
+    tone: InputAiComposeToneIn;
+  }
+  export interface AicomposeGetTonesParams {
+    hash: long;
+  }
+  export interface AicomposeGetToneExampleParams {
+    tone: InputAiComposeToneIn;
+    num: int;
+  }
+  export interface ReqPqParams {
+    nonce: int128;
+  }
+  export interface ReqPqMultiParams {
+    nonce: int128;
+  }
+  export interface ReqDHParamsParams {
+    nonce: int128;
+    serverNonce: int128;
+    p: bytes;
+    q: bytes;
+    publicKeyFingerprint: long;
+    encryptedData: bytes;
+  }
+  export interface SetClientDHParamsParams {
+    nonce: int128;
+    serverNonce: int128;
+    encryptedData: bytes;
+  }
+  export interface RpcDropAnswerParams {
+    reqMsgId: long;
+  }
+  export interface GetFutureSaltsParams {
+    num: int;
+  }
+  export interface PingParams {
+    pingId: long;
+  }
+  export interface PingDelayDisconnectParams {
+    pingId: long;
+    disconnectDelay: int;
+  }
+  export interface DestroySessionParams {
+    sessionId: long;
+  }
+
+  export type InitConnectionErrors = RpcErrors.ConnectionLayerInvalidError;
+  export type InvokeWithLayerErrors = RpcErrors.AuthBytesInvalidError | RpcErrors.CdnMethodInvalidError | RpcErrors.ConnectionApiIdInvalidError | RpcErrors.InviteHashExpiredError | RpcErrors.ChatWriteForbiddenError;
+  export type AuthSendCodeErrors = RpcErrors.ApiIdInvalidError | RpcErrors.ApiIdPublishedFloodError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PhoneNumberAppSignupForbiddenError | RpcErrors.PhoneNumberBannedError | RpcErrors.PhoneNumberFloodError | RpcErrors.PhoneNumberInvalidError | RpcErrors.PhonePasswordProtectedError | RpcErrors.SmsCodeCreateFailedError | RpcErrors.PhonePasswordFloodError | RpcErrors.UpdateAppToLoginError | RpcErrors.AuthRestartError;
+  export type AuthSignUpErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.FirstnameInvalidError | RpcErrors.LastnameInvalidError | RpcErrors.PhoneCodeEmptyError | RpcErrors.PhoneCodeExpiredError | RpcErrors.PhoneCodeInvalidError | RpcErrors.PhoneNumberFloodError | RpcErrors.PhoneNumberInvalidError | RpcErrors.PhoneNumberOccupiedError;
+  export type AuthSignInErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PhoneCodeEmptyError | RpcErrors.PhoneCodeExpiredError | RpcErrors.PhoneCodeInvalidError | RpcErrors.PhoneNumberInvalidError | RpcErrors.PhoneNumberUnoccupiedError | RpcErrors.UpdateAppToLoginError | RpcErrors.AuthRestartError | RpcErrors.SignInFailedError;
+  export type AuthResetAuthorizationsErrors = RpcErrors.AuthKeyUnregisteredError | RpcErrors.FreshResetAuthorisationForbiddenError;
+  export type AuthExportAuthorizationErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.DcIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type AuthImportAuthorizationErrors = RpcErrors.AuthBytesInvalidError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.UserIdInvalidError;
+  export type AuthBindTempAuthKeyErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.EncryptedMessageInvalidError | RpcErrors.ExpiresAtInvalidError | RpcErrors.TempAuthKeyAlreadyBoundError | RpcErrors.TempAuthKeyEmptyError;
+  export type AuthImportBotAuthorizationErrors = RpcErrors.AccessTokenExpiredError | RpcErrors.AccessTokenInvalidError | RpcErrors.ApiIdInvalidError | RpcErrors.ApiIdPublishedFloodError | RpcErrors.BusinessConnectionNotAllowedError;
+  export type AuthCheckPasswordErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PasswordHashInvalidError | RpcErrors.SrpIdInvalidError | RpcErrors.SrpPasswordChangedError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.AuthKeyUnsynchronizedError;
+  export type AuthRequestPasswordRecoveryErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PasswordEmptyError | RpcErrors.PasswordRecoveryNaError | RpcErrors.AuthKeyUnregisteredError;
+  export type AuthRecoverPasswordErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.CodeEmptyError | RpcErrors.NewSettingsInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type AuthResendCodeErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PhoneCodeEmptyError | RpcErrors.PhoneCodeExpiredError | RpcErrors.PhoneCodeHashEmptyError | RpcErrors.PhoneNumberInvalidError | RpcErrors.SendCodeUnavailableError;
+  export type AuthCancelCodeErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PhoneCodeExpiredError | RpcErrors.PhoneNumberInvalidError;
+  export type AuthExportLoginTokenErrors = RpcErrors.ApiIdInvalidError | RpcErrors.ApiIdPublishedFloodError | RpcErrors.BusinessConnectionNotAllowedError;
+  export type AuthImportLoginTokenErrors = RpcErrors.AuthTokenAlreadyAcceptedError | RpcErrors.AuthTokenExpiredError | RpcErrors.AuthTokenInvalidError | RpcErrors.AuthTokenInvalidxError | RpcErrors.BusinessConnectionNotAllowedError;
+  export type AuthAcceptLoginTokenErrors = RpcErrors.AuthTokenAlreadyAcceptedError | RpcErrors.AuthTokenExceptionError | RpcErrors.AuthTokenExpiredError | RpcErrors.AuthTokenInvalidxError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type AuthCheckRecoveryPasswordErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.CodeEmptyError | RpcErrors.PasswordRecoveryExpiredError | RpcErrors.AuthKeyUnregisteredError;
+  export type AuthImportWebTokenAuthorizationErrors = RpcErrors.ApiIdInvalidError | RpcErrors.BusinessConnectionNotAllowedError;
+  export type AuthRequestFirebaseSmsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PhoneCodeEmptyError | RpcErrors.PhoneNumberInvalidError;
+  export type AuthResetLoginEmailErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PhoneNumberInvalidError | RpcErrors.TaskAlreadyExistsError;
+  export type AuthReportMissingCodeErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PhoneNumberInvalidError;
+  export type AccountRegisterDeviceErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.TokenEmptyError | RpcErrors.TokenInvalidError | RpcErrors.TokenTypeInvalidError | RpcErrors.WebpushAuthInvalidError | RpcErrors.WebpushKeyInvalidError | RpcErrors.WebpushTokenInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountUnregisterDeviceErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.TokenInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountUpdateNotifySettingsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.MsgIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.SettingsInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountGetNotifySettingsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountResetNotifySettingsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountUpdateProfileErrors = RpcErrors.AboutTooLongError | RpcErrors.BusinessConnectionInvalidError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.FirstnameInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountUpdateStatusErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountGetWallPapersErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountReportPeerErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelPrivateError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountCheckUsernameErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.UsernameInvalidError | RpcErrors.UsernameOccupiedError | RpcErrors.UsernamePurchaseAvailableError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountUpdateUsernameErrors = RpcErrors.UsernameInvalidError | RpcErrors.UsernameNotModifiedError | RpcErrors.UsernameOccupiedError | RpcErrors.UsernamePurchaseAvailableError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountGetPrivacyErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PrivacyKeyInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountSetPrivacyErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PrivacyKeyInvalidError | RpcErrors.PrivacyTooLongError | RpcErrors.PrivacyValueInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountDeleteAccountErrors = RpcErrors.PasswordHashInvalidError | RpcErrors.TwoFaConfirmWaitError;
+  export type AccountGetAccountTTLErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountSetAccountTTLErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.TtlDaysInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountSendChangePhoneCodeErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PhoneNumberBannedError | RpcErrors.PhoneNumberInvalidError | RpcErrors.PhoneNumberOccupiedError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.FreshChangePhoneForbiddenError;
+  export type AccountChangePhoneErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PhoneCodeEmptyError | RpcErrors.PhoneCodeExpiredError | RpcErrors.PhoneNumberInvalidError | RpcErrors.PhoneNumberOccupiedError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountUpdateDeviceLockedErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountGetAuthorizationsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountResetAuthorizationErrors = RpcErrors.HashInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.FreshResetAuthorisationForbiddenError;
+  export type AccountGetPasswordErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountGetPasswordSettingsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PasswordHashInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountUpdatePasswordSettingsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.EmailInvalidError | RpcErrors.EmailUnconfirmedError | RpcErrors.NewSaltInvalidError | RpcErrors.NewSettingsEmptyError | RpcErrors.NewSettingsInvalidError | RpcErrors.PasswordHashInvalidError | RpcErrors.SrpIdInvalidError | RpcErrors.SrpPasswordChangedError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountSendConfirmPhoneCodeErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.HashInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountConfirmPhoneErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.CodeHashInvalidError | RpcErrors.PhoneCodeEmptyError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountGetTmpPasswordErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PasswordHashInvalidError | RpcErrors.SrpAInvalidError | RpcErrors.TmpPasswordDisabledError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountGetWebAuthorizationsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountResetWebAuthorizationErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.HashInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountResetWebAuthorizationsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountGetAllSecureValuesErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountGetSecureValueErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountSaveSecureValueErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PasswordRequiredError | RpcErrors.SecureSecretRequiredError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountDeleteSecureValueErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountGetAuthorizationFormErrors = RpcErrors.BotInvalidError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PublicKeyRequiredError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountAcceptAuthorizationErrors = RpcErrors.BotInvalidError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PublicKeyRequiredError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountSendVerifyPhoneCodeErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PhoneNumberInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountVerifyPhoneErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PhoneCodeEmptyError | RpcErrors.PhoneCodeExpiredError | RpcErrors.PhoneNumberInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountSendVerifyEmailCodeErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.EmailInvalidError | RpcErrors.EmailNotAllowedError | RpcErrors.EmailNotSetupError | RpcErrors.PhoneHashExpiredError | RpcErrors.PhoneNumberInvalidError;
+  export type AccountVerifyEmailErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.EmailInvalidError | RpcErrors.EmailNotAllowedError | RpcErrors.EmailVerifyExpiredError | RpcErrors.PhoneNumberInvalidError;
+  export type AccountInitTakeoutSessionErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.TakeoutInitDelayError;
+  export type AccountFinishTakeoutSessionErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.TakeoutRequiredError;
+  export type AccountConfirmPasswordEmailErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.CodeInvalidError | RpcErrors.EmailHashExpiredError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountResendPasswordEmailErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.EmailHashExpiredError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountCancelPasswordEmailErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.EmailHashExpiredError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountGetContactSignUpNotificationErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountSetContactSignUpNotificationErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountGetNotifyExceptionsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountGetWallPaperErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.WallpaperInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountUploadWallPaperErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.WallpaperFileInvalidError | RpcErrors.WallpaperMimeInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountSaveWallPaperErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.WallpaperInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountInstallWallPaperErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.WallpaperInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountResetWallPapersErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountGetAutoDownloadSettingsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountSaveAutoDownloadSettingsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountUploadThemeErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ThemeFileInvalidError | RpcErrors.ThemeMimeInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountCreateThemeErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ThemeMimeInvalidError | RpcErrors.ThemeTitleInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountUpdateThemeErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ThemeInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountSaveThemeErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ThemeInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountInstallThemeErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountGetThemeErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ThemeFormatInvalidError | RpcErrors.ThemeInvalidError | RpcErrors.ThemeSlugInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountGetThemesErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountSetContentSettingsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.SensitiveChangeForbiddenError;
+  export type AccountGetContentSettingsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountGetMultiWallPapersErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.WallpaperInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountGetGlobalPrivacySettingsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountSetGlobalPrivacySettingsErrors = RpcErrors.AutoarchiveNotAvailableError | RpcErrors.BusinessConnectionInvalidError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.BotAccessForbiddenError | RpcErrors.PremiumAccountRequiredError;
+  export type AccountReportProfilePhotoErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountResetPasswordErrors = RpcErrors.PasswordEmptyError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountDeclinePasswordResetErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ResetRequestMissingError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountGetChatThemesErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountSetAuthorizationTTLErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.TtlDaysInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.FreshResetAuthorisationForbiddenError;
+  export type AccountChangeAuthorizationSettingsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.HashInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountGetSavedRingtonesErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountSaveRingtoneErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.RingtoneInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountUploadRingtoneErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.RingtoneMimeInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountUpdateEmojiStatusErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.CollectibleInvalidError | RpcErrors.DocumentInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountGetDefaultEmojiStatusesErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountGetRecentEmojiStatusesErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountClearRecentEmojiStatusesErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountReorderUsernamesErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.OrderInvalidError | RpcErrors.UsernameNotModifiedError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountToggleUsernameErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.UsernameInvalidError | RpcErrors.UsernameNotModifiedError | RpcErrors.UsernamesActiveTooMuchError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountGetDefaultProfilePhotoEmojisErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountGetDefaultGroupPhotoEmojisErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountGetAutoSaveSettingsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountSaveAutoSaveSettingsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountDeleteAutoSaveExceptionsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountInvalidateSignInCodesErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountUpdateColorErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ColorInvalidError | RpcErrors.DocumentInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.PremiumAccountRequiredError;
+  export type AccountGetDefaultBackgroundEmojisErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountGetChannelDefaultEmojiStatusesErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountGetChannelRestrictedStatusEmojisErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountUpdateBusinessWorkHoursErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.BusinessWorkHoursEmptyError | RpcErrors.BusinessWorkHoursPeriodInvalidError | RpcErrors.TimezoneInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountUpdateBusinessLocationErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountUpdateBusinessGreetingMessageErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountUpdateBusinessAwayMessageErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountUpdateConnectedBotErrors = RpcErrors.BotBusinessMissingError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.BusinessRecipientsEmptyError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.PremiumAccountRequiredError;
+  export type AccountGetConnectedBotsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountGetBotBusinessConnectionErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ConnectionIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountUpdateBusinessIntroErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountToggleConnectedBotPausedErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountDisablePeerConnectedBotErrors = RpcErrors.BotAlreadyDisabledError | RpcErrors.BotNotConnectedYetError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountUpdateBirthdayErrors = RpcErrors.BirthdayInvalidError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountCreateBusinessChatLinkErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChatlinksTooMuchError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.PremiumAccountRequiredError;
+  export type AccountEditBusinessChatLinkErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChatlinkSlugEmptyError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.PremiumAccountRequiredError;
+  export type AccountDeleteBusinessChatLinkErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChatlinkSlugEmptyError | RpcErrors.ChatlinkSlugExpiredError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountGetBusinessChatLinksErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountResolveBusinessChatLinkErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChatlinkSlugEmptyError | RpcErrors.ChatlinkSlugExpiredError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountUpdatePersonalChannelErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountToggleSponsoredMessagesErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountGetReactionsNotifySettingsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountSetReactionsNotifySettingsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountGetCollectibleEmojiStatusesErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountGetPaidMessagesRevenueErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ParentPeerInvalidError | RpcErrors.UserIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountToggleNoPaidMessagesExceptionErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ParentPeerInvalidError | RpcErrors.UnsupportedError | RpcErrors.UserIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountSetMainProfileTabErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountSaveMusicErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.DocumentInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountGetSavedMusicIdsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountGetUniqueGiftChatThemesErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type UsersGetUsersErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.FromMessageBotDisabledError | RpcErrors.MsgIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.UserBannedInChannelError | RpcErrors.AuthKeyUnregisteredError;
+  export type UsersGetFullUserErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.MsgIdInvalidError | RpcErrors.UserIdInvalidError | RpcErrors.UsernameOccupiedError | RpcErrors.AuthKeyUnregisteredError;
+  export type UsersSetSecureValueErrorsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.DataHashSizeInvalidError | RpcErrors.HashSizeInvalidError | RpcErrors.UserBotRequiredError | RpcErrors.UserIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type UsersGetRequirementsToContactErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type UsersGetSavedMusicErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.UserIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type UsersGetSavedMusicByIDErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.UserIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type ContactsGetContactIDsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type ContactsGetStatusesErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type ContactsGetContactsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type ContactsImportContactsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type ContactsDeleteContactsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.MsgIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type ContactsDeleteByPhonesErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type ContactsBlockErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelPrivateError | RpcErrors.ContactIdInvalidError | RpcErrors.InputUserDeactivatedError | RpcErrors.MsgIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type ContactsUnblockErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelPrivateError | RpcErrors.ContactIdInvalidError | RpcErrors.MsgIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type ContactsGetBlockedErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type ContactsSearchErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.QueryTooShortError | RpcErrors.SearchQueryEmptyError | RpcErrors.AuthKeyUnregisteredError;
+  export type ContactsResolveUsernameErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ConnectionLayerInvalidError | RpcErrors.StarrefExpiredError | RpcErrors.UsernameInvalidError | RpcErrors.UsernameNotOccupiedError | RpcErrors.AuthKeyUnregisteredError;
+  export type ContactsGetTopPeersErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.TypesEmptyError | RpcErrors.AuthKeyUnregisteredError;
+  export type ContactsResetTopPeerRatingErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type ContactsResetSavedErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type ContactsGetSavedErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.TakeoutInvalidError | RpcErrors.TakeoutRequiredError | RpcErrors.AuthKeyUnregisteredError;
+  export type ContactsToggleTopPeersErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type ContactsAddContactErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelPrivateError | RpcErrors.ContactIdInvalidError | RpcErrors.ContactNameEmptyError | RpcErrors.MsgIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type ContactsAcceptContactErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ContactAddMissingError | RpcErrors.ContactIdInvalidError | RpcErrors.ContactReqMissingError | RpcErrors.MsgIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type ContactsGetLocatedErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.GeoPointInvalidError | RpcErrors.UserpicUploadRequiredError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.BusinessAddressActiveError | RpcErrors.UserpicPrivacyRequiredError;
+  export type ContactsBlockFromRepliesErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.MsgIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type ContactsResolvePhoneErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PhoneNotOccupiedError | RpcErrors.AuthKeyUnregisteredError;
+  export type ContactsExportContactTokenErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type ContactsImportContactTokenErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ImportTokenInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type ContactsEditCloseFriendsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type ContactsSetBlockedErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type ContactsGetBirthdaysErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type ContactsGetSponsoredPeersErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.SearchQueryEmptyError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesGetMessagesErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesGetDialogsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChatNotModifiedError | RpcErrors.FolderIdInvalidError | RpcErrors.OffsetPeerIdInvalidError | RpcErrors.PinnedDialogsTooMuchError | RpcErrors.TakeoutInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.ChatWriteForbiddenError;
+  export type MessagesGetHistoryErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.ChatIdInvalidError | RpcErrors.ChatNotModifiedError | RpcErrors.FrozenParticipantMissingError | RpcErrors.MsgIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.TakeoutInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesSearchErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.ChatAdminRequiredError | RpcErrors.ChatIdInvalidError | RpcErrors.FromPeerInvalidError | RpcErrors.InputFilterInvalidError | RpcErrors.InputUserDeactivatedError | RpcErrors.MsgIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.PeerIdNotSupportedError | RpcErrors.SearchQueryEmptyError | RpcErrors.TakeoutInvalidError | RpcErrors.UserIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesReadHistoryErrors = RpcErrors.BusinessConnectionInvalidError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelPrivateError | RpcErrors.ChatIdInvalidError | RpcErrors.MsgIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesDeleteHistoryErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelPrivateError | RpcErrors.ChatAdminRequiredError | RpcErrors.ChatIdInvalidError | RpcErrors.ChatRevokeDateUnsupportedError | RpcErrors.MaxDateInvalidError | RpcErrors.MessageIdInvalidError | RpcErrors.MinDateInvalidError | RpcErrors.MsgIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesDeleteMessagesErrors = RpcErrors.BusinessConnectionInvalidError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.MessageIdInvalidError | RpcErrors.SelfDeleteRestrictedError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.BotAccessForbiddenError | RpcErrors.MessageDeleteForbiddenError;
+  export type MessagesReceivedMessagesErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesSetTypingErrors = RpcErrors.BusinessConnectionInvalidError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.BusinessPeerInvalidError | RpcErrors.BusinessPeerUsageMissingError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.ChatAdminRequiredError | RpcErrors.ChatIdInvalidError | RpcErrors.InputUserDeactivatedError | RpcErrors.MsgIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.UserBannedInChannelError | RpcErrors.UserIsBlockedError | RpcErrors.UserIsBotError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.ChatWriteForbiddenError | RpcErrors.GroupcallForbiddenError;
+  export type MessagesSendMessageErrors = RpcErrors.AdminRightsEmptyError | RpcErrors.BalanceTooLowError | RpcErrors.BotDomainInvalidError | RpcErrors.BotInvalidError | RpcErrors.BusinessConnectionInvalidError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.BusinessPeerInvalidError | RpcErrors.BusinessPeerUsageMissingError | RpcErrors.ButtonCopyTextInvalidError | RpcErrors.ButtonDataInvalidError | RpcErrors.ButtonIdInvalidError | RpcErrors.ButtonTypeInvalidError | RpcErrors.ButtonUrlInvalidError | RpcErrors.ButtonUserInvalidError | RpcErrors.ButtonUserPrivacyRestrictedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelMonoforumUnsupportedError | RpcErrors.ChannelPrivateError | RpcErrors.ChatAdminRequiredError | RpcErrors.ChatForwardsRestrictedError | RpcErrors.ChatIdInvalidError | RpcErrors.ChatRestrictedError | RpcErrors.DocumentInvalidError | RpcErrors.EncryptionDeclinedError | RpcErrors.EntitiesTooLongError | RpcErrors.EntityBoundsInvalidError | RpcErrors.EntityMentionUserInvalidError | RpcErrors.FromMessageBotDisabledError | RpcErrors.InputUserDeactivatedError | RpcErrors.MessageEmptyError | RpcErrors.MessageTooLongError | RpcErrors.MsgIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.PeerTypesInvalidError | RpcErrors.PinnedDialogsTooMuchError | RpcErrors.PollOptionInvalidError | RpcErrors.QuickRepliesBotNotAllowedError | RpcErrors.QuickRepliesTooMuchError | RpcErrors.QuoteTextInvalidError | RpcErrors.ReplyMarkupInvalidError | RpcErrors.ReplyMarkupTooLongError | RpcErrors.ReplyMessageIdInvalidError | RpcErrors.ReplyMessagesTooMuchError | RpcErrors.ReplyToInvalidError | RpcErrors.ReplyToMonoforumPeerInvalidError | RpcErrors.ReplyToUserInvalidError | RpcErrors.ScheduleBotNotAllowedError | RpcErrors.ScheduleDateTooLateError | RpcErrors.ScheduleStatusPrivateError | RpcErrors.ScheduleTooMuchError | RpcErrors.SendAsPeerInvalidError | RpcErrors.StoriesNeverCreatedError | RpcErrors.StoryIdInvalidError | RpcErrors.SuggestedPostAmountInvalidError | RpcErrors.SuggestedPostPeerInvalidError | RpcErrors.TopicClosedError | RpcErrors.TopicDeletedError | RpcErrors.UserBannedInChannelError | RpcErrors.UserIsBlockedError | RpcErrors.UserIsBotError | RpcErrors.WcConvertUrlInvalidError | RpcErrors.YouBlockedUserError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.AllowPaymentRequiredError | RpcErrors.ChatGuestSendForbiddenError | RpcErrors.ChatSendPlainForbiddenError | RpcErrors.ChatWriteForbiddenError | RpcErrors.PremiumAccountRequiredError | RpcErrors.PrivacyPremiumRequiredError | RpcErrors.PaymentUnsupportedError | RpcErrors.SlowModeWaitError | RpcErrors.MsgWaitError | RpcErrors.RandomIdDuplicateError;
+  export type MessagesSendMediaErrors = RpcErrors.BotGamesDisabledError | RpcErrors.BotPaymentsDisabledError | RpcErrors.BroadcastPublicVotersForbiddenError | RpcErrors.BusinessConnectionInvalidError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.BusinessPeerInvalidError | RpcErrors.ButtonCopyTextInvalidError | RpcErrors.ButtonDataInvalidError | RpcErrors.ButtonPosInvalidError | RpcErrors.ButtonTypeInvalidError | RpcErrors.ButtonUrlInvalidError | RpcErrors.ButtonUserPrivacyRestrictedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.ChatAdminRequiredError | RpcErrors.ChatForwardsRestrictedError | RpcErrors.ChatRestrictedError | RpcErrors.CurrencyTotalAmountInvalidError | RpcErrors.DocumentInvalidError | RpcErrors.EffectIdInvalidError | RpcErrors.EmoticonInvalidError | RpcErrors.EntityBoundsInvalidError | RpcErrors.ExtendedMediaAmountInvalidError | RpcErrors.ExtendedMediaInvalidError | RpcErrors.ExternalUrlInvalidError | RpcErrors.FilePartLengthInvalidError | RpcErrors.FilePartsInvalidError | RpcErrors.FileReferenceEmptyError | RpcErrors.FileReferenceExpiredError | RpcErrors.GameBotInvalidError | RpcErrors.ImageProcessFailedError | RpcErrors.InputFileInvalidError | RpcErrors.InputUserDeactivatedError | RpcErrors.InvoicePayloadInvalidError | RpcErrors.Md5ChecksumInvalidError | RpcErrors.MediaCaptionTooLongError | RpcErrors.MediaEmptyError | RpcErrors.MediaInvalidError | RpcErrors.MessageEmptyError | RpcErrors.MsgIdInvalidError | RpcErrors.PaymentProviderInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.PhotoExtInvalidError | RpcErrors.PhotoInvalidDimensionsError | RpcErrors.PhotoSaveFileInvalidError | RpcErrors.PollAnswerInvalidError | RpcErrors.PollAnswersInvalidError | RpcErrors.PollOptionDuplicateError | RpcErrors.PollOptionInvalidError | RpcErrors.PollQuestionInvalidError | RpcErrors.QuickRepliesBotNotAllowedError | RpcErrors.QuickRepliesTooMuchError | RpcErrors.QuizCorrectAnswerInvalidError | RpcErrors.QuizCorrectAnswersEmptyError | RpcErrors.QuizCorrectAnswersTooMuchError | RpcErrors.QuizMultipleInvalidError | RpcErrors.ReplyMarkupBuyEmptyError | RpcErrors.ReplyMarkupGameEmptyError | RpcErrors.ReplyMarkupInvalidError | RpcErrors.ReplyMarkupTooLongError | RpcErrors.ReplyMessageIdInvalidError | RpcErrors.ReplyMessagesTooMuchError | RpcErrors.ScheduleBotNotAllowedError | RpcErrors.ScheduleDateTooLateError | RpcErrors.ScheduleTooMuchError | RpcErrors.SendAsPeerInvalidError | RpcErrors.StarsInvoiceInvalidError | RpcErrors.StoryIdInvalidError | RpcErrors.SubscriptionExportMissingError | RpcErrors.SuggestedPostPeerInvalidError | RpcErrors.TermsUrlInvalidError | RpcErrors.TodoItemDuplicateError | RpcErrors.TodoItemsEmptyError | RpcErrors.TopicClosedError | RpcErrors.TopicDeletedError | RpcErrors.TtlMediaInvalidError | RpcErrors.UserBannedInChannelError | RpcErrors.UserIsBlockedError | RpcErrors.UserIsBotError | RpcErrors.VideoContentTypeInvalidError | RpcErrors.VoiceMessagesForbiddenError | RpcErrors.WebdocumentMimeInvalidError | RpcErrors.WebpageCurlFailedError | RpcErrors.WebpageMediaEmptyError | RpcErrors.WebpageNotFoundError | RpcErrors.WebpageUrlInvalidError | RpcErrors.YouBlockedUserError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.AllowPaymentRequiredError | RpcErrors.ChatGuestSendForbiddenError | RpcErrors.ChatSendAudiosForbiddenError | RpcErrors.ChatSendDocsForbiddenError | RpcErrors.ChatSendGifsForbiddenError | RpcErrors.ChatSendMediaForbiddenError | RpcErrors.ChatSendPhotosForbiddenError | RpcErrors.ChatSendPlainForbiddenError | RpcErrors.ChatSendPollForbiddenError | RpcErrors.ChatSendRoundvideosForbiddenError | RpcErrors.ChatSendStickersForbiddenError | RpcErrors.ChatSendVideosForbiddenError | RpcErrors.ChatSendVoicesForbiddenError | RpcErrors.ChatWriteForbiddenError | RpcErrors.PremiumAccountRequiredError | RpcErrors.PrivacyPremiumRequiredError | RpcErrors.SlowModeWaitError | RpcErrors.RandomIdDuplicateError;
+  export type MessagesForwardMessagesErrors = RpcErrors.BroadcastPublicVotersForbiddenError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.ChatAdminRequiredError | RpcErrors.ChatForwardsRestrictedError | RpcErrors.ChatIdInvalidError | RpcErrors.ChatRestrictedError | RpcErrors.GroupedMediaInvalidError | RpcErrors.InputUserDeactivatedError | RpcErrors.MediaEmptyError | RpcErrors.MessageIdInvalidError | RpcErrors.MessageIdsEmptyError | RpcErrors.MsgIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.QuickRepliesBotNotAllowedError | RpcErrors.QuickRepliesTooMuchError | RpcErrors.QuizAnswerMissingError | RpcErrors.RandomIdInvalidError | RpcErrors.ReplyMessagesTooMuchError | RpcErrors.ReplyToMonoforumPeerInvalidError | RpcErrors.ScheduleBotNotAllowedError | RpcErrors.ScheduleDateTooLateError | RpcErrors.ScheduleTooMuchError | RpcErrors.SendAsPeerInvalidError | RpcErrors.SlowmodeMultiMsgsDisabledError | RpcErrors.SuggestedPostPeerInvalidError | RpcErrors.TopicClosedError | RpcErrors.TopicDeletedError | RpcErrors.UserBannedInChannelError | RpcErrors.UserIsBlockedError | RpcErrors.UserIsBotError | RpcErrors.YouBlockedUserError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.AllowPaymentRequiredError | RpcErrors.ChatGuestSendForbiddenError | RpcErrors.ChatSendAudiosForbiddenError | RpcErrors.ChatSendDocsForbiddenError | RpcErrors.ChatSendGameForbiddenError | RpcErrors.ChatSendGifsForbiddenError | RpcErrors.ChatSendInlineForbiddenError | RpcErrors.ChatSendMediaForbiddenError | RpcErrors.ChatSendPhotosForbiddenError | RpcErrors.ChatSendPlainForbiddenError | RpcErrors.ChatSendPollForbiddenError | RpcErrors.ChatSendStickersForbiddenError | RpcErrors.ChatSendVideosForbiddenError | RpcErrors.ChatSendVoicesForbiddenError | RpcErrors.ChatSendWebpageForbiddenError | RpcErrors.ChatWriteForbiddenError | RpcErrors.PremiumAccountRequiredError | RpcErrors.PrivacyPremiumRequiredError | RpcErrors.VoiceMessagesForbiddenError | RpcErrors.PaymentUnsupportedError | RpcErrors.SlowModeWaitError | RpcErrors.RandomIdDuplicateError;
+  export type MessagesReportSpamErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelPrivateError | RpcErrors.MsgIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesGetPeerSettingsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelMonoforumUnsupportedError | RpcErrors.ChannelPrivateError | RpcErrors.MsgIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesReportErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.OptionInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesGetChatsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChatIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesGetFullChatErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChatIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesEditChatTitleErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChatAdminRequiredError | RpcErrors.ChatIdInvalidError | RpcErrors.ChatNotModifiedError | RpcErrors.ChatTitleEmptyError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesEditChatPhotoErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChatIdInvalidError | RpcErrors.ChatNotModifiedError | RpcErrors.ImageProcessFailedError | RpcErrors.PeerIdInvalidError | RpcErrors.PhotoCropSizeSmallError | RpcErrors.PhotoExtInvalidError | RpcErrors.PhotoInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesAddChatUserErrors = RpcErrors.BotGroupsBlockedError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChatAdminRequiredError | RpcErrors.ChatIdInvalidError | RpcErrors.ChatInvalidError | RpcErrors.ChatMemberAddFailedError | RpcErrors.InputUserDeactivatedError | RpcErrors.MsgIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.UserAlreadyParticipantError | RpcErrors.UserIdInvalidError | RpcErrors.UserIsBlockedError | RpcErrors.UserNotMutualContactError | RpcErrors.UsersTooMuchError | RpcErrors.YouBlockedUserError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.ChatWriteForbiddenError | RpcErrors.UserPrivacyRestrictedError;
+  export type MessagesDeleteChatUserErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChatAdminRequiredError | RpcErrors.ChatIdInvalidError | RpcErrors.InputUserDeactivatedError | RpcErrors.PeerIdInvalidError | RpcErrors.UserIdInvalidError | RpcErrors.UserNotParticipantError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesCreateChatErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChatInvalidError | RpcErrors.ChatMemberAddFailedError | RpcErrors.ChatTitleEmptyError | RpcErrors.InputUserDeactivatedError | RpcErrors.TtlPeriodInvalidError | RpcErrors.UsersTooFewError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.UserRestrictedError | RpcErrors.ChatIdGenerateFailedError;
+  export type MessagesGetDhConfigErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.RandomLengthInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesRequestEncryptionErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.DhGAInvalidError | RpcErrors.InputUserDeactivatedError | RpcErrors.UserIdInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.UserIsBlockedError;
+  export type MessagesAcceptEncryptionErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChatIdInvalidError | RpcErrors.EncryptionAlreadyAcceptedError | RpcErrors.EncryptionAlreadyDeclinedError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesDiscardEncryptionErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChatIdEmptyError | RpcErrors.EncryptionAlreadyAcceptedError | RpcErrors.EncryptionAlreadyDeclinedError | RpcErrors.EncryptionIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesSetEncryptedTypingErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChatIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesReadEncryptedHistoryErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChatIdInvalidError | RpcErrors.MaxDateInvalidError | RpcErrors.MsgWaitError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesSendEncryptedErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChatIdInvalidError | RpcErrors.DataInvalidError | RpcErrors.DataTooLongError | RpcErrors.EncryptionDeclinedError | RpcErrors.MsgWaitError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.UserIsBlockedError;
+  export type MessagesSendEncryptedFileErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChatIdInvalidError | RpcErrors.DataTooLongError | RpcErrors.EncryptionDeclinedError | RpcErrors.FileEmtpyError | RpcErrors.Md5ChecksumInvalidError | RpcErrors.MsgWaitError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesSendEncryptedServiceErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChatIdInvalidError | RpcErrors.DataInvalidError | RpcErrors.EncryptionDeclinedError | RpcErrors.EncryptionIdInvalidError | RpcErrors.MsgWaitError | RpcErrors.UserIsBlockedError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.UserDeletedError;
+  export type MessagesReceivedQueueErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.MaxQtsInvalidError | RpcErrors.MsgWaitError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesReportEncryptedSpamErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChatIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesReadMessageContentsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesGetStickersErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.EmoticonEmptyError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesGetAllStickersErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesGetWebPagePreviewErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.EntityBoundsInvalidError | RpcErrors.MessageEmptyError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesExportChatInviteErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelMonoforumUnsupportedError | RpcErrors.ChannelPrivateError | RpcErrors.ChatAdminRequiredError | RpcErrors.ChatIdInvalidError | RpcErrors.ExpireDateInvalidError | RpcErrors.MsgIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.PricingChatInvalidError | RpcErrors.SubscriptionPeriodInvalidError | RpcErrors.UsageLimitInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.ChatWriteForbiddenError;
+  export type MessagesCheckChatInviteErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.InviteHashEmptyError | RpcErrors.InviteHashExpiredError | RpcErrors.InviteHashInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.ChannelPrivateError;
+  export type MessagesImportChatInviteErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.ChannelsTooMuchError | RpcErrors.ChatInvalidError | RpcErrors.InviteHashEmptyError | RpcErrors.InviteHashExpiredError | RpcErrors.InviteHashInvalidError | RpcErrors.InviteRequestSentError | RpcErrors.MsgIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.StarsPaymentRequiredError | RpcErrors.UserAlreadyParticipantError | RpcErrors.UserChannelsTooMuchError | RpcErrors.UsersTooMuchError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesGetStickerSetErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.EmoticonStickerpackMissingError | RpcErrors.StickersetInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesInstallStickerSetErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.StickersetInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesUninstallStickerSetErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.StickersetInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesStartBotErrors = RpcErrors.BotInvalidError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChatAdminRequiredError | RpcErrors.InputUserDeactivatedError | RpcErrors.MsgIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.StartParamEmptyError | RpcErrors.StartParamInvalidError | RpcErrors.StartParamTooLongError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.ChatWriteForbiddenError | RpcErrors.RandomIdDuplicateError;
+  export type MessagesGetMessagesViewsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.ChatIdInvalidError | RpcErrors.ChatNotModifiedError | RpcErrors.MsgIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesEditChatAdminErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChatIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.UserIdInvalidError | RpcErrors.UserNotParticipantError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesMigrateChatErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelsTooMuchError | RpcErrors.ChatAdminRequiredError | RpcErrors.ChatIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.ChatInvalidError;
+  export type MessagesSearchGlobalErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.FolderIdInvalidError | RpcErrors.InputFilterInvalidError | RpcErrors.SearchQueryEmptyError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesReorderStickerSetsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesGetDocumentByHashErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.Sha256HashInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesGetSavedGifsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesSaveGifErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.GifIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesGetInlineBotResultsErrors = RpcErrors.BotInlineDisabledError | RpcErrors.BotInvalidError | RpcErrors.BotResponseTimeoutError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.InputUserDeactivatedError | RpcErrors.MsgIdInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.TimeoutError;
+  export type MessagesSetInlineBotResultsErrors = RpcErrors.ArticleTitleEmptyError | RpcErrors.AudioContentUrlEmptyError | RpcErrors.AudioTitleEmptyError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ButtonDataInvalidError | RpcErrors.ButtonTypeInvalidError | RpcErrors.ButtonUrlInvalidError | RpcErrors.DocumentInvalidError | RpcErrors.FileContentTypeInvalidError | RpcErrors.FileTitleEmptyError | RpcErrors.GifContentTypeInvalidError | RpcErrors.MessageEmptyError | RpcErrors.MessageTooLongError | RpcErrors.NextOffsetInvalidError | RpcErrors.PeerTypesInvalidError | RpcErrors.PhotoContentTypeInvalidError | RpcErrors.PhotoContentUrlEmptyError | RpcErrors.PhotoInvalidError | RpcErrors.PhotoThumbUrlEmptyError | RpcErrors.QueryIdInvalidError | RpcErrors.ReplyMarkupInvalidError | RpcErrors.ResultIdDuplicateError | RpcErrors.ResultIdInvalidError | RpcErrors.ResultTypeInvalidError | RpcErrors.ResultsTooMuchError | RpcErrors.SendMessageMediaInvalidError | RpcErrors.SendMessageTypeInvalidError | RpcErrors.StartParamEmptyError | RpcErrors.StartParamInvalidError | RpcErrors.StickerDocumentInvalidError | RpcErrors.SwitchPmTextEmptyError | RpcErrors.SwitchWebviewUrlInvalidError | RpcErrors.UrlInvalidError | RpcErrors.UserBotRequiredError | RpcErrors.VideoContentTypeInvalidError | RpcErrors.VideoTitleEmptyError | RpcErrors.WebdocumentInvalidError | RpcErrors.WebdocumentMimeInvalidError | RpcErrors.WebdocumentSizeTooBigError | RpcErrors.WebdocumentUrlEmptyError | RpcErrors.WebdocumentUrlInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesSendInlineBotResultErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.ChatAdminRequiredError | RpcErrors.ChatRestrictedError | RpcErrors.ChatSendInlineForbiddenError | RpcErrors.EntityBoundsInvalidError | RpcErrors.InlineResultExpiredError | RpcErrors.InputUserDeactivatedError | RpcErrors.MediaEmptyError | RpcErrors.MsgIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.QueryIdEmptyError | RpcErrors.QuickRepliesTooMuchError | RpcErrors.ReplyMessagesTooMuchError | RpcErrors.ResultIdEmptyError | RpcErrors.ResultIdInvalidError | RpcErrors.ScheduleDateTooLateError | RpcErrors.ScheduleTooMuchError | RpcErrors.SendAsPeerInvalidError | RpcErrors.TopicDeletedError | RpcErrors.UserBannedInChannelError | RpcErrors.VoiceMessagesForbiddenError | RpcErrors.WebpageCurlFailedError | RpcErrors.WebpageMediaEmptyError | RpcErrors.YouBlockedUserError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.AllowPaymentRequiredError | RpcErrors.ChatGuestSendForbiddenError | RpcErrors.ChatSendAudiosForbiddenError | RpcErrors.ChatSendGameForbiddenError | RpcErrors.ChatSendGifsForbiddenError | RpcErrors.ChatSendMediaForbiddenError | RpcErrors.ChatSendPhotosForbiddenError | RpcErrors.ChatSendPlainForbiddenError | RpcErrors.ChatSendStickersForbiddenError | RpcErrors.ChatSendVoicesForbiddenError | RpcErrors.ChatWriteForbiddenError | RpcErrors.PrivacyPremiumRequiredError | RpcErrors.SlowModeWaitError | RpcErrors.RandomIdDuplicateError | RpcErrors.SendMediaInvalidError;
+  export type MessagesGetMessageEditDataErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChatAdminRequiredError | RpcErrors.MessageIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.ChatWriteForbiddenError | RpcErrors.MessageAuthorRequiredError;
+  export type MessagesEditMessageErrors = RpcErrors.BotDomainInvalidError | RpcErrors.BotInvalidError | RpcErrors.BusinessConnectionInvalidError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.BusinessPeerInvalidError | RpcErrors.ButtonCopyTextInvalidError | RpcErrors.ButtonDataInvalidError | RpcErrors.ButtonTypeInvalidError | RpcErrors.ButtonUrlInvalidError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.ChatAdminRequiredError | RpcErrors.ChatForwardsRestrictedError | RpcErrors.DocumentInvalidError | RpcErrors.EntitiesTooLongError | RpcErrors.EntityBoundsInvalidError | RpcErrors.FilePartsInvalidError | RpcErrors.ImageProcessFailedError | RpcErrors.InputUserDeactivatedError | RpcErrors.MediaCaptionTooLongError | RpcErrors.MediaEmptyError | RpcErrors.MediaGroupedInvalidError | RpcErrors.MediaInvalidError | RpcErrors.MediaNewInvalidError | RpcErrors.MediaPrevInvalidError | RpcErrors.MediaTtlInvalidError | RpcErrors.MessageEditTimeExpiredError | RpcErrors.MessageEmptyError | RpcErrors.MessageIdInvalidError | RpcErrors.MessageNotModifiedError | RpcErrors.MessageTooLongError | RpcErrors.MsgIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.PeerTypesInvalidError | RpcErrors.PhotoInvalidDimensionsError | RpcErrors.PhotoSaveFileInvalidError | RpcErrors.ReplyMarkupInvalidError | RpcErrors.ReplyMarkupTooLongError | RpcErrors.ScheduleDateInvalidError | RpcErrors.TodoItemDuplicateError | RpcErrors.TodoItemsEmptyError | RpcErrors.UserBannedInChannelError | RpcErrors.WebpageNotFoundError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.ChatSendGifsForbiddenError | RpcErrors.ChatWriteForbiddenError | RpcErrors.InlineBotRequiredError | RpcErrors.MessageAuthorRequiredError | RpcErrors.MsgWaitError;
+  export type MessagesEditInlineBotMessageErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ButtonDataInvalidError | RpcErrors.EntityBoundsInvalidError | RpcErrors.MessageIdInvalidError | RpcErrors.MessageNotModifiedError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesGetBotCallbackAnswerErrors = RpcErrors.BotResponseTimeoutError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.DataInvalidError | RpcErrors.MessageIdInvalidError | RpcErrors.PasswordMissingError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.TimeoutError;
+  export type MessagesSetBotCallbackAnswerErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.MessageTooLongError | RpcErrors.QueryIdInvalidError | RpcErrors.UrlInvalidError | RpcErrors.UserBotRequiredError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesGetPeerDialogsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.FrozenParticipantMissingError | RpcErrors.InputPeersEmptyError | RpcErrors.MsgIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesSaveDraftErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.EntityBoundsInvalidError | RpcErrors.InputUserDeactivatedError | RpcErrors.MsgIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesGetAllDraftsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesGetFeaturedStickersErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesReadFeaturedStickersErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesGetRecentStickersErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesSaveRecentStickerErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.StickerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesClearRecentStickersErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesGetArchivedStickersErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesGetMaskStickersErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesGetAttachedStickersErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.MediaEmptyError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesSetGameScoreErrors = RpcErrors.BotScoreNotModifiedError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.MessageIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.ScoreInvalidError | RpcErrors.UserBotRequiredError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesSetInlineGameScoreErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.MessageIdInvalidError | RpcErrors.UserBotRequiredError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesGetGameHighScoresErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.MessageIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.UserBotRequiredError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesGetInlineGameHighScoresErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.MessageIdInvalidError | RpcErrors.UserBotRequiredError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesGetCommonChatsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.MsgIdInvalidError | RpcErrors.UserIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesGetWebPageErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.WcConvertUrlInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesToggleDialogPinErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelPrivateError | RpcErrors.PeerHistoryEmptyError | RpcErrors.PeerIdInvalidError | RpcErrors.PinnedDialogsTooMuchError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesReorderPinnedDialogsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesGetPinnedDialogsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.FolderIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesSetBotShippingResultsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.QueryIdInvalidError | RpcErrors.UserBotRequiredError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesSetBotPrecheckoutResultsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ErrorTextEmptyError | RpcErrors.UserBotRequiredError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesUploadMediaErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.ChatAdminRequiredError | RpcErrors.ChatIdInvalidError | RpcErrors.ChatRestrictedError | RpcErrors.FilePartLengthInvalidError | RpcErrors.FilePartsInvalidError | RpcErrors.ImageProcessFailedError | RpcErrors.InputUserDeactivatedError | RpcErrors.MediaInvalidError | RpcErrors.MsgIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.PhotoExtInvalidError | RpcErrors.PhotoInvalidDimensionsError | RpcErrors.PhotoSaveFileInvalidError | RpcErrors.UserBannedInChannelError | RpcErrors.VoiceMessagesForbiddenError | RpcErrors.WebpageCurlFailedError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.ChatWriteForbiddenError;
+  export type MessagesSendScreenshotNotificationErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.InputUserDeactivatedError | RpcErrors.PeerIdInvalidError | RpcErrors.ReplyMessageIdInvalidError | RpcErrors.StoryIdInvalidError | RpcErrors.YouBlockedUserError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesGetFavedStickersErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesFaveStickerErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.StickerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesGetUnreadMentionsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.MsgIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesReadMentionsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.MsgIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesGetRecentLocationsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesSendMultiMediaErrors = RpcErrors.BusinessConnectionInvalidError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.BusinessPeerInvalidError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.ChatAdminRequiredError | RpcErrors.ChatForwardsRestrictedError | RpcErrors.EffectIdInvalidError | RpcErrors.EntityBoundsInvalidError | RpcErrors.FileReferenceExpiredError | RpcErrors.FileReferenceInvalidError | RpcErrors.MediaCaptionTooLongError | RpcErrors.MediaEmptyError | RpcErrors.MediaInvalidError | RpcErrors.MsgIdInvalidError | RpcErrors.MultiMediaTooLongError | RpcErrors.PeerIdInvalidError | RpcErrors.QuickRepliesBotNotAllowedError | RpcErrors.QuickRepliesTooMuchError | RpcErrors.RandomIdEmptyError | RpcErrors.ReplyMessagesTooMuchError | RpcErrors.ReplyToInvalidError | RpcErrors.ScheduleDateTooLateError | RpcErrors.ScheduleTooMuchError | RpcErrors.SendAsPeerInvalidError | RpcErrors.TopicClosedError | RpcErrors.TopicDeletedError | RpcErrors.UserBannedInChannelError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.AllowPaymentRequiredError | RpcErrors.ChatSendMediaForbiddenError | RpcErrors.ChatSendPhotosForbiddenError | RpcErrors.ChatSendVideosForbiddenError | RpcErrors.ChatWriteForbiddenError | RpcErrors.SlowModeWaitError | RpcErrors.RandomIdDuplicateError;
+  export type MessagesUploadEncryptedFileErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChatIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesSearchStickerSetsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesGetSplitRangesErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesMarkDialogUnreadErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesGetDialogUnreadMarksErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesClearAllDraftsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesUpdatePinnedMessageErrors = RpcErrors.BotOnesideNotAvailError | RpcErrors.BusinessConnectionInvalidError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.BusinessPeerInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.ChatAdminRequiredError | RpcErrors.ChatInvalidError | RpcErrors.ChatNotModifiedError | RpcErrors.InputUserDeactivatedError | RpcErrors.MessageIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.PinRestrictedError | RpcErrors.UserBannedInChannelError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.ChatWriteForbiddenError;
+  export type MessagesSendVoteErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.MessageIdInvalidError | RpcErrors.MessagePollClosedError | RpcErrors.MsgIdInvalidError | RpcErrors.OptionInvalidError | RpcErrors.OptionsTooMuchError | RpcErrors.PeerIdInvalidError | RpcErrors.RevoteNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesGetPollResultsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.MessageIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesGetOnlinesErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelPrivateError | RpcErrors.ChatIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesEditChatAboutErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.ChatAboutNotModifiedError | RpcErrors.ChatAboutTooLongError | RpcErrors.ChatAdminRequiredError | RpcErrors.ChatIdInvalidError | RpcErrors.ChatNotModifiedError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.ChatWriteForbiddenError;
+  export type MessagesEditChatDefaultBannedRightsErrors = RpcErrors.BannedRightsInvalidError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.ChatAdminRequiredError | RpcErrors.ChatIdInvalidError | RpcErrors.ChatNotModifiedError | RpcErrors.PeerIdInvalidError | RpcErrors.UntilDateInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.ChatWriteForbiddenError;
+  export type MessagesGetEmojiKeywordsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesGetEmojiKeywordsDifferenceErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesGetEmojiKeywordsLanguagesErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesGetEmojiURLErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesGetSearchCountersErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesRequestUrlAuthErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesAcceptUrlAuthErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesHidePeerSettingsBarErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesGetScheduledHistoryErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChatAdminRequiredError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesGetScheduledMessagesErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChatAdminRequiredError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesSendScheduledMessagesErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.MessageIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.RandomIdDuplicateError;
+  export type MessagesDeleteScheduledMessagesErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.MessageDeleteForbiddenError;
+  export type MessagesGetPollVotesErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.MsgIdInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.BroadcastForbiddenError | RpcErrors.PollVoteRequiredError;
+  export type MessagesToggleStickerSetsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesGetDialogFiltersErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesGetSuggestedDialogFiltersErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesUpdateDialogFilterErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChatIdInvalidError | RpcErrors.ChatlistExcludeInvalidError | RpcErrors.FilterIdInvalidError | RpcErrors.FilterIncludeEmptyError | RpcErrors.FilterTitleEmptyError | RpcErrors.MessageTooLongError | RpcErrors.MsgIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesUpdateDialogFiltersOrderErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesGetOldFeaturedStickersErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesGetRepliesErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.MsgIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.TopicIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesGetDiscussionMessageErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.MsgIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.TopicIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesReadDiscussionErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChatIdInvalidError | RpcErrors.MsgIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesUnpinAllMessagesErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChatAdminRequiredError | RpcErrors.ChatNotModifiedError | RpcErrors.InputUserDeactivatedError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesDeleteChatErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChatAdminRequiredError | RpcErrors.ChatIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesDeletePhoneCallHistoryErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesCheckHistoryImportErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ImportFormatUnrecognizedError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesInitHistoryImportErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChatAdminRequiredError | RpcErrors.ImportFileInvalidError | RpcErrors.ImportFormatDateInvalidError | RpcErrors.ImportFormatUnrecognizedError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.PreviousChatImportActiveWaitMinError;
+  export type MessagesUploadImportedMediaErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChatAdminRequiredError | RpcErrors.ImportIdInvalidError | RpcErrors.MediaInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesStartHistoryImportErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ImportIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesGetExportedChatInvitesErrors = RpcErrors.AdminIdInvalidError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.ChatAdminRequiredError | RpcErrors.ChatIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.ChatWriteForbiddenError;
+  export type MessagesGetExportedChatInviteErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.ChatAdminRequiredError | RpcErrors.InviteHashExpiredError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.ChatWriteForbiddenError;
+  export type MessagesEditExportedChatInviteErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelPrivateError | RpcErrors.ChatAdminRequiredError | RpcErrors.ChatInvitePermanentError | RpcErrors.InviteHashExpiredError | RpcErrors.PeerIdInvalidError | RpcErrors.UsageLimitInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.ChatWriteForbiddenError | RpcErrors.EditBotInviteForbiddenError;
+  export type MessagesDeleteRevokedExportedChatInvitesErrors = RpcErrors.AdminIdInvalidError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesDeleteExportedChatInviteErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChatAdminRequiredError | RpcErrors.InviteHashExpiredError | RpcErrors.InviteRevokedMissingError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesGetAdminsWithInvitesErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChatAdminRequiredError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.ChatWriteForbiddenError;
+  export type MessagesGetChatInviteImportersErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.ChatAdminRequiredError | RpcErrors.InviteHashExpiredError | RpcErrors.PeerIdInvalidError | RpcErrors.SearchWithLinkNotSupportedError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.ChatWriteForbiddenError;
+  export type MessagesSetHistoryTTLErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChatNotModifiedError | RpcErrors.PeerIdInvalidError | RpcErrors.TtlPeriodInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesCheckHistoryImportPeerErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChatAdminRequiredError | RpcErrors.PeerIdInvalidError | RpcErrors.UserNotMutualContactError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesSetChatThemeErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.EmojiInvalidError | RpcErrors.EmojiNotModifiedError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesGetMessageReadParticipantsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChatTooBigError | RpcErrors.MsgIdInvalidError | RpcErrors.MsgTooOldError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesGetSearchResultsCalendarErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.FilterNotSupportedError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesGetSearchResultsPositionsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesHideChatJoinRequestErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelPrivateError | RpcErrors.ChannelsTooMuchError | RpcErrors.ChatAdminRequiredError | RpcErrors.HideRequesterMissingError | RpcErrors.InputUserDeactivatedError | RpcErrors.MsgIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.UserAlreadyParticipantError | RpcErrors.UserChannelsTooMuchError | RpcErrors.UserIdInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.ChatWriteForbiddenError;
+  export type MessagesHideAllChatJoinRequestsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.ChannelsTooMuchError | RpcErrors.ChatAdminRequiredError | RpcErrors.HideRequesterMissingError | RpcErrors.InviteHashExpiredError | RpcErrors.PeerIdInvalidError | RpcErrors.UserChannelsTooMuchError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.ChatWriteForbiddenError;
+  export type MessagesToggleNoForwardsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChatAdminRequiredError | RpcErrors.ChatNotModifiedError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesSaveDefaultSendAsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.SendAsPeerInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesSendReactionErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.CustomReactionsTooManyError | RpcErrors.DocumentInvalidError | RpcErrors.MessageIdInvalidError | RpcErrors.MessageNotModifiedError | RpcErrors.MsgIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.ReactionEmptyError | RpcErrors.ReactionInvalidError | RpcErrors.ReactionsTooManyError | RpcErrors.UserBannedInChannelError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.AnonymousReactionsDisabledError | RpcErrors.ChatWriteForbiddenError | RpcErrors.PremiumAccountRequiredError;
+  export type MessagesGetMessagesReactionsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesGetMessageReactionsListErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.MsgIdInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.BroadcastForbiddenError;
+  export type MessagesSetChatAvailableReactionsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChatAdminRequiredError | RpcErrors.ChatNotModifiedError | RpcErrors.DocumentInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.ReactionInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesGetAvailableReactionsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesSetDefaultReactionErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ReactionInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesTranslateTextErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.InputTextEmptyError | RpcErrors.InputTextTooLongError | RpcErrors.MsgIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.ToLangInvalidError | RpcErrors.TranslateReqQuotaExceededError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.TranslationsDisabledError | RpcErrors.TranslateReqFailedError | RpcErrors.TranslationTimeoutError;
+  export type MessagesGetUnreadReactionsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesReadReactionsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesSearchSentMediaErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.FilterNotSupportedError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesGetAttachMenuBotsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesGetAttachMenuBotErrors = RpcErrors.BotInvalidError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesToggleBotInAttachMenuErrors = RpcErrors.BotInvalidError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesRequestWebViewErrors = RpcErrors.BotInvalidError | RpcErrors.BotWebviewDisabledError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.InputUserDeactivatedError | RpcErrors.MsgIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.SendAsPeerInvalidError | RpcErrors.ThemeParamsInvalidError | RpcErrors.UrlInvalidError | RpcErrors.YouBlockedUserError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.ChatWriteForbiddenError | RpcErrors.PrivacyPremiumRequiredError;
+  export type MessagesProlongWebViewErrors = RpcErrors.BotInvalidError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesRequestSimpleWebViewErrors = RpcErrors.BotInvalidError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.UrlInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesSendWebViewResultMessageErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.QueryIdInvalidError | RpcErrors.UserBotRequiredError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesSendWebViewDataErrors = RpcErrors.BotInvalidError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesTranscribeAudioErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.MsgIdInvalidError | RpcErrors.MsgVoiceMissingError | RpcErrors.PeerIdInvalidError | RpcErrors.TranscriptionFailedError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.PremiumAccountRequiredError;
+  export type MessagesRateTranscribedAudioErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesGetCustomEmojiDocumentsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesGetEmojiStickersErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesGetFeaturedEmojiStickersErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesReportReactionErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.MsgIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.UserIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesGetTopReactionsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesGetRecentReactionsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesClearRecentReactionsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesGetExtendedMediaErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesSetDefaultHistoryTTLErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.TtlPeriodInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesGetDefaultHistoryTTLErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesSendBotRequestedPeerErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.MessageIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesGetEmojiGroupsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesGetEmojiStatusGroupsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesGetEmojiProfilePhotoGroupsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesSearchCustomEmojiErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.EmoticonEmptyError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesTogglePeerTranslationsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesGetBotAppErrors = RpcErrors.BotAppBotInvalidError | RpcErrors.BotAppInvalidError | RpcErrors.BotAppShortnameInvalidError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesRequestAppWebViewErrors = RpcErrors.BotAppBotInvalidError | RpcErrors.BotAppInvalidError | RpcErrors.BotAppShortnameInvalidError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.MsgIdInvalidError | RpcErrors.ThemeParamsInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesSetChatWallPaperErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.WallpaperInvalidError | RpcErrors.WallpaperNotFoundError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesSearchEmojiStickerSetsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesGetSavedDialogsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesGetSavedHistoryErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesDeleteSavedHistoryErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesGetPinnedSavedDialogsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesToggleSavedDialogPinErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesReorderPinnedSavedDialogsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesGetSavedReactionTagsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesUpdateSavedReactionTagErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ReactionInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.PremiumAccountRequiredError;
+  export type MessagesGetDefaultTagReactionsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesGetOutboxReadDateErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.MessageIdInvalidError | RpcErrors.MessageNotReadYetError | RpcErrors.MessageTooOldError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.UserPrivacyRestrictedError | RpcErrors.YourPrivacyRestrictedError;
+  export type MessagesGetQuickRepliesErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesReorderQuickRepliesErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.PremiumAccountRequiredError;
+  export type MessagesCheckQuickReplyShortcutErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.PremiumAccountRequiredError;
+  export type MessagesEditQuickReplyShortcutErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ShortcutInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.PremiumAccountRequiredError;
+  export type MessagesDeleteQuickReplyShortcutErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ShortcutInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesGetQuickReplyMessagesErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ShortcutInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesSendQuickReplyMessagesErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.PremiumAccountRequiredError;
+  export type MessagesDeleteQuickReplyMessagesErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ShortcutInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesToggleDialogFilterTagsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.PremiumAccountRequiredError;
+  export type MessagesGetMyStickersErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesGetEmojiStickerGroupsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesGetAvailableEffectsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesEditFactCheckErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.ChatActionForbiddenError;
+  export type MessagesDeleteFactCheckErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.ChatActionForbiddenError;
+  export type MessagesGetFactCheckErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesRequestMainWebViewErrors = RpcErrors.BotInvalidError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesSendPaidReactionErrors = RpcErrors.BalanceTooLowError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.MessageIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.RandomIdEmptyError | RpcErrors.RandomIdExpiredError | RpcErrors.ReactionsCountInvalidError | RpcErrors.SendAsPeerInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.ChatWriteForbiddenError;
+  export type MessagesTogglePaidReactionPrivacyErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.ReactionEmptyError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesGetPaidReactionPrivacyErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesViewSponsoredMessageErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesClickSponsoredMessageErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesReportSponsoredMessageErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesGetSponsoredMessagesErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesSavePreparedInlineMessageErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ResultIdInvalidError | RpcErrors.SendMessageGameInvalidError | RpcErrors.UserBotRequiredError | RpcErrors.UserIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesGetPreparedInlineMessageErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.IdExpiredError | RpcErrors.IdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesSearchStickersErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesReportMessagesDeliveryErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesGetSavedDialogsByIDErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesReadSavedHistoryErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChatAdminRequiredError | RpcErrors.ParentPeerInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesToggleTodoCompletedErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesAppendTodoListErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.MessageIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.TodoItemDuplicateError | RpcErrors.TodoNotModifiedError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesToggleSuggestedPostApprovalErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type UpdatesGetStateErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type UpdatesGetDifferenceErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.CdnMethodInvalidError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.ChatNotModifiedError | RpcErrors.DateEmptyError | RpcErrors.MsgIdInvalidError | RpcErrors.PersistentTimestampEmptyError | RpcErrors.PersistentTimestampInvalidError | RpcErrors.UserNotParticipantError | RpcErrors.UsernameInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.ChatWriteForbiddenError | RpcErrors.RandomIdDuplicateError;
+  export type UpdatesGetChannelDifferenceErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.ChatNotModifiedError | RpcErrors.FromMessageBotDisabledError | RpcErrors.FrozenParticipantMissingError | RpcErrors.MsgIdInvalidError | RpcErrors.PersistentTimestampEmptyError | RpcErrors.PersistentTimestampInvalidError | RpcErrors.PinnedDialogsTooMuchError | RpcErrors.RangesInvalidError | RpcErrors.UserBannedInChannelError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.ChannelPublicGroupNaError | RpcErrors.ChatWriteForbiddenError | RpcErrors.PersistentTimestampOutdatedError;
+  export type PhotosUpdateProfilePhotoErrors = RpcErrors.AlbumPhotosTooManyError | RpcErrors.BotFallbackUnsupportedError | RpcErrors.FilePartsInvalidError | RpcErrors.ImageProcessFailedError | RpcErrors.LocationInvalidError | RpcErrors.PhotoCropSizeSmallError | RpcErrors.PhotoExtInvalidError | RpcErrors.PhotoIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type PhotosUploadProfilePhotoErrors = RpcErrors.AlbumPhotosTooManyError | RpcErrors.BotInvalidError | RpcErrors.EmojiMarkupInvalidError | RpcErrors.FilePartsInvalidError | RpcErrors.ImageProcessFailedError | RpcErrors.PhotoCropFileMissingError | RpcErrors.PhotoCropSizeSmallError | RpcErrors.PhotoExtInvalidError | RpcErrors.PhotoFileMissingError | RpcErrors.PhotoInvalidError | RpcErrors.StickerMimeInvalidError | RpcErrors.VideoFileInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type PhotosDeletePhotosErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type PhotosGetUserPhotosErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.MaxIdInvalidError | RpcErrors.MsgIdInvalidError | RpcErrors.UserIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type PhotosUploadContactProfilePhotoErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ContactMissingError | RpcErrors.UserIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type UploadSaveFilePartErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.FilePartEmptyError | RpcErrors.FilePartInvalidError | RpcErrors.MsgIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type UploadGetFileErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.CdnMethodInvalidError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.FileIdInvalidError | RpcErrors.FileReferenceEmptyError | RpcErrors.FileReferenceExpiredError | RpcErrors.FileReferenceInvalidError | RpcErrors.LimitInvalidError | RpcErrors.LocationInvalidError | RpcErrors.MsgIdInvalidError | RpcErrors.OffsetInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.FilerefUpgradeNeededError | RpcErrors.FloodWaitError;
+  export type UploadSaveBigFilePartErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.FilePartEmptyError | RpcErrors.FilePartInvalidError | RpcErrors.FilePartSizeChangedError | RpcErrors.FilePartSizeInvalidError | RpcErrors.FilePartTooBigError | RpcErrors.FilePartTooSmallError | RpcErrors.FilePartsInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type UploadGetWebFileErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.DocumentInvalidError | RpcErrors.LocationInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type UploadGetCdnFileErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.FileTokenInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.MethodInvalidError;
+  export type UploadReuploadCdnFileErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.CdnMethodInvalidError | RpcErrors.FileTokenInvalidError | RpcErrors.LocationInvalidError | RpcErrors.RequestTokenInvalidError | RpcErrors.RsaDecryptFailedError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.CdnUploadTimeoutError;
+  export type UploadGetCdnFileHashesErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.CdnMethodInvalidError | RpcErrors.FileTokenInvalidError | RpcErrors.RsaDecryptFailedError | RpcErrors.AuthKeyUnregisteredError;
+  export type UploadGetFileHashesErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.LocationInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type HelpGetConfigErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ConnectionApiIdInvalidError | RpcErrors.ConnectionAppVersionEmptyError | RpcErrors.ConnectionLayerInvalidError | RpcErrors.DataInvalidError | RpcErrors.MsgIdInvalidError | RpcErrors.UsernameInvalidError | RpcErrors.UserPrivacyRestrictedError;
+  export type HelpGetNearestDcErrors = RpcErrors.BusinessConnectionNotAllowedError;
+  export type HelpGetAppUpdateErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type HelpGetInviteTextErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type HelpGetSupportErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type HelpSetBotUpdatesStatusErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.UserBotRequiredError | RpcErrors.AuthKeyUnregisteredError;
+  export type HelpGetCdnConfigErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type HelpGetRecentMeUrlsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type HelpGetTermsOfServiceUpdateErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type HelpAcceptTermsOfServiceErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.DataJsonInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type HelpGetDeepLinkInfoErrors = RpcErrors.BusinessConnectionNotAllowedError;
+  export type HelpGetAppConfigErrors = RpcErrors.BusinessConnectionNotAllowedError;
+  export type HelpSaveAppLogErrors = RpcErrors.BusinessConnectionNotAllowedError;
+  export type HelpGetPassportConfigErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type HelpGetSupportNameErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.UserInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type HelpGetUserInfoErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.UserInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type HelpEditUserInfoErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.EntityBoundsInvalidError | RpcErrors.UserInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type HelpGetPromoDataErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type HelpHidePromoDataErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type HelpDismissSuggestionErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type HelpGetCountriesListErrors = RpcErrors.BusinessConnectionNotAllowedError;
+  export type HelpGetPremiumPromoErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type HelpGetPeerColorsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type HelpGetPeerProfileColorsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type HelpGetTimezonesListErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type ChannelsReadHistoryErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.MsgIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type ChannelsDeleteMessagesErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.MsgIdInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.MessageDeleteForbiddenError | RpcErrors.FrozenMethodInvalidError;
+  export type ChannelsReportSpamErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChatAdminRequiredError | RpcErrors.InputUserDeactivatedError | RpcErrors.MsgIdInvalidError | RpcErrors.UserIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type ChannelsGetMessagesErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.ChatNotModifiedError | RpcErrors.FrozenParticipantMissingError | RpcErrors.MessageIdsEmptyError | RpcErrors.MsgIdInvalidError | RpcErrors.UserBannedInChannelError | RpcErrors.AuthKeyUnregisteredError;
+  export type ChannelsGetParticipantsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelMonoforumUnsupportedError | RpcErrors.ChannelPrivateError | RpcErrors.ChatAdminRequiredError | RpcErrors.MsgIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type ChannelsGetParticipantErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.ChatAdminRequiredError | RpcErrors.MsgIdInvalidError | RpcErrors.ParticipantIdInvalidError | RpcErrors.UserIdInvalidError | RpcErrors.UserNotParticipantError | RpcErrors.AuthKeyUnregisteredError;
+  export type ChannelsGetChannelsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.MsgIdInvalidError | RpcErrors.UserBannedInChannelError | RpcErrors.AuthKeyUnregisteredError;
+  export type ChannelsGetFullChannelErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.ChatNotModifiedError | RpcErrors.MsgIdInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.ChannelPublicGroupNaError;
+  export type ChannelsCreateChannelErrors = RpcErrors.AddressInvalidError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelsAdminLocatedTooMuchError | RpcErrors.ChannelsTooMuchError | RpcErrors.ChatAboutTooLongError | RpcErrors.ChatTitleEmptyError | RpcErrors.TtlPeriodInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.UserRestrictedError | RpcErrors.ChatInvalidError;
+  export type ChannelsEditAdminErrors = RpcErrors.AdminRankEmojiNotAllowedError | RpcErrors.AdminRankInvalidError | RpcErrors.AdminsTooMuchError | RpcErrors.BotChannelsNaError | RpcErrors.BotGroupsBlockedError | RpcErrors.BotsTooMuchError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelMonoforumUnsupportedError | RpcErrors.ChannelPrivateError | RpcErrors.ChatAdminRequiredError | RpcErrors.FreshChangeAdminsForbiddenError | RpcErrors.InputUserDeactivatedError | RpcErrors.MsgIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.UserBlockedError | RpcErrors.UserCreatorError | RpcErrors.UserIdInvalidError | RpcErrors.UserNotMutualContactError | RpcErrors.UsersTooMuchError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.ChatAdminInviteRequiredError | RpcErrors.ChatWriteForbiddenError | RpcErrors.RightForbiddenError | RpcErrors.UserChannelsTooMuchError | RpcErrors.UserPrivacyRestrictedError | RpcErrors.UserRestrictedError;
+  export type ChannelsEditTitleErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.ChatAdminRequiredError | RpcErrors.ChatInvalidError | RpcErrors.ChatNotModifiedError | RpcErrors.ChatTitleEmptyError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.ChatWriteForbiddenError;
+  export type ChannelsEditPhotoErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.ChatAdminRequiredError | RpcErrors.ChatNotModifiedError | RpcErrors.FilePartsInvalidError | RpcErrors.FileReferenceInvalidError | RpcErrors.ImageProcessFailedError | RpcErrors.PhotoCropSizeSmallError | RpcErrors.PhotoExtInvalidError | RpcErrors.PhotoFileMissingError | RpcErrors.PhotoInvalidError | RpcErrors.StickerMimeInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.ChatWriteForbiddenError;
+  export type ChannelsCheckUsernameErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.ChannelsAdminPublicTooMuchError | RpcErrors.ChatIdInvalidError | RpcErrors.MsgIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.UsernameInvalidError | RpcErrors.UsernameOccupiedError | RpcErrors.UsernamePurchaseAvailableError | RpcErrors.AuthKeyUnregisteredError;
+  export type ChannelsUpdateUsernameErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.ChannelsAdminPublicTooMuchError | RpcErrors.ChatAdminRequiredError | RpcErrors.ChatNotModifiedError | RpcErrors.UsernameInvalidError | RpcErrors.UsernameNotModifiedError | RpcErrors.UsernameOccupiedError | RpcErrors.UsernamePurchaseAvailableError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.ChatWriteForbiddenError;
+  export type ChannelsJoinChannelErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelMonoforumUnsupportedError | RpcErrors.ChannelPrivateError | RpcErrors.ChannelsTooMuchError | RpcErrors.ChatInvalidError | RpcErrors.InviteHashEmptyError | RpcErrors.InviteHashExpiredError | RpcErrors.InviteHashInvalidError | RpcErrors.InviteRequestSentError | RpcErrors.MsgIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.UserAlreadyParticipantError | RpcErrors.UserChannelsTooMuchError | RpcErrors.UsersTooMuchError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.FrozenMethodInvalidError;
+  export type ChannelsLeaveChannelErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.ChatInvalidError | RpcErrors.MsgIdInvalidError | RpcErrors.UserBannedInChannelError | RpcErrors.UserCreatorError | RpcErrors.UserNotParticipantError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.ChannelPublicGroupNaError;
+  export type ChannelsInviteToChannelErrors = RpcErrors.BotGroupsBlockedError | RpcErrors.BotsTooMuchError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelMonoforumUnsupportedError | RpcErrors.ChannelPrivateError | RpcErrors.ChatAdminRequiredError | RpcErrors.ChatInvalidError | RpcErrors.ChatMemberAddFailedError | RpcErrors.InputUserDeactivatedError | RpcErrors.MsgIdInvalidError | RpcErrors.UserBannedInChannelError | RpcErrors.UserBlockedError | RpcErrors.UserBotError | RpcErrors.UserChannelsTooMuchError | RpcErrors.UserIdInvalidError | RpcErrors.UserKickedError | RpcErrors.UserNotMutualContactError | RpcErrors.UsersTooMuchError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.ChatWriteForbiddenError | RpcErrors.UserPrivacyRestrictedError;
+  export type ChannelsDeleteChannelErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.ChannelTooLargeError | RpcErrors.ChatAdminRequiredError | RpcErrors.ChatNotModifiedError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.ChatWriteForbiddenError;
+  export type ChannelsExportMessageLinkErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.MessageIdInvalidError | RpcErrors.MsgIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type ChannelsToggleSignaturesErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChatAdminRequiredError | RpcErrors.ChatIdInvalidError | RpcErrors.ChatNotModifiedError | RpcErrors.AuthKeyUnregisteredError;
+  export type ChannelsGetAdminedPublicChannelsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelsAdminLocatedTooMuchError | RpcErrors.ChannelsAdminPublicTooMuchError | RpcErrors.AuthKeyUnregisteredError;
+  export type ChannelsEditBannedErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.ChatAdminRequiredError | RpcErrors.InputUserDeactivatedError | RpcErrors.MsgIdInvalidError | RpcErrors.ParticipantIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.UserAdminInvalidError | RpcErrors.UserIdInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.ChatWriteForbiddenError | RpcErrors.BannedRightsInvalidError;
+  export type ChannelsGetAdminLogErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.ChatAdminRequiredError | RpcErrors.MsgIdInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.ChatWriteForbiddenError;
+  export type ChannelsSetStickersErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChatIdInvalidError | RpcErrors.ParticipantsTooFewError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.StickersetOwnerAnonymousError;
+  export type ChannelsReadMessageContentsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.MsgIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type ChannelsDeleteHistoryErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelParicipantMissingError | RpcErrors.ChannelPrivateError | RpcErrors.ChannelTooBigError | RpcErrors.ChatAdminRequiredError | RpcErrors.AuthKeyUnregisteredError;
+  export type ChannelsTogglePreHistoryHiddenErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.ChatAdminRequiredError | RpcErrors.ChatIdInvalidError | RpcErrors.ChatLinkExistsError | RpcErrors.ChatNotModifiedError | RpcErrors.ForumEnabledError | RpcErrors.AuthKeyUnregisteredError;
+  export type ChannelsGetLeftChannelsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.TakeoutInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.TakeoutRequiredError;
+  export type ChannelsGetGroupsForDiscussionErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type ChannelsSetDiscussionGroupErrors = RpcErrors.BroadcastIdInvalidError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChatAdminRequiredError | RpcErrors.LinkNotModifiedError | RpcErrors.MegagroupIdInvalidError | RpcErrors.MegagroupPrehistoryHiddenError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.ChatWriteForbiddenError;
+  export type ChannelsEditLocationErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChatAdminRequiredError | RpcErrors.ChatNotModifiedError | RpcErrors.MegagroupGeoRequiredError | RpcErrors.MegagroupRequiredError | RpcErrors.AuthKeyUnregisteredError;
+  export type ChannelsToggleSlowModeErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChatAdminRequiredError | RpcErrors.ChatIdInvalidError | RpcErrors.ChatNotModifiedError | RpcErrors.SecondsInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type ChannelsGetInactiveChannelsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type ChannelsConvertToGigagroupErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelIdInvalidError | RpcErrors.ChannelInvalidError | RpcErrors.ChatAdminRequiredError | RpcErrors.ForumEnabledError | RpcErrors.ParticipantsTooFewError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.ChatWriteForbiddenError;
+  export type ChannelsGetSendAsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.ChatIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type ChannelsDeleteParticipantHistoryErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.ChatAdminRequiredError | RpcErrors.MsgIdInvalidError | RpcErrors.ParticipantIdInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.ChatWriteForbiddenError;
+  export type ChannelsToggleJoinToSendErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChatAdminRequiredError | RpcErrors.ChatIdInvalidError | RpcErrors.ChatNotModifiedError | RpcErrors.AuthKeyUnregisteredError;
+  export type ChannelsToggleJoinRequestErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChatAdminRequiredError | RpcErrors.ChatIdInvalidError | RpcErrors.ChatNotModifiedError | RpcErrors.ChatPublicRequiredError | RpcErrors.AuthKeyUnregisteredError;
+  export type ChannelsReorderUsernamesErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChatNotModifiedError | RpcErrors.AuthKeyUnregisteredError;
+  export type ChannelsToggleUsernameErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.ChatAdminRequiredError | RpcErrors.ChatNotModifiedError | RpcErrors.UsernameInvalidError | RpcErrors.UsernameNotModifiedError | RpcErrors.UsernamesActiveTooMuchError | RpcErrors.AuthKeyUnregisteredError;
+  export type ChannelsDeactivateAllUsernamesErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type ChannelsToggleForumErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChatDiscussionUnallowedError | RpcErrors.ChatNotModifiedError | RpcErrors.AuthKeyUnregisteredError;
+  export type ChannelsToggleAntiSpamErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChatNotModifiedError | RpcErrors.AuthKeyUnregisteredError;
+  export type ChannelsReportAntiSpamFalsePositiveErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type ChannelsToggleParticipantsHiddenErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChatAdminRequiredError | RpcErrors.ChatIdInvalidError | RpcErrors.ChatNotModifiedError | RpcErrors.ParticipantsTooFewError | RpcErrors.AuthKeyUnregisteredError;
+  export type ChannelsUpdateColorErrors = RpcErrors.BoostsRequiredError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type ChannelsToggleViewForumAsMessagesErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type ChannelsGetChannelRecommendationsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.ChatNotModifiedError | RpcErrors.AuthKeyUnregisteredError;
+  export type ChannelsUpdateEmojiStatusErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type ChannelsSetBoostsToUnblockRestrictionsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type ChannelsSetEmojiStickersErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type ChannelsRestrictSponsoredMessagesErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type ChannelsSearchPostsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.FrozenMethodInvalidError;
+  export type ChannelsUpdatePaidMessagesPriceErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelMonoforumUnsupportedError | RpcErrors.ChatNotModifiedError | RpcErrors.StarsAmountInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type ChannelsToggleAutotranslationErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type ChannelsGetMessageAuthorErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type ChannelsCheckSearchPostsFloodErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type ChannelsSetMainProfileTabErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type BotsSendCustomRequestErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.DataJsonInvalidError | RpcErrors.MethodInvalidError | RpcErrors.UserBotRequiredError | RpcErrors.AuthKeyUnregisteredError;
+  export type BotsAnswerWebhookJSONQueryErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.DataJsonInvalidError | RpcErrors.QueryIdInvalidError | RpcErrors.UserBotRequiredError | RpcErrors.AuthKeyUnregisteredError;
+  export type BotsSetBotCommandsErrors = RpcErrors.BotCommandDescriptionInvalidError | RpcErrors.BotCommandInvalidError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.LangCodeInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.UserBotRequiredError | RpcErrors.UserIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type BotsResetBotCommandsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.LangCodeInvalidError | RpcErrors.UserBotRequiredError | RpcErrors.AuthKeyUnregisteredError;
+  export type BotsGetBotCommandsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.UserBotRequiredError | RpcErrors.AuthKeyUnregisteredError;
+  export type BotsSetBotMenuButtonErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ButtonInvalidError | RpcErrors.ButtonTextInvalidError | RpcErrors.ButtonUrlInvalidError | RpcErrors.UserBotRequiredError | RpcErrors.AuthKeyUnregisteredError;
+  export type BotsGetBotMenuButtonErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.UserBotRequiredError | RpcErrors.AuthKeyUnregisteredError;
+  export type BotsSetBotBroadcastDefaultAdminRightsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.RightsNotModifiedError | RpcErrors.UserBotRequiredError | RpcErrors.AuthKeyUnregisteredError;
+  export type BotsSetBotGroupDefaultAdminRightsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.RightsNotModifiedError | RpcErrors.UserBotRequiredError | RpcErrors.AuthKeyUnregisteredError;
+  export type BotsSetBotInfoErrors = RpcErrors.BotInvalidError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.UserBotInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type BotsGetBotInfoErrors = RpcErrors.BotInvalidError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.LangCodeInvalidError | RpcErrors.UserBotInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type BotsReorderUsernamesErrors = RpcErrors.BotInvalidError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.UsernameNotModifiedError | RpcErrors.AuthKeyUnregisteredError;
+  export type BotsToggleUsernameErrors = RpcErrors.BotInvalidError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.UsernameNotModifiedError | RpcErrors.AuthKeyUnregisteredError;
+  export type BotsCanSendMessageErrors = RpcErrors.BotInvalidError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type BotsAllowSendMessageErrors = RpcErrors.BotInvalidError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type BotsInvokeWebViewCustomMethodErrors = RpcErrors.BotInvalidError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.DataJsonInvalidError | RpcErrors.MethodInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type BotsGetPopularAppBotsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type BotsAddPreviewMediaErrors = RpcErrors.BotInvalidError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type BotsEditPreviewMediaErrors = RpcErrors.BotInvalidError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type BotsDeletePreviewMediaErrors = RpcErrors.BotInvalidError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type BotsReorderPreviewMediasErrors = RpcErrors.BotInvalidError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type BotsGetPreviewInfoErrors = RpcErrors.BotInvalidError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type BotsGetPreviewMediasErrors = RpcErrors.BotInvalidError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type BotsUpdateUserEmojiStatusErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.UserBotRequiredError | RpcErrors.UserIdInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.UserPermissionDeniedError;
+  export type BotsToggleUserEmojiStatusPermissionErrors = RpcErrors.BotInvalidError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type BotsCheckDownloadFileParamsErrors = RpcErrors.BotInvalidError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type BotsGetAdminedBotsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type BotsUpdateStarRefProgramErrors = RpcErrors.BotInvalidError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.StarrefAwaitingEndError | RpcErrors.StarrefPermilleInvalidError | RpcErrors.StarrefPermilleTooLowError | RpcErrors.AuthKeyUnregisteredError;
+  export type BotsSetCustomVerificationErrors = RpcErrors.BotInvalidError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.BotVerifierForbiddenError;
+  export type BotsGetBotRecommendationsErrors = RpcErrors.BotInvalidError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type PaymentsGetPaymentFormErrors = RpcErrors.BoostPeerInvalidError | RpcErrors.BotInvoiceInvalidError | RpcErrors.BusinessConnectionInvalidError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.GiftMonthsInvalidError | RpcErrors.InvoiceInvalidError | RpcErrors.MessageIdInvalidError | RpcErrors.MonthInvalidError | RpcErrors.NoPaymentNeededError | RpcErrors.PeerIdInvalidError | RpcErrors.SlugInvalidError | RpcErrors.StargiftAlreadyConvertedError | RpcErrors.StargiftAlreadyRefundedError | RpcErrors.StargiftAlreadyUpgradedError | RpcErrors.StargiftInvalidError | RpcErrors.StargiftNotFoundError | RpcErrors.StargiftOwnerInvalidError | RpcErrors.StargiftPeerInvalidError | RpcErrors.StargiftResellCurrencyNotAllowedError | RpcErrors.StargiftSlugInvalidError | RpcErrors.StargiftTransferTooEarlyError | RpcErrors.StargiftUpgradeUnavailableError | RpcErrors.ToIdInvalidError | RpcErrors.UntilDateInvalidError | RpcErrors.BotAccessForbiddenError | RpcErrors.ApiGiftRestrictedUpdateAppError | RpcErrors.StargiftExportInProgressError | RpcErrors.StarsFormAmountMismatchError;
+  export type PaymentsGetPaymentReceiptErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.MessageIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type PaymentsValidateRequestedInfoErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.MessageIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type PaymentsSendPaymentFormErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.FormUnsupportedError | RpcErrors.InvoiceInvalidError | RpcErrors.MessageIdInvalidError | RpcErrors.PaymentCredentialsInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.TmpPasswordInvalidError;
+  export type PaymentsGetSavedInfoErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type PaymentsClearSavedInfoErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type PaymentsGetBankCardDataErrors = RpcErrors.BankCardNumberInvalidError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type PaymentsExportInvoiceErrors = RpcErrors.BusinessConnectionInvalidError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.CurrencyTotalAmountInvalidError | RpcErrors.InvoicePayloadInvalidError | RpcErrors.MediaInvalidError | RpcErrors.PaymentProviderInvalidError | RpcErrors.StarsInvoiceInvalidError | RpcErrors.UserBotRequiredError | RpcErrors.WebdocumentMimeInvalidError | RpcErrors.WebdocumentUrlEmptyError | RpcErrors.AuthKeyUnregisteredError;
+  export type PaymentsAssignAppStoreTransactionErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.InputPurposeInvalidError | RpcErrors.ReceiptEmptyError;
+  export type PaymentsAssignPlayMarketTransactionErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.DataJsonInvalidError;
+  export type PaymentsGetPremiumGiftCodeOptionsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type PaymentsCheckGiftCodeErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.GiftSlugExpiredError | RpcErrors.GiftSlugInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type PaymentsApplyGiftCodeErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.GiftSlugExpiredError | RpcErrors.GiftSlugInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.PremiumSubActiveUntilError;
+  export type PaymentsGetGiveawayInfoErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.MessageIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type PaymentsLaunchPrepaidGiveawayErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type PaymentsGetStarsTopupOptionsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type PaymentsGetStarsStatusErrors = RpcErrors.BusinessConnectionInvalidError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.BotAccessForbiddenError;
+  export type PaymentsGetStarsTransactionsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChatAdminRequiredError | RpcErrors.PeerIdInvalidError | RpcErrors.SubscriptionIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type PaymentsSendStarsFormErrors = RpcErrors.BalanceTooLowError | RpcErrors.BotInvoiceInvalidError | RpcErrors.BusinessConnectionInvalidError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.FormExpiredError | RpcErrors.FormIdEmptyError | RpcErrors.FormSubmitDuplicateError | RpcErrors.FormUnsupportedError | RpcErrors.GiftStarsInvalidError | RpcErrors.MediaAlreadyPaidError | RpcErrors.MonthInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.PurposeInvalidError | RpcErrors.StargiftAlreadyUpgradedError | RpcErrors.StargiftNotFoundError | RpcErrors.StargiftOwnerInvalidError | RpcErrors.StargiftSlugInvalidError | RpcErrors.StargiftUsageLimitedError | RpcErrors.StargiftUserUsageLimitedError | RpcErrors.ToIdInvalidError | RpcErrors.UserIdInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.BotAccessForbiddenError | RpcErrors.ApiGiftRestrictedUpdateAppError | RpcErrors.PrecheckoutFailedError | RpcErrors.StarsFormAmountMismatchError;
+  export type PaymentsRefundStarsChargeErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChargeAlreadyRefundedError | RpcErrors.ChargeIdEmptyError | RpcErrors.UserBotRequiredError | RpcErrors.UserIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type PaymentsGetStarsRevenueStatsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type PaymentsGetStarsRevenueWithdrawalUrlErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PasswordHashInvalidError | RpcErrors.PasswordMissingError | RpcErrors.PasswordTooFreshError | RpcErrors.SessionTooFreshError | RpcErrors.AuthKeyUnregisteredError;
+  export type PaymentsGetStarsRevenueAdsAccountUrlErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.ChatWriteForbiddenError;
+  export type PaymentsGetStarsTransactionsByIDErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.TransactionIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type PaymentsGetStarsGiftOptionsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.InputUserDeactivatedError | RpcErrors.UserGiftUnavailableError | RpcErrors.UserIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type PaymentsGetStarsSubscriptionsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type PaymentsChangeStarsSubscriptionErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type PaymentsFulfillStarsSubscriptionErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type PaymentsGetStarsGiveawayOptionsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type PaymentsGetStarGiftsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type PaymentsSaveStarGiftErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.MessageIdInvalidError | RpcErrors.SavedIdEmptyError | RpcErrors.StargiftOwnerInvalidError | RpcErrors.UserIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type PaymentsConvertStarGiftErrors = RpcErrors.BusinessConnectionInvalidError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.MessageIdInvalidError | RpcErrors.SavedIdEmptyError | RpcErrors.StargiftPeerInvalidError | RpcErrors.UserIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type PaymentsBotCancelStarsSubscriptionErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChargeIdInvalidError | RpcErrors.UserIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type PaymentsGetConnectedStarRefBotsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type PaymentsGetConnectedStarRefBotErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type PaymentsGetSuggestedStarRefBotsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.PeerIdInvalidError;
+  export type PaymentsConnectStarRefBotErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type PaymentsEditConnectedStarRefBotErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.StarrefHashRevokedError | RpcErrors.AuthKeyUnregisteredError;
+  export type PaymentsGetStarGiftUpgradePreviewErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.StargiftInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type PaymentsUpgradeStarGiftErrors = RpcErrors.BusinessConnectionInvalidError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.MessageIdInvalidError | RpcErrors.PaymentRequiredError | RpcErrors.SavedIdEmptyError | RpcErrors.StargiftAlreadyConvertedError | RpcErrors.StargiftAlreadyUpgradedError | RpcErrors.StargiftUpgradeUnavailableError | RpcErrors.AuthKeyUnregisteredError;
+  export type PaymentsTransferStarGiftErrors = RpcErrors.BusinessConnectionInvalidError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.MessageIdInvalidError | RpcErrors.PaymentRequiredError | RpcErrors.PeerIdInvalidError | RpcErrors.SavedIdEmptyError | RpcErrors.StargiftNotFoundError | RpcErrors.StargiftOwnerInvalidError | RpcErrors.StargiftPeerInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type PaymentsGetUniqueStarGiftErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.StargiftSlugInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type PaymentsGetSavedStarGiftsErrors = RpcErrors.BusinessConnectionInvalidError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type PaymentsGetSavedStarGiftErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.SavedIdEmptyError | RpcErrors.StargiftSlugInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type PaymentsGetStarGiftWithdrawalUrlErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PasswordHashInvalidError | RpcErrors.PasswordTooFreshError | RpcErrors.SessionTooFreshError | RpcErrors.AuthKeyUnregisteredError;
+  export type PaymentsToggleChatStarGiftNotificationsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type PaymentsToggleStarGiftsPinnedToTopErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type PaymentsCanPurchaseStoreErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.InputPurposeInvalidError | RpcErrors.PremiumCurrentlyUnavailableError;
+  export type PaymentsGetResaleStarGiftsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.StargiftInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type PaymentsUpdateStarGiftPriceErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.SavedIdEmptyError | RpcErrors.StargiftNotFoundError | RpcErrors.AuthKeyUnregisteredError;
+  export type PaymentsCreateStarGiftCollectionErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type PaymentsUpdateStarGiftCollectionErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type PaymentsReorderStarGiftCollectionsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type PaymentsDeleteStarGiftCollectionErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type PaymentsGetStarGiftCollectionsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type PaymentsGetUniqueStarGiftValueInfoErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.StargiftSlugInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type PaymentsCheckCanSendGiftErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.StargiftInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type StickersCreateStickerSetErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PackShortNameInvalidError | RpcErrors.PackShortNameOccupiedError | RpcErrors.PackTitleInvalidError | RpcErrors.PackTypeInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.StickerEmojiInvalidError | RpcErrors.StickerFileInvalidError | RpcErrors.StickerGifDimensionsError | RpcErrors.StickerPngDimensionsError | RpcErrors.StickerPngNopngError | RpcErrors.StickerTgsNodocError | RpcErrors.StickerTgsNotgsError | RpcErrors.StickerThumbPngNopngError | RpcErrors.StickerThumbTgsNotgsError | RpcErrors.StickerVideoBigError | RpcErrors.StickerVideoNodocError | RpcErrors.StickerVideoNowebmError | RpcErrors.StickersEmptyError | RpcErrors.UserIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type StickersRemoveStickerFromSetErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.StickerInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type StickersChangeStickerPositionErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.StickerInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type StickersAddStickerToSetErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.StickerPngNopngError | RpcErrors.StickerTgsNotgsError | RpcErrors.StickerpackStickersTooMuchError | RpcErrors.StickersTooMuchError | RpcErrors.StickersetInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type StickersSetStickerSetThumbErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.StickerThumbPngNopngError | RpcErrors.StickerThumbTgsNotgsError | RpcErrors.StickersetInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type StickersCheckShortNameErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ShortNameInvalidError | RpcErrors.ShortNameOccupiedError | RpcErrors.AuthKeyUnregisteredError;
+  export type StickersSuggestShortNameErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.TitleInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type StickersChangeStickerErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.StickerInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type StickersRenameStickerSetErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.StickersetInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type StickersDeleteStickerSetErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.StickersetInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type StickersReplaceStickerErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.StickerInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type PhoneGetCallConfigErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type PhoneRequestCallErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.CallProtocolFlagsInvalidError | RpcErrors.CallProtocolLayerInvalidError | RpcErrors.InputUserDeactivatedError | RpcErrors.ParticipantVersionOutdatedError | RpcErrors.UserIdInvalidError | RpcErrors.UserIsBlockedError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.UserPrivacyRestrictedError;
+  export type PhoneAcceptCallErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.CallAlreadyAcceptedError | RpcErrors.CallAlreadyDeclinedError | RpcErrors.CallPeerInvalidError | RpcErrors.CallProtocolFlagsInvalidError | RpcErrors.CallProtocolLayerInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.CallProtocolCompatLayerInvalidError | RpcErrors.CallOccupyFailedError;
+  export type PhoneConfirmCallErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.CallAlreadyDeclinedError | RpcErrors.CallPeerInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type PhoneReceivedCallErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.CallAlreadyDeclinedError | RpcErrors.CallPeerInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type PhoneDiscardCallErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.CallAlreadyAcceptedError | RpcErrors.CallOccupyFailedError | RpcErrors.CallPeerInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type PhoneSetCallRatingErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.CallPeerInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type PhoneSaveCallDebugErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.CallPeerInvalidError | RpcErrors.DataJsonInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type PhoneSendSignalingDataErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.CallPeerInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type PhoneCreateGroupCallErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelPrivateError | RpcErrors.ChatAdminRequiredError | RpcErrors.CreateCallFailedError | RpcErrors.GroupcallAlreadyDiscardedError | RpcErrors.PeerIdInvalidError | RpcErrors.ScheduleDateInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type PhoneJoinGroupCallErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.DataJsonInvalidError | RpcErrors.GroupcallInvalidError | RpcErrors.GroupcallSsrcDuplicateMuchError | RpcErrors.JoinAsPeerInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.GroupcallForbiddenError;
+  export type PhoneLeaveGroupCallErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.GroupcallInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type PhoneInviteToGroupCallErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.GroupcallInvalidError | RpcErrors.InviteForbiddenWithJoinasError | RpcErrors.UserAlreadyInvitedError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.ChatTypeInvalidError | RpcErrors.GroupcallForbiddenError | RpcErrors.UserNotParticipantError;
+  export type PhoneDiscardGroupCallErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.GroupcallAlreadyDiscardedError | RpcErrors.GroupcallInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.GroupcallForbiddenError;
+  export type PhoneToggleGroupCallSettingsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.GroupcallInvalidError | RpcErrors.GroupcallNotModifiedError | RpcErrors.AuthKeyUnregisteredError;
+  export type PhoneGetGroupCallErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.GroupcallInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.GroupcallForbiddenError;
+  export type PhoneGetGroupParticipantsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.GroupcallInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type PhoneCheckGroupCallErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.GroupcallInvalidError | RpcErrors.GroupcallJoinMissingError | RpcErrors.AuthKeyUnregisteredError;
+  export type PhoneToggleGroupCallRecordErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.GroupcallInvalidError | RpcErrors.GroupcallNotModifiedError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.GroupcallForbiddenError;
+  export type PhoneEditGroupCallParticipantErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.GroupcallForbiddenError | RpcErrors.GroupcallInvalidError | RpcErrors.ParticipantJoinMissingError | RpcErrors.RaiseHandForbiddenError | RpcErrors.UserVolumeInvalidError | RpcErrors.VideoPauseForbiddenError | RpcErrors.VideoStopForbiddenError | RpcErrors.AuthKeyUnregisteredError;
+  export type PhoneEditGroupCallTitleErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.GroupcallInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.GroupcallForbiddenError;
+  export type PhoneGetGroupCallJoinAsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type PhoneExportGroupCallInviteErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.GroupcallInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.PublicChannelMissingError;
+  export type PhoneToggleGroupCallStartSubscriptionErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.GroupcallInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.GroupcallAlreadyStartedError;
+  export type PhoneStartScheduledGroupCallErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.GroupcallInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.GroupcallAlreadyStartedError;
+  export type PhoneSaveDefaultGroupCallJoinAsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.JoinAsPeerInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type PhoneJoinGroupCallPresentationErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.GroupcallInvalidError | RpcErrors.ParticipantJoinMissingError | RpcErrors.AuthKeyUnregisteredError;
+  export type PhoneLeaveGroupCallPresentationErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.GroupcallInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type PhoneGetGroupCallStreamChannelsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.GroupcallInvalidError | RpcErrors.GroupcallJoinMissingError | RpcErrors.AuthKeyUnregisteredError;
+  export type PhoneGetGroupCallStreamRtmpUrlErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChatAdminRequiredError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type PhoneSaveCallLogErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.CallPeerInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type PhoneCreateConferenceCallErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type PhoneDeleteConferenceCallParticipantsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.GroupcallInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type PhoneSendConferenceCallBroadcastErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.GroupcallInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type PhoneInviteConferenceCallParticipantErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.GroupcallInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type PhoneDeclineConferenceCallInviteErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.MessageIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type PhoneGetGroupCallChainBlocksErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.GroupcallInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type LangpackGetLangPackErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.LangCodeNotSupportedError | RpcErrors.LangPackInvalidError | RpcErrors.LanguageInvalidError;
+  export type LangpackGetStringsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.LangCodeNotSupportedError | RpcErrors.LangPackInvalidError;
+  export type LangpackGetDifferenceErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.LangPackInvalidError;
+  export type LangpackGetLanguagesErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.LangPackInvalidError;
+  export type LangpackGetLanguageErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.LangCodeNotSupportedError | RpcErrors.LangPackInvalidError;
+  export type FoldersEditPeerFoldersErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.ChatIdInvalidError | RpcErrors.FolderIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type StatsGetBroadcastStatsErrors = RpcErrors.BroadcastRequiredError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.ChatAdminRequiredError | RpcErrors.AuthKeyUnregisteredError;
+  export type StatsLoadAsyncGraphErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.GraphExpiredReloadError | RpcErrors.GraphInvalidReloadError | RpcErrors.GraphOutdatedReloadError | RpcErrors.AuthKeyUnregisteredError;
+  export type StatsGetMegagroupStatsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChatAdminRequiredError | RpcErrors.MegagroupRequiredError | RpcErrors.AuthKeyUnregisteredError;
+  export type StatsGetMessagePublicForwardsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChatAdminRequiredError | RpcErrors.MessageIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type StatsGetMessageStatsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChatAdminRequiredError | RpcErrors.MessageIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type StatsGetStoryStatsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.StoriesNeverCreatedError | RpcErrors.AuthKeyUnregisteredError;
+  export type StatsGetStoryPublicForwardsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type ChatlistsExportChatlistInviteErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.ChatAdminRequiredError | RpcErrors.ChatlistsTooMuchError | RpcErrors.FilterIdInvalidError | RpcErrors.FilterNotSupportedError | RpcErrors.InvitesTooMuchError | RpcErrors.PeersListEmptyError | RpcErrors.AuthKeyUnregisteredError;
+  export type ChatlistsDeleteExportedInviteErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.FilterIdInvalidError | RpcErrors.FilterNotSupportedError | RpcErrors.InviteSlugExpiredError | RpcErrors.InviteSlugInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type ChatlistsEditExportedInviteErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.FilterIdInvalidError | RpcErrors.FilterNotSupportedError | RpcErrors.InviteSlugEmptyError | RpcErrors.InviteSlugExpiredError | RpcErrors.PeersListEmptyError | RpcErrors.AuthKeyUnregisteredError;
+  export type ChatlistsGetExportedInvitesErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.FilterIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type ChatlistsCheckChatlistInviteErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.InviteSlugEmptyError | RpcErrors.InviteSlugExpiredError | RpcErrors.AuthKeyUnregisteredError;
+  export type ChatlistsJoinChatlistInviteErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelsTooMuchError | RpcErrors.ChatlistsTooMuchError | RpcErrors.FilterIncludeEmptyError | RpcErrors.InviteSlugEmptyError | RpcErrors.InviteSlugExpiredError | RpcErrors.AuthKeyUnregisteredError;
+  export type ChatlistsGetChatlistUpdatesErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.FilterIdInvalidError | RpcErrors.FilterNotSupportedError | RpcErrors.InputChatlistInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type ChatlistsJoinChatlistUpdatesErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.FilterIdInvalidError | RpcErrors.FilterIncludeEmptyError | RpcErrors.AuthKeyUnregisteredError;
+  export type ChatlistsHideChatlistUpdatesErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.FilterIdInvalidError | RpcErrors.FilterNotSupportedError | RpcErrors.AuthKeyUnregisteredError;
+  export type ChatlistsGetLeaveChatlistSuggestionsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.FilterIdInvalidError | RpcErrors.FilterNotSupportedError | RpcErrors.AuthKeyUnregisteredError;
+  export type ChatlistsLeaveChatlistErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.FilterIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type StoriesCanSendStoryErrors = RpcErrors.BoostsRequiredError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChatAdminRequiredError | RpcErrors.PeerIdInvalidError | RpcErrors.PremiumAccountRequiredError | RpcErrors.StoriesTooMuchError | RpcErrors.StorySendFloodMonthlyError | RpcErrors.StorySendFloodWeeklyError | RpcErrors.AuthKeyUnregisteredError;
+  export type StoriesSendStoryErrors = RpcErrors.BoostsRequiredError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChatAdminRequiredError | RpcErrors.ImageProcessFailedError | RpcErrors.MediaEmptyError | RpcErrors.MediaFileInvalidError | RpcErrors.MediaTypeInvalidError | RpcErrors.MediaVideoStoryMissingError | RpcErrors.PeerIdInvalidError | RpcErrors.PremiumAccountRequiredError | RpcErrors.StoriesTooMuchError | RpcErrors.StoryPeriodInvalidError | RpcErrors.VenueIdInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.BotAccessForbiddenError;
+  export type StoriesEditStoryErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.StoryNotModifiedError | RpcErrors.AuthKeyUnregisteredError;
+  export type StoriesDeleteStoriesErrors = RpcErrors.BusinessConnectionInvalidError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.StoryIdEmptyError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.BotAccessForbiddenError;
+  export type StoriesTogglePinnedErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type StoriesGetAllStoriesErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type StoriesGetPinnedStoriesErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.UserIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type StoriesGetStoriesArchiveErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChatAdminRequiredError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type StoriesGetStoriesByIDErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.PeerIdInvalidError | RpcErrors.StoriesNeverCreatedError | RpcErrors.StoryIdEmptyError | RpcErrors.AuthKeyUnregisteredError;
+  export type StoriesToggleAllStoriesHiddenErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type StoriesReadStoriesErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.MaxIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.StoriesNeverCreatedError | RpcErrors.AuthKeyUnregisteredError;
+  export type StoriesIncrementStoryViewsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.StoryIdEmptyError | RpcErrors.AuthKeyUnregisteredError;
+  export type StoriesGetStoryViewsListErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.StoryIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type StoriesGetStoriesViewsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.PeerIdInvalidError | RpcErrors.StoryIdEmptyError | RpcErrors.AuthKeyUnregisteredError;
+  export type StoriesExportStoryLinkErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.StoryIdEmptyError | RpcErrors.UserPublicMissingError | RpcErrors.AuthKeyUnregisteredError;
+  export type StoriesReportErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type StoriesActivateStealthModeErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PremiumAccountRequiredError | RpcErrors.AuthKeyUnregisteredError;
+  export type StoriesSendReactionErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.ReactionInvalidError | RpcErrors.StoryIdEmptyError | RpcErrors.StoryIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type StoriesGetPeerStoriesErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.MsgIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type StoriesGetAllReadPeerStoriesErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type StoriesGetPeerMaxIDsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type StoriesGetChatsToSendErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type StoriesTogglePeerStoriesHiddenErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type StoriesGetStoryReactionsListErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type StoriesTogglePinnedToTopErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.StoryIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type StoriesSearchPostsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.HashtagInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type StoriesCreateAlbumErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type StoriesUpdateAlbumErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type StoriesReorderAlbumsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type StoriesDeleteAlbumErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type StoriesGetAlbumsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type StoriesGetAlbumStoriesErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type PremiumGetBoostsListErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChatAdminRequiredError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type PremiumGetMyBoostsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type PremiumApplyBoostErrors = RpcErrors.BoostsEmptyError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.SlotsEmptyError | RpcErrors.AuthKeyUnregisteredError;
+  export type PremiumGetBoostsStatusErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type PremiumGetUserBoostsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type SmsjobsIsEligibleToJoinErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.NotEligibleError;
+  export type SmsjobsJoinErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.NotEligibleError | RpcErrors.AuthKeyUnregisteredError;
+  export type SmsjobsLeaveErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.NotJoinedError | RpcErrors.AuthKeyUnregisteredError;
+  export type SmsjobsUpdateSettingsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.NotJoinedError | RpcErrors.AuthKeyUnregisteredError;
+  export type SmsjobsGetStatusErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.NotJoinedError | RpcErrors.AuthKeyUnregisteredError;
+  export type SmsjobsGetSmsJobErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.SmsjobIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type SmsjobsFinishJobErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.SmsjobIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type FragmentGetCollectibleInfoErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.CollectibleInvalidError | RpcErrors.CollectibleNotFoundError | RpcErrors.AuthKeyUnregisteredError;
+
+  export interface InputClientProxyIn {
+    _?: "inputClientProxy";
+    address: string;
+    port: int;
+  }
+  export interface JsonNullIn {
+    _: "jsonNull";
+  }
+  export interface JsonBoolIn {
+    _: "jsonBool";
+    value: Bool;
+  }
+  export interface JsonNumberIn {
+    _: "jsonNumber";
+    value: double;
+  }
+  export interface JsonStringIn {
+    _: "jsonString";
+    value: string;
+  }
+  export interface JsonArrayIn {
+    _: "jsonArray";
+    value: JSONValueIn[];
+  }
+  export interface JsonObjectIn {
+    _: "jsonObject";
+    value: JSONObjectValueIn[];
+  }
+  export interface JsonObjectValueIn {
+    _?: "jsonObjectValue";
+    key: string;
+    value: JSONValueIn;
+  }
+  export interface MessageRangeIn {
+    _?: "messageRange";
+    minId: int;
+    maxId: int;
+  }
+  export interface CodeSettingsIn {
+    _?: "codeSettings";
+    allowFlashcall?: boolean;
+    currentNumber?: boolean;
+    allowAppHash?: boolean;
+    allowMissedCall?: boolean;
+    allowFirebase?: boolean;
+    unknownNumber?: boolean;
+    logoutTokens?: bytes[];
+    token?: string;
+    appSandbox?: Bool;
+  }
+  export interface EmailVerificationCodeIn {
+    _: "emailVerificationCode";
+    code: string;
+  }
+  export interface EmailVerificationGoogleIn {
+    _: "emailVerificationGoogle";
+    token: string;
+  }
+  export interface EmailVerificationAppleIn {
+    _: "emailVerificationApple";
+    token: string;
+  }
+  export interface InputCheckPasswordEmptyIn {
+    _: "inputCheckPasswordEmpty";
+  }
+  export interface InputCheckPasswordSRPIn {
+    _: "inputCheckPasswordSRP";
+    srpId: long;
+    A: bytes;
+    M1: bytes;
+  }
+  export interface AccountPasswordInputSettingsIn {
+    _?: "account.passwordInputSettings";
+    newAlgo?: PasswordKdfAlgoIn;
+    newPasswordHash?: bytes;
+    hint?: string;
+    email?: string;
+    newSecureSettings?: SecureSecretSettingsIn;
+  }
+  export interface PasswordKdfAlgoUnknownIn {
+    _: "passwordKdfAlgoUnknown";
+  }
+  export interface PasswordKdfAlgoSHA256SHA256PBKDF2HMACSHA512iter100000SHA256ModPowIn {
+    _: "passwordKdfAlgoSHA256SHA256PBKDF2HMACSHA512iter100000SHA256ModPow";
+    salt1: bytes;
+    salt2: bytes;
+    g: int;
+    p: bytes;
+  }
+  export interface SecureSecretSettingsIn {
+    _?: "secureSecretSettings";
+    secureAlgo: SecurePasswordKdfAlgoIn;
+    secureSecret: bytes;
+    secureSecretId: long;
+  }
+  export interface SecurePasswordKdfAlgoUnknownIn {
+    _: "securePasswordKdfAlgoUnknown";
+  }
+  export interface SecurePasswordKdfAlgoPBKDF2HMACSHA512iter100000In {
+    _: "securePasswordKdfAlgoPBKDF2HMACSHA512iter100000";
+    salt: bytes;
+  }
+  export interface SecurePasswordKdfAlgoSHA512In {
+    _: "securePasswordKdfAlgoSHA512";
+    salt: bytes;
+  }
+  export interface InputPasskeyCredentialPublicKeyIn {
+    _: "inputPasskeyCredentialPublicKey";
+    id: string;
+    rawId: string;
+    response: InputPasskeyResponseIn;
+  }
+  export interface InputPasskeyResponseRegisterIn {
+    _: "inputPasskeyResponseRegister";
+    clientData: DataJSONIn;
+    attestationData: bytes;
+  }
+  export interface DataJSONIn {
+    _?: "dataJSON";
+    data: string;
+  }
+  export interface InputPasskeyResponseLoginIn {
+    _: "inputPasskeyResponseLogin";
+    clientData: DataJSONIn;
+    authenticatorData: bytes;
+    signature: bytes;
+    userHandle: string;
+  }
+  export interface InputPasskeyCredentialFirebasePNVIn {
+    _: "inputPasskeyCredentialFirebasePNV";
+    pnvToken: string;
+  }
+  export interface InputPeerNotifySettingsIn {
+    _?: "inputPeerNotifySettings";
+    showPreviews?: Bool;
+    silent?: Bool;
+    muteUntil?: int;
+    sound?: NotificationSoundIn;
+    storiesMuted?: Bool;
+    storiesHideSender?: Bool;
+    storiesSound?: NotificationSoundIn;
+  }
+  export interface NotificationSoundDefaultIn {
+    _: "notificationSoundDefault";
+  }
+  export interface NotificationSoundNoneIn {
+    _: "notificationSoundNone";
+  }
+  export interface NotificationSoundLocalIn {
+    _: "notificationSoundLocal";
+    title: string;
+    data: string;
+  }
+  export interface NotificationSoundRingtoneIn {
+    _: "notificationSoundRingtone";
+    id: long;
+  }
+  export interface InputReportReasonSpamIn {
+    _: "inputReportReasonSpam";
+  }
+  export interface InputReportReasonViolenceIn {
+    _: "inputReportReasonViolence";
+  }
+  export interface InputReportReasonPornographyIn {
+    _: "inputReportReasonPornography";
+  }
+  export interface InputReportReasonChildAbuseIn {
+    _: "inputReportReasonChildAbuse";
+  }
+  export interface InputReportReasonOtherIn {
+    _: "inputReportReasonOther";
+  }
+  export interface InputReportReasonCopyrightIn {
+    _: "inputReportReasonCopyright";
+  }
+  export interface InputReportReasonGeoIrrelevantIn {
+    _: "inputReportReasonGeoIrrelevant";
+  }
+  export interface InputReportReasonFakeIn {
+    _: "inputReportReasonFake";
+  }
+  export interface InputReportReasonIllegalDrugsIn {
+    _: "inputReportReasonIllegalDrugs";
+  }
+  export interface InputReportReasonPersonalDetailsIn {
+    _: "inputReportReasonPersonalDetails";
+  }
+  export interface InputPrivacyKeyStatusTimestampIn {
+    _: "inputPrivacyKeyStatusTimestamp";
+  }
+  export interface InputPrivacyKeyChatInviteIn {
+    _: "inputPrivacyKeyChatInvite";
+  }
+  export interface InputPrivacyKeyPhoneCallIn {
+    _: "inputPrivacyKeyPhoneCall";
+  }
+  export interface InputPrivacyKeyPhoneP2PIn {
+    _: "inputPrivacyKeyPhoneP2P";
+  }
+  export interface InputPrivacyKeyForwardsIn {
+    _: "inputPrivacyKeyForwards";
+  }
+  export interface InputPrivacyKeyProfilePhotoIn {
+    _: "inputPrivacyKeyProfilePhoto";
+  }
+  export interface InputPrivacyKeyPhoneNumberIn {
+    _: "inputPrivacyKeyPhoneNumber";
+  }
+  export interface InputPrivacyKeyAddedByPhoneIn {
+    _: "inputPrivacyKeyAddedByPhone";
+  }
+  export interface InputPrivacyKeyVoiceMessagesIn {
+    _: "inputPrivacyKeyVoiceMessages";
+  }
+  export interface InputPrivacyKeyAboutIn {
+    _: "inputPrivacyKeyAbout";
+  }
+  export interface InputPrivacyKeyBirthdayIn {
+    _: "inputPrivacyKeyBirthday";
+  }
+  export interface InputPrivacyKeyStarGiftsAutoSaveIn {
+    _: "inputPrivacyKeyStarGiftsAutoSave";
+  }
+  export interface InputPrivacyKeyNoPaidMessagesIn {
+    _: "inputPrivacyKeyNoPaidMessages";
+  }
+  export interface InputPrivacyKeySavedMusicIn {
+    _: "inputPrivacyKeySavedMusic";
+  }
+  export interface InputPrivacyValueAllowContactsIn {
+    _: "inputPrivacyValueAllowContacts";
+  }
+  export interface InputPrivacyValueAllowAllIn {
+    _: "inputPrivacyValueAllowAll";
+  }
+  export interface InputPrivacyValueAllowUsersIn {
+    _: "inputPrivacyValueAllowUsers";
+    users: InputUserIn[];
+  }
+  export interface InputUserEmptyIn {
+    _: "inputUserEmpty";
+  }
+  export interface InputUserSelfIn {
+    _: "inputUserSelf";
+  }
+  export interface InputUserIn {
+    _: "inputUser";
+    userId: long;
+    accessHash: long;
+  }
+  export interface InputUserFromMessageIn {
+    _: "inputUserFromMessage";
+    peer: InputPeerIn;
+    msgId: int;
+    userId: long;
+  }
+  export interface InputPeerEmptyIn {
+    _: "inputPeerEmpty";
+  }
+  export interface InputPeerSelfIn {
+    _: "inputPeerSelf";
+  }
+  export interface InputPeerChatIn {
+    _: "inputPeerChat";
+    chatId: long;
+  }
+  export interface InputPeerUserIn {
+    _: "inputPeerUser";
+    userId: long;
+    accessHash: long;
+  }
+  export interface InputPeerChannelIn {
+    _: "inputPeerChannel";
+    channelId: long;
+    accessHash: long;
+  }
+  export interface InputPeerUserFromMessageIn {
+    _: "inputPeerUserFromMessage";
+    peer: InputPeerIn;
+    msgId: int;
+    userId: long;
+  }
+  export interface InputPeerChannelFromMessageIn {
+    _: "inputPeerChannelFromMessage";
+    peer: InputPeerIn;
+    msgId: int;
+    channelId: long;
+  }
+  export interface InputPrivacyValueDisallowContactsIn {
+    _: "inputPrivacyValueDisallowContacts";
+  }
+  export interface InputPrivacyValueDisallowAllIn {
+    _: "inputPrivacyValueDisallowAll";
+  }
+  export interface InputPrivacyValueDisallowUsersIn {
+    _: "inputPrivacyValueDisallowUsers";
+    users: InputUserIn[];
+  }
+  export interface InputPrivacyValueAllowChatParticipantsIn {
+    _: "inputPrivacyValueAllowChatParticipants";
+    chats: long[];
+  }
+  export interface InputPrivacyValueDisallowChatParticipantsIn {
+    _: "inputPrivacyValueDisallowChatParticipants";
+    chats: long[];
+  }
+  export interface InputPrivacyValueAllowCloseFriendsIn {
+    _: "inputPrivacyValueAllowCloseFriends";
+  }
+  export interface InputPrivacyValueAllowPremiumIn {
+    _: "inputPrivacyValueAllowPremium";
+  }
+  export interface InputPrivacyValueAllowBotsIn {
+    _: "inputPrivacyValueAllowBots";
+  }
+  export interface InputPrivacyValueDisallowBotsIn {
+    _: "inputPrivacyValueDisallowBots";
+  }
+  export interface AccountDaysTTLIn {
+    _?: "accountDaysTTL";
+    days: int;
+  }
+  export interface SecureValueTypePersonalDetailsIn {
+    _: "secureValueTypePersonalDetails";
+  }
+  export interface SecureValueTypePassportIn {
+    _: "secureValueTypePassport";
+  }
+  export interface SecureValueTypeDriverLicenseIn {
+    _: "secureValueTypeDriverLicense";
+  }
+  export interface SecureValueTypeIdentityCardIn {
+    _: "secureValueTypeIdentityCard";
+  }
+  export interface SecureValueTypeInternalPassportIn {
+    _: "secureValueTypeInternalPassport";
+  }
+  export interface SecureValueTypeAddressIn {
+    _: "secureValueTypeAddress";
+  }
+  export interface SecureValueTypeUtilityBillIn {
+    _: "secureValueTypeUtilityBill";
+  }
+  export interface SecureValueTypeBankStatementIn {
+    _: "secureValueTypeBankStatement";
+  }
+  export interface SecureValueTypeRentalAgreementIn {
+    _: "secureValueTypeRentalAgreement";
+  }
+  export interface SecureValueTypePassportRegistrationIn {
+    _: "secureValueTypePassportRegistration";
+  }
+  export interface SecureValueTypeTemporaryRegistrationIn {
+    _: "secureValueTypeTemporaryRegistration";
+  }
+  export interface SecureValueTypePhoneIn {
+    _: "secureValueTypePhone";
+  }
+  export interface SecureValueTypeEmailIn {
+    _: "secureValueTypeEmail";
+  }
+  export interface InputSecureValueIn {
+    _?: "inputSecureValue";
+    type: SecureValueTypeIn;
+    data?: SecureDataIn;
+    frontSide?: InputSecureFileIn;
+    reverseSide?: InputSecureFileIn;
+    selfie?: InputSecureFileIn;
+    translation?: InputSecureFileIn[];
+    files?: InputSecureFileIn[];
+    plainData?: SecurePlainDataIn;
+  }
+  export interface SecureDataIn {
+    _?: "secureData";
+    data: bytes;
+    dataHash: bytes;
+    secret: bytes;
+  }
+  export interface InputSecureFileUploadedIn {
+    _: "inputSecureFileUploaded";
+    id: long;
+    parts: int;
+    md5Checksum: string;
+    fileHash: bytes;
+    secret: bytes;
+  }
+  export interface InputSecureFileIn {
+    _: "inputSecureFile";
+    id: long;
+    accessHash: long;
+  }
+  export interface SecurePlainPhoneIn {
+    _: "securePlainPhone";
+    phone: string;
+  }
+  export interface SecurePlainEmailIn {
+    _: "securePlainEmail";
+    email: string;
+  }
+  export interface SecureValueHashIn {
+    _?: "secureValueHash";
+    type: SecureValueTypeIn;
+    hash: bytes;
+  }
+  export interface SecureCredentialsEncryptedIn {
+    _?: "secureCredentialsEncrypted";
+    data: bytes;
+    hash: bytes;
+    secret: bytes;
+  }
+  export interface EmailVerifyPurposeLoginSetupIn {
+    _: "emailVerifyPurposeLoginSetup";
+    phoneNumber: string;
+    phoneCodeHash: string;
+  }
+  export interface EmailVerifyPurposeLoginChangeIn {
+    _: "emailVerifyPurposeLoginChange";
+  }
+  export interface EmailVerifyPurposePassportIn {
+    _: "emailVerifyPurposePassport";
+  }
+  export interface InputWallPaperIn {
+    _: "inputWallPaper";
+    id: long;
+    accessHash: long;
+  }
+  export interface InputWallPaperSlugIn {
+    _: "inputWallPaperSlug";
+    slug: string;
+  }
+  export interface InputWallPaperNoFileIn {
+    _: "inputWallPaperNoFile";
+    id: long;
+  }
+  export interface InputFileIn {
+    _: "inputFile";
+    id: long;
+    parts: int;
+    name: string;
+    md5Checksum: string;
+  }
+  export interface InputFileBigIn {
+    _: "inputFileBig";
+    id: long;
+    parts: int;
+    name: string;
+  }
+  export interface InputFileStoryDocumentIn {
+    _: "inputFileStoryDocument";
+    id: InputDocumentIn;
+  }
+  export interface InputDocumentEmptyIn {
+    _: "inputDocumentEmpty";
+  }
+  export interface InputDocumentIn {
+    _: "inputDocument";
+    id: long;
+    accessHash: long;
+    fileReference: bytes;
+  }
+  export interface WallPaperSettingsIn {
+    _?: "wallPaperSettings";
+    blur?: boolean;
+    motion?: boolean;
+    backgroundColor?: int;
+    secondBackgroundColor?: int;
+    thirdBackgroundColor?: int;
+    fourthBackgroundColor?: int;
+    intensity?: int;
+    rotation?: int;
+    emoticon?: string;
+  }
+  export interface AutoDownloadSettingsIn {
+    _?: "autoDownloadSettings";
+    disabled?: boolean;
+    videoPreloadLarge?: boolean;
+    audioPreloadNext?: boolean;
+    phonecallsLessData?: boolean;
+    storiesPreload?: boolean;
+    photoSizeMax: int;
+    videoSizeMax: long;
+    fileSizeMax: long;
+    videoUploadMaxbitrate: int;
+    smallQueueActiveOperationsMax: int;
+    largeQueueActiveOperationsMax: int;
+  }
+  export interface InputThemeSettingsIn {
+    _?: "inputThemeSettings";
+    messageColorsAnimated?: boolean;
+    baseTheme: BaseThemeIn;
+    accentColor: int;
+    outboxAccentColor?: int;
+    messageColors?: int[];
+    wallpaper?: InputWallPaperIn;
+    wallpaperSettings?: WallPaperSettingsIn;
+  }
+  export interface BaseThemeClassicIn {
+    _: "baseThemeClassic";
+  }
+  export interface BaseThemeDayIn {
+    _: "baseThemeDay";
+  }
+  export interface BaseThemeNightIn {
+    _: "baseThemeNight";
+  }
+  export interface BaseThemeTintedIn {
+    _: "baseThemeTinted";
+  }
+  export interface BaseThemeArcticIn {
+    _: "baseThemeArctic";
+  }
+  export interface InputThemeIn {
+    _: "inputTheme";
+    id: long;
+    accessHash: long;
+  }
+  export interface InputThemeSlugIn {
+    _: "inputThemeSlug";
+    slug: string;
+  }
+  export interface GlobalPrivacySettingsIn {
+    _?: "globalPrivacySettings";
+    archiveAndMuteNewNoncontactPeers?: boolean;
+    keepArchivedUnmuted?: boolean;
+    keepArchivedFolders?: boolean;
+    hideReadMarks?: boolean;
+    newNoncontactPeersRequirePremium?: boolean;
+    displayGiftsButton?: boolean;
+    noncontactPeersPaidStars?: long;
+    disallowedGifts?: DisallowedGiftsSettingsIn;
+  }
+  export interface DisallowedGiftsSettingsIn {
+    _?: "disallowedGiftsSettings";
+    disallowUnlimitedStargifts?: boolean;
+    disallowLimitedStargifts?: boolean;
+    disallowUniqueStargifts?: boolean;
+    disallowPremiumGifts?: boolean;
+    disallowStargiftsFromChannels?: boolean;
+  }
+  export interface InputPhotoEmptyIn {
+    _: "inputPhotoEmpty";
+  }
+  export interface InputPhotoIn {
+    _: "inputPhoto";
+    id: long;
+    accessHash: long;
+    fileReference: bytes;
+  }
+  export interface EmojiStatusEmptyIn {
+    _: "emojiStatusEmpty";
+  }
+  export interface EmojiStatusIn {
+    _: "emojiStatus";
+    documentId: long;
+    until?: int;
+  }
+  export interface EmojiStatusCollectibleIn {
+    _: "emojiStatusCollectible";
+    collectibleId: long;
+    documentId: long;
+    title: string;
+    slug: string;
+    patternDocumentId: long;
+    centerColor: int;
+    edgeColor: int;
+    patternColor: int;
+    textColor: int;
+    until?: int;
+  }
+  export interface InputEmojiStatusCollectibleIn {
+    _: "inputEmojiStatusCollectible";
+    collectibleId: long;
+    until?: int;
+  }
+  export interface AutoSaveSettingsIn {
+    _?: "autoSaveSettings";
+    photos?: boolean;
+    videos?: boolean;
+    videoMaxSize?: long;
+  }
+  export interface PeerColorIn {
+    _: "peerColor";
+    color?: int;
+    backgroundEmojiId?: long;
+  }
+  export interface PeerColorCollectibleIn {
+    _: "peerColorCollectible";
+    collectibleId: long;
+    giftEmojiId: long;
+    backgroundEmojiId: long;
+    accentColor: int;
+    colors: int[];
+    darkAccentColor?: int;
+    darkColors?: int[];
+  }
+  export interface InputPeerColorCollectibleIn {
+    _: "inputPeerColorCollectible";
+    collectibleId: long;
+  }
+  export interface BusinessWorkHoursIn {
+    _?: "businessWorkHours";
+    openNow?: boolean;
+    timezoneId: string;
+    weeklyOpen: BusinessWeeklyOpenIn[];
+  }
+  export interface BusinessWeeklyOpenIn {
+    _?: "businessWeeklyOpen";
+    startMinute: int;
+    endMinute: int;
+  }
+  export interface InputGeoPointEmptyIn {
+    _: "inputGeoPointEmpty";
+  }
+  export interface InputGeoPointIn {
+    _: "inputGeoPoint";
+    lat: double;
+    long: double;
+    accuracyRadius?: int;
+  }
+  export interface InputBusinessGreetingMessageIn {
+    _?: "inputBusinessGreetingMessage";
+    shortcutId: int;
+    recipients: InputBusinessRecipientsIn;
+    noActivityDays: int;
+  }
+  export interface InputBusinessRecipientsIn {
+    _?: "inputBusinessRecipients";
+    existingChats?: boolean;
+    newChats?: boolean;
+    contacts?: boolean;
+    nonContacts?: boolean;
+    excludeSelected?: boolean;
+    users?: InputUserIn[];
+  }
+  export interface InputBusinessAwayMessageIn {
+    _?: "inputBusinessAwayMessage";
+    offlineOnly?: boolean;
+    shortcutId: int;
+    schedule: BusinessAwayMessageScheduleIn;
+    recipients: InputBusinessRecipientsIn;
+  }
+  export interface BusinessAwayMessageScheduleAlwaysIn {
+    _: "businessAwayMessageScheduleAlways";
+  }
+  export interface BusinessAwayMessageScheduleOutsideWorkHoursIn {
+    _: "businessAwayMessageScheduleOutsideWorkHours";
+  }
+  export interface BusinessAwayMessageScheduleCustomIn {
+    _: "businessAwayMessageScheduleCustom";
+    startDate: int;
+    endDate: int;
+  }
+  export interface BusinessBotRightsIn {
+    _?: "businessBotRights";
+    reply?: boolean;
+    readMessages?: boolean;
+    deleteSentMessages?: boolean;
+    deleteReceivedMessages?: boolean;
+    editName?: boolean;
+    editBio?: boolean;
+    editProfilePhoto?: boolean;
+    editUsername?: boolean;
+    viewGifts?: boolean;
+    sellGifts?: boolean;
+    changeGiftSettings?: boolean;
+    transferAndUpgradeGifts?: boolean;
+    transferStars?: boolean;
+    manageStories?: boolean;
+  }
+  export interface InputBusinessBotRecipientsIn {
+    _?: "inputBusinessBotRecipients";
+    existingChats?: boolean;
+    newChats?: boolean;
+    contacts?: boolean;
+    nonContacts?: boolean;
+    excludeSelected?: boolean;
+    users?: InputUserIn[];
+    excludeUsers?: InputUserIn[];
+  }
+  export interface InputBusinessIntroIn {
+    _?: "inputBusinessIntro";
+    title: string;
+    description: string;
+    sticker?: InputDocumentIn;
+  }
+  export interface BirthdayIn {
+    _?: "birthday";
+    day: int;
+    month: int;
+    year?: int;
+  }
+  export interface InputBusinessChatLinkIn {
+    _?: "inputBusinessChatLink";
+    message: string;
+    entities?: MessageEntityIn[];
+    title?: string;
+  }
+  export interface MessageEntityUnknownIn {
+    _: "messageEntityUnknown";
+    offset: int;
+    length: int;
+  }
+  export interface MessageEntityMentionIn {
+    _: "messageEntityMention";
+    offset: int;
+    length: int;
+  }
+  export interface MessageEntityHashtagIn {
+    _: "messageEntityHashtag";
+    offset: int;
+    length: int;
+  }
+  export interface MessageEntityBotCommandIn {
+    _: "messageEntityBotCommand";
+    offset: int;
+    length: int;
+  }
+  export interface MessageEntityUrlIn {
+    _: "messageEntityUrl";
+    offset: int;
+    length: int;
+  }
+  export interface MessageEntityEmailIn {
+    _: "messageEntityEmail";
+    offset: int;
+    length: int;
+  }
+  export interface MessageEntityBoldIn {
+    _: "messageEntityBold";
+    offset: int;
+    length: int;
+  }
+  export interface MessageEntityItalicIn {
+    _: "messageEntityItalic";
+    offset: int;
+    length: int;
+  }
+  export interface MessageEntityCodeIn {
+    _: "messageEntityCode";
+    offset: int;
+    length: int;
+  }
+  export interface MessageEntityPreIn {
+    _: "messageEntityPre";
+    offset: int;
+    length: int;
+    language: string;
+  }
+  export interface MessageEntityTextUrlIn {
+    _: "messageEntityTextUrl";
+    offset: int;
+    length: int;
+    url: string;
+  }
+  export interface MessageEntityMentionNameIn {
+    _: "messageEntityMentionName";
+    offset: int;
+    length: int;
+    userId: long;
+  }
+  export interface InputMessageEntityMentionNameIn {
+    _: "inputMessageEntityMentionName";
+    offset: int;
+    length: int;
+    userId: InputUserIn;
+  }
+  export interface MessageEntityPhoneIn {
+    _: "messageEntityPhone";
+    offset: int;
+    length: int;
+  }
+  export interface MessageEntityCashtagIn {
+    _: "messageEntityCashtag";
+    offset: int;
+    length: int;
+  }
+  export interface MessageEntityUnderlineIn {
+    _: "messageEntityUnderline";
+    offset: int;
+    length: int;
+  }
+  export interface MessageEntityStrikeIn {
+    _: "messageEntityStrike";
+    offset: int;
+    length: int;
+  }
+  export interface MessageEntityBankCardIn {
+    _: "messageEntityBankCard";
+    offset: int;
+    length: int;
+  }
+  export interface MessageEntitySpoilerIn {
+    _: "messageEntitySpoiler";
+    offset: int;
+    length: int;
+  }
+  export interface MessageEntityCustomEmojiIn {
+    _: "messageEntityCustomEmoji";
+    offset: int;
+    length: int;
+    documentId: long;
+  }
+  export interface MessageEntityBlockquoteIn {
+    _: "messageEntityBlockquote";
+    collapsed?: boolean;
+    offset: int;
+    length: int;
+  }
+  export interface MessageEntityFormattedDateIn {
+    _: "messageEntityFormattedDate";
+    relative?: boolean;
+    shortTime?: boolean;
+    longTime?: boolean;
+    shortDate?: boolean;
+    longDate?: boolean;
+    dayOfWeek?: boolean;
+    offset: int;
+    length: int;
+    date: int;
+  }
+  export interface MessageEntityDiffInsertIn {
+    _: "messageEntityDiffInsert";
+    offset: int;
+    length: int;
+  }
+  export interface MessageEntityDiffReplaceIn {
+    _: "messageEntityDiffReplace";
+    offset: int;
+    length: int;
+    oldText: string;
+  }
+  export interface MessageEntityDiffDeleteIn {
+    _: "messageEntityDiffDelete";
+    offset: int;
+    length: int;
+  }
+  export interface ReactionsNotifySettingsIn {
+    _?: "reactionsNotifySettings";
+    messagesNotifyFrom?: ReactionNotificationsFromIn;
+    storiesNotifyFrom?: ReactionNotificationsFromIn;
+    pollVotesNotifyFrom?: ReactionNotificationsFromIn;
+    sound: NotificationSoundIn;
+    showPreviews: Bool;
+  }
+  export interface ReactionNotificationsFromContactsIn {
+    _: "reactionNotificationsFromContacts";
+  }
+  export interface ReactionNotificationsFromAllIn {
+    _: "reactionNotificationsFromAll";
+  }
+  export interface ProfileTabPostsIn {
+    _: "profileTabPosts";
+  }
+  export interface ProfileTabGiftsIn {
+    _: "profileTabGifts";
+  }
+  export interface ProfileTabMediaIn {
+    _: "profileTabMedia";
+  }
+  export interface ProfileTabFilesIn {
+    _: "profileTabFiles";
+  }
+  export interface ProfileTabMusicIn {
+    _: "profileTabMusic";
+  }
+  export interface ProfileTabVoiceIn {
+    _: "profileTabVoice";
+  }
+  export interface ProfileTabLinksIn {
+    _: "profileTabLinks";
+  }
+  export interface ProfileTabGifsIn {
+    _: "profileTabGifs";
+  }
+  export interface SecureValueErrorDataIn {
+    _: "secureValueErrorData";
+    type: SecureValueTypeIn;
+    dataHash: bytes;
+    field: string;
+    text: string;
+  }
+  export interface SecureValueErrorFrontSideIn {
+    _: "secureValueErrorFrontSide";
+    type: SecureValueTypeIn;
+    fileHash: bytes;
+    text: string;
+  }
+  export interface SecureValueErrorReverseSideIn {
+    _: "secureValueErrorReverseSide";
+    type: SecureValueTypeIn;
+    fileHash: bytes;
+    text: string;
+  }
+  export interface SecureValueErrorSelfieIn {
+    _: "secureValueErrorSelfie";
+    type: SecureValueTypeIn;
+    fileHash: bytes;
+    text: string;
+  }
+  export interface SecureValueErrorFileIn {
+    _: "secureValueErrorFile";
+    type: SecureValueTypeIn;
+    fileHash: bytes;
+    text: string;
+  }
+  export interface SecureValueErrorFilesIn {
+    _: "secureValueErrorFiles";
+    type: SecureValueTypeIn;
+    fileHash: bytes[];
+    text: string;
+  }
+  export interface SecureValueErrorIn {
+    _: "secureValueError";
+    type: SecureValueTypeIn;
+    hash: bytes;
+    text: string;
+  }
+  export interface SecureValueErrorTranslationFileIn {
+    _: "secureValueErrorTranslationFile";
+    type: SecureValueTypeIn;
+    fileHash: bytes;
+    text: string;
+  }
+  export interface SecureValueErrorTranslationFilesIn {
+    _: "secureValueErrorTranslationFiles";
+    type: SecureValueTypeIn;
+    fileHash: bytes[];
+    text: string;
+  }
+  export interface InputPhoneContactIn {
+    _?: "inputPhoneContact";
+    clientId: long;
+    phone: string;
+    firstName: string;
+    lastName: string;
+    note?: TextWithEntitiesIn;
+  }
+  export interface TextWithEntitiesIn {
+    _?: "textWithEntities";
+    text: string;
+    entities: MessageEntityIn[];
+  }
+  export interface TopPeerCategoryBotsPMIn {
+    _: "topPeerCategoryBotsPM";
+  }
+  export interface TopPeerCategoryBotsInlineIn {
+    _: "topPeerCategoryBotsInline";
+  }
+  export interface TopPeerCategoryCorrespondentsIn {
+    _: "topPeerCategoryCorrespondents";
+  }
+  export interface TopPeerCategoryGroupsIn {
+    _: "topPeerCategoryGroups";
+  }
+  export interface TopPeerCategoryChannelsIn {
+    _: "topPeerCategoryChannels";
+  }
+  export interface TopPeerCategoryPhoneCallsIn {
+    _: "topPeerCategoryPhoneCalls";
+  }
+  export interface TopPeerCategoryForwardUsersIn {
+    _: "topPeerCategoryForwardUsers";
+  }
+  export interface TopPeerCategoryForwardChatsIn {
+    _: "topPeerCategoryForwardChats";
+  }
+  export interface TopPeerCategoryBotsAppIn {
+    _: "topPeerCategoryBotsApp";
+  }
+  export interface TopPeerCategoryBotsGuestChatIn {
+    _: "topPeerCategoryBotsGuestChat";
+  }
+  export interface InputMessageIDIn {
+    _: "inputMessageID";
+    id: int;
+  }
+  export interface InputMessageReplyToIn {
+    _: "inputMessageReplyTo";
+    id: int;
+  }
+  export interface InputMessagePinnedIn {
+    _: "inputMessagePinned";
+  }
+  export interface InputMessageCallbackQueryIn {
+    _: "inputMessageCallbackQuery";
+    id: int;
+    queryId: long;
+  }
+  export interface ReactionEmptyIn {
+    _: "reactionEmpty";
+  }
+  export interface ReactionEmojiIn {
+    _: "reactionEmoji";
+    emoticon: string;
+  }
+  export interface ReactionCustomEmojiIn {
+    _: "reactionCustomEmoji";
+    documentId: long;
+  }
+  export interface ReactionPaidIn {
+    _: "reactionPaid";
+  }
+  export interface InputMessagesFilterEmptyIn {
+    _: "inputMessagesFilterEmpty";
+  }
+  export interface InputMessagesFilterPhotosIn {
+    _: "inputMessagesFilterPhotos";
+  }
+  export interface InputMessagesFilterVideoIn {
+    _: "inputMessagesFilterVideo";
+  }
+  export interface InputMessagesFilterPhotoVideoIn {
+    _: "inputMessagesFilterPhotoVideo";
+  }
+  export interface InputMessagesFilterDocumentIn {
+    _: "inputMessagesFilterDocument";
+  }
+  export interface InputMessagesFilterUrlIn {
+    _: "inputMessagesFilterUrl";
+  }
+  export interface InputMessagesFilterGifIn {
+    _: "inputMessagesFilterGif";
+  }
+  export interface InputMessagesFilterVoiceIn {
+    _: "inputMessagesFilterVoice";
+  }
+  export interface InputMessagesFilterMusicIn {
+    _: "inputMessagesFilterMusic";
+  }
+  export interface InputMessagesFilterChatPhotosIn {
+    _: "inputMessagesFilterChatPhotos";
+  }
+  export interface InputMessagesFilterPhoneCallsIn {
+    _: "inputMessagesFilterPhoneCalls";
+    missed?: boolean;
+  }
+  export interface InputMessagesFilterRoundVoiceIn {
+    _: "inputMessagesFilterRoundVoice";
+  }
+  export interface InputMessagesFilterRoundVideoIn {
+    _: "inputMessagesFilterRoundVideo";
+  }
+  export interface InputMessagesFilterMyMentionsIn {
+    _: "inputMessagesFilterMyMentions";
+  }
+  export interface InputMessagesFilterGeoIn {
+    _: "inputMessagesFilterGeo";
+  }
+  export interface InputMessagesFilterContactsIn {
+    _: "inputMessagesFilterContacts";
+  }
+  export interface InputMessagesFilterPinnedIn {
+    _: "inputMessagesFilterPinned";
+  }
+  export interface InputMessagesFilterPollIn {
+    _: "inputMessagesFilterPoll";
+  }
+  export interface SendMessageTypingActionIn {
+    _: "sendMessageTypingAction";
+  }
+  export interface SendMessageCancelActionIn {
+    _: "sendMessageCancelAction";
+  }
+  export interface SendMessageRecordVideoActionIn {
+    _: "sendMessageRecordVideoAction";
+  }
+  export interface SendMessageUploadVideoActionIn {
+    _: "sendMessageUploadVideoAction";
+    progress: int;
+  }
+  export interface SendMessageRecordAudioActionIn {
+    _: "sendMessageRecordAudioAction";
+  }
+  export interface SendMessageUploadAudioActionIn {
+    _: "sendMessageUploadAudioAction";
+    progress: int;
+  }
+  export interface SendMessageUploadPhotoActionIn {
+    _: "sendMessageUploadPhotoAction";
+    progress: int;
+  }
+  export interface SendMessageUploadDocumentActionIn {
+    _: "sendMessageUploadDocumentAction";
+    progress: int;
+  }
+  export interface SendMessageGeoLocationActionIn {
+    _: "sendMessageGeoLocationAction";
+  }
+  export interface SendMessageChooseContactActionIn {
+    _: "sendMessageChooseContactAction";
+  }
+  export interface SendMessageGamePlayActionIn {
+    _: "sendMessageGamePlayAction";
+  }
+  export interface SendMessageRecordRoundActionIn {
+    _: "sendMessageRecordRoundAction";
+  }
+  export interface SendMessageUploadRoundActionIn {
+    _: "sendMessageUploadRoundAction";
+    progress: int;
+  }
+  export interface SpeakingInGroupCallActionIn {
+    _: "speakingInGroupCallAction";
+  }
+  export interface SendMessageHistoryImportActionIn {
+    _: "sendMessageHistoryImportAction";
+    progress: int;
+  }
+  export interface SendMessageChooseStickerActionIn {
+    _: "sendMessageChooseStickerAction";
+  }
+  export interface SendMessageEmojiInteractionIn {
+    _: "sendMessageEmojiInteraction";
+    emoticon: string;
+    msgId: int;
+    interaction: DataJSONIn;
+  }
+  export interface SendMessageEmojiInteractionSeenIn {
+    _: "sendMessageEmojiInteractionSeen";
+    emoticon: string;
+  }
+  export interface SendMessageTextDraftActionIn {
+    _: "sendMessageTextDraftAction";
+    randomId?: long;
+    text: TextWithEntitiesIn;
+  }
+  export interface InputSendMessageRichMessageDraftActionIn {
+    _: "inputSendMessageRichMessageDraftAction";
+    randomId?: long;
+    richMessage: InputRichMessageIn;
+  }
+  export interface InputRichMessageIn {
+    _: "inputRichMessage";
+    rtl?: boolean;
+    noautolink?: boolean;
+    blocks: PageBlockIn[];
+    photos?: InputPhotoIn[];
+    documents?: InputDocumentIn[];
+    users?: InputUserIn[];
+  }
+  export interface PageBlockUnsupportedIn {
+    _: "pageBlockUnsupported";
+  }
+  export interface PageBlockTitleIn {
+    _: "pageBlockTitle";
+    text: RichTextIn;
+  }
+  export interface TextEmptyIn {
+    _: "textEmpty";
+  }
+  export interface TextPlainIn {
+    _: "textPlain";
+    text: string;
+  }
+  export interface TextBoldIn {
+    _: "textBold";
+    text: RichTextIn;
+  }
+  export interface TextItalicIn {
+    _: "textItalic";
+    text: RichTextIn;
+  }
+  export interface TextUnderlineIn {
+    _: "textUnderline";
+    text: RichTextIn;
+  }
+  export interface TextStrikeIn {
+    _: "textStrike";
+    text: RichTextIn;
+  }
+  export interface TextFixedIn {
+    _: "textFixed";
+    text: RichTextIn;
+  }
+  export interface TextUrlIn {
+    _: "textUrl";
+    text: RichTextIn;
+    url: string;
+    webpageId: long;
+  }
+  export interface TextEmailIn {
+    _: "textEmail";
+    text: RichTextIn;
+    email: string;
+  }
+  export interface TextConcatIn {
+    _: "textConcat";
+    texts: RichTextIn[];
+  }
+  export interface TextSubscriptIn {
+    _: "textSubscript";
+    text: RichTextIn;
+  }
+  export interface TextSuperscriptIn {
+    _: "textSuperscript";
+    text: RichTextIn;
+  }
+  export interface TextMarkedIn {
+    _: "textMarked";
+    text: RichTextIn;
+  }
+  export interface TextPhoneIn {
+    _: "textPhone";
+    text: RichTextIn;
+    phone: string;
+  }
+  export interface TextImageIn {
+    _: "textImage";
+    documentId: long;
+    w: int;
+    h: int;
+  }
+  export interface TextAnchorIn {
+    _: "textAnchor";
+    text: RichTextIn;
+    name: string;
+  }
+  export interface TextMathIn {
+    _: "textMath";
+    source: string;
+  }
+  export interface TextCustomEmojiIn {
+    _: "textCustomEmoji";
+    documentId: long;
+    alt: string;
+  }
+  export interface TextSpoilerIn {
+    _: "textSpoiler";
+    text: RichTextIn;
+  }
+  export interface TextMentionIn {
+    _: "textMention";
+    text: RichTextIn;
+  }
+  export interface TextHashtagIn {
+    _: "textHashtag";
+    text: RichTextIn;
+  }
+  export interface TextBotCommandIn {
+    _: "textBotCommand";
+    text: RichTextIn;
+  }
+  export interface TextCashtagIn {
+    _: "textCashtag";
+    text: RichTextIn;
+  }
+  export interface TextAutoUrlIn {
+    _: "textAutoUrl";
+    text: RichTextIn;
+  }
+  export interface TextAutoEmailIn {
+    _: "textAutoEmail";
+    text: RichTextIn;
+  }
+  export interface TextAutoPhoneIn {
+    _: "textAutoPhone";
+    text: RichTextIn;
+  }
+  export interface TextBankCardIn {
+    _: "textBankCard";
+    text: RichTextIn;
+  }
+  export interface TextMentionNameIn {
+    _: "textMentionName";
+    text: RichTextIn;
+    userId: long;
+  }
+  export interface TextDateIn {
+    _: "textDate";
+    relative?: boolean;
+    shortTime?: boolean;
+    longTime?: boolean;
+    shortDate?: boolean;
+    longDate?: boolean;
+    dayOfWeek?: boolean;
+    text: RichTextIn;
+    date: int;
+  }
+  export interface PageBlockSubtitleIn {
+    _: "pageBlockSubtitle";
+    text: RichTextIn;
+  }
+  export interface PageBlockAuthorDateIn {
+    _: "pageBlockAuthorDate";
+    author: RichTextIn;
+    publishedDate: int;
+  }
+  export interface PageBlockHeaderIn {
+    _: "pageBlockHeader";
+    text: RichTextIn;
+  }
+  export interface PageBlockSubheaderIn {
+    _: "pageBlockSubheader";
+    text: RichTextIn;
+  }
+  export interface PageBlockParagraphIn {
+    _: "pageBlockParagraph";
+    text: RichTextIn;
+  }
+  export interface PageBlockPreformattedIn {
+    _: "pageBlockPreformatted";
+    text: RichTextIn;
+    language: string;
+  }
+  export interface PageBlockFooterIn {
+    _: "pageBlockFooter";
+    text: RichTextIn;
+  }
+  export interface PageBlockDividerIn {
+    _: "pageBlockDivider";
+  }
+  export interface PageBlockAnchorIn {
+    _: "pageBlockAnchor";
+    name: string;
+  }
+  export interface PageBlockListIn {
+    _: "pageBlockList";
+    items: PageListItemIn[];
+  }
+  export interface PageListItemTextIn {
+    _: "pageListItemText";
+    checkbox?: boolean;
+    checked?: boolean;
+    text: RichTextIn;
+  }
+  export interface PageListItemBlocksIn {
+    _: "pageListItemBlocks";
+    checkbox?: boolean;
+    checked?: boolean;
+    blocks: PageBlockIn[];
+  }
+  export interface PageBlockBlockquoteIn {
+    _: "pageBlockBlockquote";
+    text: RichTextIn;
+    caption: RichTextIn;
+  }
+  export interface PageBlockPullquoteIn {
+    _: "pageBlockPullquote";
+    text: RichTextIn;
+    caption: RichTextIn;
+  }
+  export interface PageBlockPhotoIn {
+    _: "pageBlockPhoto";
+    spoiler?: boolean;
+    photoId: long;
+    caption: PageCaptionIn;
+    url?: string;
+    webpageId?: long;
+  }
+  export interface PageCaptionIn {
+    _?: "pageCaption";
+    text: RichTextIn;
+    credit: RichTextIn;
+  }
+  export interface PageBlockVideoIn {
+    _: "pageBlockVideo";
+    autoplay?: boolean;
+    loop?: boolean;
+    spoiler?: boolean;
+    videoId: long;
+    caption: PageCaptionIn;
+  }
+  export interface PageBlockCoverIn {
+    _: "pageBlockCover";
+    cover: PageBlockIn;
+  }
+  export interface PageBlockEmbedIn {
+    _: "pageBlockEmbed";
+    fullWidth?: boolean;
+    allowScrolling?: boolean;
+    url?: string;
+    html?: string;
+    posterPhotoId?: long;
+    w?: int;
+    h?: int;
+    caption: PageCaptionIn;
+  }
+  export interface PageBlockEmbedPostIn {
+    _: "pageBlockEmbedPost";
+    url: string;
+    webpageId: long;
+    authorPhotoId: long;
+    author: string;
+    date: int;
+    blocks: PageBlockIn[];
+    caption: PageCaptionIn;
+  }
+  export interface PageBlockCollageIn {
+    _: "pageBlockCollage";
+    items: PageBlockIn[];
+    caption: PageCaptionIn;
+  }
+  export interface PageBlockSlideshowIn {
+    _: "pageBlockSlideshow";
+    items: PageBlockIn[];
+    caption: PageCaptionIn;
+  }
+  export interface PageBlockChannelIn {
+    _: "pageBlockChannel";
+    channel: ChatIn;
+  }
+  export interface ChatEmptyIn {
+    _: "chatEmpty";
+    id: long;
+  }
+  export interface ChatIn {
+    _: "chat";
+    creator?: boolean;
+    left?: boolean;
+    deactivated?: boolean;
+    callActive?: boolean;
+    callNotEmpty?: boolean;
+    noforwards?: boolean;
+    id: long;
+    title: string;
+    photo: ChatPhotoIn;
+    participantsCount: int;
+    date: int;
+    version: int;
+    migratedTo?: InputChannelIn;
+    adminRights?: ChatAdminRightsIn;
+    defaultBannedRights?: ChatBannedRightsIn;
+  }
+  export interface ChatPhotoEmptyIn {
+    _: "chatPhotoEmpty";
+  }
+  export interface ChatPhotoIn {
+    _: "chatPhoto";
+    hasVideo?: boolean;
+    photoId: long;
+    strippedThumb?: bytes;
+    dcId: int;
+  }
+  export interface InputChannelEmptyIn {
+    _: "inputChannelEmpty";
+  }
+  export interface InputChannelIn {
+    _: "inputChannel";
+    channelId: long;
+    accessHash: long;
+  }
+  export interface InputChannelFromMessageIn {
+    _: "inputChannelFromMessage";
+    peer: InputPeerIn;
+    msgId: int;
+    channelId: long;
+  }
+  export interface ChatAdminRightsIn {
+    _?: "chatAdminRights";
+    changeInfo?: boolean;
+    postMessages?: boolean;
+    editMessages?: boolean;
+    deleteMessages?: boolean;
+    banUsers?: boolean;
+    inviteUsers?: boolean;
+    pinMessages?: boolean;
+    addAdmins?: boolean;
+    anonymous?: boolean;
+    manageCall?: boolean;
+    other?: boolean;
+    manageTopics?: boolean;
+    postStories?: boolean;
+    editStories?: boolean;
+    deleteStories?: boolean;
+    manageDirectMessages?: boolean;
+    manageRanks?: boolean;
+  }
+  export interface ChatBannedRightsIn {
+    _?: "chatBannedRights";
+    viewMessages?: boolean;
+    sendMessages?: boolean;
+    sendMedia?: boolean;
+    sendStickers?: boolean;
+    sendGifs?: boolean;
+    sendGames?: boolean;
+    sendInline?: boolean;
+    embedLinks?: boolean;
+    sendPolls?: boolean;
+    changeInfo?: boolean;
+    inviteUsers?: boolean;
+    pinMessages?: boolean;
+    manageTopics?: boolean;
+    sendPhotos?: boolean;
+    sendVideos?: boolean;
+    sendRoundvideos?: boolean;
+    sendAudios?: boolean;
+    sendVoices?: boolean;
+    sendDocs?: boolean;
+    sendPlain?: boolean;
+    editRank?: boolean;
+    sendReactions?: boolean;
+    untilDate: int;
+  }
+  export interface ChatForbiddenIn {
+    _: "chatForbidden";
+    id: long;
+    title: string;
+  }
+  export interface ChannelIn {
+    _: "channel";
+    creator?: boolean;
+    left?: boolean;
+    broadcast?: boolean;
+    verified?: boolean;
+    megagroup?: boolean;
+    restricted?: boolean;
+    signatures?: boolean;
+    min?: boolean;
+    scam?: boolean;
+    hasLink?: boolean;
+    hasGeo?: boolean;
+    slowmodeEnabled?: boolean;
+    callActive?: boolean;
+    callNotEmpty?: boolean;
+    fake?: boolean;
+    gigagroup?: boolean;
+    noforwards?: boolean;
+    joinToSend?: boolean;
+    joinRequest?: boolean;
+    forum?: boolean;
+    storiesHidden?: boolean;
+    storiesHiddenMin?: boolean;
+    storiesUnavailable?: boolean;
+    signatureProfiles?: boolean;
+    autotranslation?: boolean;
+    broadcastMessagesAllowed?: boolean;
+    monoforum?: boolean;
+    forumTabs?: boolean;
+    id: long;
+    accessHash?: long;
+    title: string;
+    username?: string;
+    photo: ChatPhotoIn;
+    date: int;
+    restrictionReason?: RestrictionReasonIn[];
+    adminRights?: ChatAdminRightsIn;
+    bannedRights?: ChatBannedRightsIn;
+    defaultBannedRights?: ChatBannedRightsIn;
+    participantsCount?: int;
+    usernames?: UsernameIn[];
+    storiesMaxId?: RecentStoryIn;
+    color?: PeerColorIn;
+    profileColor?: PeerColorIn;
+    emojiStatus?: EmojiStatusIn;
+    level?: int;
+    subscriptionUntilDate?: int;
+    botVerificationIcon?: long;
+    sendPaidMessagesStars?: long;
+    linkedMonoforumId?: long;
+  }
+  export interface RestrictionReasonIn {
+    _?: "restrictionReason";
+    platform: string;
+    reason: string;
+    text: string;
+  }
+  export interface UsernameIn {
+    _?: "username";
+    editable?: boolean;
+    active?: boolean;
+    username: string;
+  }
+  export interface RecentStoryIn {
+    _?: "recentStory";
+    live?: boolean;
+    maxId?: int;
+  }
+  export interface ChannelForbiddenIn {
+    _: "channelForbidden";
+    broadcast?: boolean;
+    megagroup?: boolean;
+    monoforum?: boolean;
+    id: long;
+    accessHash: long;
+    title: string;
+    untilDate?: int;
+  }
+  export interface PageBlockAudioIn {
+    _: "pageBlockAudio";
+    audioId: long;
+    caption: PageCaptionIn;
+  }
+  export interface PageBlockKickerIn {
+    _: "pageBlockKicker";
+    text: RichTextIn;
+  }
+  export interface PageBlockTableIn {
+    _: "pageBlockTable";
+    bordered?: boolean;
+    striped?: boolean;
+    title: RichTextIn;
+    rows: PageTableRowIn[];
+  }
+  export interface PageTableRowIn {
+    _?: "pageTableRow";
+    cells: PageTableCellIn[];
+  }
+  export interface PageTableCellIn {
+    _?: "pageTableCell";
+    header?: boolean;
+    alignCenter?: boolean;
+    alignRight?: boolean;
+    valignMiddle?: boolean;
+    valignBottom?: boolean;
+    text?: RichTextIn;
+    colspan?: int;
+    rowspan?: int;
+  }
+  export interface PageBlockOrderedListIn {
+    _: "pageBlockOrderedList";
+    reversed?: boolean;
+    items: PageListOrderedItemIn[];
+    start?: int;
+    type?: string;
+  }
+  export interface PageListOrderedItemTextIn {
+    _: "pageListOrderedItemText";
+    checkbox?: boolean;
+    checked?: boolean;
+    num?: string;
+    text: RichTextIn;
+    value?: int;
+    type?: string;
+  }
+  export interface PageListOrderedItemBlocksIn {
+    _: "pageListOrderedItemBlocks";
+    checkbox?: boolean;
+    checked?: boolean;
+    num?: string;
+    blocks: PageBlockIn[];
+    value?: int;
+    type?: string;
+  }
+  export interface PageBlockDetailsIn {
+    _: "pageBlockDetails";
+    open?: boolean;
+    blocks: PageBlockIn[];
+    title: RichTextIn;
+  }
+  export interface PageBlockRelatedArticlesIn {
+    _: "pageBlockRelatedArticles";
+    title: RichTextIn;
+    articles: PageRelatedArticleIn[];
+  }
+  export interface PageRelatedArticleIn {
+    _?: "pageRelatedArticle";
+    url: string;
+    webpageId: long;
+    title?: string;
+    description?: string;
+    photoId?: long;
+    author?: string;
+    publishedDate?: int;
+  }
+  export interface PageBlockMapIn {
+    _: "pageBlockMap";
+    geo: GeoPointIn;
+    zoom: int;
+    w: int;
+    h: int;
+    caption: PageCaptionIn;
+  }
+  export interface GeoPointEmptyIn {
+    _: "geoPointEmpty";
+  }
+  export interface GeoPointIn {
+    _: "geoPoint";
+    long: double;
+    lat: double;
+    accessHash: long;
+    accuracyRadius?: int;
+  }
+  export interface PageBlockHeading1In {
+    _: "pageBlockHeading1";
+    text: RichTextIn;
+  }
+  export interface PageBlockHeading2In {
+    _: "pageBlockHeading2";
+    text: RichTextIn;
+  }
+  export interface PageBlockHeading3In {
+    _: "pageBlockHeading3";
+    text: RichTextIn;
+  }
+  export interface PageBlockHeading4In {
+    _: "pageBlockHeading4";
+    text: RichTextIn;
+  }
+  export interface PageBlockHeading5In {
+    _: "pageBlockHeading5";
+    text: RichTextIn;
+  }
+  export interface PageBlockHeading6In {
+    _: "pageBlockHeading6";
+    text: RichTextIn;
+  }
+  export interface PageBlockMathIn {
+    _: "pageBlockMath";
+    source: string;
+  }
+  export interface PageBlockThinkingIn {
+    _: "pageBlockThinking";
+    text: RichTextIn;
+  }
+  export interface InputPageBlockMapIn {
+    _: "inputPageBlockMap";
+    geo: InputGeoPointIn;
+    zoom: int;
+    w: int;
+    h: int;
+    caption: PageCaptionIn;
+  }
+  export interface PageBlockBlockquoteBlocksIn {
+    _: "pageBlockBlockquoteBlocks";
+    blocks: PageBlockIn[];
+    caption: RichTextIn;
+  }
+  export interface InputRichMessageHTMLIn {
+    _: "inputRichMessageHTML";
+    rtl?: boolean;
+    noautolink?: boolean;
+    html: string;
+    photos?: InputPhotoIn[];
+    documents?: InputDocumentIn[];
+    users?: InputUserIn[];
+  }
+  export interface InputRichMessageMarkdownIn {
+    _: "inputRichMessageMarkdown";
+    rtl?: boolean;
+    noautolink?: boolean;
+    markdown: string;
+    photos?: InputPhotoIn[];
+    documents?: InputDocumentIn[];
+    users?: InputUserIn[];
+  }
+  export interface SendMessageRichMessageDraftActionIn {
+    _: "sendMessageRichMessageDraftAction";
+    randomId?: long;
+    richMessage: RichMessageIn;
+  }
+  export interface RichMessageIn {
+    _?: "richMessage";
+    rtl?: boolean;
+    part?: boolean;
+    blocks: PageBlockIn[];
+    photos: PhotoIn[];
+    documents: DocumentIn[];
+  }
+  export interface PhotoEmptyIn {
+    _: "photoEmpty";
+    id: long;
+  }
+  export interface PhotoIn {
+    _: "photo";
+    hasStickers?: boolean;
+    id: long;
+    accessHash: long;
+    fileReference: bytes;
+    date: int;
+    sizes: PhotoSizeIn[];
+    videoSizes?: VideoSizeIn[];
+    dcId: int;
+  }
+  export interface PhotoSizeEmptyIn {
+    _: "photoSizeEmpty";
+    type: string;
+  }
+  export interface PhotoSizeIn {
+    _: "photoSize";
+    type: string;
+    w: int;
+    h: int;
+    size: int;
+  }
+  export interface PhotoCachedSizeIn {
+    _: "photoCachedSize";
+    type: string;
+    w: int;
+    h: int;
+    bytes: bytes;
+  }
+  export interface PhotoStrippedSizeIn {
+    _: "photoStrippedSize";
+    type: string;
+    bytes: bytes;
+  }
+  export interface PhotoSizeProgressiveIn {
+    _: "photoSizeProgressive";
+    type: string;
+    w: int;
+    h: int;
+    sizes: int[];
+  }
+  export interface PhotoPathSizeIn {
+    _: "photoPathSize";
+    type: string;
+    bytes: bytes;
+  }
+  export interface VideoSizeIn {
+    _: "videoSize";
+    type: string;
+    w: int;
+    h: int;
+    size: int;
+    videoStartTs?: double;
+  }
+  export interface VideoSizeEmojiMarkupIn {
+    _: "videoSizeEmojiMarkup";
+    emojiId: long;
+    backgroundColors: int[];
+  }
+  export interface VideoSizeStickerMarkupIn {
+    _: "videoSizeStickerMarkup";
+    stickerset: InputStickerSetIn;
+    stickerId: long;
+    backgroundColors: int[];
+  }
+  export interface InputStickerSetEmptyIn {
+    _: "inputStickerSetEmpty";
+  }
+  export interface InputStickerSetIDIn {
+    _: "inputStickerSetID";
+    id: long;
+    accessHash: long;
+  }
+  export interface InputStickerSetShortNameIn {
+    _: "inputStickerSetShortName";
+    shortName: string;
+  }
+  export interface InputStickerSetAnimatedEmojiIn {
+    _: "inputStickerSetAnimatedEmoji";
+  }
+  export interface InputStickerSetDiceIn {
+    _: "inputStickerSetDice";
+    emoticon: string;
+  }
+  export interface InputStickerSetAnimatedEmojiAnimationsIn {
+    _: "inputStickerSetAnimatedEmojiAnimations";
+  }
+  export interface InputStickerSetPremiumGiftsIn {
+    _: "inputStickerSetPremiumGifts";
+  }
+  export interface InputStickerSetEmojiGenericAnimationsIn {
+    _: "inputStickerSetEmojiGenericAnimations";
+  }
+  export interface InputStickerSetEmojiDefaultStatusesIn {
+    _: "inputStickerSetEmojiDefaultStatuses";
+  }
+  export interface InputStickerSetEmojiDefaultTopicIconsIn {
+    _: "inputStickerSetEmojiDefaultTopicIcons";
+  }
+  export interface InputStickerSetEmojiChannelDefaultStatusesIn {
+    _: "inputStickerSetEmojiChannelDefaultStatuses";
+  }
+  export interface InputStickerSetTonGiftsIn {
+    _: "inputStickerSetTonGifts";
+  }
+  export interface DocumentEmptyIn {
+    _: "documentEmpty";
+    id: long;
+  }
+  export interface DocumentIn {
+    _: "document";
+    id: long;
+    accessHash: long;
+    fileReference: bytes;
+    date: int;
+    mimeType: string;
+    size: long;
+    thumbs?: PhotoSizeIn[];
+    videoThumbs?: VideoSizeIn[];
+    dcId: int;
+    attributes: DocumentAttributeIn[];
+  }
+  export interface DocumentAttributeImageSizeIn {
+    _: "documentAttributeImageSize";
+    w: int;
+    h: int;
+  }
+  export interface DocumentAttributeAnimatedIn {
+    _: "documentAttributeAnimated";
+  }
+  export interface DocumentAttributeStickerIn {
+    _: "documentAttributeSticker";
+    mask?: boolean;
+    alt: string;
+    stickerset: InputStickerSetIn;
+    maskCoords?: MaskCoordsIn;
+  }
+  export interface MaskCoordsIn {
+    _?: "maskCoords";
+    n: int;
+    x: double;
+    y: double;
+    zoom: double;
+  }
+  export interface DocumentAttributeVideoIn {
+    _: "documentAttributeVideo";
+    roundMessage?: boolean;
+    supportsStreaming?: boolean;
+    nosound?: boolean;
+    duration: double;
+    w: int;
+    h: int;
+    preloadPrefixSize?: int;
+    videoStartTs?: double;
+    videoCodec?: string;
+  }
+  export interface DocumentAttributeAudioIn {
+    _: "documentAttributeAudio";
+    voice?: boolean;
+    duration: int;
+    title?: string;
+    performer?: string;
+    waveform?: bytes;
+  }
+  export interface DocumentAttributeFilenameIn {
+    _: "documentAttributeFilename";
+    fileName: string;
+  }
+  export interface DocumentAttributeHasStickersIn {
+    _: "documentAttributeHasStickers";
+  }
+  export interface DocumentAttributeCustomEmojiIn {
+    _: "documentAttributeCustomEmoji";
+    free?: boolean;
+    textColor?: boolean;
+    alt: string;
+    stickerset: InputStickerSetIn;
+  }
+  export interface InputReplyToMessageIn {
+    _: "inputReplyToMessage";
+    replyToMsgId: int;
+    topMsgId?: int;
+    replyToPeerId?: InputPeerIn;
+    quoteText?: string;
+    quoteEntities?: MessageEntityIn[];
+    quoteOffset?: int;
+    monoforumPeerId?: InputPeerIn;
+    todoItemId?: int;
+    pollOption?: bytes;
+  }
+  export interface InputReplyToStoryIn {
+    _: "inputReplyToStory";
+    peer: InputPeerIn;
+    storyId: int;
+  }
+  export interface InputReplyToMonoForumIn {
+    _: "inputReplyToMonoForum";
+    monoforumPeerId: InputPeerIn;
+  }
+  export interface ReplyKeyboardHideIn {
+    _: "replyKeyboardHide";
+    selective?: boolean;
+  }
+  export interface ReplyKeyboardForceReplyIn {
+    _: "replyKeyboardForceReply";
+    singleUse?: boolean;
+    selective?: boolean;
+    placeholder?: string;
+  }
+  export interface ReplyKeyboardMarkupIn {
+    _: "replyKeyboardMarkup";
+    resize?: boolean;
+    singleUse?: boolean;
+    selective?: boolean;
+    persistent?: boolean;
+    rows: KeyboardButtonRowIn[];
+    placeholder?: string;
+  }
+  export interface KeyboardButtonRowIn {
+    _?: "keyboardButtonRow";
+    buttons: KeyboardButtonIn[];
+  }
+  export interface KeyboardButtonIn {
+    _: "keyboardButton";
+    style?: KeyboardButtonStyleIn;
+    text: string;
+  }
+  export interface KeyboardButtonStyleIn {
+    _?: "keyboardButtonStyle";
+    bgPrimary?: boolean;
+    bgDanger?: boolean;
+    bgSuccess?: boolean;
+    icon?: long;
+  }
+  export interface KeyboardButtonUrlIn {
+    _: "keyboardButtonUrl";
+    style?: KeyboardButtonStyleIn;
+    text: string;
+    url: string;
+  }
+  export interface KeyboardButtonCallbackIn {
+    _: "keyboardButtonCallback";
+    requiresPassword?: boolean;
+    style?: KeyboardButtonStyleIn;
+    text: string;
+    data: bytes;
+  }
+  export interface KeyboardButtonRequestPhoneIn {
+    _: "keyboardButtonRequestPhone";
+    style?: KeyboardButtonStyleIn;
+    text: string;
+  }
+  export interface KeyboardButtonRequestGeoLocationIn {
+    _: "keyboardButtonRequestGeoLocation";
+    style?: KeyboardButtonStyleIn;
+    text: string;
+  }
+  export interface KeyboardButtonSwitchInlineIn {
+    _: "keyboardButtonSwitchInline";
+    samePeer?: boolean;
+    style?: KeyboardButtonStyleIn;
+    text: string;
+    query: string;
+    peerTypes?: InlineQueryPeerTypeIn[];
+  }
+  export interface InlineQueryPeerTypeSameBotPMIn {
+    _: "inlineQueryPeerTypeSameBotPM";
+  }
+  export interface InlineQueryPeerTypePMIn {
+    _: "inlineQueryPeerTypePM";
+  }
+  export interface InlineQueryPeerTypeChatIn {
+    _: "inlineQueryPeerTypeChat";
+  }
+  export interface InlineQueryPeerTypeMegagroupIn {
+    _: "inlineQueryPeerTypeMegagroup";
+  }
+  export interface InlineQueryPeerTypeBroadcastIn {
+    _: "inlineQueryPeerTypeBroadcast";
+  }
+  export interface InlineQueryPeerTypeBotPMIn {
+    _: "inlineQueryPeerTypeBotPM";
+  }
+  export interface KeyboardButtonGameIn {
+    _: "keyboardButtonGame";
+    style?: KeyboardButtonStyleIn;
+    text: string;
+  }
+  export interface KeyboardButtonBuyIn {
+    _: "keyboardButtonBuy";
+    style?: KeyboardButtonStyleIn;
+    text: string;
+  }
+  export interface KeyboardButtonUrlAuthIn {
+    _: "keyboardButtonUrlAuth";
+    style?: KeyboardButtonStyleIn;
+    text: string;
+    fwdText?: string;
+    url: string;
+    buttonId: int;
+  }
+  export interface InputKeyboardButtonUrlAuthIn {
+    _: "inputKeyboardButtonUrlAuth";
+    requestWriteAccess?: boolean;
+    style?: KeyboardButtonStyleIn;
+    text: string;
+    fwdText?: string;
+    url: string;
+    bot: InputUserIn;
+  }
+  export interface KeyboardButtonRequestPollIn {
+    _: "keyboardButtonRequestPoll";
+    style?: KeyboardButtonStyleIn;
+    quiz?: Bool;
+    text: string;
+  }
+  export interface InputKeyboardButtonUserProfileIn {
+    _: "inputKeyboardButtonUserProfile";
+    style?: KeyboardButtonStyleIn;
+    text: string;
+    userId: InputUserIn;
+  }
+  export interface KeyboardButtonUserProfileIn {
+    _: "keyboardButtonUserProfile";
+    style?: KeyboardButtonStyleIn;
+    text: string;
+    userId: long;
+  }
+  export interface KeyboardButtonWebViewIn {
+    _: "keyboardButtonWebView";
+    style?: KeyboardButtonStyleIn;
+    text: string;
+    url: string;
+  }
+  export interface KeyboardButtonSimpleWebViewIn {
+    _: "keyboardButtonSimpleWebView";
+    style?: KeyboardButtonStyleIn;
+    text: string;
+    url: string;
+  }
+  export interface KeyboardButtonRequestPeerIn {
+    _: "keyboardButtonRequestPeer";
+    style?: KeyboardButtonStyleIn;
+    text: string;
+    buttonId: int;
+    peerType: RequestPeerTypeIn;
+    maxQuantity: int;
+  }
+  export interface RequestPeerTypeUserIn {
+    _: "requestPeerTypeUser";
+    bot?: Bool;
+    premium?: Bool;
+  }
+  export interface RequestPeerTypeChatIn {
+    _: "requestPeerTypeChat";
+    creator?: boolean;
+    botParticipant?: boolean;
+    hasUsername?: Bool;
+    forum?: Bool;
+    userAdminRights?: ChatAdminRightsIn;
+    botAdminRights?: ChatAdminRightsIn;
+  }
+  export interface RequestPeerTypeBroadcastIn {
+    _: "requestPeerTypeBroadcast";
+    creator?: boolean;
+    hasUsername?: Bool;
+    userAdminRights?: ChatAdminRightsIn;
+    botAdminRights?: ChatAdminRightsIn;
+  }
+  export interface RequestPeerTypeCreateBotIn {
+    _: "requestPeerTypeCreateBot";
+    botManaged?: boolean;
+    suggestedName?: string;
+    suggestedUsername?: string;
+  }
+  export interface InputKeyboardButtonRequestPeerIn {
+    _: "inputKeyboardButtonRequestPeer";
+    nameRequested?: boolean;
+    usernameRequested?: boolean;
+    photoRequested?: boolean;
+    style?: KeyboardButtonStyleIn;
+    text: string;
+    buttonId: int;
+    peerType: RequestPeerTypeIn;
+    maxQuantity: int;
+  }
+  export interface KeyboardButtonCopyIn {
+    _: "keyboardButtonCopy";
+    style?: KeyboardButtonStyleIn;
+    text: string;
+    copyText: string;
+  }
+  export interface ReplyInlineMarkupIn {
+    _: "replyInlineMarkup";
+    rows: KeyboardButtonRowIn[];
+  }
+  export interface InputQuickReplyShortcutIn {
+    _: "inputQuickReplyShortcut";
+    shortcut: string;
+  }
+  export interface InputQuickReplyShortcutIdIn {
+    _: "inputQuickReplyShortcutId";
+    shortcutId: int;
+  }
+  export interface SuggestedPostIn {
+    _?: "suggestedPost";
+    accepted?: boolean;
+    rejected?: boolean;
+    price?: StarsAmountIn;
+    scheduleDate?: int;
+  }
+  export interface StarsAmountIn {
+    _: "starsAmount";
+    amount: long;
+    nanos: int;
+  }
+  export interface StarsTonAmountIn {
+    _: "starsTonAmount";
+    amount: long;
+  }
+  export interface InputMediaEmptyIn {
+    _: "inputMediaEmpty";
+  }
+  export interface InputMediaUploadedPhotoIn {
+    _: "inputMediaUploadedPhoto";
+    spoiler?: boolean;
+    livePhoto?: boolean;
+    file: InputFileIn;
+    stickers?: InputDocumentIn[];
+    ttlSeconds?: int;
+    video?: InputDocumentIn;
+  }
+  export interface InputMediaPhotoIn {
+    _: "inputMediaPhoto";
+    spoiler?: boolean;
+    livePhoto?: boolean;
+    id: InputPhotoIn;
+    ttlSeconds?: int;
+    video?: InputDocumentIn;
+  }
+  export interface InputMediaGeoPointIn {
+    _: "inputMediaGeoPoint";
+    geoPoint: InputGeoPointIn;
+  }
+  export interface InputMediaContactIn {
+    _: "inputMediaContact";
+    phoneNumber: string;
+    firstName: string;
+    lastName: string;
+    vcard: string;
+  }
+  export interface InputMediaUploadedDocumentIn {
+    _: "inputMediaUploadedDocument";
+    nosoundVideo?: boolean;
+    forceFile?: boolean;
+    spoiler?: boolean;
+    file: InputFileIn;
+    thumb?: InputFileIn;
+    mimeType: string;
+    attributes: DocumentAttributeIn[];
+    stickers?: InputDocumentIn[];
+    videoCover?: InputPhotoIn;
+    videoTimestamp?: int;
+    ttlSeconds?: int;
+  }
+  export interface InputMediaDocumentIn {
+    _: "inputMediaDocument";
+    spoiler?: boolean;
+    id: InputDocumentIn;
+    videoCover?: InputPhotoIn;
+    videoTimestamp?: int;
+    ttlSeconds?: int;
+    query?: string;
+  }
+  export interface InputMediaVenueIn {
+    _: "inputMediaVenue";
+    geoPoint: InputGeoPointIn;
+    title: string;
+    address: string;
+    provider: string;
+    venueId: string;
+    venueType: string;
+  }
+  export interface InputMediaPhotoExternalIn {
+    _: "inputMediaPhotoExternal";
+    spoiler?: boolean;
+    url: string;
+    ttlSeconds?: int;
+  }
+  export interface InputMediaDocumentExternalIn {
+    _: "inputMediaDocumentExternal";
+    spoiler?: boolean;
+    url: string;
+    ttlSeconds?: int;
+    videoCover?: InputPhotoIn;
+    videoTimestamp?: int;
+  }
+  export interface InputMediaGameIn {
+    _: "inputMediaGame";
+    id: InputGameIn;
+  }
+  export interface InputGameIDIn {
+    _: "inputGameID";
+    id: long;
+    accessHash: long;
+  }
+  export interface InputGameShortNameIn {
+    _: "inputGameShortName";
+    botId: InputUserIn;
+    shortName: string;
+  }
+  export interface InputMediaInvoiceIn {
+    _: "inputMediaInvoice";
+    title: string;
+    description: string;
+    photo?: InputWebDocumentIn;
+    invoice: InvoiceIn;
+    payload: bytes;
+    provider?: string;
+    providerData: DataJSONIn;
+    startParam?: string;
+    extendedMedia?: InputMediaIn;
+  }
+  export interface InputWebDocumentIn {
+    _?: "inputWebDocument";
+    url: string;
+    size: int;
+    mimeType: string;
+    attributes: DocumentAttributeIn[];
+  }
+  export interface InvoiceIn {
+    _?: "invoice";
+    test?: boolean;
+    nameRequested?: boolean;
+    phoneRequested?: boolean;
+    emailRequested?: boolean;
+    shippingAddressRequested?: boolean;
+    flexible?: boolean;
+    phoneToProvider?: boolean;
+    emailToProvider?: boolean;
+    recurring?: boolean;
+    currency: string;
+    prices: LabeledPriceIn[];
+    maxTipAmount?: long;
+    suggestedTipAmounts?: long[];
+    termsUrl?: string;
+    subscriptionPeriod?: int;
+  }
+  export interface LabeledPriceIn {
+    _?: "labeledPrice";
+    label: string;
+    amount: long;
+  }
+  export interface InputMediaGeoLiveIn {
+    _: "inputMediaGeoLive";
+    stopped?: boolean;
+    geoPoint: InputGeoPointIn;
+    heading?: int;
+    period?: int;
+    proximityNotificationRadius?: int;
+  }
+  export interface InputMediaPollIn {
+    _: "inputMediaPoll";
+    poll: PollIn;
+    correctAnswers?: int[];
+    attachedMedia?: InputMediaIn;
+    solution?: string;
+    solutionEntities?: MessageEntityIn[];
+    solutionMedia?: InputMediaIn;
+  }
+  export interface PollIn {
+    _?: "poll";
+    id: long;
+    closed?: boolean;
+    publicVoters?: boolean;
+    multipleChoice?: boolean;
+    quiz?: boolean;
+    openAnswers?: boolean;
+    revotingDisabled?: boolean;
+    shuffleAnswers?: boolean;
+    hideResultsUntilClose?: boolean;
+    creator?: boolean;
+    subscribersOnly?: boolean;
+    question: TextWithEntitiesIn;
+    answers: PollAnswerIn[];
+    closePeriod?: int;
+    closeDate?: int;
+    countriesIso2?: string[];
+    hash: long;
+  }
+  export interface PollAnswerIn {
+    _: "pollAnswer";
+    text: TextWithEntitiesIn;
+    option: bytes;
+    media?: MessageMediaIn;
+    addedBy?: PeerIn;
+    date?: int;
+  }
+  export interface MessageMediaEmptyIn {
+    _: "messageMediaEmpty";
+  }
+  export interface MessageMediaPhotoIn {
+    _: "messageMediaPhoto";
+    spoiler?: boolean;
+    livePhoto?: boolean;
+    photo?: PhotoIn;
+    ttlSeconds?: int;
+    video?: DocumentIn;
+  }
+  export interface MessageMediaGeoIn {
+    _: "messageMediaGeo";
+    geo: GeoPointIn;
+  }
+  export interface MessageMediaContactIn {
+    _: "messageMediaContact";
+    phoneNumber: string;
+    firstName: string;
+    lastName: string;
+    vcard: string;
+    userId: long;
+  }
+  export interface MessageMediaUnsupportedIn {
+    _: "messageMediaUnsupported";
+  }
+  export interface MessageMediaDocumentIn {
+    _: "messageMediaDocument";
+    nopremium?: boolean;
+    spoiler?: boolean;
+    video?: boolean;
+    round?: boolean;
+    voice?: boolean;
+    document?: DocumentIn;
+    altDocuments?: DocumentIn[];
+    videoCover?: PhotoIn;
+    videoTimestamp?: int;
+    ttlSeconds?: int;
+  }
+  export interface MessageMediaWebPageIn {
+    _: "messageMediaWebPage";
+    forceLargeMedia?: boolean;
+    forceSmallMedia?: boolean;
+    manual?: boolean;
+    safe?: boolean;
+    webpage: WebPageIn;
+  }
+  export interface WebPageEmptyIn {
+    _: "webPageEmpty";
+    id: long;
+    url?: string;
+  }
+  export interface WebPagePendingIn {
+    _: "webPagePending";
+    id: long;
+    url?: string;
+    date: int;
+  }
+  export interface WebPageIn {
+    _: "webPage";
+    hasLargeMedia?: boolean;
+    videoCoverPhoto?: boolean;
+    id: long;
+    url: string;
+    displayUrl: string;
+    hash: int;
+    type?: string;
+    siteName?: string;
+    title?: string;
+    description?: string;
+    photo?: PhotoIn;
+    embedUrl?: string;
+    embedType?: string;
+    embedWidth?: int;
+    embedHeight?: int;
+    duration?: int;
+    author?: string;
+    document?: DocumentIn;
+    cachedPage?: PageIn;
+    attributes?: WebPageAttributeIn[];
+  }
+  export interface PageIn {
+    _?: "page";
+    part?: boolean;
+    rtl?: boolean;
+    v2?: boolean;
+    url: string;
+    blocks: PageBlockIn[];
+    photos: PhotoIn[];
+    documents: DocumentIn[];
+    views?: int;
+  }
+  export interface WebPageAttributeThemeIn {
+    _: "webPageAttributeTheme";
+    documents?: DocumentIn[];
+    settings?: ThemeSettingsIn;
+  }
+  export interface ThemeSettingsIn {
+    _?: "themeSettings";
+    messageColorsAnimated?: boolean;
+    baseTheme: BaseThemeIn;
+    accentColor: int;
+    outboxAccentColor?: int;
+    messageColors?: int[];
+    wallpaper?: WallPaperIn;
+  }
+  export interface WallPaperIn {
+    _: "wallPaper";
+    id: long;
+    creator?: boolean;
+    default?: boolean;
+    pattern?: boolean;
+    dark?: boolean;
+    accessHash: long;
+    slug: string;
+    document: DocumentIn;
+    settings?: WallPaperSettingsIn;
+  }
+  export interface WallPaperNoFileIn {
+    _: "wallPaperNoFile";
+    id: long;
+    default?: boolean;
+    dark?: boolean;
+    settings?: WallPaperSettingsIn;
+  }
+  export interface WebPageAttributeStoryIn {
+    _: "webPageAttributeStory";
+    peer: PeerIn;
+    id: int;
+    story?: StoryItemIn;
+  }
+  export interface PeerUserIn {
+    _: "peerUser";
+    userId: long;
+  }
+  export interface PeerChatIn {
+    _: "peerChat";
+    chatId: long;
+  }
+  export interface PeerChannelIn {
+    _: "peerChannel";
+    channelId: long;
+  }
+  export interface StoryItemDeletedIn {
+    _: "storyItemDeleted";
+    id: int;
+  }
+  export interface StoryItemSkippedIn {
+    _: "storyItemSkipped";
+    closeFriends?: boolean;
+    live?: boolean;
+    id: int;
+    date: int;
+    expireDate: int;
+  }
+  export interface StoryItemIn {
+    _: "storyItem";
+    pinned?: boolean;
+    public?: boolean;
+    closeFriends?: boolean;
+    min?: boolean;
+    noforwards?: boolean;
+    edited?: boolean;
+    contacts?: boolean;
+    selectedContacts?: boolean;
+    out?: boolean;
+    id: int;
+    date: int;
+    fromId?: PeerIn;
+    fwdFrom?: StoryFwdHeaderIn;
+    expireDate: int;
+    caption?: string;
+    entities?: MessageEntityIn[];
+    media: MessageMediaIn;
+    mediaAreas?: MediaAreaIn[];
+    privacy?: PrivacyRuleIn[];
+    views?: StoryViewsIn;
+    sentReaction?: ReactionIn;
+    albums?: int[];
+    music?: DocumentIn;
+  }
+  export interface StoryFwdHeaderIn {
+    _?: "storyFwdHeader";
+    modified?: boolean;
+    from?: PeerIn;
+    fromName?: string;
+    storyId?: int;
+  }
+  export interface MediaAreaVenueIn {
+    _: "mediaAreaVenue";
+    coordinates: MediaAreaCoordinatesIn;
+    geo: GeoPointIn;
+    title: string;
+    address: string;
+    provider: string;
+    venueId: string;
+    venueType: string;
+  }
+  export interface MediaAreaCoordinatesIn {
+    _?: "mediaAreaCoordinates";
+    x: double;
+    y: double;
+    w: double;
+    h: double;
+    rotation: double;
+    radius?: double;
+  }
+  export interface InputMediaAreaVenueIn {
+    _: "inputMediaAreaVenue";
+    coordinates: MediaAreaCoordinatesIn;
+    queryId: long;
+    resultId: string;
+  }
+  export interface MediaAreaGeoPointIn {
+    _: "mediaAreaGeoPoint";
+    coordinates: MediaAreaCoordinatesIn;
+    geo: GeoPointIn;
+    address?: GeoPointAddressIn;
+  }
+  export interface GeoPointAddressIn {
+    _?: "geoPointAddress";
+    countryIso2: string;
+    state?: string;
+    city?: string;
+    street?: string;
+  }
+  export interface MediaAreaSuggestedReactionIn {
+    _: "mediaAreaSuggestedReaction";
+    dark?: boolean;
+    flipped?: boolean;
+    coordinates: MediaAreaCoordinatesIn;
+    reaction: ReactionIn;
+  }
+  export interface MediaAreaChannelPostIn {
+    _: "mediaAreaChannelPost";
+    coordinates: MediaAreaCoordinatesIn;
+    channelId: long;
+    msgId: int;
+  }
+  export interface InputMediaAreaChannelPostIn {
+    _: "inputMediaAreaChannelPost";
+    coordinates: MediaAreaCoordinatesIn;
+    channel: InputChannelIn;
+    msgId: int;
+  }
+  export interface MediaAreaUrlIn {
+    _: "mediaAreaUrl";
+    coordinates: MediaAreaCoordinatesIn;
+    url: string;
+  }
+  export interface MediaAreaWeatherIn {
+    _: "mediaAreaWeather";
+    coordinates: MediaAreaCoordinatesIn;
+    emoji: string;
+    temperatureC: double;
+    color: int;
+  }
+  export interface MediaAreaStarGiftIn {
+    _: "mediaAreaStarGift";
+    coordinates: MediaAreaCoordinatesIn;
+    slug: string;
+  }
+  export interface PrivacyValueAllowContactsIn {
+    _: "privacyValueAllowContacts";
+  }
+  export interface PrivacyValueAllowAllIn {
+    _: "privacyValueAllowAll";
+  }
+  export interface PrivacyValueAllowUsersIn {
+    _: "privacyValueAllowUsers";
+    users: long[];
+  }
+  export interface PrivacyValueDisallowContactsIn {
+    _: "privacyValueDisallowContacts";
+  }
+  export interface PrivacyValueDisallowAllIn {
+    _: "privacyValueDisallowAll";
+  }
+  export interface PrivacyValueDisallowUsersIn {
+    _: "privacyValueDisallowUsers";
+    users: long[];
+  }
+  export interface PrivacyValueAllowChatParticipantsIn {
+    _: "privacyValueAllowChatParticipants";
+    chats: long[];
+  }
+  export interface PrivacyValueDisallowChatParticipantsIn {
+    _: "privacyValueDisallowChatParticipants";
+    chats: long[];
+  }
+  export interface PrivacyValueAllowCloseFriendsIn {
+    _: "privacyValueAllowCloseFriends";
+  }
+  export interface PrivacyValueAllowPremiumIn {
+    _: "privacyValueAllowPremium";
+  }
+  export interface PrivacyValueAllowBotsIn {
+    _: "privacyValueAllowBots";
+  }
+  export interface PrivacyValueDisallowBotsIn {
+    _: "privacyValueDisallowBots";
+  }
+  export interface StoryViewsIn {
+    _?: "storyViews";
+    hasViewers?: boolean;
+    viewsCount: int;
+    forwardsCount?: int;
+    reactions?: ReactionCountIn[];
+    reactionsCount?: int;
+    recentViewers?: long[];
+  }
+  export interface ReactionCountIn {
+    _?: "reactionCount";
+    chosenOrder?: int;
+    reaction: ReactionIn;
+    count: int;
+  }
+  export interface WebPageAttributeStickerSetIn {
+    _: "webPageAttributeStickerSet";
+    emojis?: boolean;
+    textColor?: boolean;
+    stickers: DocumentIn[];
+  }
+  export interface WebPageAttributeUniqueStarGiftIn {
+    _: "webPageAttributeUniqueStarGift";
+    gift: StarGiftIn;
+  }
+  export interface StarGiftIn {
+    _: "starGift";
+    limited?: boolean;
+    soldOut?: boolean;
+    birthday?: boolean;
+    requirePremium?: boolean;
+    limitedPerUser?: boolean;
+    peerColorAvailable?: boolean;
+    auction?: boolean;
+    id: long;
+    sticker: DocumentIn;
+    stars: long;
+    availabilityRemains?: int;
+    availabilityTotal?: int;
+    availabilityResale?: long;
+    convertStars: long;
+    firstSaleDate?: int;
+    lastSaleDate?: int;
+    upgradeStars?: long;
+    resellMinStars?: long;
+    title?: string;
+    releasedBy?: PeerIn;
+    perUserTotal?: int;
+    perUserRemains?: int;
+    lockedUntilDate?: int;
+    auctionSlug?: string;
+    giftsPerRound?: int;
+    auctionStartDate?: int;
+    upgradeVariants?: int;
+    background?: StarGiftBackgroundIn;
+  }
+  export interface StarGiftBackgroundIn {
+    _?: "starGiftBackground";
+    centerColor: int;
+    edgeColor: int;
+    textColor: int;
+  }
+  export interface StarGiftUniqueIn {
+    _: "starGiftUnique";
+    requirePremium?: boolean;
+    resaleTonOnly?: boolean;
+    themeAvailable?: boolean;
+    burned?: boolean;
+    crafted?: boolean;
+    id: long;
+    giftId: long;
+    title: string;
+    slug: string;
+    num: int;
+    ownerId?: PeerIn;
+    ownerName?: string;
+    ownerAddress?: string;
+    attributes: StarGiftAttributeIn[];
+    availabilityIssued: int;
+    availabilityTotal: int;
+    giftAddress?: string;
+    resellAmount?: StarsAmountIn[];
+    releasedBy?: PeerIn;
+    valueAmount?: long;
+    valueCurrency?: string;
+    valueUsdAmount?: long;
+    themePeer?: PeerIn;
+    peerColor?: PeerColorIn;
+    hostId?: PeerIn;
+    offerMinStars?: int;
+    craftChancePermille?: int;
+  }
+  export interface StarGiftAttributeModelIn {
+    _: "starGiftAttributeModel";
+    crafted?: boolean;
+    name: string;
+    document: DocumentIn;
+    rarity: StarGiftAttributeRarityIn;
+  }
+  export interface StarGiftAttributeRarityIn {
+    _: "starGiftAttributeRarity";
+    permille: int;
+  }
+  export interface StarGiftAttributeRarityUncommonIn {
+    _: "starGiftAttributeRarityUncommon";
+  }
+  export interface StarGiftAttributeRarityRareIn {
+    _: "starGiftAttributeRarityRare";
+  }
+  export interface StarGiftAttributeRarityEpicIn {
+    _: "starGiftAttributeRarityEpic";
+  }
+  export interface StarGiftAttributeRarityLegendaryIn {
+    _: "starGiftAttributeRarityLegendary";
+  }
+  export interface StarGiftAttributePatternIn {
+    _: "starGiftAttributePattern";
+    name: string;
+    document: DocumentIn;
+    rarity: StarGiftAttributeRarityIn;
+  }
+  export interface StarGiftAttributeBackdropIn {
+    _: "starGiftAttributeBackdrop";
+    name: string;
+    backdropId: int;
+    centerColor: int;
+    edgeColor: int;
+    patternColor: int;
+    textColor: int;
+    rarity: StarGiftAttributeRarityIn;
+  }
+  export interface StarGiftAttributeOriginalDetailsIn {
+    _: "starGiftAttributeOriginalDetails";
+    senderId?: PeerIn;
+    recipientId: PeerIn;
+    date: int;
+    message?: TextWithEntitiesIn;
+  }
+  export interface WebPageAttributeStarGiftCollectionIn {
+    _: "webPageAttributeStarGiftCollection";
+    icons: DocumentIn[];
+  }
+  export interface WebPageAttributeStarGiftAuctionIn {
+    _: "webPageAttributeStarGiftAuction";
+    gift: StarGiftIn;
+    endDate: int;
+  }
+  export interface WebPageAttributeAiComposeToneIn {
+    _: "webPageAttributeAiComposeTone";
+    emojiId: long;
+  }
+  export interface WebPageNotModifiedIn {
+    _: "webPageNotModified";
+    cachedPageViews?: int;
+  }
+  export interface MessageMediaVenueIn {
+    _: "messageMediaVenue";
+    geo: GeoPointIn;
+    title: string;
+    address: string;
+    provider: string;
+    venueId: string;
+    venueType: string;
+  }
+  export interface MessageMediaGameIn {
+    _: "messageMediaGame";
+    game: GameIn;
+  }
+  export interface GameIn {
+    _?: "game";
+    id: long;
+    accessHash: long;
+    shortName: string;
+    title: string;
+    description: string;
+    photo: PhotoIn;
+    document?: DocumentIn;
+  }
+  export interface MessageMediaInvoiceIn {
+    _: "messageMediaInvoice";
+    shippingAddressRequested?: boolean;
+    test?: boolean;
+    title: string;
+    description: string;
+    photo?: WebDocumentIn;
+    receiptMsgId?: int;
+    currency: string;
+    totalAmount: long;
+    startParam: string;
+    extendedMedia?: MessageExtendedMediaIn;
+  }
+  export interface WebDocumentIn {
+    _: "webDocument";
+    url: string;
+    accessHash: long;
+    size: int;
+    mimeType: string;
+    attributes: DocumentAttributeIn[];
+  }
+  export interface WebDocumentNoProxyIn {
+    _: "webDocumentNoProxy";
+    url: string;
+    size: int;
+    mimeType: string;
+    attributes: DocumentAttributeIn[];
+  }
+  export interface MessageExtendedMediaPreviewIn {
+    _: "messageExtendedMediaPreview";
+    w?: int;
+    h?: int;
+    thumb?: PhotoSizeIn;
+    videoDuration?: int;
+  }
+  export interface MessageExtendedMediaIn {
+    _: "messageExtendedMedia";
+    media: MessageMediaIn;
+  }
+  export interface MessageMediaGeoLiveIn {
+    _: "messageMediaGeoLive";
+    geo: GeoPointIn;
+    heading?: int;
+    period: int;
+    proximityNotificationRadius?: int;
+  }
+  export interface MessageMediaPollIn {
+    _: "messageMediaPoll";
+    poll: PollIn;
+    results: PollResultsIn;
+    attachedMedia?: MessageMediaIn;
+  }
+  export interface PollResultsIn {
+    _?: "pollResults";
+    min?: boolean;
+    hasUnreadVotes?: boolean;
+    canViewStats?: boolean;
+    results?: PollAnswerVotersIn[];
+    totalVoters?: int;
+    recentVoters?: PeerIn[];
+    solution?: string;
+    solutionEntities?: MessageEntityIn[];
+    solutionMedia?: MessageMediaIn;
+  }
+  export interface PollAnswerVotersIn {
+    _?: "pollAnswerVoters";
+    chosen?: boolean;
+    correct?: boolean;
+    option: bytes;
+    voters?: int;
+    recentVoters?: PeerIn[];
+  }
+  export interface MessageMediaDiceIn {
+    _: "messageMediaDice";
+    value: int;
+    emoticon: string;
+    gameOutcome?: MessagesEmojiGameOutcomeIn;
+  }
+  export interface MessagesEmojiGameOutcomeIn {
+    _?: "messages.emojiGameOutcome";
+    seed: bytes;
+    stakeTonAmount: long;
+    tonAmount: long;
+  }
+  export interface MessageMediaStoryIn {
+    _: "messageMediaStory";
+    viaMention?: boolean;
+    peer: PeerIn;
+    id: int;
+    story?: StoryItemIn;
+  }
+  export interface MessageMediaGiveawayIn {
+    _: "messageMediaGiveaway";
+    onlyNewSubscribers?: boolean;
+    winnersAreVisible?: boolean;
+    channels: long[];
+    countriesIso2?: string[];
+    prizeDescription?: string;
+    quantity: int;
+    months?: int;
+    stars?: long;
+    untilDate: int;
+  }
+  export interface MessageMediaGiveawayResultsIn {
+    _: "messageMediaGiveawayResults";
+    onlyNewSubscribers?: boolean;
+    refunded?: boolean;
+    channelId: long;
+    additionalPeersCount?: int;
+    launchMsgId: int;
+    winnersCount: int;
+    unclaimedCount: int;
+    winners: long[];
+    months?: int;
+    stars?: long;
+    prizeDescription?: string;
+    untilDate: int;
+  }
+  export interface MessageMediaPaidMediaIn {
+    _: "messageMediaPaidMedia";
+    starsAmount: long;
+    extendedMedia: MessageExtendedMediaIn[];
+  }
+  export interface MessageMediaToDoIn {
+    _: "messageMediaToDo";
+    todo: TodoListIn;
+    completions?: TodoCompletionIn[];
+  }
+  export interface TodoListIn {
+    _?: "todoList";
+    othersCanAppend?: boolean;
+    othersCanComplete?: boolean;
+    title: TextWithEntitiesIn;
+    list: TodoItemIn[];
+  }
+  export interface TodoItemIn {
+    _?: "todoItem";
+    id: int;
+    title: TextWithEntitiesIn;
+  }
+  export interface TodoCompletionIn {
+    _?: "todoCompletion";
+    id: int;
+    completedBy: PeerIn;
+    date: int;
+  }
+  export interface MessageMediaVideoStreamIn {
+    _: "messageMediaVideoStream";
+    rtmpStream?: boolean;
+    call: InputGroupCallIn;
+  }
+  export interface InputGroupCallIn {
+    _: "inputGroupCall";
+    id: long;
+    accessHash: long;
+  }
+  export interface InputGroupCallSlugIn {
+    _: "inputGroupCallSlug";
+    slug: string;
+  }
+  export interface InputGroupCallInviteMessageIn {
+    _: "inputGroupCallInviteMessage";
+    msgId: int;
+  }
+  export interface InputPollAnswerIn {
+    _: "inputPollAnswer";
+    text: TextWithEntitiesIn;
+    media?: InputMediaIn;
+  }
+  export interface InputMediaDiceIn {
+    _: "inputMediaDice";
+    emoticon: string;
+  }
+  export interface InputMediaStoryIn {
+    _: "inputMediaStory";
+    peer: InputPeerIn;
+    id: int;
+  }
+  export interface InputMediaWebPageIn {
+    _: "inputMediaWebPage";
+    forceLargeMedia?: boolean;
+    forceSmallMedia?: boolean;
+    optional?: boolean;
+    url: string;
+  }
+  export interface InputMediaPaidMediaIn {
+    _: "inputMediaPaidMedia";
+    starsAmount: long;
+    extendedMedia: InputMediaIn[];
+    payload?: string;
+  }
+  export interface InputMediaTodoIn {
+    _: "inputMediaTodo";
+    todo: TodoListIn;
+  }
+  export interface InputMediaStakeDiceIn {
+    _: "inputMediaStakeDice";
+    gameHash: string;
+    tonAmount: long;
+    clientSeed: bytes;
+  }
+  export interface InputChatPhotoEmptyIn {
+    _: "inputChatPhotoEmpty";
+  }
+  export interface InputChatUploadedPhotoIn {
+    _: "inputChatUploadedPhoto";
+    file?: InputFileIn;
+    video?: InputFileIn;
+    videoStartTs?: double;
+    videoEmojiMarkup?: VideoSizeIn;
+  }
+  export interface InputChatPhotoIn {
+    _: "inputChatPhoto";
+    id: InputPhotoIn;
+  }
+  export interface InputEncryptedChatIn {
+    _?: "inputEncryptedChat";
+    chatId: int;
+    accessHash: long;
+  }
+  export interface InputEncryptedFileEmptyIn {
+    _: "inputEncryptedFileEmpty";
+  }
+  export interface InputEncryptedFileUploadedIn {
+    _: "inputEncryptedFileUploaded";
+    id: long;
+    parts: int;
+    md5Checksum: string;
+    keyFingerprint: int;
+  }
+  export interface InputEncryptedFileIn {
+    _: "inputEncryptedFile";
+    id: long;
+    accessHash: long;
+  }
+  export interface InputEncryptedFileBigUploadedIn {
+    _: "inputEncryptedFileBigUploaded";
+    id: long;
+    parts: int;
+    keyFingerprint: int;
+  }
+  export interface StarsSubscriptionPricingIn {
+    _?: "starsSubscriptionPricing";
+    period: int;
+    amount: long;
+  }
+  export interface InputBotInlineResultIn {
+    _: "inputBotInlineResult";
+    id: string;
+    type: string;
+    title?: string;
+    description?: string;
+    url?: string;
+    thumb?: InputWebDocumentIn;
+    content?: InputWebDocumentIn;
+    sendMessage: InputBotInlineMessageIn;
+  }
+  export interface InputBotInlineMessageMediaAutoIn {
+    _: "inputBotInlineMessageMediaAuto";
+    invertMedia?: boolean;
+    message: string;
+    entities?: MessageEntityIn[];
+    replyMarkup?: ReplyMarkupIn;
+  }
+  export interface InputBotInlineMessageTextIn {
+    _: "inputBotInlineMessageText";
+    noWebpage?: boolean;
+    invertMedia?: boolean;
+    message: string;
+    entities?: MessageEntityIn[];
+    replyMarkup?: ReplyMarkupIn;
+  }
+  export interface InputBotInlineMessageMediaGeoIn {
+    _: "inputBotInlineMessageMediaGeo";
+    geoPoint: InputGeoPointIn;
+    heading?: int;
+    period?: int;
+    proximityNotificationRadius?: int;
+    replyMarkup?: ReplyMarkupIn;
+  }
+  export interface InputBotInlineMessageMediaVenueIn {
+    _: "inputBotInlineMessageMediaVenue";
+    geoPoint: InputGeoPointIn;
+    title: string;
+    address: string;
+    provider: string;
+    venueId: string;
+    venueType: string;
+    replyMarkup?: ReplyMarkupIn;
+  }
+  export interface InputBotInlineMessageMediaContactIn {
+    _: "inputBotInlineMessageMediaContact";
+    phoneNumber: string;
+    firstName: string;
+    lastName: string;
+    vcard: string;
+    replyMarkup?: ReplyMarkupIn;
+  }
+  export interface InputBotInlineMessageGameIn {
+    _: "inputBotInlineMessageGame";
+    replyMarkup?: ReplyMarkupIn;
+  }
+  export interface InputBotInlineMessageMediaInvoiceIn {
+    _: "inputBotInlineMessageMediaInvoice";
+    title: string;
+    description: string;
+    photo?: InputWebDocumentIn;
+    invoice: InvoiceIn;
+    payload: bytes;
+    provider: string;
+    providerData: DataJSONIn;
+    replyMarkup?: ReplyMarkupIn;
+  }
+  export interface InputBotInlineMessageMediaWebPageIn {
+    _: "inputBotInlineMessageMediaWebPage";
+    invertMedia?: boolean;
+    forceLargeMedia?: boolean;
+    forceSmallMedia?: boolean;
+    optional?: boolean;
+    message: string;
+    entities?: MessageEntityIn[];
+    url: string;
+    replyMarkup?: ReplyMarkupIn;
+  }
+  export interface InputBotInlineMessageRichMessageIn {
+    _: "inputBotInlineMessageRichMessage";
+    replyMarkup?: ReplyMarkupIn;
+    richMessage: InputRichMessageIn;
+  }
+  export interface InputBotInlineResultPhotoIn {
+    _: "inputBotInlineResultPhoto";
+    id: string;
+    type: string;
+    photo: InputPhotoIn;
+    sendMessage: InputBotInlineMessageIn;
+  }
+  export interface InputBotInlineResultDocumentIn {
+    _: "inputBotInlineResultDocument";
+    id: string;
+    type: string;
+    title?: string;
+    description?: string;
+    document: InputDocumentIn;
+    sendMessage: InputBotInlineMessageIn;
+  }
+  export interface InputBotInlineResultGameIn {
+    _: "inputBotInlineResultGame";
+    id: string;
+    shortName: string;
+    sendMessage: InputBotInlineMessageIn;
+  }
+  export interface InlineBotSwitchPMIn {
+    _?: "inlineBotSwitchPM";
+    text: string;
+    startParam: string;
+  }
+  export interface InlineBotWebViewIn {
+    _?: "inlineBotWebView";
+    text: string;
+    url: string;
+  }
+  export interface InputBotInlineMessageIDIn {
+    _: "inputBotInlineMessageID";
+    dcId: int;
+    id: long;
+    accessHash: long;
+  }
+  export interface InputBotInlineMessageID64In {
+    _: "inputBotInlineMessageID64";
+    dcId: int;
+    ownerId: long;
+    id: int;
+    accessHash: long;
+  }
+  export interface InputStickeredMediaPhotoIn {
+    _: "inputStickeredMediaPhoto";
+    id: InputPhotoIn;
+  }
+  export interface InputStickeredMediaDocumentIn {
+    _: "inputStickeredMediaDocument";
+    id: InputDocumentIn;
+  }
+  export interface ShippingOptionIn {
+    _?: "shippingOption";
+    id: string;
+    title: string;
+    prices: LabeledPriceIn[];
+  }
+  export interface InputSingleMediaIn {
+    _?: "inputSingleMedia";
+    media: InputMediaIn;
+    randomId?: long;
+    message: string;
+    entities?: MessageEntityIn[];
+  }
+  export interface DialogFilterIn {
+    _: "dialogFilter";
+    contacts?: boolean;
+    nonContacts?: boolean;
+    groups?: boolean;
+    broadcasts?: boolean;
+    bots?: boolean;
+    excludeMuted?: boolean;
+    excludeRead?: boolean;
+    excludeArchived?: boolean;
+    titleNoanimate?: boolean;
+    id: int;
+    title: TextWithEntitiesIn;
+    emoticon?: string;
+    color?: int;
+    pinnedPeers: InputPeerIn[];
+    includePeers: InputPeerIn[];
+    excludePeers: InputPeerIn[];
+  }
+  export interface DialogFilterDefaultIn {
+    _: "dialogFilterDefault";
+  }
+  export interface DialogFilterChatlistIn {
+    _: "dialogFilterChatlist";
+    hasMyInvites?: boolean;
+    titleNoanimate?: boolean;
+    id: int;
+    title: TextWithEntitiesIn;
+    emoticon?: string;
+    color?: int;
+    pinnedPeers: InputPeerIn[];
+    includePeers: InputPeerIn[];
+  }
+  export interface InputChatThemeEmptyIn {
+    _: "inputChatThemeEmpty";
+  }
+  export interface InputChatThemeIn {
+    _: "inputChatTheme";
+    emoticon: string;
+  }
+  export interface InputChatThemeUniqueGiftIn {
+    _: "inputChatThemeUniqueGift";
+    slug: string;
+  }
+  export interface ChatReactionsNoneIn {
+    _: "chatReactionsNone";
+  }
+  export interface ChatReactionsAllIn {
+    _: "chatReactionsAll";
+    allowCustom?: boolean;
+  }
+  export interface ChatReactionsSomeIn {
+    _: "chatReactionsSome";
+    reactions: ReactionIn[];
+  }
+  export interface InputBotAppIDIn {
+    _: "inputBotAppID";
+    id: long;
+    accessHash: long;
+  }
+  export interface InputBotAppShortNameIn {
+    _: "inputBotAppShortName";
+    botId: InputUserIn;
+    shortName: string;
+  }
+  export interface PaidReactionPrivacyDefaultIn {
+    _: "paidReactionPrivacyDefault";
+  }
+  export interface PaidReactionPrivacyAnonymousIn {
+    _: "paidReactionPrivacyAnonymous";
+  }
+  export interface PaidReactionPrivacyPeerIn {
+    _: "paidReactionPrivacyPeer";
+    peer: InputPeerIn;
+  }
+  export interface InputAiComposeToneDefaultIn {
+    _: "inputAiComposeToneDefault";
+    tone: string;
+  }
+  export interface InputAiComposeToneIDIn {
+    _: "inputAiComposeToneID";
+    id: long;
+    accessHash: long;
+  }
+  export interface InputAiComposeToneSlugIn {
+    _: "inputAiComposeToneSlug";
+    slug: string;
+  }
+  export interface InputMessageReadMetricIn {
+    _?: "inputMessageReadMetric";
+    msgId: int;
+    viewId: long;
+    timeInViewMs: int;
+    activeTimeInViewMs: int;
+    heightToViewportRatioPermille: int;
+    seenRangeRatioPermille: int;
+  }
+  export interface ChannelMessagesFilterEmptyIn {
+    _: "channelMessagesFilterEmpty";
+  }
+  export interface ChannelMessagesFilterIn {
+    _: "channelMessagesFilter";
+    excludeNewMessages?: boolean;
+    ranges: MessageRangeIn[];
+  }
+  export interface InputFileLocationIn {
+    _: "inputFileLocation";
+    volumeId: long;
+    localId: int;
+    secret: long;
+    fileReference: bytes;
+  }
+  export interface InputEncryptedFileLocationIn {
+    _: "inputEncryptedFileLocation";
+    id: long;
+    accessHash: long;
+  }
+  export interface InputDocumentFileLocationIn {
+    _: "inputDocumentFileLocation";
+    id: long;
+    accessHash: long;
+    fileReference: bytes;
+    thumbSize: string;
+  }
+  export interface InputSecureFileLocationIn {
+    _: "inputSecureFileLocation";
+    id: long;
+    accessHash: long;
+  }
+  export interface InputTakeoutFileLocationIn {
+    _: "inputTakeoutFileLocation";
+  }
+  export interface InputPhotoFileLocationIn {
+    _: "inputPhotoFileLocation";
+    id: long;
+    accessHash: long;
+    fileReference: bytes;
+    thumbSize: string;
+  }
+  export interface InputPhotoLegacyFileLocationIn {
+    _: "inputPhotoLegacyFileLocation";
+    id: long;
+    accessHash: long;
+    fileReference: bytes;
+    volumeId: long;
+    localId: int;
+    secret: long;
+  }
+  export interface InputPeerPhotoFileLocationIn {
+    _: "inputPeerPhotoFileLocation";
+    big?: boolean;
+    peer: InputPeerIn;
+    photoId: long;
+  }
+  export interface InputStickerSetThumbIn {
+    _: "inputStickerSetThumb";
+    stickerset: InputStickerSetIn;
+    thumbVersion: int;
+  }
+  export interface InputGroupCallStreamIn {
+    _: "inputGroupCallStream";
+    call: InputGroupCallIn;
+    timeMs: long;
+    scale: int;
+    videoChannel?: int;
+    videoQuality?: int;
+  }
+  export interface InputWebFileLocationIn {
+    _: "inputWebFileLocation";
+    url: string;
+    accessHash: long;
+  }
+  export interface InputWebFileGeoPointLocationIn {
+    _: "inputWebFileGeoPointLocation";
+    geoPoint: InputGeoPointIn;
+    accessHash: long;
+    w: int;
+    h: int;
+    zoom: int;
+    scale: int;
+  }
+  export interface InputWebFileAudioAlbumThumbLocationIn {
+    _: "inputWebFileAudioAlbumThumbLocation";
+    small?: boolean;
+    document?: InputDocumentIn;
+    title?: string;
+    performer?: string;
+  }
+  export interface InputAppEventIn {
+    _?: "inputAppEvent";
+    time: double;
+    type: string;
+    peer: long;
+    data: JSONValueIn;
+  }
+  export interface ChannelParticipantsRecentIn {
+    _: "channelParticipantsRecent";
+  }
+  export interface ChannelParticipantsAdminsIn {
+    _: "channelParticipantsAdmins";
+  }
+  export interface ChannelParticipantsKickedIn {
+    _: "channelParticipantsKicked";
+    q: string;
+  }
+  export interface ChannelParticipantsBotsIn {
+    _: "channelParticipantsBots";
+  }
+  export interface ChannelParticipantsBannedIn {
+    _: "channelParticipantsBanned";
+    q: string;
+  }
+  export interface ChannelParticipantsSearchIn {
+    _: "channelParticipantsSearch";
+    q: string;
+  }
+  export interface ChannelParticipantsContactsIn {
+    _: "channelParticipantsContacts";
+    q: string;
+  }
+  export interface ChannelParticipantsMentionsIn {
+    _: "channelParticipantsMentions";
+    q?: string;
+    topMsgId?: int;
+  }
+  export interface ChannelAdminLogEventsFilterIn {
+    _?: "channelAdminLogEventsFilter";
+    join?: boolean;
+    leave?: boolean;
+    invite?: boolean;
+    ban?: boolean;
+    unban?: boolean;
+    kick?: boolean;
+    unkick?: boolean;
+    promote?: boolean;
+    demote?: boolean;
+    info?: boolean;
+    settings?: boolean;
+    pinned?: boolean;
+    edit?: boolean;
+    delete?: boolean;
+    groupCall?: boolean;
+    invites?: boolean;
+    send?: boolean;
+    forums?: boolean;
+    subExtend?: boolean;
+    editRank?: boolean;
+  }
+  export interface BotCommandScopeDefaultIn {
+    _: "botCommandScopeDefault";
+  }
+  export interface BotCommandScopeUsersIn {
+    _: "botCommandScopeUsers";
+  }
+  export interface BotCommandScopeChatsIn {
+    _: "botCommandScopeChats";
+  }
+  export interface BotCommandScopeChatAdminsIn {
+    _: "botCommandScopeChatAdmins";
+  }
+  export interface BotCommandScopePeerIn {
+    _: "botCommandScopePeer";
+    peer: InputPeerIn;
+  }
+  export interface BotCommandScopePeerAdminsIn {
+    _: "botCommandScopePeerAdmins";
+    peer: InputPeerIn;
+  }
+  export interface BotCommandScopePeerUserIn {
+    _: "botCommandScopePeerUser";
+    peer: InputPeerIn;
+    userId: InputUserIn;
+  }
+  export interface BotCommandIn {
+    _?: "botCommand";
+    command: string;
+    description: string;
+  }
+  export interface BotMenuButtonDefaultIn {
+    _: "botMenuButtonDefault";
+  }
+  export interface BotMenuButtonCommandsIn {
+    _: "botMenuButtonCommands";
+  }
+  export interface BotMenuButtonIn {
+    _: "botMenuButton";
+    text: string;
+    url: string;
+  }
+  export interface JoinChatBotResultApprovedIn {
+    _: "joinChatBotResultApproved";
+  }
+  export interface JoinChatBotResultDeclinedIn {
+    _: "joinChatBotResultDeclined";
+  }
+  export interface JoinChatBotResultQueuedIn {
+    _: "joinChatBotResultQueued";
+  }
+  export interface JoinChatBotResultWebViewIn {
+    _: "joinChatBotResultWebView";
+    url: string;
+  }
+  export interface InputInvoiceMessageIn {
+    _: "inputInvoiceMessage";
+    peer: InputPeerIn;
+    msgId: int;
+  }
+  export interface InputInvoiceSlugIn {
+    _: "inputInvoiceSlug";
+    slug: string;
+  }
+  export interface InputInvoicePremiumGiftCodeIn {
+    _: "inputInvoicePremiumGiftCode";
+    purpose: InputStorePaymentPurposeIn;
+    option: PremiumGiftCodeOptionIn;
+  }
+  export interface InputStorePaymentPremiumSubscriptionIn {
+    _: "inputStorePaymentPremiumSubscription";
+    restore?: boolean;
+    upgrade?: boolean;
+  }
+  export interface InputStorePaymentGiftPremiumIn {
+    _: "inputStorePaymentGiftPremium";
+    userId: InputUserIn;
+    currency: string;
+    amount: long;
+  }
+  export interface InputStorePaymentPremiumGiftCodeIn {
+    _: "inputStorePaymentPremiumGiftCode";
+    users: InputUserIn[];
+    boostPeer?: InputPeerIn;
+    currency: string;
+    amount: long;
+    message?: TextWithEntitiesIn;
+  }
+  export interface InputStorePaymentPremiumGiveawayIn {
+    _: "inputStorePaymentPremiumGiveaway";
+    onlyNewSubscribers?: boolean;
+    winnersAreVisible?: boolean;
+    boostPeer: InputPeerIn;
+    additionalPeers?: InputPeerIn[];
+    countriesIso2?: string[];
+    prizeDescription?: string;
+    randomId?: long;
+    untilDate: int;
+    currency: string;
+    amount: long;
+  }
+  export interface InputStorePaymentStarsTopupIn {
+    _: "inputStorePaymentStarsTopup";
+    stars: long;
+    currency: string;
+    amount: long;
+    spendPurposePeer?: InputPeerIn;
+  }
+  export interface InputStorePaymentStarsGiftIn {
+    _: "inputStorePaymentStarsGift";
+    userId: InputUserIn;
+    stars: long;
+    currency: string;
+    amount: long;
+  }
+  export interface InputStorePaymentStarsGiveawayIn {
+    _: "inputStorePaymentStarsGiveaway";
+    onlyNewSubscribers?: boolean;
+    winnersAreVisible?: boolean;
+    stars: long;
+    boostPeer: InputPeerIn;
+    additionalPeers?: InputPeerIn[];
+    countriesIso2?: string[];
+    prizeDescription?: string;
+    randomId?: long;
+    untilDate: int;
+    currency: string;
+    amount: long;
+    users: int;
+  }
+  export interface InputStorePaymentAuthCodeIn {
+    _: "inputStorePaymentAuthCode";
+    restore?: boolean;
+    phoneNumber: string;
+    phoneCodeHash: string;
+    premiumDays: int;
+    currency: string;
+    amount: long;
+  }
+  export interface PremiumGiftCodeOptionIn {
+    _?: "premiumGiftCodeOption";
+    users: int;
+    months: int;
+    storeProduct?: string;
+    storeQuantity?: int;
+    currency: string;
+    amount: long;
+  }
+  export interface InputInvoiceStarsIn {
+    _: "inputInvoiceStars";
+    purpose: InputStorePaymentPurposeIn;
+  }
+  export interface InputInvoiceChatInviteSubscriptionIn {
+    _: "inputInvoiceChatInviteSubscription";
+    hash: string;
+  }
+  export interface InputInvoiceStarGiftIn {
+    _: "inputInvoiceStarGift";
+    hideName?: boolean;
+    includeUpgrade?: boolean;
+    peer: InputPeerIn;
+    giftId: long;
+    message?: TextWithEntitiesIn;
+  }
+  export interface InputInvoiceStarGiftUpgradeIn {
+    _: "inputInvoiceStarGiftUpgrade";
+    keepOriginalDetails?: boolean;
+    stargift: InputSavedStarGiftIn;
+  }
+  export interface InputSavedStarGiftUserIn {
+    _: "inputSavedStarGiftUser";
+    msgId: int;
+  }
+  export interface InputSavedStarGiftChatIn {
+    _: "inputSavedStarGiftChat";
+    peer: InputPeerIn;
+    savedId: long;
+  }
+  export interface InputSavedStarGiftSlugIn {
+    _: "inputSavedStarGiftSlug";
+    slug: string;
+  }
+  export interface InputInvoiceStarGiftTransferIn {
+    _: "inputInvoiceStarGiftTransfer";
+    stargift: InputSavedStarGiftIn;
+    toId: InputPeerIn;
+  }
+  export interface InputInvoicePremiumGiftStarsIn {
+    _: "inputInvoicePremiumGiftStars";
+    userId: InputUserIn;
+    months: int;
+    message?: TextWithEntitiesIn;
+  }
+  export interface InputInvoiceBusinessBotTransferStarsIn {
+    _: "inputInvoiceBusinessBotTransferStars";
+    bot: InputUserIn;
+    stars: long;
+  }
+  export interface InputInvoiceStarGiftResaleIn {
+    _: "inputInvoiceStarGiftResale";
+    ton?: boolean;
+    slug: string;
+    toId: InputPeerIn;
+  }
+  export interface InputInvoiceStarGiftPrepaidUpgradeIn {
+    _: "inputInvoiceStarGiftPrepaidUpgrade";
+    peer: InputPeerIn;
+    hash: string;
+  }
+  export interface InputInvoicePremiumAuthCodeIn {
+    _: "inputInvoicePremiumAuthCode";
+    purpose: InputStorePaymentPurposeIn;
+  }
+  export interface InputInvoiceStarGiftDropOriginalDetailsIn {
+    _: "inputInvoiceStarGiftDropOriginalDetails";
+    stargift: InputSavedStarGiftIn;
+  }
+  export interface InputInvoiceStarGiftAuctionBidIn {
+    _: "inputInvoiceStarGiftAuctionBid";
+    hideName?: boolean;
+    updateBid?: boolean;
+    peer?: InputPeerIn;
+    giftId: long;
+    bidAmount: long;
+    message?: TextWithEntitiesIn;
+  }
+  export interface PaymentRequestedInfoIn {
+    _?: "paymentRequestedInfo";
+    name?: string;
+    phone?: string;
+    email?: string;
+    shippingAddress?: PostAddressIn;
+  }
+  export interface PostAddressIn {
+    _?: "postAddress";
+    streetLine1: string;
+    streetLine2: string;
+    city: string;
+    state: string;
+    countryIso2: string;
+    postCode: string;
+  }
+  export interface InputPaymentCredentialsSavedIn {
+    _: "inputPaymentCredentialsSaved";
+    id: string;
+    tmpPassword: bytes;
+  }
+  export interface InputPaymentCredentialsIn {
+    _: "inputPaymentCredentials";
+    save?: boolean;
+    data: DataJSONIn;
+  }
+  export interface InputPaymentCredentialsApplePayIn {
+    _: "inputPaymentCredentialsApplePay";
+    paymentData: DataJSONIn;
+  }
+  export interface InputPaymentCredentialsGooglePayIn {
+    _: "inputPaymentCredentialsGooglePay";
+    paymentToken: DataJSONIn;
+  }
+  export interface InputStarsTransactionIn {
+    _?: "inputStarsTransaction";
+    refund?: boolean;
+    id: string;
+  }
+  export interface StarGiftAttributeIdModelIn {
+    _: "starGiftAttributeIdModel";
+    documentId: long;
+  }
+  export interface StarGiftAttributeIdPatternIn {
+    _: "starGiftAttributeIdPattern";
+    documentId: long;
+  }
+  export interface StarGiftAttributeIdBackdropIn {
+    _: "starGiftAttributeIdBackdrop";
+    backdropId: int;
+  }
+  export interface InputStarGiftAuctionIn {
+    _: "inputStarGiftAuction";
+    giftId: long;
+  }
+  export interface InputStarGiftAuctionSlugIn {
+    _: "inputStarGiftAuctionSlug";
+    slug: string;
+  }
+  export interface InputStickerSetItemIn {
+    _?: "inputStickerSetItem";
+    document: InputDocumentIn;
+    emoji: string;
+    maskCoords?: MaskCoordsIn;
+    keywords?: string;
+  }
+  export interface PhoneCallProtocolIn {
+    _?: "phoneCallProtocol";
+    udpP2p?: boolean;
+    udpReflector?: boolean;
+    minLayer: int;
+    maxLayer: int;
+    libraryVersions: string[];
+  }
+  export interface InputPhoneCallIn {
+    _?: "inputPhoneCall";
+    id: long;
+    accessHash: long;
+  }
+  export interface PhoneCallDiscardReasonMissedIn {
+    _: "phoneCallDiscardReasonMissed";
+  }
+  export interface PhoneCallDiscardReasonDisconnectIn {
+    _: "phoneCallDiscardReasonDisconnect";
+  }
+  export interface PhoneCallDiscardReasonHangupIn {
+    _: "phoneCallDiscardReasonHangup";
+  }
+  export interface PhoneCallDiscardReasonBusyIn {
+    _: "phoneCallDiscardReasonBusy";
+  }
+  export interface PhoneCallDiscardReasonMigrateConferenceCallIn {
+    _: "phoneCallDiscardReasonMigrateConferenceCall";
+    slug: string;
+  }
+  export interface InputFolderPeerIn {
+    _?: "inputFolderPeer";
+    peer: InputPeerIn;
+    folderId: int;
+  }
+  export interface InputChatlistDialogFilterIn {
+    _?: "inputChatlistDialogFilter";
+    filterId: int;
+  }
+  export interface InputCollectibleUsernameIn {
+    _: "inputCollectibleUsername";
+    username: string;
+  }
+  export interface InputCollectiblePhoneIn {
+    _: "inputCollectiblePhone";
+    phone: string;
+  }
+  export type InputClientProxyIn = InputClientProxyIn;
+  export type JSONValueIn = JsonNullIn | JsonBoolIn | JsonNumberIn | JsonStringIn | JsonArrayIn | JsonObjectIn;
+  export type JSONObjectValueIn = JsonObjectValueIn;
+  export type MessageRangeIn = MessageRangeIn;
+  export type CodeSettingsIn = CodeSettingsIn;
+  export type EmailVerificationIn = EmailVerificationCodeIn | EmailVerificationGoogleIn | EmailVerificationAppleIn;
+  export type InputCheckPasswordSRPIn = InputCheckPasswordEmptyIn | InputCheckPasswordSRPIn;
+  export type AccountPasswordInputSettingsIn = AccountPasswordInputSettingsIn;
+  export type PasswordKdfAlgoIn = PasswordKdfAlgoUnknownIn | PasswordKdfAlgoSHA256SHA256PBKDF2HMACSHA512iter100000SHA256ModPowIn;
+  export type SecureSecretSettingsIn = SecureSecretSettingsIn;
+  export type SecurePasswordKdfAlgoIn = SecurePasswordKdfAlgoUnknownIn | SecurePasswordKdfAlgoPBKDF2HMACSHA512iter100000In | SecurePasswordKdfAlgoSHA512In;
+  export type InputPasskeyCredentialIn = InputPasskeyCredentialPublicKeyIn | InputPasskeyCredentialFirebasePNVIn;
+  export type InputPasskeyResponseIn = InputPasskeyResponseRegisterIn | InputPasskeyResponseLoginIn;
+  export type DataJSONIn = DataJSONIn;
+  export type InputPeerNotifySettingsIn = InputPeerNotifySettingsIn;
+  export type NotificationSoundIn = NotificationSoundDefaultIn | NotificationSoundNoneIn | NotificationSoundLocalIn | NotificationSoundRingtoneIn;
+  export type ReportReasonIn = InputReportReasonSpamIn | InputReportReasonViolenceIn | InputReportReasonPornographyIn | InputReportReasonChildAbuseIn | InputReportReasonOtherIn | InputReportReasonCopyrightIn | InputReportReasonGeoIrrelevantIn | InputReportReasonFakeIn | InputReportReasonIllegalDrugsIn | InputReportReasonPersonalDetailsIn;
+  export type InputPrivacyKeyIn = InputPrivacyKeyStatusTimestampIn | InputPrivacyKeyChatInviteIn | InputPrivacyKeyPhoneCallIn | InputPrivacyKeyPhoneP2PIn | InputPrivacyKeyForwardsIn | InputPrivacyKeyProfilePhotoIn | InputPrivacyKeyPhoneNumberIn | InputPrivacyKeyAddedByPhoneIn | InputPrivacyKeyVoiceMessagesIn | InputPrivacyKeyAboutIn | InputPrivacyKeyBirthdayIn | InputPrivacyKeyStarGiftsAutoSaveIn | InputPrivacyKeyNoPaidMessagesIn | InputPrivacyKeySavedMusicIn;
+  export type InputPrivacyRuleIn = InputPrivacyValueAllowContactsIn | InputPrivacyValueAllowAllIn | InputPrivacyValueAllowUsersIn | InputPrivacyValueDisallowContactsIn | InputPrivacyValueDisallowAllIn | InputPrivacyValueDisallowUsersIn | InputPrivacyValueAllowChatParticipantsIn | InputPrivacyValueDisallowChatParticipantsIn | InputPrivacyValueAllowCloseFriendsIn | InputPrivacyValueAllowPremiumIn | InputPrivacyValueAllowBotsIn | InputPrivacyValueDisallowBotsIn;
+  export type InputUserIn = InputUserEmptyIn | InputUserSelfIn | InputUserIn | InputUserFromMessageIn;
+  export type InputPeerIn = InputPeerEmptyIn | InputPeerSelfIn | InputPeerChatIn | InputPeerUserIn | InputPeerChannelIn | InputPeerUserFromMessageIn | InputPeerChannelFromMessageIn;
+  export type AccountDaysTTLIn = AccountDaysTTLIn;
+  export type SecureValueTypeIn = SecureValueTypePersonalDetailsIn | SecureValueTypePassportIn | SecureValueTypeDriverLicenseIn | SecureValueTypeIdentityCardIn | SecureValueTypeInternalPassportIn | SecureValueTypeAddressIn | SecureValueTypeUtilityBillIn | SecureValueTypeBankStatementIn | SecureValueTypeRentalAgreementIn | SecureValueTypePassportRegistrationIn | SecureValueTypeTemporaryRegistrationIn | SecureValueTypePhoneIn | SecureValueTypeEmailIn;
+  export type InputSecureValueIn = InputSecureValueIn;
+  export type SecureDataIn = SecureDataIn;
+  export type InputSecureFileIn = InputSecureFileUploadedIn | InputSecureFileIn;
+  export type SecurePlainDataIn = SecurePlainPhoneIn | SecurePlainEmailIn;
+  export type SecureValueHashIn = SecureValueHashIn;
+  export type SecureCredentialsEncryptedIn = SecureCredentialsEncryptedIn;
+  export type EmailVerifyPurposeIn = EmailVerifyPurposeLoginSetupIn | EmailVerifyPurposeLoginChangeIn | EmailVerifyPurposePassportIn;
+  export type InputWallPaperIn = InputWallPaperIn | InputWallPaperSlugIn | InputWallPaperNoFileIn;
+  export type InputFileIn = InputFileIn | InputFileBigIn | InputFileStoryDocumentIn;
+  export type InputDocumentIn = InputDocumentEmptyIn | InputDocumentIn;
+  export type WallPaperSettingsIn = WallPaperSettingsIn;
+  export type AutoDownloadSettingsIn = AutoDownloadSettingsIn;
+  export type InputThemeSettingsIn = InputThemeSettingsIn;
+  export type BaseThemeIn = BaseThemeClassicIn | BaseThemeDayIn | BaseThemeNightIn | BaseThemeTintedIn | BaseThemeArcticIn;
+  export type InputThemeIn = InputThemeIn | InputThemeSlugIn;
+  export type GlobalPrivacySettingsIn = GlobalPrivacySettingsIn;
+  export type DisallowedGiftsSettingsIn = DisallowedGiftsSettingsIn;
+  export type InputPhotoIn = InputPhotoEmptyIn | InputPhotoIn;
+  export type EmojiStatusIn = EmojiStatusEmptyIn | EmojiStatusIn | EmojiStatusCollectibleIn | InputEmojiStatusCollectibleIn;
+  export type AutoSaveSettingsIn = AutoSaveSettingsIn;
+  export type PeerColorIn = PeerColorIn | PeerColorCollectibleIn | InputPeerColorCollectibleIn;
+  export type BusinessWorkHoursIn = BusinessWorkHoursIn;
+  export type BusinessWeeklyOpenIn = BusinessWeeklyOpenIn;
+  export type InputGeoPointIn = InputGeoPointEmptyIn | InputGeoPointIn;
+  export type InputBusinessGreetingMessageIn = InputBusinessGreetingMessageIn;
+  export type InputBusinessRecipientsIn = InputBusinessRecipientsIn;
+  export type InputBusinessAwayMessageIn = InputBusinessAwayMessageIn;
+  export type BusinessAwayMessageScheduleIn = BusinessAwayMessageScheduleAlwaysIn | BusinessAwayMessageScheduleOutsideWorkHoursIn | BusinessAwayMessageScheduleCustomIn;
+  export type BusinessBotRightsIn = BusinessBotRightsIn;
+  export type InputBusinessBotRecipientsIn = InputBusinessBotRecipientsIn;
+  export type InputBusinessIntroIn = InputBusinessIntroIn;
+  export type BirthdayIn = BirthdayIn;
+  export type InputBusinessChatLinkIn = InputBusinessChatLinkIn;
+  export type MessageEntityIn = MessageEntityUnknownIn | MessageEntityMentionIn | MessageEntityHashtagIn | MessageEntityBotCommandIn | MessageEntityUrlIn | MessageEntityEmailIn | MessageEntityBoldIn | MessageEntityItalicIn | MessageEntityCodeIn | MessageEntityPreIn | MessageEntityTextUrlIn | MessageEntityMentionNameIn | InputMessageEntityMentionNameIn | MessageEntityPhoneIn | MessageEntityCashtagIn | MessageEntityUnderlineIn | MessageEntityStrikeIn | MessageEntityBankCardIn | MessageEntitySpoilerIn | MessageEntityCustomEmojiIn | MessageEntityBlockquoteIn | MessageEntityFormattedDateIn | MessageEntityDiffInsertIn | MessageEntityDiffReplaceIn | MessageEntityDiffDeleteIn;
+  export type ReactionsNotifySettingsIn = ReactionsNotifySettingsIn;
+  export type ReactionNotificationsFromIn = ReactionNotificationsFromContactsIn | ReactionNotificationsFromAllIn;
+  export type ProfileTabIn = ProfileTabPostsIn | ProfileTabGiftsIn | ProfileTabMediaIn | ProfileTabFilesIn | ProfileTabMusicIn | ProfileTabVoiceIn | ProfileTabLinksIn | ProfileTabGifsIn;
+  export type SecureValueErrorIn = SecureValueErrorDataIn | SecureValueErrorFrontSideIn | SecureValueErrorReverseSideIn | SecureValueErrorSelfieIn | SecureValueErrorFileIn | SecureValueErrorFilesIn | SecureValueErrorIn | SecureValueErrorTranslationFileIn | SecureValueErrorTranslationFilesIn;
+  export type InputContactIn = InputPhoneContactIn;
+  export type TextWithEntitiesIn = TextWithEntitiesIn;
+  export type TopPeerCategoryIn = TopPeerCategoryBotsPMIn | TopPeerCategoryBotsInlineIn | TopPeerCategoryCorrespondentsIn | TopPeerCategoryGroupsIn | TopPeerCategoryChannelsIn | TopPeerCategoryPhoneCallsIn | TopPeerCategoryForwardUsersIn | TopPeerCategoryForwardChatsIn | TopPeerCategoryBotsAppIn | TopPeerCategoryBotsGuestChatIn;
+  export type InputMessageIn = InputMessageIDIn | InputMessageReplyToIn | InputMessagePinnedIn | InputMessageCallbackQueryIn;
+  export type ReactionIn = ReactionEmptyIn | ReactionEmojiIn | ReactionCustomEmojiIn | ReactionPaidIn;
+  export type MessagesFilterIn = InputMessagesFilterEmptyIn | InputMessagesFilterPhotosIn | InputMessagesFilterVideoIn | InputMessagesFilterPhotoVideoIn | InputMessagesFilterDocumentIn | InputMessagesFilterUrlIn | InputMessagesFilterGifIn | InputMessagesFilterVoiceIn | InputMessagesFilterMusicIn | InputMessagesFilterChatPhotosIn | InputMessagesFilterPhoneCallsIn | InputMessagesFilterRoundVoiceIn | InputMessagesFilterRoundVideoIn | InputMessagesFilterMyMentionsIn | InputMessagesFilterGeoIn | InputMessagesFilterContactsIn | InputMessagesFilterPinnedIn | InputMessagesFilterPollIn;
+  export type SendMessageActionIn = SendMessageTypingActionIn | SendMessageCancelActionIn | SendMessageRecordVideoActionIn | SendMessageUploadVideoActionIn | SendMessageRecordAudioActionIn | SendMessageUploadAudioActionIn | SendMessageUploadPhotoActionIn | SendMessageUploadDocumentActionIn | SendMessageGeoLocationActionIn | SendMessageChooseContactActionIn | SendMessageGamePlayActionIn | SendMessageRecordRoundActionIn | SendMessageUploadRoundActionIn | SpeakingInGroupCallActionIn | SendMessageHistoryImportActionIn | SendMessageChooseStickerActionIn | SendMessageEmojiInteractionIn | SendMessageEmojiInteractionSeenIn | SendMessageTextDraftActionIn | InputSendMessageRichMessageDraftActionIn | SendMessageRichMessageDraftActionIn;
+  export type InputRichMessageIn = InputRichMessageIn | InputRichMessageHTMLIn | InputRichMessageMarkdownIn;
+  export type PageBlockIn = PageBlockUnsupportedIn | PageBlockTitleIn | PageBlockSubtitleIn | PageBlockAuthorDateIn | PageBlockHeaderIn | PageBlockSubheaderIn | PageBlockParagraphIn | PageBlockPreformattedIn | PageBlockFooterIn | PageBlockDividerIn | PageBlockAnchorIn | PageBlockListIn | PageBlockBlockquoteIn | PageBlockPullquoteIn | PageBlockPhotoIn | PageBlockVideoIn | PageBlockCoverIn | PageBlockEmbedIn | PageBlockEmbedPostIn | PageBlockCollageIn | PageBlockSlideshowIn | PageBlockChannelIn | PageBlockAudioIn | PageBlockKickerIn | PageBlockTableIn | PageBlockOrderedListIn | PageBlockDetailsIn | PageBlockRelatedArticlesIn | PageBlockMapIn | PageBlockHeading1In | PageBlockHeading2In | PageBlockHeading3In | PageBlockHeading4In | PageBlockHeading5In | PageBlockHeading6In | PageBlockMathIn | PageBlockThinkingIn | InputPageBlockMapIn | PageBlockBlockquoteBlocksIn;
+  export type RichTextIn = TextEmptyIn | TextPlainIn | TextBoldIn | TextItalicIn | TextUnderlineIn | TextStrikeIn | TextFixedIn | TextUrlIn | TextEmailIn | TextConcatIn | TextSubscriptIn | TextSuperscriptIn | TextMarkedIn | TextPhoneIn | TextImageIn | TextAnchorIn | TextMathIn | TextCustomEmojiIn | TextSpoilerIn | TextMentionIn | TextHashtagIn | TextBotCommandIn | TextCashtagIn | TextAutoUrlIn | TextAutoEmailIn | TextAutoPhoneIn | TextBankCardIn | TextMentionNameIn | TextDateIn;
+  export type PageListItemIn = PageListItemTextIn | PageListItemBlocksIn;
+  export type PageCaptionIn = PageCaptionIn;
+  export type ChatIn = ChatEmptyIn | ChatIn | ChatForbiddenIn | ChannelIn | ChannelForbiddenIn;
+  export type ChatPhotoIn = ChatPhotoEmptyIn | ChatPhotoIn;
+  export type InputChannelIn = InputChannelEmptyIn | InputChannelIn | InputChannelFromMessageIn;
+  export type ChatAdminRightsIn = ChatAdminRightsIn;
+  export type ChatBannedRightsIn = ChatBannedRightsIn;
+  export type RestrictionReasonIn = RestrictionReasonIn;
+  export type UsernameIn = UsernameIn;
+  export type RecentStoryIn = RecentStoryIn;
+  export type PageTableRowIn = PageTableRowIn;
+  export type PageTableCellIn = PageTableCellIn;
+  export type PageListOrderedItemIn = PageListOrderedItemTextIn | PageListOrderedItemBlocksIn;
+  export type PageRelatedArticleIn = PageRelatedArticleIn;
+  export type GeoPointIn = GeoPointEmptyIn | GeoPointIn;
+  export type RichMessageIn = RichMessageIn;
+  export type PhotoIn = PhotoEmptyIn | PhotoIn;
+  export type PhotoSizeIn = PhotoSizeEmptyIn | PhotoSizeIn | PhotoCachedSizeIn | PhotoStrippedSizeIn | PhotoSizeProgressiveIn | PhotoPathSizeIn;
+  export type VideoSizeIn = VideoSizeIn | VideoSizeEmojiMarkupIn | VideoSizeStickerMarkupIn;
+  export type InputStickerSetIn = InputStickerSetEmptyIn | InputStickerSetIDIn | InputStickerSetShortNameIn | InputStickerSetAnimatedEmojiIn | InputStickerSetDiceIn | InputStickerSetAnimatedEmojiAnimationsIn | InputStickerSetPremiumGiftsIn | InputStickerSetEmojiGenericAnimationsIn | InputStickerSetEmojiDefaultStatusesIn | InputStickerSetEmojiDefaultTopicIconsIn | InputStickerSetEmojiChannelDefaultStatusesIn | InputStickerSetTonGiftsIn;
+  export type DocumentIn = DocumentEmptyIn | DocumentIn;
+  export type DocumentAttributeIn = DocumentAttributeImageSizeIn | DocumentAttributeAnimatedIn | DocumentAttributeStickerIn | DocumentAttributeVideoIn | DocumentAttributeAudioIn | DocumentAttributeFilenameIn | DocumentAttributeHasStickersIn | DocumentAttributeCustomEmojiIn;
+  export type MaskCoordsIn = MaskCoordsIn;
+  export type InputReplyToIn = InputReplyToMessageIn | InputReplyToStoryIn | InputReplyToMonoForumIn;
+  export type ReplyMarkupIn = ReplyKeyboardHideIn | ReplyKeyboardForceReplyIn | ReplyKeyboardMarkupIn | ReplyInlineMarkupIn;
+  export type KeyboardButtonRowIn = KeyboardButtonRowIn;
+  export type KeyboardButtonIn = KeyboardButtonIn | KeyboardButtonUrlIn | KeyboardButtonCallbackIn | KeyboardButtonRequestPhoneIn | KeyboardButtonRequestGeoLocationIn | KeyboardButtonSwitchInlineIn | KeyboardButtonGameIn | KeyboardButtonBuyIn | KeyboardButtonUrlAuthIn | InputKeyboardButtonUrlAuthIn | KeyboardButtonRequestPollIn | InputKeyboardButtonUserProfileIn | KeyboardButtonUserProfileIn | KeyboardButtonWebViewIn | KeyboardButtonSimpleWebViewIn | KeyboardButtonRequestPeerIn | InputKeyboardButtonRequestPeerIn | KeyboardButtonCopyIn;
+  export type KeyboardButtonStyleIn = KeyboardButtonStyleIn;
+  export type InlineQueryPeerTypeIn = InlineQueryPeerTypeSameBotPMIn | InlineQueryPeerTypePMIn | InlineQueryPeerTypeChatIn | InlineQueryPeerTypeMegagroupIn | InlineQueryPeerTypeBroadcastIn | InlineQueryPeerTypeBotPMIn;
+  export type RequestPeerTypeIn = RequestPeerTypeUserIn | RequestPeerTypeChatIn | RequestPeerTypeBroadcastIn | RequestPeerTypeCreateBotIn;
+  export type InputQuickReplyShortcutIn = InputQuickReplyShortcutIn | InputQuickReplyShortcutIdIn;
+  export type SuggestedPostIn = SuggestedPostIn;
+  export type StarsAmountIn = StarsAmountIn | StarsTonAmountIn;
+  export type InputMediaIn = InputMediaEmptyIn | InputMediaUploadedPhotoIn | InputMediaPhotoIn | InputMediaGeoPointIn | InputMediaContactIn | InputMediaUploadedDocumentIn | InputMediaDocumentIn | InputMediaVenueIn | InputMediaPhotoExternalIn | InputMediaDocumentExternalIn | InputMediaGameIn | InputMediaInvoiceIn | InputMediaGeoLiveIn | InputMediaPollIn | InputMediaDiceIn | InputMediaStoryIn | InputMediaWebPageIn | InputMediaPaidMediaIn | InputMediaTodoIn | InputMediaStakeDiceIn;
+  export type InputGameIn = InputGameIDIn | InputGameShortNameIn;
+  export type InputWebDocumentIn = InputWebDocumentIn;
+  export type InvoiceIn = InvoiceIn;
+  export type LabeledPriceIn = LabeledPriceIn;
+  export type PollIn = PollIn;
+  export type PollAnswerIn = PollAnswerIn | InputPollAnswerIn;
+  export type MessageMediaIn = MessageMediaEmptyIn | MessageMediaPhotoIn | MessageMediaGeoIn | MessageMediaContactIn | MessageMediaUnsupportedIn | MessageMediaDocumentIn | MessageMediaWebPageIn | MessageMediaVenueIn | MessageMediaGameIn | MessageMediaInvoiceIn | MessageMediaGeoLiveIn | MessageMediaPollIn | MessageMediaDiceIn | MessageMediaStoryIn | MessageMediaGiveawayIn | MessageMediaGiveawayResultsIn | MessageMediaPaidMediaIn | MessageMediaToDoIn | MessageMediaVideoStreamIn;
+  export type WebPageIn = WebPageEmptyIn | WebPagePendingIn | WebPageIn | WebPageNotModifiedIn;
+  export type PageIn = PageIn;
+  export type WebPageAttributeIn = WebPageAttributeThemeIn | WebPageAttributeStoryIn | WebPageAttributeStickerSetIn | WebPageAttributeUniqueStarGiftIn | WebPageAttributeStarGiftCollectionIn | WebPageAttributeStarGiftAuctionIn | WebPageAttributeAiComposeToneIn;
+  export type ThemeSettingsIn = ThemeSettingsIn;
+  export type WallPaperIn = WallPaperIn | WallPaperNoFileIn;
+  export type PeerIn = PeerUserIn | PeerChatIn | PeerChannelIn;
+  export type StoryItemIn = StoryItemDeletedIn | StoryItemSkippedIn | StoryItemIn;
+  export type StoryFwdHeaderIn = StoryFwdHeaderIn;
+  export type MediaAreaIn = MediaAreaVenueIn | InputMediaAreaVenueIn | MediaAreaGeoPointIn | MediaAreaSuggestedReactionIn | MediaAreaChannelPostIn | InputMediaAreaChannelPostIn | MediaAreaUrlIn | MediaAreaWeatherIn | MediaAreaStarGiftIn;
+  export type MediaAreaCoordinatesIn = MediaAreaCoordinatesIn;
+  export type GeoPointAddressIn = GeoPointAddressIn;
+  export type PrivacyRuleIn = PrivacyValueAllowContactsIn | PrivacyValueAllowAllIn | PrivacyValueAllowUsersIn | PrivacyValueDisallowContactsIn | PrivacyValueDisallowAllIn | PrivacyValueDisallowUsersIn | PrivacyValueAllowChatParticipantsIn | PrivacyValueDisallowChatParticipantsIn | PrivacyValueAllowCloseFriendsIn | PrivacyValueAllowPremiumIn | PrivacyValueAllowBotsIn | PrivacyValueDisallowBotsIn;
+  export type StoryViewsIn = StoryViewsIn;
+  export type ReactionCountIn = ReactionCountIn;
+  export type StarGiftIn = StarGiftIn | StarGiftUniqueIn;
+  export type StarGiftBackgroundIn = StarGiftBackgroundIn;
+  export type StarGiftAttributeIn = StarGiftAttributeModelIn | StarGiftAttributePatternIn | StarGiftAttributeBackdropIn | StarGiftAttributeOriginalDetailsIn;
+  export type StarGiftAttributeRarityIn = StarGiftAttributeRarityIn | StarGiftAttributeRarityUncommonIn | StarGiftAttributeRarityRareIn | StarGiftAttributeRarityEpicIn | StarGiftAttributeRarityLegendaryIn;
+  export type GameIn = GameIn;
+  export type WebDocumentIn = WebDocumentIn | WebDocumentNoProxyIn;
+  export type MessageExtendedMediaIn = MessageExtendedMediaPreviewIn | MessageExtendedMediaIn;
+  export type PollResultsIn = PollResultsIn;
+  export type PollAnswerVotersIn = PollAnswerVotersIn;
+  export type MessagesEmojiGameOutcomeIn = MessagesEmojiGameOutcomeIn;
+  export type TodoListIn = TodoListIn;
+  export type TodoItemIn = TodoItemIn;
+  export type TodoCompletionIn = TodoCompletionIn;
+  export type InputGroupCallIn = InputGroupCallIn | InputGroupCallSlugIn | InputGroupCallInviteMessageIn;
+  export type InputChatPhotoIn = InputChatPhotoEmptyIn | InputChatUploadedPhotoIn | InputChatPhotoIn;
+  export type InputEncryptedChatIn = InputEncryptedChatIn;
+  export type InputEncryptedFileIn = InputEncryptedFileEmptyIn | InputEncryptedFileUploadedIn | InputEncryptedFileIn | InputEncryptedFileBigUploadedIn;
+  export type StarsSubscriptionPricingIn = StarsSubscriptionPricingIn;
+  export type InputBotInlineResultIn = InputBotInlineResultIn | InputBotInlineResultPhotoIn | InputBotInlineResultDocumentIn | InputBotInlineResultGameIn;
+  export type InputBotInlineMessageIn = InputBotInlineMessageMediaAutoIn | InputBotInlineMessageTextIn | InputBotInlineMessageMediaGeoIn | InputBotInlineMessageMediaVenueIn | InputBotInlineMessageMediaContactIn | InputBotInlineMessageGameIn | InputBotInlineMessageMediaInvoiceIn | InputBotInlineMessageMediaWebPageIn | InputBotInlineMessageRichMessageIn;
+  export type InlineBotSwitchPMIn = InlineBotSwitchPMIn;
+  export type InlineBotWebViewIn = InlineBotWebViewIn;
+  export type InputBotInlineMessageIDIn = InputBotInlineMessageIDIn | InputBotInlineMessageID64In;
+  export type InputStickeredMediaIn = InputStickeredMediaPhotoIn | InputStickeredMediaDocumentIn;
+  export type ShippingOptionIn = ShippingOptionIn;
+  export type InputSingleMediaIn = InputSingleMediaIn;
+  export type DialogFilterIn = DialogFilterIn | DialogFilterDefaultIn | DialogFilterChatlistIn;
+  export type InputChatThemeIn = InputChatThemeEmptyIn | InputChatThemeIn | InputChatThemeUniqueGiftIn;
+  export type ChatReactionsIn = ChatReactionsNoneIn | ChatReactionsAllIn | ChatReactionsSomeIn;
+  export type InputBotAppIn = InputBotAppIDIn | InputBotAppShortNameIn;
+  export type PaidReactionPrivacyIn = PaidReactionPrivacyDefaultIn | PaidReactionPrivacyAnonymousIn | PaidReactionPrivacyPeerIn;
+  export type InputAiComposeToneIn = InputAiComposeToneDefaultIn | InputAiComposeToneIDIn | InputAiComposeToneSlugIn;
+  export type InputMessageReadMetricIn = InputMessageReadMetricIn;
+  export type ChannelMessagesFilterIn = ChannelMessagesFilterEmptyIn | ChannelMessagesFilterIn;
+  export type InputFileLocationIn = InputFileLocationIn | InputEncryptedFileLocationIn | InputDocumentFileLocationIn | InputSecureFileLocationIn | InputTakeoutFileLocationIn | InputPhotoFileLocationIn | InputPhotoLegacyFileLocationIn | InputPeerPhotoFileLocationIn | InputStickerSetThumbIn | InputGroupCallStreamIn;
+  export type InputWebFileLocationIn = InputWebFileLocationIn | InputWebFileGeoPointLocationIn | InputWebFileAudioAlbumThumbLocationIn;
+  export type InputAppEventIn = InputAppEventIn;
+  export type ChannelParticipantsFilterIn = ChannelParticipantsRecentIn | ChannelParticipantsAdminsIn | ChannelParticipantsKickedIn | ChannelParticipantsBotsIn | ChannelParticipantsBannedIn | ChannelParticipantsSearchIn | ChannelParticipantsContactsIn | ChannelParticipantsMentionsIn;
+  export type ChannelAdminLogEventsFilterIn = ChannelAdminLogEventsFilterIn;
+  export type BotCommandScopeIn = BotCommandScopeDefaultIn | BotCommandScopeUsersIn | BotCommandScopeChatsIn | BotCommandScopeChatAdminsIn | BotCommandScopePeerIn | BotCommandScopePeerAdminsIn | BotCommandScopePeerUserIn;
+  export type BotCommandIn = BotCommandIn;
+  export type BotMenuButtonIn = BotMenuButtonDefaultIn | BotMenuButtonCommandsIn | BotMenuButtonIn;
+  export type JoinChatBotResultIn = JoinChatBotResultApprovedIn | JoinChatBotResultDeclinedIn | JoinChatBotResultQueuedIn | JoinChatBotResultWebViewIn;
+  export type InputInvoiceIn = InputInvoiceMessageIn | InputInvoiceSlugIn | InputInvoicePremiumGiftCodeIn | InputInvoiceStarsIn | InputInvoiceChatInviteSubscriptionIn | InputInvoiceStarGiftIn | InputInvoiceStarGiftUpgradeIn | InputInvoiceStarGiftTransferIn | InputInvoicePremiumGiftStarsIn | InputInvoiceBusinessBotTransferStarsIn | InputInvoiceStarGiftResaleIn | InputInvoiceStarGiftPrepaidUpgradeIn | InputInvoicePremiumAuthCodeIn | InputInvoiceStarGiftDropOriginalDetailsIn | InputInvoiceStarGiftAuctionBidIn;
+  export type InputStorePaymentPurposeIn = InputStorePaymentPremiumSubscriptionIn | InputStorePaymentGiftPremiumIn | InputStorePaymentPremiumGiftCodeIn | InputStorePaymentPremiumGiveawayIn | InputStorePaymentStarsTopupIn | InputStorePaymentStarsGiftIn | InputStorePaymentStarsGiveawayIn | InputStorePaymentAuthCodeIn;
+  export type PremiumGiftCodeOptionIn = PremiumGiftCodeOptionIn;
+  export type InputSavedStarGiftIn = InputSavedStarGiftUserIn | InputSavedStarGiftChatIn | InputSavedStarGiftSlugIn;
+  export type PaymentRequestedInfoIn = PaymentRequestedInfoIn;
+  export type PostAddressIn = PostAddressIn;
+  export type InputPaymentCredentialsIn = InputPaymentCredentialsSavedIn | InputPaymentCredentialsIn | InputPaymentCredentialsApplePayIn | InputPaymentCredentialsGooglePayIn;
+  export type InputStarsTransactionIn = InputStarsTransactionIn;
+  export type StarGiftAttributeIdIn = StarGiftAttributeIdModelIn | StarGiftAttributeIdPatternIn | StarGiftAttributeIdBackdropIn;
+  export type InputStarGiftAuctionIn = InputStarGiftAuctionIn | InputStarGiftAuctionSlugIn;
+  export type InputStickerSetItemIn = InputStickerSetItemIn;
+  export type PhoneCallProtocolIn = PhoneCallProtocolIn;
+  export type InputPhoneCallIn = InputPhoneCallIn;
+  export type PhoneCallDiscardReasonIn = PhoneCallDiscardReasonMissedIn | PhoneCallDiscardReasonDisconnectIn | PhoneCallDiscardReasonHangupIn | PhoneCallDiscardReasonBusyIn | PhoneCallDiscardReasonMigrateConferenceCallIn;
+  export type InputFolderPeerIn = InputFolderPeerIn;
+  export type InputChatlistIn = InputChatlistDialogFilterIn;
+  export type InputCollectibleIn = InputCollectibleUsernameIn | InputCollectiblePhoneIn;
+
+  /**
+   * Typed 1:1 facade over the raw MTProto methods.
+   *
+   * `client.api.<namespace>.<method>(params, opts?)` — no `new`, no manual
+   * `invoke`, full autocomplete and strict typing straight from the schema.
+   * Per-method params live in `<Method>Params`; throwable errors in
+   * `<Method>Errors`.
+   */
+  export interface ApiFacade {
+    /**
+     * Invokes a query after successful completion of one of the previous queries.
+     * @see https://core.telegram.org/method/invokeAfterMsg
+     */
+    invokeAfterMsg(params: InvokeAfterMsgParams, opts?: ApiCallOptions): Promise<X>;
+    /**
+     * Invokes a query after a successful completion of previous queries
+     * @see https://core.telegram.org/method/invokeAfterMsgs
+     */
+    invokeAfterMsgs(params: InvokeAfterMsgsParams, opts?: ApiCallOptions): Promise<X>;
+    /**
+     * Initialize connection
+     * @see https://core.telegram.org/method/initConnection
+     * @throws {InitConnectionErrors}
+     */
+    initConnection(params: InitConnectionParams, opts?: ApiCallOptions): Promise<X>;
+    /**
+     * Invoke the specified query using the specified API layer
+     * @see https://core.telegram.org/method/invokeWithLayer
+     * @throws {InvokeWithLayerErrors}
+     */
+    invokeWithLayer(params: InvokeWithLayerParams, opts?: ApiCallOptions): Promise<X>;
+    /**
+     * Invoke a request without subscribing the used connection for updates (this is enabled by default for file queries ).
+     * @see https://core.telegram.org/method/invokeWithoutUpdates
+     */
+    invokeWithoutUpdates(params: InvokeWithoutUpdatesParams, opts?: ApiCallOptions): Promise<X>;
+    /**
+     * Invoke with the given message range
+     * @see https://core.telegram.org/method/invokeWithMessagesRange
+     */
+    invokeWithMessagesRange(params: InvokeWithMessagesRangeParams, opts?: ApiCallOptions): Promise<X>;
+    /**
+     * Invoke a method within a takeout session, see here » for more info .
+     * @see https://core.telegram.org/method/invokeWithTakeout
+     */
+    invokeWithTakeout(params: InvokeWithTakeoutParams, opts?: ApiCallOptions): Promise<X>;
+    /**
+     * Invoke a method using a Telegram Business Bot connection, see here » for more info, including a list of the methods that can be wrapped in this constructor . Make sure to always send queries wrapped in a invokeWithBusinessConnection to the datacenter ID, specified in the dc_id field of the botBusinessConnection that is being used.
+     * @see https://core.telegram.org/method/invokeWithBusinessConnection
+     */
+    invokeWithBusinessConnection(params: InvokeWithBusinessConnectionParams, opts?: ApiCallOptions): Promise<X>;
+    /**
+     * Official clients only, invoke with Google Play Integrity token.
+     * @see https://core.telegram.org/method/invokeWithGooglePlayIntegrity
+     */
+    invokeWithGooglePlayIntegrity(params: InvokeWithGooglePlayIntegrityParams, opts?: ApiCallOptions): Promise<X>;
+    /**
+     * Official clients only, invoke with Apple push verification.
+     * @see https://core.telegram.org/method/invokeWithApnsSecret
+     */
+    invokeWithApnsSecret(params: InvokeWithApnsSecretParams, opts?: ApiCallOptions): Promise<X>;
+    /**
+     * Official clients only: re-execute a method call that required reCAPTCHA verification via a RECAPTCHA_CHECK_%s__%s , where the first placeholder is the action , and the second one is the reCAPTCHA key ID.
+     * @see https://core.telegram.org/method/invokeWithReCaptcha
+     */
+    invokeWithReCaptcha(params: InvokeWithReCaptchaParams, opts?: ApiCallOptions): Promise<X>;
+    /**
+     * @see https://core.telegram.org/method/reqPq
+     */
+    reqPq(params: ReqPqParams, opts?: ApiCallOptions): Promise<Api.TypeResPQ>;
+    /**
+     * @see https://core.telegram.org/method/reqPqMulti
+     */
+    reqPqMulti(params: ReqPqMultiParams, opts?: ApiCallOptions): Promise<Api.TypeResPQ>;
+    /**
+     * @see https://core.telegram.org/method/reqDHParams
+     */
+    reqDHParams(params: ReqDHParamsParams, opts?: ApiCallOptions): Promise<Api.TypeServer_DH_Params>;
+    /**
+     * @see https://core.telegram.org/method/setClientDHParams
+     */
+    setClientDHParams(params: SetClientDHParamsParams, opts?: ApiCallOptions): Promise<Api.TypeSet_client_DH_params_answer>;
+    /**
+     * @see https://core.telegram.org/method/destroyAuthKey
+     */
+    destroyAuthKey(opts?: ApiCallOptions): Promise<Api.TypeDestroyAuthKeyRes>;
+    /**
+     * @see https://core.telegram.org/method/rpcDropAnswer
+     */
+    rpcDropAnswer(params: RpcDropAnswerParams, opts?: ApiCallOptions): Promise<Api.TypeRpcDropAnswer>;
+    /**
+     * @see https://core.telegram.org/method/getFutureSalts
+     */
+    getFutureSalts(params: GetFutureSaltsParams, opts?: ApiCallOptions): Promise<Api.TypeFutureSalts>;
+    /**
+     * @see https://core.telegram.org/method/ping
+     */
+    ping(params: PingParams, opts?: ApiCallOptions): Promise<Api.TypePong>;
+    /**
+     * @see https://core.telegram.org/method/pingDelayDisconnect
+     */
+    pingDelayDisconnect(params: PingDelayDisconnectParams, opts?: ApiCallOptions): Promise<Api.TypePong>;
+    /**
+     * @see https://core.telegram.org/method/destroySession
+     */
+    destroySession(params: DestroySessionParams, opts?: ApiCallOptions): Promise<Api.TypeDestroySessionRes>;
+    auth: {
+      /**
+       * Send the verification code for login
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/auth.sendCode
+       * @throws {AuthSendCodeErrors}
+       */
+      sendCode(params: AuthSendCodeParams, opts?: ApiCallOptions): Promise<auth.TypeSentCode>;
+      /**
+       * Registers a validated phone number in the system.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/auth.signUp
+       * @throws {AuthSignUpErrors}
+       */
+      signUp(params: AuthSignUpParams, opts?: ApiCallOptions): Promise<auth.TypeAuthorization>;
+      /**
+       * Signs in a user with a validated phone number.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/auth.signIn
+       * @throws {AuthSignInErrors}
+       */
+      signIn(params: AuthSignInParams, opts?: ApiCallOptions): Promise<auth.TypeAuthorization>;
+      /**
+       * Logs out the user.
+       * @see https://core.telegram.org/method/auth.logOut
+       */
+      logOut(opts?: ApiCallOptions): Promise<auth.TypeLoggedOut>;
+      /**
+       * Terminates all user's authorized sessions except for the current one. After calling this method it is necessary to reregister the current device using the method account.registerDevice
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/auth.resetAuthorizations
+       * @throws {AuthResetAuthorizationsErrors}
+       */
+      resetAuthorizations(opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Returns data for copying authorization to another data-center.
+       * @see https://core.telegram.org/method/auth.exportAuthorization
+       * @throws {AuthExportAuthorizationErrors}
+       */
+      exportAuthorization(params: AuthExportAuthorizationParams, opts?: ApiCallOptions): Promise<auth.TypeExportedAuthorization>;
+      /**
+       * Logs in a user using a key transmitted from his native data-center.
+       * @see https://core.telegram.org/method/auth.importAuthorization
+       * @throws {AuthImportAuthorizationErrors}
+       */
+      importAuthorization(params: AuthImportAuthorizationParams, opts?: ApiCallOptions): Promise<auth.TypeAuthorization>;
+      /**
+       * Binds a temporary authorization key temp_auth_key_id to the permanent authorization key perm_auth_key_id . Each permanent key may only be bound to one temporary key at a time, binding a new temporary key overwrites the previous one. For more information, see Perfect Forward Secrecy .
+       * @see https://core.telegram.org/method/auth.bindTempAuthKey
+       * @throws {AuthBindTempAuthKeyErrors}
+       */
+      bindTempAuthKey(params: AuthBindTempAuthKeyParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Login as a bot
+       * @see https://core.telegram.org/method/auth.importBotAuthorization
+       * @throws {AuthImportBotAuthorizationErrors}
+       */
+      importBotAuthorization(params: AuthImportBotAuthorizationParams, opts?: ApiCallOptions): Promise<auth.TypeAuthorization>;
+      /**
+       * Try logging to an account protected by a 2FA password .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/auth.checkPassword
+       * @throws {AuthCheckPasswordErrors}
+       */
+      checkPassword(params: AuthCheckPasswordParams, opts?: ApiCallOptions): Promise<auth.TypeAuthorization>;
+      /**
+       * Request recovery code of a 2FA password , only for accounts with a recovery email configured .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/auth.requestPasswordRecovery
+       * @throws {AuthRequestPasswordRecoveryErrors}
+       */
+      requestPasswordRecovery(opts?: ApiCallOptions): Promise<auth.TypePasswordRecovery>;
+      /**
+       * Reset the 2FA password using the recovery code sent using auth.requestPasswordRecovery .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/auth.recoverPassword
+       * @throws {AuthRecoverPasswordErrors}
+       */
+      recoverPassword(params: AuthRecoverPasswordParams, opts?: ApiCallOptions): Promise<auth.TypeAuthorization>;
+      /**
+       * Resend the login code via another medium, the phone code type is determined by the return value of the previous auth.sendCode/auth.resendCode: see login for more info.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/auth.resendCode
+       * @throws {AuthResendCodeErrors}
+       */
+      resendCode(params: AuthResendCodeParams, opts?: ApiCallOptions): Promise<auth.TypeSentCode>;
+      /**
+       * Cancel the login verification code
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/auth.cancelCode
+       * @throws {AuthCancelCodeErrors}
+       */
+      cancelCode(params: AuthCancelCodeParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Delete all temporary authorization keys except for the ones specified
+       * @see https://core.telegram.org/method/auth.dropTempAuthKeys
+       */
+      dropTempAuthKeys(params: AuthDropTempAuthKeysParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Generate a login token, for login via QR code . The generated login token should be encoded using base64url, then shown as a tg://login?token=base64encodedtoken deep link » in the QR code. For more info, see login via QR code .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/auth.exportLoginToken
+       * @throws {AuthExportLoginTokenErrors}
+       */
+      exportLoginToken(params: AuthExportLoginTokenParams, opts?: ApiCallOptions): Promise<auth.TypeLoginToken>;
+      /**
+       * Login using a redirected login token, generated in case of DC mismatch during QR code login . For more info, see login via QR code .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/auth.importLoginToken
+       * @throws {AuthImportLoginTokenErrors}
+       */
+      importLoginToken(params: AuthImportLoginTokenParams, opts?: ApiCallOptions): Promise<auth.TypeLoginToken>;
+      /**
+       * Accept QR code login token, logging in the app that generated it. Returns info about the new session. For more info, see login via QR code .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/auth.acceptLoginToken
+       * @throws {AuthAcceptLoginTokenErrors}
+       */
+      acceptLoginToken(params: AuthAcceptLoginTokenParams, opts?: ApiCallOptions): Promise<Api.TypeAuthorization>;
+      /**
+       * Check if the 2FA recovery code sent using auth.requestPasswordRecovery is valid, before passing it to auth.recoverPassword .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/auth.checkRecoveryPassword
+       * @throws {AuthCheckRecoveryPasswordErrors}
+       */
+      checkRecoveryPassword(params: AuthCheckRecoveryPasswordParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Login by importing an authorization token
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/auth.importWebTokenAuthorization
+       * @throws {AuthImportWebTokenAuthorizationErrors}
+       */
+      importWebTokenAuthorization(params: AuthImportWebTokenAuthorizationParams, opts?: ApiCallOptions): Promise<auth.TypeAuthorization>;
+      /**
+       * Request an SMS code via Firebase.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/auth.requestFirebaseSms
+       * @throws {AuthRequestFirebaseSmsErrors}
+       */
+      requestFirebaseSms(params: AuthRequestFirebaseSmsParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Reset the login email » .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/auth.resetLoginEmail
+       * @throws {AuthResetLoginEmailErrors}
+       */
+      resetLoginEmail(params: AuthResetLoginEmailParams, opts?: ApiCallOptions): Promise<auth.TypeSentCode>;
+      /**
+       * Official apps only, reports that the SMS authentication code wasn't delivered.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/auth.reportMissingCode
+       * @throws {AuthReportMissingCodeErrors}
+       */
+      reportMissingCode(params: AuthReportMissingCodeParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * @see https://core.telegram.org/method/auth.checkPaidAuth
+       */
+      checkPaidAuth(params: AuthCheckPaidAuthParams, opts?: ApiCallOptions): Promise<auth.TypeSentCode>;
+      /**
+       * @see https://core.telegram.org/method/auth.initPasskeyLogin
+       */
+      initPasskeyLogin(params: AuthInitPasskeyLoginParams, opts?: ApiCallOptions): Promise<auth.TypePasskeyLoginOptions>;
+      /**
+       * @see https://core.telegram.org/method/auth.finishPasskeyLogin
+       */
+      finishPasskeyLogin(params: AuthFinishPasskeyLoginParams, opts?: ApiCallOptions): Promise<auth.TypeAuthorization>;
+    };
+    account: {
+      /**
+       * Register device to receive PUSH notifications
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.registerDevice
+       * @throws {AccountRegisterDeviceErrors}
+       */
+      registerDevice(params: AccountRegisterDeviceParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Deletes a device by its token, stops sending PUSH-notifications to it.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.unregisterDevice
+       * @throws {AccountUnregisterDeviceErrors}
+       */
+      unregisterDevice(params: AccountUnregisterDeviceParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Edits notification settings from a given user/group, from all users/all groups.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.updateNotifySettings
+       * @throws {AccountUpdateNotifySettingsErrors}
+       */
+      updateNotifySettings(params: AccountUpdateNotifySettingsParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Gets current notification settings for a given user/group, from all users/all groups.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.getNotifySettings
+       * @throws {AccountGetNotifySettingsErrors}
+       */
+      getNotifySettings(params: AccountGetNotifySettingsParams, opts?: ApiCallOptions): Promise<Api.TypePeerNotifySettings>;
+      /**
+       * Resets all notification settings from users and groups.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.resetNotifySettings
+       * @throws {AccountResetNotifySettingsErrors}
+       */
+      resetNotifySettings(opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Updates user profile.
+       * @remarks user-only (bots rejected) · works over a business connection
+       * @see https://core.telegram.org/method/account.updateProfile
+       * @throws {AccountUpdateProfileErrors}
+       */
+      updateProfile(params: AccountUpdateProfileParams, opts?: ApiCallOptions): Promise<Api.TypeUser>;
+      /**
+       * Updates online user status.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.updateStatus
+       * @throws {AccountUpdateStatusErrors}
+       */
+      updateStatus(params: AccountUpdateStatusParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Returns a list of available wallpapers .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.getWallPapers
+       * @throws {AccountGetWallPapersErrors}
+       */
+      getWallPapers(params: AccountGetWallPapersParams, opts?: ApiCallOptions): Promise<account.TypeWallPapers>;
+      /**
+       * Report a peer for violation of telegram's Terms of Service
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.reportPeer
+       * @throws {AccountReportPeerErrors}
+       */
+      reportPeer(params: AccountReportPeerParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Validates a username and checks availability.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.checkUsername
+       * @throws {AccountCheckUsernameErrors}
+       */
+      checkUsername(params: AccountCheckUsernameParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Changes username for the current user.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.updateUsername
+       * @throws {AccountUpdateUsernameErrors}
+       */
+      updateUsername(params: AccountUpdateUsernameParams, opts?: ApiCallOptions): Promise<Api.TypeUser>;
+      /**
+       * Get privacy settings of current account
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.getPrivacy
+       * @throws {AccountGetPrivacyErrors}
+       */
+      getPrivacy(params: AccountGetPrivacyParams, opts?: ApiCallOptions): Promise<account.TypePrivacyRules>;
+      /**
+       * Change privacy settings of current account
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.setPrivacy
+       * @throws {AccountSetPrivacyErrors}
+       */
+      setPrivacy(params: AccountSetPrivacyParams, opts?: ApiCallOptions): Promise<account.TypePrivacyRules>;
+      /**
+       * Delete the user's account from the telegram servers. Can also be used to delete the account of a user that provided the login code, but forgot the 2FA password and no recovery method is configured, see here » for more info on password recovery, and here » for more info on account deletion.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.deleteAccount
+       * @throws {AccountDeleteAccountErrors}
+       */
+      deleteAccount(params: AccountDeleteAccountParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Get days to live of account
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.getAccountTTL
+       * @throws {AccountGetAccountTTLErrors}
+       */
+      getAccountTTL(opts?: ApiCallOptions): Promise<Api.TypeAccountDaysTTL>;
+      /**
+       * Set account self-destruction period
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.setAccountTTL
+       * @throws {AccountSetAccountTTLErrors}
+       */
+      setAccountTTL(params: AccountSetAccountTTLParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Verify a new phone number to associate to the current account
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.sendChangePhoneCode
+       * @throws {AccountSendChangePhoneCodeErrors}
+       */
+      sendChangePhoneCode(params: AccountSendChangePhoneCodeParams, opts?: ApiCallOptions): Promise<auth.TypeSentCode>;
+      /**
+       * Change the phone number of the current account
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.changePhone
+       * @throws {AccountChangePhoneErrors}
+       */
+      changePhone(params: AccountChangePhoneParams, opts?: ApiCallOptions): Promise<Api.TypeUser>;
+      /**
+       * When client-side passcode lock feature is enabled, will not show message texts in incoming PUSH notifications .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.updateDeviceLocked
+       * @throws {AccountUpdateDeviceLockedErrors}
+       */
+      updateDeviceLocked(params: AccountUpdateDeviceLockedParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Get logged-in sessions
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.getAuthorizations
+       * @throws {AccountGetAuthorizationsErrors}
+       */
+      getAuthorizations(opts?: ApiCallOptions): Promise<account.TypeAuthorizations>;
+      /**
+       * Log out an active authorized session by its hash
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.resetAuthorization
+       * @throws {AccountResetAuthorizationErrors}
+       */
+      resetAuthorization(params: AccountResetAuthorizationParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Obtain configuration for two-factor authorization with password
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.getPassword
+       * @throws {AccountGetPasswordErrors}
+       */
+      getPassword(opts?: ApiCallOptions): Promise<account.TypePassword>;
+      /**
+       * Get private info associated to the password info (recovery email, telegram passport info & so on)
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.getPasswordSettings
+       * @throws {AccountGetPasswordSettingsErrors}
+       */
+      getPasswordSettings(params: AccountGetPasswordSettingsParams, opts?: ApiCallOptions): Promise<account.TypePasswordSettings>;
+      /**
+       * Set a new 2FA password
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.updatePasswordSettings
+       * @throws {AccountUpdatePasswordSettingsErrors}
+       */
+      updatePasswordSettings(params: AccountUpdatePasswordSettingsParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Send confirmation code to cancel account deletion, for more info click here »
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.sendConfirmPhoneCode
+       * @throws {AccountSendConfirmPhoneCodeErrors}
+       */
+      sendConfirmPhoneCode(params: AccountSendConfirmPhoneCodeParams, opts?: ApiCallOptions): Promise<auth.TypeSentCode>;
+      /**
+       * Confirm a phone number to cancel account deletion, for more info click here »
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.confirmPhone
+       * @throws {AccountConfirmPhoneErrors}
+       */
+      confirmPhone(params: AccountConfirmPhoneParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Get temporary payment password
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.getTmpPassword
+       * @throws {AccountGetTmpPasswordErrors}
+       */
+      getTmpPassword(params: AccountGetTmpPasswordParams, opts?: ApiCallOptions): Promise<account.TypeTmpPassword>;
+      /**
+       * Get web login widget authorizations
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.getWebAuthorizations
+       * @throws {AccountGetWebAuthorizationsErrors}
+       */
+      getWebAuthorizations(opts?: ApiCallOptions): Promise<account.TypeWebAuthorizations>;
+      /**
+       * Log out an active web telegram login session
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.resetWebAuthorization
+       * @throws {AccountResetWebAuthorizationErrors}
+       */
+      resetWebAuthorization(params: AccountResetWebAuthorizationParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Reset all active web telegram login sessions
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.resetWebAuthorizations
+       * @throws {AccountResetWebAuthorizationsErrors}
+       */
+      resetWebAuthorizations(opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Get all saved Telegram Passport documents, for more info see the passport docs »
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.getAllSecureValues
+       * @throws {AccountGetAllSecureValuesErrors}
+       */
+      getAllSecureValues(opts?: ApiCallOptions): Promise<Api.TypeSecureValue[]>;
+      /**
+       * Get saved Telegram Passport document, for more info see the passport docs »
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.getSecureValue
+       * @throws {AccountGetSecureValueErrors}
+       */
+      getSecureValue(params: AccountGetSecureValueParams, opts?: ApiCallOptions): Promise<Api.TypeSecureValue[]>;
+      /**
+       * Securely save Telegram Passport document, for more info see the passport docs »
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.saveSecureValue
+       * @throws {AccountSaveSecureValueErrors}
+       */
+      saveSecureValue(params: AccountSaveSecureValueParams, opts?: ApiCallOptions): Promise<Api.TypeSecureValue>;
+      /**
+       * Delete stored Telegram Passport documents, for more info see the passport docs »
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.deleteSecureValue
+       * @throws {AccountDeleteSecureValueErrors}
+       */
+      deleteSecureValue(params: AccountDeleteSecureValueParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Returns a Telegram Passport authorization form for sharing data with a service
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.getAuthorizationForm
+       * @throws {AccountGetAuthorizationFormErrors}
+       */
+      getAuthorizationForm(params: AccountGetAuthorizationFormParams, opts?: ApiCallOptions): Promise<account.TypeAuthorizationForm>;
+      /**
+       * Sends a Telegram Passport authorization form, effectively sharing data with the service
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.acceptAuthorization
+       * @throws {AccountAcceptAuthorizationErrors}
+       */
+      acceptAuthorization(params: AccountAcceptAuthorizationParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Send the verification phone code for telegram passport .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.sendVerifyPhoneCode
+       * @throws {AccountSendVerifyPhoneCodeErrors}
+       */
+      sendVerifyPhoneCode(params: AccountSendVerifyPhoneCodeParams, opts?: ApiCallOptions): Promise<auth.TypeSentCode>;
+      /**
+       * Verify a phone number for telegram passport .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.verifyPhone
+       * @throws {AccountVerifyPhoneErrors}
+       */
+      verifyPhone(params: AccountVerifyPhoneParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Send an email verification code.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.sendVerifyEmailCode
+       * @throws {AccountSendVerifyEmailCodeErrors}
+       */
+      sendVerifyEmailCode(params: AccountSendVerifyEmailCodeParams, opts?: ApiCallOptions): Promise<account.TypeSentEmailCode>;
+      /**
+       * Verify an email address.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.verifyEmail
+       * @throws {AccountVerifyEmailErrors}
+       */
+      verifyEmail(params: AccountVerifyEmailParams, opts?: ApiCallOptions): Promise<account.TypeEmailVerified>;
+      /**
+       * Initialize a takeout session, see here » for more info .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.initTakeoutSession
+       * @throws {AccountInitTakeoutSessionErrors}
+       */
+      initTakeoutSession(params: AccountInitTakeoutSessionParams, opts?: ApiCallOptions): Promise<account.TypeTakeout>;
+      /**
+       * Terminate a takeout session, see here » for more info .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.finishTakeoutSession
+       * @throws {AccountFinishTakeoutSessionErrors}
+       */
+      finishTakeoutSession(params: AccountFinishTakeoutSessionParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Verify an email to use as 2FA recovery method .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.confirmPasswordEmail
+       * @throws {AccountConfirmPasswordEmailErrors}
+       */
+      confirmPasswordEmail(params: AccountConfirmPasswordEmailParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Resend the code to verify an email to use as 2FA recovery method .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.resendPasswordEmail
+       * @throws {AccountResendPasswordEmailErrors}
+       */
+      resendPasswordEmail(opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Cancel the code that was sent to verify an email to use as 2FA recovery method .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.cancelPasswordEmail
+       * @throws {AccountCancelPasswordEmailErrors}
+       */
+      cancelPasswordEmail(opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Whether the user will receive notifications when contacts sign up
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.getContactSignUpNotification
+       * @throws {AccountGetContactSignUpNotificationErrors}
+       */
+      getContactSignUpNotification(opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Toggle contact sign up notifications
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.setContactSignUpNotification
+       * @throws {AccountSetContactSignUpNotificationErrors}
+       */
+      setContactSignUpNotification(params: AccountSetContactSignUpNotificationParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Returns list of chats with non-default notification settings
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.getNotifyExceptions
+       * @throws {AccountGetNotifyExceptionsErrors}
+       */
+      getNotifyExceptions(params: AccountGetNotifyExceptionsParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * Get info about a certain wallpaper
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.getWallPaper
+       * @throws {AccountGetWallPaperErrors}
+       */
+      getWallPaper(params: AccountGetWallPaperParams, opts?: ApiCallOptions): Promise<Api.TypeWallPaper>;
+      /**
+       * Create and upload a new wallpaper
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.uploadWallPaper
+       * @throws {AccountUploadWallPaperErrors}
+       */
+      uploadWallPaper(params: AccountUploadWallPaperParams, opts?: ApiCallOptions): Promise<Api.TypeWallPaper>;
+      /**
+       * Install/uninstall wallpaper
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.saveWallPaper
+       * @throws {AccountSaveWallPaperErrors}
+       */
+      saveWallPaper(params: AccountSaveWallPaperParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Install wallpaper
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.installWallPaper
+       * @throws {AccountInstallWallPaperErrors}
+       */
+      installWallPaper(params: AccountInstallWallPaperParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Delete all installed wallpapers , reverting to the default wallpaper set.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.resetWallPapers
+       * @throws {AccountResetWallPapersErrors}
+       */
+      resetWallPapers(opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Get media autodownload settings
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.getAutoDownloadSettings
+       * @throws {AccountGetAutoDownloadSettingsErrors}
+       */
+      getAutoDownloadSettings(opts?: ApiCallOptions): Promise<account.TypeAutoDownloadSettings>;
+      /**
+       * Change media autodownload settings
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.saveAutoDownloadSettings
+       * @throws {AccountSaveAutoDownloadSettingsErrors}
+       */
+      saveAutoDownloadSettings(params: AccountSaveAutoDownloadSettingsParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Upload theme
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.uploadTheme
+       * @throws {AccountUploadThemeErrors}
+       */
+      uploadTheme(params: AccountUploadThemeParams, opts?: ApiCallOptions): Promise<Api.TypeDocument>;
+      /**
+       * Create a theme
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.createTheme
+       * @throws {AccountCreateThemeErrors}
+       */
+      createTheme(params: AccountCreateThemeParams, opts?: ApiCallOptions): Promise<Api.TypeTheme>;
+      /**
+       * Update theme
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.updateTheme
+       * @throws {AccountUpdateThemeErrors}
+       */
+      updateTheme(params: AccountUpdateThemeParams, opts?: ApiCallOptions): Promise<Api.TypeTheme>;
+      /**
+       * Save a theme
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.saveTheme
+       * @throws {AccountSaveThemeErrors}
+       */
+      saveTheme(params: AccountSaveThemeParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Install a theme
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.installTheme
+       * @throws {AccountInstallThemeErrors}
+       */
+      installTheme(params: AccountInstallThemeParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Get theme information
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.getTheme
+       * @throws {AccountGetThemeErrors}
+       */
+      getTheme(params: AccountGetThemeParams, opts?: ApiCallOptions): Promise<Api.TypeTheme>;
+      /**
+       * Get installed themes
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.getThemes
+       * @throws {AccountGetThemesErrors}
+       */
+      getThemes(params: AccountGetThemesParams, opts?: ApiCallOptions): Promise<account.TypeThemes>;
+      /**
+       * Set sensitive content settings (for viewing or hiding NSFW content)
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.setContentSettings
+       * @throws {AccountSetContentSettingsErrors}
+       */
+      setContentSettings(params: AccountSetContentSettingsParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Get sensitive content settings
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.getContentSettings
+       * @throws {AccountGetContentSettingsErrors}
+       */
+      getContentSettings(opts?: ApiCallOptions): Promise<account.TypeContentSettings>;
+      /**
+       * Get info about multiple wallpapers
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.getMultiWallPapers
+       * @throws {AccountGetMultiWallPapersErrors}
+       */
+      getMultiWallPapers(params: AccountGetMultiWallPapersParams, opts?: ApiCallOptions): Promise<Api.TypeWallPaper[]>;
+      /**
+       * Get global privacy settings
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.getGlobalPrivacySettings
+       * @throws {AccountGetGlobalPrivacySettingsErrors}
+       */
+      getGlobalPrivacySettings(opts?: ApiCallOptions): Promise<Api.TypeGlobalPrivacySettings>;
+      /**
+       * Set global privacy settings
+       * @remarks user-only (bots rejected) · works over a business connection
+       * @see https://core.telegram.org/method/account.setGlobalPrivacySettings
+       * @throws {AccountSetGlobalPrivacySettingsErrors}
+       */
+      setGlobalPrivacySettings(params: AccountSetGlobalPrivacySettingsParams, opts?: ApiCallOptions): Promise<Api.TypeGlobalPrivacySettings>;
+      /**
+       * Report a profile photo of a dialog
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.reportProfilePhoto
+       * @throws {AccountReportProfilePhotoErrors}
+       */
+      reportProfilePhoto(params: AccountReportProfilePhotoParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Initiate a 2FA password reset: can only be used if the user is already logged-in, see here for more info »
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.resetPassword
+       * @throws {AccountResetPasswordErrors}
+       */
+      resetPassword(opts?: ApiCallOptions): Promise<account.TypeResetPasswordResult>;
+      /**
+       * Abort a pending 2FA password reset, see here for more info »
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.declinePasswordReset
+       * @throws {AccountDeclinePasswordResetErrors}
+       */
+      declinePasswordReset(opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Get all available chat themes » .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.getChatThemes
+       * @throws {AccountGetChatThemesErrors}
+       */
+      getChatThemes(params: AccountGetChatThemesParams, opts?: ApiCallOptions): Promise<account.TypeThemes>;
+      /**
+       * Set time-to-live of current session
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.setAuthorizationTTL
+       * @throws {AccountSetAuthorizationTTLErrors}
+       */
+      setAuthorizationTTL(params: AccountSetAuthorizationTTLParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Change settings related to a session.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.changeAuthorizationSettings
+       * @throws {AccountChangeAuthorizationSettingsErrors}
+       */
+      changeAuthorizationSettings(params: AccountChangeAuthorizationSettingsParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Fetch saved notification sounds
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.getSavedRingtones
+       * @throws {AccountGetSavedRingtonesErrors}
+       */
+      getSavedRingtones(params: AccountGetSavedRingtonesParams, opts?: ApiCallOptions): Promise<account.TypeSavedRingtones>;
+      /**
+       * Save or remove saved notification sound. If the notification sound is already in MP3 format, account.savedRingtone will be returned. Otherwise, it will be automatically converted and a account.savedRingtoneConverted will be returned, containing a new document object that should be used to refer to the ringtone from now on (ie when deleting it using the unsave parameter, or when downloading it).
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.saveRingtone
+       * @throws {AccountSaveRingtoneErrors}
+       */
+      saveRingtone(params: AccountSaveRingtoneParams, opts?: ApiCallOptions): Promise<account.TypeSavedRingtone>;
+      /**
+       * Upload notification sound, use account.saveRingtone to convert it and add it to the list of saved notification sounds.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.uploadRingtone
+       * @throws {AccountUploadRingtoneErrors}
+       */
+      uploadRingtone(params: AccountUploadRingtoneParams, opts?: ApiCallOptions): Promise<Api.TypeDocument>;
+      /**
+       * Set an emoji status
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.updateEmojiStatus
+       * @throws {AccountUpdateEmojiStatusErrors}
+       */
+      updateEmojiStatus(params: AccountUpdateEmojiStatusParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Get a list of default suggested emoji statuses
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.getDefaultEmojiStatuses
+       * @throws {AccountGetDefaultEmojiStatusesErrors}
+       */
+      getDefaultEmojiStatuses(params: AccountGetDefaultEmojiStatusesParams, opts?: ApiCallOptions): Promise<account.TypeEmojiStatuses>;
+      /**
+       * Get recently used emoji statuses
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.getRecentEmojiStatuses
+       * @throws {AccountGetRecentEmojiStatusesErrors}
+       */
+      getRecentEmojiStatuses(params: AccountGetRecentEmojiStatusesParams, opts?: ApiCallOptions): Promise<account.TypeEmojiStatuses>;
+      /**
+       * Clears list of recently used emoji statuses
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.clearRecentEmojiStatuses
+       * @throws {AccountClearRecentEmojiStatusesErrors}
+       */
+      clearRecentEmojiStatuses(opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Reorder usernames associated with the currently logged-in user.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.reorderUsernames
+       * @throws {AccountReorderUsernamesErrors}
+       */
+      reorderUsernames(params: AccountReorderUsernamesParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Activate or deactivate a purchased fragment.com username associated to the currently logged-in user.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.toggleUsername
+       * @throws {AccountToggleUsernameErrors}
+       */
+      toggleUsername(params: AccountToggleUsernameParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Get a set of suggested custom emoji stickers that can be used as profile picture
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.getDefaultProfilePhotoEmojis
+       * @throws {AccountGetDefaultProfilePhotoEmojisErrors}
+       */
+      getDefaultProfilePhotoEmojis(params: AccountGetDefaultProfilePhotoEmojisParams, opts?: ApiCallOptions): Promise<Api.TypeEmojiList>;
+      /**
+       * Get a set of suggested custom emoji stickers that can be used as group picture
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.getDefaultGroupPhotoEmojis
+       * @throws {AccountGetDefaultGroupPhotoEmojisErrors}
+       */
+      getDefaultGroupPhotoEmojis(params: AccountGetDefaultGroupPhotoEmojisParams, opts?: ApiCallOptions): Promise<Api.TypeEmojiList>;
+      /**
+       * Get autosave settings
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.getAutoSaveSettings
+       * @throws {AccountGetAutoSaveSettingsErrors}
+       */
+      getAutoSaveSettings(opts?: ApiCallOptions): Promise<account.TypeAutoSaveSettings>;
+      /**
+       * Modify autosave settings
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.saveAutoSaveSettings
+       * @throws {AccountSaveAutoSaveSettingsErrors}
+       */
+      saveAutoSaveSettings(params: AccountSaveAutoSaveSettingsParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Clear all peer-specific autosave settings.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.deleteAutoSaveExceptions
+       * @throws {AccountDeleteAutoSaveExceptionsErrors}
+       */
+      deleteAutoSaveExceptions(opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Invalidate the specified login codes, see here » for more info.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.invalidateSignInCodes
+       * @throws {AccountInvalidateSignInCodesErrors}
+       */
+      invalidateSignInCodes(params: AccountInvalidateSignInCodesParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Update the accent color and background custom emoji » of the current account.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.updateColor
+       * @throws {AccountUpdateColorErrors}
+       */
+      updateColor(params: AccountUpdateColorParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Get a set of suggested custom emoji stickers that can be used in an accent color pattern .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.getDefaultBackgroundEmojis
+       * @throws {AccountGetDefaultBackgroundEmojisErrors}
+       */
+      getDefaultBackgroundEmojis(params: AccountGetDefaultBackgroundEmojisParams, opts?: ApiCallOptions): Promise<Api.TypeEmojiList>;
+      /**
+       * Get a list of default suggested channel emoji statuses .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.getChannelDefaultEmojiStatuses
+       * @throws {AccountGetChannelDefaultEmojiStatusesErrors}
+       */
+      getChannelDefaultEmojiStatuses(params: AccountGetChannelDefaultEmojiStatusesParams, opts?: ApiCallOptions): Promise<account.TypeEmojiStatuses>;
+      /**
+       * Returns fetch the full list of custom emoji IDs » that cannot be used in channel emoji statuses » .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.getChannelRestrictedStatusEmojis
+       * @throws {AccountGetChannelRestrictedStatusEmojisErrors}
+       */
+      getChannelRestrictedStatusEmojis(params: AccountGetChannelRestrictedStatusEmojisParams, opts?: ApiCallOptions): Promise<Api.TypeEmojiList>;
+      /**
+       * Specify a set of Telegram Business opening hours . This info will be contained in userFull . business_work_hours . To remove all opening hours, invoke the method without setting the business_work_hours field. Note that the opening hours specified by the user must be appropriately validated and transformed before invoking the method, as specified here » .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.updateBusinessWorkHours
+       * @throws {AccountUpdateBusinessWorkHoursErrors}
+       */
+      updateBusinessWorkHours(params: AccountUpdateBusinessWorkHoursParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Businesses » may advertise their location using this method, see here » for more info. To remove business location information invoke the method without setting any of the parameters.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.updateBusinessLocation
+       * @throws {AccountUpdateBusinessLocationErrors}
+       */
+      updateBusinessLocation(params: AccountUpdateBusinessLocationParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Set a list of Telegram Business greeting messages .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.updateBusinessGreetingMessage
+       * @throws {AccountUpdateBusinessGreetingMessageErrors}
+       */
+      updateBusinessGreetingMessage(params: AccountUpdateBusinessGreetingMessageParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Set a list of Telegram Business away messages .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.updateBusinessAwayMessage
+       * @throws {AccountUpdateBusinessAwayMessageErrors}
+       */
+      updateBusinessAwayMessage(params: AccountUpdateBusinessAwayMessageParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Connect a business bot » to the current account, or to change the current connection settings.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.updateConnectedBot
+       * @throws {AccountUpdateConnectedBotErrors}
+       */
+      updateConnectedBot(params: AccountUpdateConnectedBotParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * List all currently connected business bots »
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.getConnectedBots
+       * @throws {AccountGetConnectedBotsErrors}
+       */
+      getConnectedBots(opts?: ApiCallOptions): Promise<account.TypeConnectedBots>;
+      /**
+       * Bots may invoke this method to re-fetch the updateBotBusinessConnect constructor associated with a specific business connection_id , see here » for more info on connected business bots. This is needed for example for freshly logged in bots that are receiving some updateBotNewBusinessMessage , etc. updates because some users have already connected to the bot before it could login. In this case, the bot is receiving messages from the business connection, but it hasn't cached the associated updateBotBusinessConnect with info about the connection (can it reply to messages? etc.) yet, and cannot receive the old ones because they were sent when the bot wasn't logged into the session yet. This method can be used to fetch info about a not-yet-cached business connection, and should not be invoked if the info is already cached or to fetch changes, as eventual changes will automatically be sent as new updateBotBusinessConnect updates to the bot using the usual update delivery methods » .
+       * @see https://core.telegram.org/method/account.getBotBusinessConnection
+       * @throws {AccountGetBotBusinessConnectionErrors}
+       */
+      getBotBusinessConnection(params: AccountGetBotBusinessConnectionParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * Set or remove the Telegram Business introduction » .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.updateBusinessIntro
+       * @throws {AccountUpdateBusinessIntroErrors}
+       */
+      updateBusinessIntro(params: AccountUpdateBusinessIntroParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Pause or unpause a specific chat, temporarily disconnecting it from all business bots » .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.toggleConnectedBotPaused
+       * @throws {AccountToggleConnectedBotPausedErrors}
+       */
+      toggleConnectedBotPaused(params: AccountToggleConnectedBotPausedParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Permanently disconnect a specific chat from all business bots » (equivalent to specifying it in recipients.exclude_users during initial configuration with account.updateConnectedBot » ); to reconnect of a chat disconnected using this method the user must reconnect the entire bot by invoking account.updateConnectedBot » .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.disablePeerConnectedBot
+       * @throws {AccountDisablePeerConnectedBotErrors}
+       */
+      disablePeerConnectedBot(params: AccountDisablePeerConnectedBotParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Update our birthday, see here » for more info.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.updateBirthday
+       * @throws {AccountUpdateBirthdayErrors}
+       */
+      updateBirthday(params: AccountUpdateBirthdayParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Create a business chat deep link » .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.createBusinessChatLink
+       * @throws {AccountCreateBusinessChatLinkErrors}
+       */
+      createBusinessChatLink(params: AccountCreateBusinessChatLinkParams, opts?: ApiCallOptions): Promise<Api.TypeBusinessChatLink>;
+      /**
+       * Edit a created business chat deep link » .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.editBusinessChatLink
+       * @throws {AccountEditBusinessChatLinkErrors}
+       */
+      editBusinessChatLink(params: AccountEditBusinessChatLinkParams, opts?: ApiCallOptions): Promise<Api.TypeBusinessChatLink>;
+      /**
+       * Delete a business chat deep link » .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.deleteBusinessChatLink
+       * @throws {AccountDeleteBusinessChatLinkErrors}
+       */
+      deleteBusinessChatLink(params: AccountDeleteBusinessChatLinkParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * List all created business chat deep links » .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.getBusinessChatLinks
+       * @throws {AccountGetBusinessChatLinksErrors}
+       */
+      getBusinessChatLinks(opts?: ApiCallOptions): Promise<account.TypeBusinessChatLinks>;
+      /**
+       * Resolve a business chat deep link » .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.resolveBusinessChatLink
+       * @throws {AccountResolveBusinessChatLinkErrors}
+       */
+      resolveBusinessChatLink(params: AccountResolveBusinessChatLinkParams, opts?: ApiCallOptions): Promise<account.TypeResolvedBusinessChatLinks>;
+      /**
+       * Associate (or remove) a personal channel » , that will be listed on our personal profile page » . Changing it will emit an updateUser update.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.updatePersonalChannel
+       * @throws {AccountUpdatePersonalChannelErrors}
+       */
+      updatePersonalChannel(params: AccountUpdatePersonalChannelParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Disable or re-enable Telegram ads for the current Premium account. Useful for business owners that may want to launch and view their own Telegram ads via the Telegram ad platform » .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.toggleSponsoredMessages
+       * @throws {AccountToggleSponsoredMessagesErrors}
+       */
+      toggleSponsoredMessages(params: AccountToggleSponsoredMessagesParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Get the current reaction notification settings » .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.getReactionsNotifySettings
+       * @throws {AccountGetReactionsNotifySettingsErrors}
+       */
+      getReactionsNotifySettings(opts?: ApiCallOptions): Promise<Api.TypeReactionsNotifySettings>;
+      /**
+       * Change the reaction notification settings » .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.setReactionsNotifySettings
+       * @throws {AccountSetReactionsNotifySettingsErrors}
+       */
+      setReactionsNotifySettings(params: AccountSetReactionsNotifySettingsParams, opts?: ApiCallOptions): Promise<Api.TypeReactionsNotifySettings>;
+      /**
+       * Obtain a list of emoji statuses » for owned collectible gifts .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.getCollectibleEmojiStatuses
+       * @throws {AccountGetCollectibleEmojiStatusesErrors}
+       */
+      getCollectibleEmojiStatuses(params: AccountGetCollectibleEmojiStatusesParams, opts?: ApiCallOptions): Promise<account.TypeEmojiStatuses>;
+      /**
+       * Get the number of stars we have received from the specified user thanks to paid messages » ; the received amount will be equal to the sent amount multiplied by stars_paid_message_commission_permille divided by 1000.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.getPaidMessagesRevenue
+       * @throws {AccountGetPaidMessagesRevenueErrors}
+       */
+      getPaidMessagesRevenue(params: AccountGetPaidMessagesRevenueParams, opts?: ApiCallOptions): Promise<account.TypePaidMessagesRevenue>;
+      /**
+       * Allow a user to send us messages without paying if paid messages » are enabled.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.toggleNoPaidMessagesException
+       * @throws {AccountToggleNoPaidMessagesExceptionErrors}
+       */
+      toggleNoPaidMessagesException(params: AccountToggleNoPaidMessagesExceptionParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Changes the main profile tab of the current user, see here » for more info.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.setMainProfileTab
+       * @throws {AccountSetMainProfileTabErrors}
+       */
+      setMainProfileTab(params: AccountSetMainProfileTabParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Adds or removes a song from the current user's profile see here » for more info on the music tab of the profile page.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.saveMusic
+       * @throws {AccountSaveMusicErrors}
+       */
+      saveMusic(params: AccountSaveMusicParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Fetch the full list of only the IDs of songs currently added to the profile, see here » for more info.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.getSavedMusicIds
+       * @throws {AccountGetSavedMusicIdsErrors}
+       */
+      getSavedMusicIds(params: AccountGetSavedMusicIdsParams, opts?: ApiCallOptions): Promise<account.TypeSavedMusicIds>;
+      /**
+       * Obtain all chat themes » associated to owned collectible gifts » .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/account.getUniqueGiftChatThemes
+       * @throws {AccountGetUniqueGiftChatThemesErrors}
+       */
+      getUniqueGiftChatThemes(params: AccountGetUniqueGiftChatThemesParams, opts?: ApiCallOptions): Promise<account.TypeChatThemes>;
+      /**
+       * @see https://core.telegram.org/method/account.initPasskeyRegistration
+       */
+      initPasskeyRegistration(opts?: ApiCallOptions): Promise<account.TypePasskeyRegistrationOptions>;
+      /**
+       * @see https://core.telegram.org/method/account.registerPasskey
+       */
+      registerPasskey(params: AccountRegisterPasskeyParams, opts?: ApiCallOptions): Promise<Api.TypePasskey>;
+      /**
+       * @see https://core.telegram.org/method/account.getPasskeys
+       */
+      getPasskeys(opts?: ApiCallOptions): Promise<account.TypePasskeys>;
+      /**
+       * @see https://core.telegram.org/method/account.deletePasskey
+       */
+      deletePasskey(params: AccountDeletePasskeyParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * @see https://core.telegram.org/method/account.confirmBotConnection
+       */
+      confirmBotConnection(params: AccountConfirmBotConnectionParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * @see https://core.telegram.org/method/account.getWebBrowserSettings
+       */
+      getWebBrowserSettings(params: AccountGetWebBrowserSettingsParams, opts?: ApiCallOptions): Promise<account.TypeWebBrowserSettings>;
+      /**
+       * @see https://core.telegram.org/method/account.updateWebBrowserSettings
+       */
+      updateWebBrowserSettings(params: AccountUpdateWebBrowserSettingsParams, opts?: ApiCallOptions): Promise<account.TypeWebBrowserSettings>;
+      /**
+       * @see https://core.telegram.org/method/account.toggleWebBrowserSettingsException
+       */
+      toggleWebBrowserSettingsException(params: AccountToggleWebBrowserSettingsExceptionParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * @see https://core.telegram.org/method/account.deleteWebBrowserSettingsExceptions
+       */
+      deleteWebBrowserSettingsExceptions(opts?: ApiCallOptions): Promise<account.TypeWebBrowserSettings>;
+    };
+    users: {
+      /**
+       * Returns basic user info according to their identifiers.
+       * @see https://core.telegram.org/method/users.getUsers
+       * @throws {UsersGetUsersErrors}
+       */
+      getUsers(params: UsersGetUsersParams, opts?: ApiCallOptions): Promise<Api.TypeUser[]>;
+      /**
+       * Returns extended user info by ID.
+       * @see https://core.telegram.org/method/users.getFullUser
+       * @throws {UsersGetFullUserErrors}
+       */
+      getFullUser(params: UsersGetFullUserParams, opts?: ApiCallOptions): Promise<users.TypeUserFull>;
+      /**
+       * Notify the user that the sent passport data contains some errors The user will not be able to re-submit their Passport data to you until the errors are fixed (the contents of the field for which you returned the error must change). Use this if the data submitted by the user doesn't satisfy the standards your service requires for any reason. For example, if a birthday date seems invalid, a submitted document is blurry, a scan shows evidence of tampering, etc. Supply some details in the error message to make sure the user knows how to correct the issues.
+       * @remarks bots-only
+       * @see https://core.telegram.org/method/users.setSecureValueErrors
+       * @throws {UsersSetSecureValueErrorsErrors}
+       */
+      setSecureValueErrors(params: UsersSetSecureValueErrorsParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Check whether we can write to the specified users, used to implement bulk checks for Premium-only messages » and paid messages » . For each input user, returns a RequirementToContact constructor (at the same offset in the vector) containing requirements to contact them.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/users.getRequirementsToContact
+       * @throws {UsersGetRequirementsToContactErrors}
+       */
+      getRequirementsToContact(params: UsersGetRequirementsToContactParams, opts?: ApiCallOptions): Promise<Api.TypeRequirementToContact[]>;
+      /**
+       * Get songs pinned to the user's profile, see here » for more info.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/users.getSavedMusic
+       * @throws {UsersGetSavedMusicErrors}
+       */
+      getSavedMusic(params: UsersGetSavedMusicParams, opts?: ApiCallOptions): Promise<users.TypeSavedMusic>;
+      /**
+       * Check if the passed songs are still pinned to the user's profile, or refresh the file references of songs pinned on a user's profile see here » for more info.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/users.getSavedMusicByID
+       * @throws {UsersGetSavedMusicByIDErrors}
+       */
+      getSavedMusicByID(params: UsersGetSavedMusicByIDParams, opts?: ApiCallOptions): Promise<users.TypeSavedMusic>;
+      /**
+       * @see https://core.telegram.org/method/users.suggestBirthday
+       */
+      suggestBirthday(params: UsersSuggestBirthdayParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+    };
+    contacts: {
+      /**
+       * Get the telegram IDs of all contacts. Returns an array of Telegram user IDs for all contacts (0 if a contact does not have an associated Telegram account or have hidden their account using privacy settings).
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/contacts.getContactIDs
+       * @throws {ContactsGetContactIDsErrors}
+       */
+      getContactIDs(params: ContactsGetContactIDsParams, opts?: ApiCallOptions): Promise<int[]>;
+      /**
+       * Use this method to obtain the online statuses of all contacts with an accessible Telegram account.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/contacts.getStatuses
+       * @throws {ContactsGetStatusesErrors}
+       */
+      getStatuses(opts?: ApiCallOptions): Promise<Api.TypeContactStatus[]>;
+      /**
+       * Returns the current user's contact list.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/contacts.getContacts
+       * @throws {ContactsGetContactsErrors}
+       */
+      getContacts(params: ContactsGetContactsParams, opts?: ApiCallOptions): Promise<contacts.TypeContacts>;
+      /**
+       * Imports contacts: saves a full list on the server, adds already registered contacts to the contact list, returns added contacts and their info. Use contacts.addContact to add Telegram contacts without actually using their phone number.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/contacts.importContacts
+       * @throws {ContactsImportContactsErrors}
+       */
+      importContacts(params: ContactsImportContactsParams, opts?: ApiCallOptions): Promise<contacts.TypeImportedContacts>;
+      /**
+       * Deletes several contacts from the list.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/contacts.deleteContacts
+       * @throws {ContactsDeleteContactsErrors}
+       */
+      deleteContacts(params: ContactsDeleteContactsParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * Delete contacts by phone number
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/contacts.deleteByPhones
+       * @throws {ContactsDeleteByPhonesErrors}
+       */
+      deleteByPhones(params: ContactsDeleteByPhonesParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Adds a peer to a blocklist, see here » for more info.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/contacts.block
+       * @throws {ContactsBlockErrors}
+       */
+      block(params: ContactsBlockParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Deletes a peer from a blocklist, see here » for more info.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/contacts.unblock
+       * @throws {ContactsUnblockErrors}
+       */
+      unblock(params: ContactsUnblockParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Returns the list of blocked users.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/contacts.getBlocked
+       * @throws {ContactsGetBlockedErrors}
+       */
+      getBlocked(params: ContactsGetBlockedParams, opts?: ApiCallOptions): Promise<contacts.TypeBlocked>;
+      /**
+       * Returns users found by username substring.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/contacts.search
+       * @throws {ContactsSearchErrors}
+       */
+      search(params: ContactsSearchParams, opts?: ApiCallOptions): Promise<contacts.TypeFound>;
+      /**
+       * Resolve a @username to get peer info
+       * @see https://core.telegram.org/method/contacts.resolveUsername
+       * @throws {ContactsResolveUsernameErrors}
+       */
+      resolveUsername(params: ContactsResolveUsernameParams, opts?: ApiCallOptions): Promise<contacts.TypeResolvedPeer>;
+      /**
+       * Get most used peers
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/contacts.getTopPeers
+       * @throws {ContactsGetTopPeersErrors}
+       */
+      getTopPeers(params: ContactsGetTopPeersParams, opts?: ApiCallOptions): Promise<contacts.TypeTopPeers>;
+      /**
+       * Reset rating of top peer
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/contacts.resetTopPeerRating
+       * @throws {ContactsResetTopPeerRatingErrors}
+       */
+      resetTopPeerRating(params: ContactsResetTopPeerRatingParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Removes all contacts without an associated Telegram account.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/contacts.resetSaved
+       * @throws {ContactsResetSavedErrors}
+       */
+      resetSaved(opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Get all contacts, requires a takeout session, see here » for more info .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/contacts.getSaved
+       * @throws {ContactsGetSavedErrors}
+       */
+      getSaved(opts?: ApiCallOptions): Promise<Api.TypeSavedContact[]>;
+      /**
+       * Enable/disable top peers
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/contacts.toggleTopPeers
+       * @throws {ContactsToggleTopPeersErrors}
+       */
+      toggleTopPeers(params: ContactsToggleTopPeersParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Add an existing telegram user as contact. Use contacts.importContacts to add contacts by phone number, without knowing their Telegram ID.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/contacts.addContact
+       * @throws {ContactsAddContactErrors}
+       */
+      addContact(params: ContactsAddContactParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * If the add contact action bar is active , add that user as contact
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/contacts.acceptContact
+       * @throws {ContactsAcceptContactErrors}
+       */
+      acceptContact(params: ContactsAcceptContactParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * Get users and geochats near you, see here » for more info.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/contacts.getLocated
+       * @throws {ContactsGetLocatedErrors}
+       */
+      getLocated(params: ContactsGetLocatedParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * Stop getting notifications about discussion replies of a certain user in @replies
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/contacts.blockFromReplies
+       * @throws {ContactsBlockFromRepliesErrors}
+       */
+      blockFromReplies(params: ContactsBlockFromRepliesParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * Resolve a phone number to get user info, if their privacy settings allow it.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/contacts.resolvePhone
+       * @throws {ContactsResolvePhoneErrors}
+       */
+      resolvePhone(params: ContactsResolvePhoneParams, opts?: ApiCallOptions): Promise<contacts.TypeResolvedPeer>;
+      /**
+       * Generates a temporary profile link for the currently logged-in user.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/contacts.exportContactToken
+       * @throws {ContactsExportContactTokenErrors}
+       */
+      exportContactToken(opts?: ApiCallOptions): Promise<Api.TypeExportedContactToken>;
+      /**
+       * Obtain user info from a temporary profile link .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/contacts.importContactToken
+       * @throws {ContactsImportContactTokenErrors}
+       */
+      importContactToken(params: ContactsImportContactTokenParams, opts?: ApiCallOptions): Promise<Api.TypeUser>;
+      /**
+       * Edit the close friends list, see here » for more info.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/contacts.editCloseFriends
+       * @throws {ContactsEditCloseFriendsErrors}
+       */
+      editCloseFriends(params: ContactsEditCloseFriendsParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Replace the contents of an entire blocklist, see here for more info » .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/contacts.setBlocked
+       * @throws {ContactsSetBlockedErrors}
+       */
+      setBlocked(params: ContactsSetBlockedParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Fetch all users with birthdays that fall within +1/-1 days, relative to the current day: this method should be invoked by clients every 6-8 hours, and if the result is non-empty, it should be used to appropriately update locally cached birthday information in user . birthday . See here » for more info.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/contacts.getBirthdays
+       * @throws {ContactsGetBirthdaysErrors}
+       */
+      getBirthdays(opts?: ApiCallOptions): Promise<contacts.TypeContactBirthdays>;
+      /**
+       * Obtain a list of sponsored peer search results for a given query
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/contacts.getSponsoredPeers
+       * @throws {ContactsGetSponsoredPeersErrors}
+       */
+      getSponsoredPeers(params: ContactsGetSponsoredPeersParams, opts?: ApiCallOptions): Promise<contacts.TypeSponsoredPeers>;
+      /**
+       * @see https://core.telegram.org/method/contacts.updateContactNote
+       */
+      updateContactNote(params: ContactsUpdateContactNoteParams, opts?: ApiCallOptions): Promise<Bool>;
+    };
+    messages: {
+      /**
+       * Returns the list of messages by their IDs.
+       * @see https://core.telegram.org/method/messages.getMessages
+       * @throws {MessagesGetMessagesErrors}
+       */
+      getMessages(params: MessagesGetMessagesParams, opts?: ApiCallOptions): Promise<messages.TypeMessages>;
+      /**
+       * Returns the current user dialog list.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.getDialogs
+       * @throws {MessagesGetDialogsErrors}
+       */
+      getDialogs(params: MessagesGetDialogsParams, opts?: ApiCallOptions): Promise<messages.TypeDialogs>;
+      /**
+       * Returns the conversation history with one interlocutor / within a chat
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.getHistory
+       * @throws {MessagesGetHistoryErrors}
+       */
+      getHistory(params: MessagesGetHistoryParams, opts?: ApiCallOptions): Promise<messages.TypeMessages>;
+      /**
+       * Search for messages.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.search
+       * @throws {MessagesSearchErrors}
+       */
+      search(params: MessagesSearchParams, opts?: ApiCallOptions): Promise<messages.TypeMessages>;
+      /**
+       * Marks message history as read.
+       * @remarks user-only (bots rejected) · works over a business connection
+       * @see https://core.telegram.org/method/messages.readHistory
+       * @throws {MessagesReadHistoryErrors}
+       */
+      readHistory(params: MessagesReadHistoryParams, opts?: ApiCallOptions): Promise<messages.TypeAffectedMessages>;
+      /**
+       * Deletes communication history.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.deleteHistory
+       * @throws {MessagesDeleteHistoryErrors}
+       */
+      deleteHistory(params: MessagesDeleteHistoryParams, opts?: ApiCallOptions): Promise<messages.TypeAffectedHistory>;
+      /**
+       * Deletes messages by their identifiers.
+       * @remarks works over a business connection
+       * @see https://core.telegram.org/method/messages.deleteMessages
+       * @throws {MessagesDeleteMessagesErrors}
+       */
+      deleteMessages(params: MessagesDeleteMessagesParams, opts?: ApiCallOptions): Promise<messages.TypeAffectedMessages>;
+      /**
+       * Confirms receipt of messages by a client, cancels PUSH-notification sending.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.receivedMessages
+       * @throws {MessagesReceivedMessagesErrors}
+       */
+      receivedMessages(params: MessagesReceivedMessagesParams, opts?: ApiCallOptions): Promise<Api.TypeReceivedNotifyMessage[]>;
+      /**
+       * Sends a current user typing event (see SendMessageAction for all event types) to a conversation partner or group.
+       * @remarks works over a business connection
+       * @see https://core.telegram.org/method/messages.setTyping
+       * @throws {MessagesSetTypingErrors}
+       */
+      setTyping(params: MessagesSetTypingParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Sends a message to a chat
+       * @remarks works over a business connection
+       * @see https://core.telegram.org/method/messages.sendMessage
+       * @throws {MessagesSendMessageErrors}
+       */
+      sendMessage(params: MessagesSendMessageParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * Send a media
+       * @remarks works over a business connection
+       * @see https://core.telegram.org/method/messages.sendMedia
+       * @throws {MessagesSendMediaErrors}
+       */
+      sendMedia(params: MessagesSendMediaParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * Forwards messages by their IDs.
+       * @see https://core.telegram.org/method/messages.forwardMessages
+       * @throws {MessagesForwardMessagesErrors}
+       */
+      forwardMessages(params: MessagesForwardMessagesParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * Report a new incoming chat for spam, if the peer settings of the chat allow us to do that
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.reportSpam
+       * @throws {MessagesReportSpamErrors}
+       */
+      reportSpam(params: MessagesReportSpamParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Get peer settings
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.getPeerSettings
+       * @throws {MessagesGetPeerSettingsErrors}
+       */
+      getPeerSettings(params: MessagesGetPeerSettingsParams, opts?: ApiCallOptions): Promise<messages.TypePeerSettings>;
+      /**
+       * Report a message in a chat for violation of telegram's Terms of Service
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.report
+       * @throws {MessagesReportErrors}
+       */
+      report(params: MessagesReportParams, opts?: ApiCallOptions): Promise<Api.TypeReportResult>;
+      /**
+       * Returns chat basic info on their IDs.
+       * @see https://core.telegram.org/method/messages.getChats
+       * @throws {MessagesGetChatsErrors}
+       */
+      getChats(params: MessagesGetChatsParams, opts?: ApiCallOptions): Promise<messages.TypeChats>;
+      /**
+       * Get full info about a basic group .
+       * @see https://core.telegram.org/method/messages.getFullChat
+       * @throws {MessagesGetFullChatErrors}
+       */
+      getFullChat(params: MessagesGetFullChatParams, opts?: ApiCallOptions): Promise<messages.TypeChatFull>;
+      /**
+       * Changes chat name and sends a service message on it.
+       * @see https://core.telegram.org/method/messages.editChatTitle
+       * @throws {MessagesEditChatTitleErrors}
+       */
+      editChatTitle(params: MessagesEditChatTitleParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * Changes chat photo and sends a service message on it
+       * @see https://core.telegram.org/method/messages.editChatPhoto
+       * @throws {MessagesEditChatPhotoErrors}
+       */
+      editChatPhoto(params: MessagesEditChatPhotoParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * Adds a user to a chat and sends a service message on it.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.addChatUser
+       * @throws {MessagesAddChatUserErrors}
+       */
+      addChatUser(params: MessagesAddChatUserParams, opts?: ApiCallOptions): Promise<messages.TypeInvitedUsers>;
+      /**
+       * Deletes a user from a chat and sends a service message on it.
+       * @see https://core.telegram.org/method/messages.deleteChatUser
+       * @throws {MessagesDeleteChatUserErrors}
+       */
+      deleteChatUser(params: MessagesDeleteChatUserParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * Creates a new chat.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.createChat
+       * @throws {MessagesCreateChatErrors}
+       */
+      createChat(params: MessagesCreateChatParams, opts?: ApiCallOptions): Promise<messages.TypeInvitedUsers>;
+      /**
+       * Returns configuration parameters for Diffie-Hellman key generation. Can also return a random sequence of bytes of required length.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.getDhConfig
+       * @throws {MessagesGetDhConfigErrors}
+       */
+      getDhConfig(params: MessagesGetDhConfigParams, opts?: ApiCallOptions): Promise<messages.TypeDhConfig>;
+      /**
+       * Sends a request to start a secret chat to the user.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.requestEncryption
+       * @throws {MessagesRequestEncryptionErrors}
+       */
+      requestEncryption(params: MessagesRequestEncryptionParams, opts?: ApiCallOptions): Promise<Api.TypeEncryptedChat>;
+      /**
+       * Confirms creation of a secret chat
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.acceptEncryption
+       * @throws {MessagesAcceptEncryptionErrors}
+       */
+      acceptEncryption(params: MessagesAcceptEncryptionParams, opts?: ApiCallOptions): Promise<Api.TypeEncryptedChat>;
+      /**
+       * Cancels a request for creation and/or delete info on secret chat.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.discardEncryption
+       * @throws {MessagesDiscardEncryptionErrors}
+       */
+      discardEncryption(params: MessagesDiscardEncryptionParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Send typing event by the current user to a secret chat.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.setEncryptedTyping
+       * @throws {MessagesSetEncryptedTypingErrors}
+       */
+      setEncryptedTyping(params: MessagesSetEncryptedTypingParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Marks message history within a secret chat as read.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.readEncryptedHistory
+       * @throws {MessagesReadEncryptedHistoryErrors}
+       */
+      readEncryptedHistory(params: MessagesReadEncryptedHistoryParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Sends a text message to a secret chat.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.sendEncrypted
+       * @throws {MessagesSendEncryptedErrors}
+       */
+      sendEncrypted(params: MessagesSendEncryptedParams, opts?: ApiCallOptions): Promise<messages.TypeSentEncryptedMessage>;
+      /**
+       * Sends a message with a file attachment to a secret chat
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.sendEncryptedFile
+       * @throws {MessagesSendEncryptedFileErrors}
+       */
+      sendEncryptedFile(params: MessagesSendEncryptedFileParams, opts?: ApiCallOptions): Promise<messages.TypeSentEncryptedMessage>;
+      /**
+       * Sends a service message to a secret chat.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.sendEncryptedService
+       * @throws {MessagesSendEncryptedServiceErrors}
+       */
+      sendEncryptedService(params: MessagesSendEncryptedServiceParams, opts?: ApiCallOptions): Promise<messages.TypeSentEncryptedMessage>;
+      /**
+       * Confirms receipt of messages in a secret chat by client, cancels push notifications. The method returns a list of random_id s of messages for which push notifications were cancelled.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.receivedQueue
+       * @throws {MessagesReceivedQueueErrors}
+       */
+      receivedQueue(params: MessagesReceivedQueueParams, opts?: ApiCallOptions): Promise<long[]>;
+      /**
+       * Report a secret chat for spam
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.reportEncryptedSpam
+       * @throws {MessagesReportEncryptedSpamErrors}
+       */
+      reportEncryptedSpam(params: MessagesReportEncryptedSpamParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Notifies the sender about the recipient having listened a voice message or watched a video, emitting an updateReadMessagesContents .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.readMessageContents
+       * @throws {MessagesReadMessageContentsErrors}
+       */
+      readMessageContents(params: MessagesReadMessageContentsParams, opts?: ApiCallOptions): Promise<messages.TypeAffectedMessages>;
+      /**
+       * Get stickers by emoji
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.getStickers
+       * @throws {MessagesGetStickersErrors}
+       */
+      getStickers(params: MessagesGetStickersParams, opts?: ApiCallOptions): Promise<messages.TypeStickers>;
+      /**
+       * Get all installed stickers
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.getAllStickers
+       * @throws {MessagesGetAllStickersErrors}
+       */
+      getAllStickers(params: MessagesGetAllStickersParams, opts?: ApiCallOptions): Promise<messages.TypeAllStickers>;
+      /**
+       * Get preview of webpage
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.getWebPagePreview
+       * @throws {MessagesGetWebPagePreviewErrors}
+       */
+      getWebPagePreview(params: MessagesGetWebPagePreviewParams, opts?: ApiCallOptions): Promise<messages.TypeWebPagePreview>;
+      /**
+       * Export an invite link for a chat
+       * @see https://core.telegram.org/method/messages.exportChatInvite
+       * @throws {MessagesExportChatInviteErrors}
+       */
+      exportChatInvite(params: MessagesExportChatInviteParams, opts?: ApiCallOptions): Promise<Api.TypeExportedChatInvite>;
+      /**
+       * Check the validity of a chat invite link and get basic info about it
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.checkChatInvite
+       * @throws {MessagesCheckChatInviteErrors}
+       */
+      checkChatInvite(params: MessagesCheckChatInviteParams, opts?: ApiCallOptions): Promise<Api.TypeChatInvite>;
+      /**
+       * Import a chat invite and join a private chat/supergroup/channel
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.importChatInvite
+       * @throws {MessagesImportChatInviteErrors}
+       */
+      importChatInvite(params: MessagesImportChatInviteParams, opts?: ApiCallOptions): Promise<messages.TypeChatInviteJoinResult>;
+      /**
+       * Get info about a stickerset
+       * @see https://core.telegram.org/method/messages.getStickerSet
+       * @throws {MessagesGetStickerSetErrors}
+       */
+      getStickerSet(params: MessagesGetStickerSetParams, opts?: ApiCallOptions): Promise<messages.TypeStickerSet>;
+      /**
+       * Install a stickerset
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.installStickerSet
+       * @throws {MessagesInstallStickerSetErrors}
+       */
+      installStickerSet(params: MessagesInstallStickerSetParams, opts?: ApiCallOptions): Promise<messages.TypeStickerSetInstallResult>;
+      /**
+       * Uninstall a stickerset
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.uninstallStickerSet
+       * @throws {MessagesUninstallStickerSetErrors}
+       */
+      uninstallStickerSet(params: MessagesUninstallStickerSetParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Start a conversation with a bot using a deep linking parameter
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.startBot
+       * @throws {MessagesStartBotErrors}
+       */
+      startBot(params: MessagesStartBotParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * Get and increase the view counter of a message sent or forwarded from a channel
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.getMessagesViews
+       * @throws {MessagesGetMessagesViewsErrors}
+       */
+      getMessagesViews(params: MessagesGetMessagesViewsParams, opts?: ApiCallOptions): Promise<messages.TypeMessageViews>;
+      /**
+       * Make a user admin in a basic group .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.editChatAdmin
+       * @throws {MessagesEditChatAdminErrors}
+       */
+      editChatAdmin(params: MessagesEditChatAdminParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Turn a basic group into a supergroup
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.migrateChat
+       * @throws {MessagesMigrateChatErrors}
+       */
+      migrateChat(params: MessagesMigrateChatParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * Search for messages and peers globally
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.searchGlobal
+       * @throws {MessagesSearchGlobalErrors}
+       */
+      searchGlobal(params: MessagesSearchGlobalParams, opts?: ApiCallOptions): Promise<messages.TypeMessages>;
+      /**
+       * Reorder installed stickersets
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.reorderStickerSets
+       * @throws {MessagesReorderStickerSetsErrors}
+       */
+      reorderStickerSets(params: MessagesReorderStickerSetsParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Get a document by its SHA256 hash, mainly used for gifs
+       * @see https://core.telegram.org/method/messages.getDocumentByHash
+       * @throws {MessagesGetDocumentByHashErrors}
+       */
+      getDocumentByHash(params: MessagesGetDocumentByHashParams, opts?: ApiCallOptions): Promise<Api.TypeDocument>;
+      /**
+       * Get saved GIFs.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.getSavedGifs
+       * @throws {MessagesGetSavedGifsErrors}
+       */
+      getSavedGifs(params: MessagesGetSavedGifsParams, opts?: ApiCallOptions): Promise<messages.TypeSavedGifs>;
+      /**
+       * Add GIF to saved gifs list
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.saveGif
+       * @throws {MessagesSaveGifErrors}
+       */
+      saveGif(params: MessagesSaveGifParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Query an inline bot
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.getInlineBotResults
+       * @throws {MessagesGetInlineBotResultsErrors}
+       */
+      getInlineBotResults(params: MessagesGetInlineBotResultsParams, opts?: ApiCallOptions): Promise<messages.TypeBotResults>;
+      /**
+       * Answer an inline query, for bots only
+       * @remarks bots-only
+       * @see https://core.telegram.org/method/messages.setInlineBotResults
+       * @throws {MessagesSetInlineBotResultsErrors}
+       */
+      setInlineBotResults(params: MessagesSetInlineBotResultsParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Send a result obtained using messages.getInlineBotResults .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.sendInlineBotResult
+       * @throws {MessagesSendInlineBotResultErrors}
+       */
+      sendInlineBotResult(params: MessagesSendInlineBotResultParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * Find out if a media message's caption can be edited
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.getMessageEditData
+       * @throws {MessagesGetMessageEditDataErrors}
+       */
+      getMessageEditData(params: MessagesGetMessageEditDataParams, opts?: ApiCallOptions): Promise<messages.TypeMessageEditData>;
+      /**
+       * Edit message
+       * @remarks works over a business connection
+       * @see https://core.telegram.org/method/messages.editMessage
+       * @throws {MessagesEditMessageErrors}
+       */
+      editMessage(params: MessagesEditMessageParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * Edit an inline bot message
+       * @see https://core.telegram.org/method/messages.editInlineBotMessage
+       * @throws {MessagesEditInlineBotMessageErrors}
+       */
+      editInlineBotMessage(params: MessagesEditInlineBotMessageParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Press an inline callback button and get a callback answer from the bot
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.getBotCallbackAnswer
+       * @throws {MessagesGetBotCallbackAnswerErrors}
+       */
+      getBotCallbackAnswer(params: MessagesGetBotCallbackAnswerParams, opts?: ApiCallOptions): Promise<messages.TypeBotCallbackAnswer>;
+      /**
+       * Set the callback answer to a user button press (bots only)
+       * @remarks bots-only
+       * @see https://core.telegram.org/method/messages.setBotCallbackAnswer
+       * @throws {MessagesSetBotCallbackAnswerErrors}
+       */
+      setBotCallbackAnswer(params: MessagesSetBotCallbackAnswerParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Get dialog info of specified peers
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.getPeerDialogs
+       * @throws {MessagesGetPeerDialogsErrors}
+       */
+      getPeerDialogs(params: MessagesGetPeerDialogsParams, opts?: ApiCallOptions): Promise<messages.TypePeerDialogs>;
+      /**
+       * Save a message draft associated to a chat.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.saveDraft
+       * @throws {MessagesSaveDraftErrors}
+       */
+      saveDraft(params: MessagesSaveDraftParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Return all message drafts . Returns all the latest updateDraftMessage updates related to all chats with drafts.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.getAllDrafts
+       * @throws {MessagesGetAllDraftsErrors}
+       */
+      getAllDrafts(opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * Get featured stickers
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.getFeaturedStickers
+       * @throws {MessagesGetFeaturedStickersErrors}
+       */
+      getFeaturedStickers(params: MessagesGetFeaturedStickersParams, opts?: ApiCallOptions): Promise<messages.TypeFeaturedStickers>;
+      /**
+       * Mark new featured stickers as read
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.readFeaturedStickers
+       * @throws {MessagesReadFeaturedStickersErrors}
+       */
+      readFeaturedStickers(params: MessagesReadFeaturedStickersParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Get recent stickers
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.getRecentStickers
+       * @throws {MessagesGetRecentStickersErrors}
+       */
+      getRecentStickers(params: MessagesGetRecentStickersParams, opts?: ApiCallOptions): Promise<messages.TypeRecentStickers>;
+      /**
+       * Add/remove sticker from recent stickers list
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.saveRecentSticker
+       * @throws {MessagesSaveRecentStickerErrors}
+       */
+      saveRecentSticker(params: MessagesSaveRecentStickerParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Clear recent stickers
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.clearRecentStickers
+       * @throws {MessagesClearRecentStickersErrors}
+       */
+      clearRecentStickers(params: MessagesClearRecentStickersParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Get all archived stickers
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.getArchivedStickers
+       * @throws {MessagesGetArchivedStickersErrors}
+       */
+      getArchivedStickers(params: MessagesGetArchivedStickersParams, opts?: ApiCallOptions): Promise<messages.TypeArchivedStickers>;
+      /**
+       * Get installed mask stickers
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.getMaskStickers
+       * @throws {MessagesGetMaskStickersErrors}
+       */
+      getMaskStickers(params: MessagesGetMaskStickersParams, opts?: ApiCallOptions): Promise<messages.TypeAllStickers>;
+      /**
+       * Get stickers attached to a photo or video
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.getAttachedStickers
+       * @throws {MessagesGetAttachedStickersErrors}
+       */
+      getAttachedStickers(params: MessagesGetAttachedStickersParams, opts?: ApiCallOptions): Promise<Api.TypeStickerSetCovered[]>;
+      /**
+       * Use this method to set the score of the specified user in a game sent as a normal message (bots only).
+       * @remarks bots-only
+       * @see https://core.telegram.org/method/messages.setGameScore
+       * @throws {MessagesSetGameScoreErrors}
+       */
+      setGameScore(params: MessagesSetGameScoreParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * Use this method to set the score of the specified user in a game sent as an inline message (bots only).
+       * @remarks bots-only
+       * @see https://core.telegram.org/method/messages.setInlineGameScore
+       * @throws {MessagesSetInlineGameScoreErrors}
+       */
+      setInlineGameScore(params: MessagesSetInlineGameScoreParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Get highscores of a game
+       * @remarks bots-only
+       * @see https://core.telegram.org/method/messages.getGameHighScores
+       * @throws {MessagesGetGameHighScoresErrors}
+       */
+      getGameHighScores(params: MessagesGetGameHighScoresParams, opts?: ApiCallOptions): Promise<messages.TypeHighScores>;
+      /**
+       * Get highscores of a game sent using an inline bot
+       * @remarks bots-only
+       * @see https://core.telegram.org/method/messages.getInlineGameHighScores
+       * @throws {MessagesGetInlineGameHighScoresErrors}
+       */
+      getInlineGameHighScores(params: MessagesGetInlineGameHighScoresParams, opts?: ApiCallOptions): Promise<messages.TypeHighScores>;
+      /**
+       * Get chats in common with a user
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.getCommonChats
+       * @throws {MessagesGetCommonChatsErrors}
+       */
+      getCommonChats(params: MessagesGetCommonChatsParams, opts?: ApiCallOptions): Promise<messages.TypeChats>;
+      /**
+       * Get instant view page
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.getWebPage
+       * @throws {MessagesGetWebPageErrors}
+       */
+      getWebPage(params: MessagesGetWebPageParams, opts?: ApiCallOptions): Promise<messages.TypeWebPage>;
+      /**
+       * Pin/unpin a dialog
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.toggleDialogPin
+       * @throws {MessagesToggleDialogPinErrors}
+       */
+      toggleDialogPin(params: MessagesToggleDialogPinParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Reorder pinned dialogs
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.reorderPinnedDialogs
+       * @throws {MessagesReorderPinnedDialogsErrors}
+       */
+      reorderPinnedDialogs(params: MessagesReorderPinnedDialogsParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Get pinned dialogs
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.getPinnedDialogs
+       * @throws {MessagesGetPinnedDialogsErrors}
+       */
+      getPinnedDialogs(params: MessagesGetPinnedDialogsParams, opts?: ApiCallOptions): Promise<messages.TypePeerDialogs>;
+      /**
+       * If you sent an invoice requesting a shipping address and the parameter is_flexible was specified, the bot will receive an updateBotShippingQuery update. Use this method to reply to shipping queries.
+       * @remarks bots-only
+       * @see https://core.telegram.org/method/messages.setBotShippingResults
+       * @throws {MessagesSetBotShippingResultsErrors}
+       */
+      setBotShippingResults(params: MessagesSetBotShippingResultsParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Once the user has confirmed their payment and shipping details, the bot receives an updateBotPrecheckoutQuery update. Use this method to respond to such pre-checkout queries. Note : Telegram must receive an answer within 10 seconds after the pre-checkout query was sent.
+       * @remarks bots-only
+       * @see https://core.telegram.org/method/messages.setBotPrecheckoutResults
+       * @throws {MessagesSetBotPrecheckoutResultsErrors}
+       */
+      setBotPrecheckoutResults(params: MessagesSetBotPrecheckoutResultsParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Upload a file and associate it to a chat (without actually sending it to the chat) May also be used in a business connection , not by wrapping the query in invokeWithBusinessConnection » , but rather by specifying the business connection ID in the business_connection_id parameter.
+       * @see https://core.telegram.org/method/messages.uploadMedia
+       * @throws {MessagesUploadMediaErrors}
+       */
+      uploadMedia(params: MessagesUploadMediaParams, opts?: ApiCallOptions): Promise<Api.TypeMessageMedia>;
+      /**
+       * Notify the other user in a private chat that a screenshot of the chat was taken
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.sendScreenshotNotification
+       * @throws {MessagesSendScreenshotNotificationErrors}
+       */
+      sendScreenshotNotification(params: MessagesSendScreenshotNotificationParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * Get faved stickers
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.getFavedStickers
+       * @throws {MessagesGetFavedStickersErrors}
+       */
+      getFavedStickers(params: MessagesGetFavedStickersParams, opts?: ApiCallOptions): Promise<messages.TypeFavedStickers>;
+      /**
+       * Mark or unmark a sticker as favorite
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.faveSticker
+       * @throws {MessagesFaveStickerErrors}
+       */
+      faveSticker(params: MessagesFaveStickerParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Get unread messages where we were mentioned
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.getUnreadMentions
+       * @throws {MessagesGetUnreadMentionsErrors}
+       */
+      getUnreadMentions(params: MessagesGetUnreadMentionsParams, opts?: ApiCallOptions): Promise<messages.TypeMessages>;
+      /**
+       * Mark mentions as read
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.readMentions
+       * @throws {MessagesReadMentionsErrors}
+       */
+      readMentions(params: MessagesReadMentionsParams, opts?: ApiCallOptions): Promise<messages.TypeAffectedHistory>;
+      /**
+       * Get live location history of a certain user
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.getRecentLocations
+       * @throws {MessagesGetRecentLocationsErrors}
+       */
+      getRecentLocations(params: MessagesGetRecentLocationsParams, opts?: ApiCallOptions): Promise<messages.TypeMessages>;
+      /**
+       * Send an album or grouped media
+       * @remarks works over a business connection
+       * @see https://core.telegram.org/method/messages.sendMultiMedia
+       * @throws {MessagesSendMultiMediaErrors}
+       */
+      sendMultiMedia(params: MessagesSendMultiMediaParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * Upload encrypted file and associate it to a secret chat (without actually sending it to the chat).
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.uploadEncryptedFile
+       * @throws {MessagesUploadEncryptedFileErrors}
+       */
+      uploadEncryptedFile(params: MessagesUploadEncryptedFileParams, opts?: ApiCallOptions): Promise<Api.TypeEncryptedFile>;
+      /**
+       * Search for stickersets
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.searchStickerSets
+       * @throws {MessagesSearchStickerSetsErrors}
+       */
+      searchStickerSets(params: MessagesSearchStickerSetsParams, opts?: ApiCallOptions): Promise<messages.TypeFoundStickerSets>;
+      /**
+       * Get message ranges for saving the user's chat history
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.getSplitRanges
+       * @throws {MessagesGetSplitRangesErrors}
+       */
+      getSplitRanges(opts?: ApiCallOptions): Promise<Api.TypeMessageRange[]>;
+      /**
+       * Manually mark dialog as unread
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.markDialogUnread
+       * @throws {MessagesMarkDialogUnreadErrors}
+       */
+      markDialogUnread(params: MessagesMarkDialogUnreadParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Get dialogs manually marked as unread
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.getDialogUnreadMarks
+       * @throws {MessagesGetDialogUnreadMarksErrors}
+       */
+      getDialogUnreadMarks(params: MessagesGetDialogUnreadMarksParams, opts?: ApiCallOptions): Promise<Api.TypeDialogPeer[]>;
+      /**
+       * Clear all drafts .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.clearAllDrafts
+       * @throws {MessagesClearAllDraftsErrors}
+       */
+      clearAllDrafts(opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Pin a message
+       * @remarks works over a business connection
+       * @see https://core.telegram.org/method/messages.updatePinnedMessage
+       * @throws {MessagesUpdatePinnedMessageErrors}
+       */
+      updatePinnedMessage(params: MessagesUpdatePinnedMessageParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * Vote in a poll Starting from layer 159, the vote will be sent from the peer specified using messages.saveDefaultSendAs .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.sendVote
+       * @throws {MessagesSendVoteErrors}
+       */
+      sendVote(params: MessagesSendVoteParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * Get poll results
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.getPollResults
+       * @throws {MessagesGetPollResultsErrors}
+       */
+      getPollResults(params: MessagesGetPollResultsParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * Get count of online users in a chat
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.getOnlines
+       * @throws {MessagesGetOnlinesErrors}
+       */
+      getOnlines(params: MessagesGetOnlinesParams, opts?: ApiCallOptions): Promise<Api.TypeChatOnlines>;
+      /**
+       * Edit the description of a group/supergroup/channel .
+       * @see https://core.telegram.org/method/messages.editChatAbout
+       * @throws {MessagesEditChatAboutErrors}
+       */
+      editChatAbout(params: MessagesEditChatAboutParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Edit the default banned rights of a channel/supergroup/group .
+       * @see https://core.telegram.org/method/messages.editChatDefaultBannedRights
+       * @throws {MessagesEditChatDefaultBannedRightsErrors}
+       */
+      editChatDefaultBannedRights(params: MessagesEditChatDefaultBannedRightsParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * Get localized emoji keywords » .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.getEmojiKeywords
+       * @throws {MessagesGetEmojiKeywordsErrors}
+       */
+      getEmojiKeywords(params: MessagesGetEmojiKeywordsParams, opts?: ApiCallOptions): Promise<Api.TypeEmojiKeywordsDifference>;
+      /**
+       * Get changed emoji keywords » .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.getEmojiKeywordsDifference
+       * @throws {MessagesGetEmojiKeywordsDifferenceErrors}
+       */
+      getEmojiKeywordsDifference(params: MessagesGetEmojiKeywordsDifferenceParams, opts?: ApiCallOptions): Promise<Api.TypeEmojiKeywordsDifference>;
+      /**
+       * Obtain a list of related languages that must be used when fetching emoji keyword lists » . Usually the method will return the passed language codes (if localized) + en + some language codes for similar languages (if applicable).
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.getEmojiKeywordsLanguages
+       * @throws {MessagesGetEmojiKeywordsLanguagesErrors}
+       */
+      getEmojiKeywordsLanguages(params: MessagesGetEmojiKeywordsLanguagesParams, opts?: ApiCallOptions): Promise<Api.TypeEmojiLanguage[]>;
+      /**
+       * Returns an HTTP URL which can be used to automatically log in into translation platform and suggest new emoji keywords » . The URL will be valid for 30 seconds after generation.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.getEmojiURL
+       * @throws {MessagesGetEmojiURLErrors}
+       */
+      getEmojiURL(params: MessagesGetEmojiURLParams, opts?: ApiCallOptions): Promise<Api.TypeEmojiURL>;
+      /**
+       * Get the number of results that would be found by a messages.search call with the same parameters
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.getSearchCounters
+       * @throws {MessagesGetSearchCountersErrors}
+       */
+      getSearchCounters(params: MessagesGetSearchCountersParams, opts?: ApiCallOptions): Promise<messages.TypeSearchCounter[]>;
+      /**
+       * Get more info about a Seamless Telegram Login authorization request, for more info click here »
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.requestUrlAuth
+       * @throws {MessagesRequestUrlAuthErrors}
+       */
+      requestUrlAuth(params: MessagesRequestUrlAuthParams, opts?: ApiCallOptions): Promise<Api.TypeUrlAuthResult>;
+      /**
+       * Use this to accept a Seamless Telegram Login authorization request, for more info click here »
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.acceptUrlAuth
+       * @throws {MessagesAcceptUrlAuthErrors}
+       */
+      acceptUrlAuth(params: MessagesAcceptUrlAuthParams, opts?: ApiCallOptions): Promise<Api.TypeUrlAuthResult>;
+      /**
+       * Should be called after the user hides the report spam/add as contact bar of a new chat, effectively prevents the user from executing the actions specified in the action bar » .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.hidePeerSettingsBar
+       * @throws {MessagesHidePeerSettingsBarErrors}
+       */
+      hidePeerSettingsBar(params: MessagesHidePeerSettingsBarParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Get scheduled messages
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.getScheduledHistory
+       * @throws {MessagesGetScheduledHistoryErrors}
+       */
+      getScheduledHistory(params: MessagesGetScheduledHistoryParams, opts?: ApiCallOptions): Promise<messages.TypeMessages>;
+      /**
+       * Get scheduled messages
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.getScheduledMessages
+       * @throws {MessagesGetScheduledMessagesErrors}
+       */
+      getScheduledMessages(params: MessagesGetScheduledMessagesParams, opts?: ApiCallOptions): Promise<messages.TypeMessages>;
+      /**
+       * Send scheduled messages right away
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.sendScheduledMessages
+       * @throws {MessagesSendScheduledMessagesErrors}
+       */
+      sendScheduledMessages(params: MessagesSendScheduledMessagesParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * Delete scheduled messages
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.deleteScheduledMessages
+       * @throws {MessagesDeleteScheduledMessagesErrors}
+       */
+      deleteScheduledMessages(params: MessagesDeleteScheduledMessagesParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * Get poll results for non-anonymous polls
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.getPollVotes
+       * @throws {MessagesGetPollVotesErrors}
+       */
+      getPollVotes(params: MessagesGetPollVotesParams, opts?: ApiCallOptions): Promise<messages.TypeVotesList>;
+      /**
+       * Apply changes to multiple stickersets
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.toggleStickerSets
+       * @throws {MessagesToggleStickerSetsErrors}
+       */
+      toggleStickerSets(params: MessagesToggleStickerSetsParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Get folders
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.getDialogFilters
+       * @throws {MessagesGetDialogFiltersErrors}
+       */
+      getDialogFilters(opts?: ApiCallOptions): Promise<messages.TypeDialogFilters>;
+      /**
+       * Get suggested folders
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.getSuggestedDialogFilters
+       * @throws {MessagesGetSuggestedDialogFiltersErrors}
+       */
+      getSuggestedDialogFilters(opts?: ApiCallOptions): Promise<Api.TypeDialogFilterSuggested[]>;
+      /**
+       * Update folder
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.updateDialogFilter
+       * @throws {MessagesUpdateDialogFilterErrors}
+       */
+      updateDialogFilter(params: MessagesUpdateDialogFilterParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Reorder folders
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.updateDialogFiltersOrder
+       * @throws {MessagesUpdateDialogFiltersOrderErrors}
+       */
+      updateDialogFiltersOrder(params: MessagesUpdateDialogFiltersOrderParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Method for fetching previously featured stickers
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.getOldFeaturedStickers
+       * @throws {MessagesGetOldFeaturedStickersErrors}
+       */
+      getOldFeaturedStickers(params: MessagesGetOldFeaturedStickersParams, opts?: ApiCallOptions): Promise<messages.TypeFeaturedStickers>;
+      /**
+       * Get messages in a reply thread
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.getReplies
+       * @throws {MessagesGetRepliesErrors}
+       */
+      getReplies(params: MessagesGetRepliesParams, opts?: ApiCallOptions): Promise<messages.TypeMessages>;
+      /**
+       * Get discussion message from the associated discussion group of a channel to show it on top of the comment section, without actually joining the group
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.getDiscussionMessage
+       * @throws {MessagesGetDiscussionMessageErrors}
+       */
+      getDiscussionMessage(params: MessagesGetDiscussionMessageParams, opts?: ApiCallOptions): Promise<messages.TypeDiscussionMessage>;
+      /**
+       * Mark a thread as read
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.readDiscussion
+       * @throws {MessagesReadDiscussionErrors}
+       */
+      readDiscussion(params: MessagesReadDiscussionParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Unpin all pinned messages
+       * @see https://core.telegram.org/method/messages.unpinAllMessages
+       * @throws {MessagesUnpinAllMessagesErrors}
+       */
+      unpinAllMessages(params: MessagesUnpinAllMessagesParams, opts?: ApiCallOptions): Promise<messages.TypeAffectedHistory>;
+      /**
+       * Delete a chat
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.deleteChat
+       * @throws {MessagesDeleteChatErrors}
+       */
+      deleteChat(params: MessagesDeleteChatParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Delete the entire phone call history.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.deletePhoneCallHistory
+       * @throws {MessagesDeletePhoneCallHistoryErrors}
+       */
+      deletePhoneCallHistory(params: MessagesDeletePhoneCallHistoryParams, opts?: ApiCallOptions): Promise<messages.TypeAffectedFoundMessages>;
+      /**
+       * Obtains information about a chat export file, generated by a foreign chat app, click here for more info about imported chats » .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.checkHistoryImport
+       * @throws {MessagesCheckHistoryImportErrors}
+       */
+      checkHistoryImport(params: MessagesCheckHistoryImportParams, opts?: ApiCallOptions): Promise<messages.TypeHistoryImportParsed>;
+      /**
+       * Import chat history from a foreign chat app into a specific Telegram chat, click here for more info about imported chats » .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.initHistoryImport
+       * @throws {MessagesInitHistoryImportErrors}
+       */
+      initHistoryImport(params: MessagesInitHistoryImportParams, opts?: ApiCallOptions): Promise<messages.TypeHistoryImport>;
+      /**
+       * Upload a media file associated with an imported chat, click here for more info » .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.uploadImportedMedia
+       * @throws {MessagesUploadImportedMediaErrors}
+       */
+      uploadImportedMedia(params: MessagesUploadImportedMediaParams, opts?: ApiCallOptions): Promise<Api.TypeMessageMedia>;
+      /**
+       * Complete the history import process , importing all messages into the chat. To be called only after initializing the import with messages.initHistoryImport and uploading all files using messages.uploadImportedMedia .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.startHistoryImport
+       * @throws {MessagesStartHistoryImportErrors}
+       */
+      startHistoryImport(params: MessagesStartHistoryImportParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Get info about the chat invites of a specific chat
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.getExportedChatInvites
+       * @throws {MessagesGetExportedChatInvitesErrors}
+       */
+      getExportedChatInvites(params: MessagesGetExportedChatInvitesParams, opts?: ApiCallOptions): Promise<messages.TypeExportedChatInvites>;
+      /**
+       * Get info about a chat invite
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.getExportedChatInvite
+       * @throws {MessagesGetExportedChatInviteErrors}
+       */
+      getExportedChatInvite(params: MessagesGetExportedChatInviteParams, opts?: ApiCallOptions): Promise<messages.TypeExportedChatInvite>;
+      /**
+       * Edit an exported chat invite
+       * @see https://core.telegram.org/method/messages.editExportedChatInvite
+       * @throws {MessagesEditExportedChatInviteErrors}
+       */
+      editExportedChatInvite(params: MessagesEditExportedChatInviteParams, opts?: ApiCallOptions): Promise<messages.TypeExportedChatInvite>;
+      /**
+       * Delete all revoked chat invites
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.deleteRevokedExportedChatInvites
+       * @throws {MessagesDeleteRevokedExportedChatInvitesErrors}
+       */
+      deleteRevokedExportedChatInvites(params: MessagesDeleteRevokedExportedChatInvitesParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Delete a chat invite
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.deleteExportedChatInvite
+       * @throws {MessagesDeleteExportedChatInviteErrors}
+       */
+      deleteExportedChatInvite(params: MessagesDeleteExportedChatInviteParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Get info about chat invites generated by admins.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.getAdminsWithInvites
+       * @throws {MessagesGetAdminsWithInvitesErrors}
+       */
+      getAdminsWithInvites(params: MessagesGetAdminsWithInvitesParams, opts?: ApiCallOptions): Promise<messages.TypeChatAdminsWithInvites>;
+      /**
+       * Get info about the users that joined the chat using a specific chat invite
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.getChatInviteImporters
+       * @throws {MessagesGetChatInviteImportersErrors}
+       */
+      getChatInviteImporters(params: MessagesGetChatInviteImportersParams, opts?: ApiCallOptions): Promise<messages.TypeChatInviteImporters>;
+      /**
+       * Set maximum Time-To-Live of all messages in the specified chat
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.setHistoryTTL
+       * @throws {MessagesSetHistoryTTLErrors}
+       */
+      setHistoryTTL(params: MessagesSetHistoryTTLParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * Check whether chat history exported from another chat app can be imported into a specific Telegram chat, click here for more info » . If the check succeeds, and no RPC errors are returned, a messages.CheckedHistoryImportPeer constructor will be returned, with a confirmation text to be shown to the user, before actually initializing the import.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.checkHistoryImportPeer
+       * @throws {MessagesCheckHistoryImportPeerErrors}
+       */
+      checkHistoryImportPeer(params: MessagesCheckHistoryImportPeerParams, opts?: ApiCallOptions): Promise<messages.TypeCheckedHistoryImportPeer>;
+      /**
+       * Change the chat theme of a certain chat, see here » for more info.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.setChatTheme
+       * @throws {MessagesSetChatThemeErrors}
+       */
+      setChatTheme(params: MessagesSetChatThemeParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * Get which users read a specific message: only available for groups and supergroups with less than chat_read_mark_size_threshold members , read receipts will be stored for chat_read_mark_expire_period seconds after the message was sent , see client configuration for more info » .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.getMessageReadParticipants
+       * @throws {MessagesGetMessageReadParticipantsErrors}
+       */
+      getMessageReadParticipants(params: MessagesGetMessageReadParticipantsParams, opts?: ApiCallOptions): Promise<Api.TypeReadParticipantDate[]>;
+      /**
+       * Returns information about the next messages of the specified type in the chat split by days. Returns the results in reverse chronological order. Can return partial results for the last returned day.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.getSearchResultsCalendar
+       * @throws {MessagesGetSearchResultsCalendarErrors}
+       */
+      getSearchResultsCalendar(params: MessagesGetSearchResultsCalendarParams, opts?: ApiCallOptions): Promise<messages.TypeSearchResultsCalendar>;
+      /**
+       * Returns sparse positions of messages of the specified type in the chat to be used for shared media scroll implementation. Returns the results in reverse chronological order (i.e., in order of decreasing message_id).
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.getSearchResultsPositions
+       * @throws {MessagesGetSearchResultsPositionsErrors}
+       */
+      getSearchResultsPositions(params: MessagesGetSearchResultsPositionsParams, opts?: ApiCallOptions): Promise<messages.TypeSearchResultsPositions>;
+      /**
+       * Dismiss or approve a chat join request related to a specific chat or channel.
+       * @see https://core.telegram.org/method/messages.hideChatJoinRequest
+       * @throws {MessagesHideChatJoinRequestErrors}
+       */
+      hideChatJoinRequest(params: MessagesHideChatJoinRequestParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * Dismiss or approve all join requests related to a specific chat or channel.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.hideAllChatJoinRequests
+       * @throws {MessagesHideAllChatJoinRequestsErrors}
+       */
+      hideAllChatJoinRequests(params: MessagesHideAllChatJoinRequestsParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * Enable or disable content protection on a channel or chat
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.toggleNoForwards
+       * @throws {MessagesToggleNoForwardsErrors}
+       */
+      toggleNoForwards(params: MessagesToggleNoForwardsParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * Change the default peer that should be used when sending messages, reactions, poll votes to a specific group
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.saveDefaultSendAs
+       * @throws {MessagesSaveDefaultSendAsErrors}
+       */
+      saveDefaultSendAs(params: MessagesSaveDefaultSendAsParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * React to message. Starting from layer 159, the reaction will be sent from the peer specified using messages.saveDefaultSendAs .
+       * @see https://core.telegram.org/method/messages.sendReaction
+       * @throws {MessagesSendReactionErrors}
+       */
+      sendReaction(params: MessagesSendReactionParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * Get message reactions »
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.getMessagesReactions
+       * @throws {MessagesGetMessagesReactionsErrors}
+       */
+      getMessagesReactions(params: MessagesGetMessagesReactionsParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * Get message reaction list, along with the sender of each reaction.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.getMessageReactionsList
+       * @throws {MessagesGetMessageReactionsListErrors}
+       */
+      getMessageReactionsList(params: MessagesGetMessageReactionsListParams, opts?: ApiCallOptions): Promise<messages.TypeMessageReactionsList>;
+      /**
+       * Change the set of message reactions » that can be used in a certain group, supergroup or channel
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.setChatAvailableReactions
+       * @throws {MessagesSetChatAvailableReactionsErrors}
+       */
+      setChatAvailableReactions(params: MessagesSetChatAvailableReactionsParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * Obtain available message reactions »
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.getAvailableReactions
+       * @throws {MessagesGetAvailableReactionsErrors}
+       */
+      getAvailableReactions(params: MessagesGetAvailableReactionsParams, opts?: ApiCallOptions): Promise<messages.TypeAvailableReactions>;
+      /**
+       * Change default emoji reaction to use in the quick reaction menu: the value is synced across devices and can be fetched using help.getConfig, reactions_default field .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.setDefaultReaction
+       * @throws {MessagesSetDefaultReactionErrors}
+       */
+      setDefaultReaction(params: MessagesSetDefaultReactionParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Translate a given text. Styled text entities will only be preserved for Telegram Premium users.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.translateText
+       * @throws {MessagesTranslateTextErrors}
+       */
+      translateText(params: MessagesTranslateTextParams, opts?: ApiCallOptions): Promise<messages.TypeTranslatedText>;
+      /**
+       * Get unread reactions to messages you sent
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.getUnreadReactions
+       * @throws {MessagesGetUnreadReactionsErrors}
+       */
+      getUnreadReactions(params: MessagesGetUnreadReactionsParams, opts?: ApiCallOptions): Promise<messages.TypeMessages>;
+      /**
+       * Mark message reactions » as read
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.readReactions
+       * @throws {MessagesReadReactionsErrors}
+       */
+      readReactions(params: MessagesReadReactionsParams, opts?: ApiCallOptions): Promise<messages.TypeAffectedHistory>;
+      /**
+       * View and search recently sent media. This method does not support pagination.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.searchSentMedia
+       * @throws {MessagesSearchSentMediaErrors}
+       */
+      searchSentMedia(params: MessagesSearchSentMediaParams, opts?: ApiCallOptions): Promise<messages.TypeMessages>;
+      /**
+       * Returns installed attachment menu bot mini apps »
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.getAttachMenuBots
+       * @throws {MessagesGetAttachMenuBotsErrors}
+       */
+      getAttachMenuBots(params: MessagesGetAttachMenuBotsParams, opts?: ApiCallOptions): Promise<Api.TypeAttachMenuBots>;
+      /**
+       * Returns attachment menu entry for a bot mini app that can be launched from the attachment menu »
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.getAttachMenuBot
+       * @throws {MessagesGetAttachMenuBotErrors}
+       */
+      getAttachMenuBot(params: MessagesGetAttachMenuBotParams, opts?: ApiCallOptions): Promise<Api.TypeAttachMenuBotsBot>;
+      /**
+       * Enable or disable web bot attachment menu »
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.toggleBotInAttachMenu
+       * @throws {MessagesToggleBotInAttachMenuErrors}
+       */
+      toggleBotInAttachMenu(params: MessagesToggleBotInAttachMenuParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Open a bot mini app , sending over user information after user confirmation. After calling this method, until the user closes the webview, messages.prolongWebView must be called every 60 seconds.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.requestWebView
+       * @throws {MessagesRequestWebViewErrors}
+       */
+      requestWebView(params: MessagesRequestWebViewParams, opts?: ApiCallOptions): Promise<Api.TypeWebViewResult>;
+      /**
+       * Indicate to the server (from the user side) that the user is still using a web app. If the method returns a QUERY_ID_INVALID error, the webview must be closed.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.prolongWebView
+       * @throws {MessagesProlongWebViewErrors}
+       */
+      prolongWebView(params: MessagesProlongWebViewParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Open a bot mini app .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.requestSimpleWebView
+       * @throws {MessagesRequestSimpleWebViewErrors}
+       */
+      requestSimpleWebView(params: MessagesRequestSimpleWebViewParams, opts?: ApiCallOptions): Promise<Api.TypeWebViewResult>;
+      /**
+       * Terminate webview interaction started with messages.requestWebView , sending the specified message to the chat on behalf of the user.
+       * @remarks bots-only
+       * @see https://core.telegram.org/method/messages.sendWebViewResultMessage
+       * @throws {MessagesSendWebViewResultMessageErrors}
+       */
+      sendWebViewResultMessage(params: MessagesSendWebViewResultMessageParams, opts?: ApiCallOptions): Promise<Api.TypeWebViewMessageSent>;
+      /**
+       * Used by the user to relay data from an opened reply keyboard bot mini app to the bot that owns it.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.sendWebViewData
+       * @throws {MessagesSendWebViewDataErrors}
+       */
+      sendWebViewData(params: MessagesSendWebViewDataParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * Transcribe voice message
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.transcribeAudio
+       * @throws {MessagesTranscribeAudioErrors}
+       */
+      transcribeAudio(params: MessagesTranscribeAudioParams, opts?: ApiCallOptions): Promise<messages.TypeTranscribedAudio>;
+      /**
+       * Rate transcribed voice message
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.rateTranscribedAudio
+       * @throws {MessagesRateTranscribedAudioErrors}
+       */
+      rateTranscribedAudio(params: MessagesRateTranscribedAudioParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Fetch custom emoji stickers » . Returns a list of documents with the animated custom emoji in TGS format, and a documentAttributeCustomEmoji attribute with the original emoji and info about the emoji stickerset this custom emoji belongs to.
+       * @see https://core.telegram.org/method/messages.getCustomEmojiDocuments
+       * @throws {MessagesGetCustomEmojiDocumentsErrors}
+       */
+      getCustomEmojiDocuments(params: MessagesGetCustomEmojiDocumentsParams, opts?: ApiCallOptions): Promise<Api.TypeDocument[]>;
+      /**
+       * Gets the list of currently installed custom emoji stickersets .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.getEmojiStickers
+       * @throws {MessagesGetEmojiStickersErrors}
+       */
+      getEmojiStickers(params: MessagesGetEmojiStickersParams, opts?: ApiCallOptions): Promise<messages.TypeAllStickers>;
+      /**
+       * Gets featured custom emoji stickersets.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.getFeaturedEmojiStickers
+       * @throws {MessagesGetFeaturedEmojiStickersErrors}
+       */
+      getFeaturedEmojiStickers(params: MessagesGetFeaturedEmojiStickersParams, opts?: ApiCallOptions): Promise<messages.TypeFeaturedStickers>;
+      /**
+       * Report a message reaction
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.reportReaction
+       * @throws {MessagesReportReactionErrors}
+       */
+      reportReaction(params: MessagesReportReactionParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Got popular message reactions
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.getTopReactions
+       * @throws {MessagesGetTopReactionsErrors}
+       */
+      getTopReactions(params: MessagesGetTopReactionsParams, opts?: ApiCallOptions): Promise<messages.TypeReactions>;
+      /**
+       * Get recently used message reactions
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.getRecentReactions
+       * @throws {MessagesGetRecentReactionsErrors}
+       */
+      getRecentReactions(params: MessagesGetRecentReactionsParams, opts?: ApiCallOptions): Promise<messages.TypeReactions>;
+      /**
+       * Clear recently used message reactions
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.clearRecentReactions
+       * @throws {MessagesClearRecentReactionsErrors}
+       */
+      clearRecentReactions(opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Fetch updated information about paid media, see here » for the full flow. This method will return an array of updateMessageExtendedMedia updates, only for messages containing already bought paid media. No information will be returned for messages containing not yet bought paid media.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.getExtendedMedia
+       * @throws {MessagesGetExtendedMediaErrors}
+       */
+      getExtendedMedia(params: MessagesGetExtendedMediaParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * Changes the default value of the Time-To-Live setting, applied to all new chats.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.setDefaultHistoryTTL
+       * @throws {MessagesSetDefaultHistoryTTLErrors}
+       */
+      setDefaultHistoryTTL(params: MessagesSetDefaultHistoryTTLParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Gets the default value of the Time-To-Live setting, applied to all new chats.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.getDefaultHistoryTTL
+       * @throws {MessagesGetDefaultHistoryTTLErrors}
+       */
+      getDefaultHistoryTTL(opts?: ApiCallOptions): Promise<Api.TypeDefaultHistoryTTL>;
+      /**
+       * Send one or more chosen peers, as requested by a keyboardButtonRequestPeer button.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.sendBotRequestedPeer
+       * @throws {MessagesSendBotRequestedPeerErrors}
+       */
+      sendBotRequestedPeer(params: MessagesSendBotRequestedPeerParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * Represents a list of emoji categories .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.getEmojiGroups
+       * @throws {MessagesGetEmojiGroupsErrors}
+       */
+      getEmojiGroups(params: MessagesGetEmojiGroupsParams, opts?: ApiCallOptions): Promise<messages.TypeEmojiGroups>;
+      /**
+       * Represents a list of emoji categories , to be used when selecting custom emojis to set as custom emoji status .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.getEmojiStatusGroups
+       * @throws {MessagesGetEmojiStatusGroupsErrors}
+       */
+      getEmojiStatusGroups(params: MessagesGetEmojiStatusGroupsParams, opts?: ApiCallOptions): Promise<messages.TypeEmojiGroups>;
+      /**
+       * Represents a list of emoji categories , to be used when selecting custom emojis to set as profile picture .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.getEmojiProfilePhotoGroups
+       * @throws {MessagesGetEmojiProfilePhotoGroupsErrors}
+       */
+      getEmojiProfilePhotoGroups(params: MessagesGetEmojiProfilePhotoGroupsParams, opts?: ApiCallOptions): Promise<messages.TypeEmojiGroups>;
+      /**
+       * Look for custom emojis associated to a UTF8 emoji
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.searchCustomEmoji
+       * @throws {MessagesSearchCustomEmojiErrors}
+       */
+      searchCustomEmoji(params: MessagesSearchCustomEmojiParams, opts?: ApiCallOptions): Promise<Api.TypeEmojiList>;
+      /**
+       * Show or hide the real-time chat translation popup for a certain chat
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.togglePeerTranslations
+       * @throws {MessagesTogglePeerTranslationsErrors}
+       */
+      togglePeerTranslations(params: MessagesTogglePeerTranslationsParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Obtain information about a direct link Mini App
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.getBotApp
+       * @throws {MessagesGetBotAppErrors}
+       */
+      getBotApp(params: MessagesGetBotAppParams, opts?: ApiCallOptions): Promise<messages.TypeBotApp>;
+      /**
+       * Open a bot mini app from a direct Mini App deep link , sending over user information after user confirmation. After calling this method, until the user closes the webview, messages.prolongWebView must be called every 60 seconds.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.requestAppWebView
+       * @throws {MessagesRequestAppWebViewErrors}
+       */
+      requestAppWebView(params: MessagesRequestAppWebViewParams, opts?: ApiCallOptions): Promise<Api.TypeWebViewResult>;
+      /**
+       * Set a custom wallpaper » in a specific private chat with another user.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.setChatWallPaper
+       * @throws {MessagesSetChatWallPaperErrors}
+       */
+      setChatWallPaper(params: MessagesSetChatWallPaperParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * Search for custom emoji stickersets »
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.searchEmojiStickerSets
+       * @throws {MessagesSearchEmojiStickerSetsErrors}
+       */
+      searchEmojiStickerSets(params: MessagesSearchEmojiStickerSetsParams, opts?: ApiCallOptions): Promise<messages.TypeFoundStickerSets>;
+      /**
+       * Returns the current saved dialog list » or monoforum topic list » .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.getSavedDialogs
+       * @throws {MessagesGetSavedDialogsErrors}
+       */
+      getSavedDialogs(params: MessagesGetSavedDialogsParams, opts?: ApiCallOptions): Promise<messages.TypeSavedDialogs>;
+      /**
+       * Fetch saved messages » forwarded from a specific peer, or fetch messages from a monoforum topic » .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.getSavedHistory
+       * @throws {MessagesGetSavedHistoryErrors}
+       */
+      getSavedHistory(params: MessagesGetSavedHistoryParams, opts?: ApiCallOptions): Promise<messages.TypeMessages>;
+      /**
+       * Deletes messages from a monoforum topic » , or deletes messages forwarded from a specific peer to saved messages » .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.deleteSavedHistory
+       * @throws {MessagesDeleteSavedHistoryErrors}
+       */
+      deleteSavedHistory(params: MessagesDeleteSavedHistoryParams, opts?: ApiCallOptions): Promise<messages.TypeAffectedHistory>;
+      /**
+       * Get pinned saved dialogs, see here » for more info.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.getPinnedSavedDialogs
+       * @throws {MessagesGetPinnedSavedDialogsErrors}
+       */
+      getPinnedSavedDialogs(opts?: ApiCallOptions): Promise<messages.TypeSavedDialogs>;
+      /**
+       * Pin or unpin a saved message dialog » .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.toggleSavedDialogPin
+       * @throws {MessagesToggleSavedDialogPinErrors}
+       */
+      toggleSavedDialogPin(params: MessagesToggleSavedDialogPinParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Reorder pinned saved message dialogs » .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.reorderPinnedSavedDialogs
+       * @throws {MessagesReorderPinnedSavedDialogsErrors}
+       */
+      reorderPinnedSavedDialogs(params: MessagesReorderPinnedSavedDialogsParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Fetch the full list of saved message tags created by the user.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.getSavedReactionTags
+       * @throws {MessagesGetSavedReactionTagsErrors}
+       */
+      getSavedReactionTags(params: MessagesGetSavedReactionTagsParams, opts?: ApiCallOptions): Promise<messages.TypeSavedReactionTags>;
+      /**
+       * Update the description of a saved message tag » .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.updateSavedReactionTag
+       * @throws {MessagesUpdateSavedReactionTagErrors}
+       */
+      updateSavedReactionTag(params: MessagesUpdateSavedReactionTagParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Fetch a default recommended list of saved message tag reactions .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.getDefaultTagReactions
+       * @throws {MessagesGetDefaultTagReactionsErrors}
+       */
+      getDefaultTagReactions(params: MessagesGetDefaultTagReactionsParams, opts?: ApiCallOptions): Promise<messages.TypeReactions>;
+      /**
+       * Get the exact read date of one of our messages, sent to a private chat with another user. Can be only done for private outgoing messages not older than appConfig.pm_read_date_expire_period » . If the peer 's userFull . read_dates_private flag is set, we will not be able to fetch the exact read date of messages we send to them, and a USER_PRIVACY_RESTRICTED RPC error will be emitted. The exact read date of messages might still be unavailable for other reasons, see here » for more info. To set userFull . read_dates_private for ourselves invoke account.setGlobalPrivacySettings , setting the settings.hide_read_marks flag.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.getOutboxReadDate
+       * @throws {MessagesGetOutboxReadDateErrors}
+       */
+      getOutboxReadDate(params: MessagesGetOutboxReadDateParams, opts?: ApiCallOptions): Promise<Api.TypeOutboxReadDate>;
+      /**
+       * Fetch basic info about all existing quick reply shortcuts .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.getQuickReplies
+       * @throws {MessagesGetQuickRepliesErrors}
+       */
+      getQuickReplies(params: MessagesGetQuickRepliesParams, opts?: ApiCallOptions): Promise<messages.TypeQuickReplies>;
+      /**
+       * Reorder quick reply shortcuts . This will emit an updateQuickReplies update to other logged-in sessions.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.reorderQuickReplies
+       * @throws {MessagesReorderQuickRepliesErrors}
+       */
+      reorderQuickReplies(params: MessagesReorderQuickRepliesParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Before offering the user the choice to add a message to a quick reply shortcut , to make sure that none of the limits specified here » were reached.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.checkQuickReplyShortcut
+       * @throws {MessagesCheckQuickReplyShortcutErrors}
+       */
+      checkQuickReplyShortcut(params: MessagesCheckQuickReplyShortcutParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Rename a quick reply shortcut . This will emit an updateQuickReplies update to other logged-in sessions.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.editQuickReplyShortcut
+       * @throws {MessagesEditQuickReplyShortcutErrors}
+       */
+      editQuickReplyShortcut(params: MessagesEditQuickReplyShortcutParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Completely delete a quick reply shortcut . This will also emit an updateDeleteQuickReply update to other logged-in sessions (and no updateDeleteQuickReplyMessages updates, even if all the messages in the shortcuts are also deleted by this method).
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.deleteQuickReplyShortcut
+       * @throws {MessagesDeleteQuickReplyShortcutErrors}
+       */
+      deleteQuickReplyShortcut(params: MessagesDeleteQuickReplyShortcutParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Fetch (a subset or all) messages in a quick reply shortcut » .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.getQuickReplyMessages
+       * @throws {MessagesGetQuickReplyMessagesErrors}
+       */
+      getQuickReplyMessages(params: MessagesGetQuickReplyMessagesParams, opts?: ApiCallOptions): Promise<messages.TypeMessages>;
+      /**
+       * Send a quick reply shortcut » .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.sendQuickReplyMessages
+       * @throws {MessagesSendQuickReplyMessagesErrors}
+       */
+      sendQuickReplyMessages(params: MessagesSendQuickReplyMessagesParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * Delete one or more messages from a quick reply shortcut . This will also emit an updateDeleteQuickReplyMessages update.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.deleteQuickReplyMessages
+       * @throws {MessagesDeleteQuickReplyMessagesErrors}
+       */
+      deleteQuickReplyMessages(params: MessagesDeleteQuickReplyMessagesParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * Enable or disable folder tags » .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.toggleDialogFilterTags
+       * @throws {MessagesToggleDialogFilterTagsErrors}
+       */
+      toggleDialogFilterTags(params: MessagesToggleDialogFilterTagsParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Fetch all stickersets » owned by the current user.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.getMyStickers
+       * @throws {MessagesGetMyStickersErrors}
+       */
+      getMyStickers(params: MessagesGetMyStickersParams, opts?: ApiCallOptions): Promise<messages.TypeMyStickers>;
+      /**
+       * Represents a list of emoji categories , to be used when choosing a sticker.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.getEmojiStickerGroups
+       * @throws {MessagesGetEmojiStickerGroupsErrors}
+       */
+      getEmojiStickerGroups(params: MessagesGetEmojiStickerGroupsParams, opts?: ApiCallOptions): Promise<messages.TypeEmojiGroups>;
+      /**
+       * Fetch the full list of usable animated message effects » .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.getAvailableEffects
+       * @throws {MessagesGetAvailableEffectsErrors}
+       */
+      getAvailableEffects(params: MessagesGetAvailableEffectsParams, opts?: ApiCallOptions): Promise<messages.TypeAvailableEffects>;
+      /**
+       * Edit/create a fact-check on a message. Can only be used by independent fact-checkers as specified by the appConfig.can_edit_factcheck configuration flag.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.editFactCheck
+       * @throws {MessagesEditFactCheckErrors}
+       */
+      editFactCheck(params: MessagesEditFactCheckParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * Delete a fact-check from a message. Can only be used by independent fact-checkers as specified by the appConfig.can_edit_factcheck configuration flag.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.deleteFactCheck
+       * @throws {MessagesDeleteFactCheckErrors}
+       */
+      deleteFactCheck(params: MessagesDeleteFactCheckParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * Fetch one or more factchecks, see here » for the full flow.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.getFactCheck
+       * @throws {MessagesGetFactCheckErrors}
+       */
+      getFactCheck(params: MessagesGetFactCheckParams, opts?: ApiCallOptions): Promise<Api.TypeFactCheck[]>;
+      /**
+       * Open a Main Mini App .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.requestMainWebView
+       * @throws {MessagesRequestMainWebViewErrors}
+       */
+      requestMainWebView(params: MessagesRequestMainWebViewParams, opts?: ApiCallOptions): Promise<Api.TypeWebViewResult>;
+      /**
+       * Sends one or more paid Telegram Star reactions » , transferring Telegram Stars » to a channel's balance.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.sendPaidReaction
+       * @throws {MessagesSendPaidReactionErrors}
+       */
+      sendPaidReaction(params: MessagesSendPaidReactionParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * Changes the privacy of already sent paid reactions on a specific message.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.togglePaidReactionPrivacy
+       * @throws {MessagesTogglePaidReactionPrivacyErrors}
+       */
+      togglePaidReactionPrivacy(params: MessagesTogglePaidReactionPrivacyParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Fetches an updatePaidReactionPrivacy update with the current default paid reaction privacy, see here » for more info.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.getPaidReactionPrivacy
+       * @throws {MessagesGetPaidReactionPrivacyErrors}
+       */
+      getPaidReactionPrivacy(opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * Mark a specific sponsored message » as read
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.viewSponsoredMessage
+       * @throws {MessagesViewSponsoredMessageErrors}
+       */
+      viewSponsoredMessage(params: MessagesViewSponsoredMessageParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Informs the server that the user has interacted with a sponsored message in one of the ways listed here » .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.clickSponsoredMessage
+       * @throws {MessagesClickSponsoredMessageErrors}
+       */
+      clickSponsoredMessage(params: MessagesClickSponsoredMessageParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Report a sponsored message » , see here » for more info on the full flow.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.reportSponsoredMessage
+       * @throws {MessagesReportSponsoredMessageErrors}
+       */
+      reportSponsoredMessage(params: MessagesReportSponsoredMessageParams, opts?: ApiCallOptions): Promise<channels.TypeSponsoredMessageReportResult>;
+      /**
+       * Get a list of sponsored messages for a peer, see here » for more info.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.getSponsoredMessages
+       * @throws {MessagesGetSponsoredMessagesErrors}
+       */
+      getSponsoredMessages(params: MessagesGetSponsoredMessagesParams, opts?: ApiCallOptions): Promise<messages.TypeSponsoredMessages>;
+      /**
+       * Save a prepared inline message , to be shared by the user of the mini app using a web_app_send_prepared_message event
+       * @remarks bots-only
+       * @see https://core.telegram.org/method/messages.savePreparedInlineMessage
+       * @throws {MessagesSavePreparedInlineMessageErrors}
+       */
+      savePreparedInlineMessage(params: MessagesSavePreparedInlineMessageParams, opts?: ApiCallOptions): Promise<messages.TypeBotPreparedInlineMessage>;
+      /**
+       * Obtain a prepared inline message generated by a mini app : invoked when handling web_app_send_prepared_message events
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.getPreparedInlineMessage
+       * @throws {MessagesGetPreparedInlineMessageErrors}
+       */
+      getPreparedInlineMessage(params: MessagesGetPreparedInlineMessageParams, opts?: ApiCallOptions): Promise<messages.TypePreparedInlineMessage>;
+      /**
+       * Search for stickers using AI-powered keyword search
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.searchStickers
+       * @throws {MessagesSearchStickersErrors}
+       */
+      searchStickers(params: MessagesSearchStickersParams, opts?: ApiCallOptions): Promise<messages.TypeFoundStickers>;
+      /**
+       * Used for Telegram Gateway verification messages » : indicate to the server that one or more message s were received by the client, if requested by the message . report_delivery_until_date flag or the equivalent flag in push notifications .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.reportMessagesDelivery
+       * @throws {MessagesReportMessagesDeliveryErrors}
+       */
+      reportMessagesDelivery(params: MessagesReportMessagesDeliveryParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Obtain information about specific saved message dialogs » or monoforum topics » .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.getSavedDialogsByID
+       * @throws {MessagesGetSavedDialogsByIDErrors}
+       */
+      getSavedDialogsByID(params: MessagesGetSavedDialogsByIDParams, opts?: ApiCallOptions): Promise<messages.TypeSavedDialogs>;
+      /**
+       * Mark messages as read in a monoforum topic » .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.readSavedHistory
+       * @throws {MessagesReadSavedHistoryErrors}
+       */
+      readSavedHistory(params: MessagesReadSavedHistoryParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Mark one or more items of a todo list » as completed or not completed.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.toggleTodoCompleted
+       * @throws {MessagesToggleTodoCompletedErrors}
+       */
+      toggleTodoCompleted(params: MessagesToggleTodoCompletedParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * Appends one or more items to a todo list » .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/messages.appendTodoList
+       * @throws {MessagesAppendTodoListErrors}
+       */
+      appendTodoList(params: MessagesAppendTodoListParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * Approve or reject a suggested post » .
+       * @see https://core.telegram.org/method/messages.toggleSuggestedPostApproval
+       * @throws {MessagesToggleSuggestedPostApprovalErrors}
+       */
+      toggleSuggestedPostApproval(params: MessagesToggleSuggestedPostApprovalParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * @see https://core.telegram.org/method/messages.getForumTopics
+       */
+      getForumTopics(params: MessagesGetForumTopicsParams, opts?: ApiCallOptions): Promise<messages.TypeForumTopics>;
+      /**
+       * @see https://core.telegram.org/method/messages.getForumTopicsByID
+       */
+      getForumTopicsByID(params: MessagesGetForumTopicsByIDParams, opts?: ApiCallOptions): Promise<messages.TypeForumTopics>;
+      /**
+       * @see https://core.telegram.org/method/messages.editForumTopic
+       */
+      editForumTopic(params: MessagesEditForumTopicParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * @see https://core.telegram.org/method/messages.updatePinnedForumTopic
+       */
+      updatePinnedForumTopic(params: MessagesUpdatePinnedForumTopicParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * @see https://core.telegram.org/method/messages.reorderPinnedForumTopics
+       */
+      reorderPinnedForumTopics(params: MessagesReorderPinnedForumTopicsParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * @see https://core.telegram.org/method/messages.createForumTopic
+       */
+      createForumTopic(params: MessagesCreateForumTopicParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * @see https://core.telegram.org/method/messages.deleteTopicHistory
+       */
+      deleteTopicHistory(params: MessagesDeleteTopicHistoryParams, opts?: ApiCallOptions): Promise<messages.TypeAffectedHistory>;
+      /**
+       * @see https://core.telegram.org/method/messages.getEmojiGameInfo
+       */
+      getEmojiGameInfo(opts?: ApiCallOptions): Promise<messages.TypeEmojiGameInfo>;
+      /**
+       * @see https://core.telegram.org/method/messages.summarizeText
+       */
+      summarizeText(params: MessagesSummarizeTextParams, opts?: ApiCallOptions): Promise<Api.TypeTextWithEntities>;
+      /**
+       * @see https://core.telegram.org/method/messages.editChatCreator
+       */
+      editChatCreator(params: MessagesEditChatCreatorParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * @see https://core.telegram.org/method/messages.getFutureChatCreatorAfterLeave
+       */
+      getFutureChatCreatorAfterLeave(params: MessagesGetFutureChatCreatorAfterLeaveParams, opts?: ApiCallOptions): Promise<Api.TypeUser>;
+      /**
+       * @see https://core.telegram.org/method/messages.editChatParticipantRank
+       */
+      editChatParticipantRank(params: MessagesEditChatParticipantRankParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * @see https://core.telegram.org/method/messages.declineUrlAuth
+       */
+      declineUrlAuth(params: MessagesDeclineUrlAuthParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * @see https://core.telegram.org/method/messages.checkUrlAuthMatchCode
+       */
+      checkUrlAuthMatchCode(params: MessagesCheckUrlAuthMatchCodeParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * @see https://core.telegram.org/method/messages.composeMessageWithAI
+       */
+      composeMessageWithAI(params: MessagesComposeMessageWithAIParams, opts?: ApiCallOptions): Promise<messages.TypeComposedMessageWithAI>;
+      /**
+       * @see https://core.telegram.org/method/messages.reportReadMetrics
+       */
+      reportReadMetrics(params: MessagesReportReadMetricsParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * @see https://core.telegram.org/method/messages.reportMusicListen
+       */
+      reportMusicListen(params: MessagesReportMusicListenParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * @see https://core.telegram.org/method/messages.addPollAnswer
+       */
+      addPollAnswer(params: MessagesAddPollAnswerParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * @see https://core.telegram.org/method/messages.deletePollAnswer
+       */
+      deletePollAnswer(params: MessagesDeletePollAnswerParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * @see https://core.telegram.org/method/messages.getUnreadPollVotes
+       */
+      getUnreadPollVotes(params: MessagesGetUnreadPollVotesParams, opts?: ApiCallOptions): Promise<messages.TypeMessages>;
+      /**
+       * @see https://core.telegram.org/method/messages.readPollVotes
+       */
+      readPollVotes(params: MessagesReadPollVotesParams, opts?: ApiCallOptions): Promise<messages.TypeAffectedHistory>;
+      /**
+       * @see https://core.telegram.org/method/messages.setBotGuestChatResult
+       */
+      setBotGuestChatResult(params: MessagesSetBotGuestChatResultParams, opts?: ApiCallOptions): Promise<Api.TypeInputBotInlineMessageID>;
+      /**
+       * @see https://core.telegram.org/method/messages.deleteParticipantReactions
+       */
+      deleteParticipantReactions(params: MessagesDeleteParticipantReactionsParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * @see https://core.telegram.org/method/messages.deleteParticipantReaction
+       */
+      deleteParticipantReaction(params: MessagesDeleteParticipantReactionParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * @see https://core.telegram.org/method/messages.getPersonalChannelHistory
+       */
+      getPersonalChannelHistory(params: MessagesGetPersonalChannelHistoryParams, opts?: ApiCallOptions): Promise<messages.TypeMessages>;
+      /**
+       * @see https://core.telegram.org/method/messages.getRichMessage
+       */
+      getRichMessage(params: MessagesGetRichMessageParams, opts?: ApiCallOptions): Promise<messages.TypeMessages>;
+    };
+    updates: {
+      /**
+       * Returns a current state of updates.
+       * @see https://core.telegram.org/method/updates.getState
+       * @throws {UpdatesGetStateErrors}
+       */
+      getState(opts?: ApiCallOptions): Promise<updates.TypeState>;
+      /**
+       * Get new updates .
+       * @see https://core.telegram.org/method/updates.getDifference
+       * @throws {UpdatesGetDifferenceErrors}
+       */
+      getDifference(params: UpdatesGetDifferenceParams, opts?: ApiCallOptions): Promise<updates.TypeDifference>;
+      /**
+       * Returns the difference between the current state of updates of a certain channel and transmitted.
+       * @see https://core.telegram.org/method/updates.getChannelDifference
+       * @throws {UpdatesGetChannelDifferenceErrors}
+       */
+      getChannelDifference(params: UpdatesGetChannelDifferenceParams, opts?: ApiCallOptions): Promise<updates.TypeChannelDifference>;
+    };
+    photos: {
+      /**
+       * Installs a previously uploaded photo as a profile photo.
+       * @see https://core.telegram.org/method/photos.updateProfilePhoto
+       * @throws {PhotosUpdateProfilePhotoErrors}
+       */
+      updateProfilePhoto(params: PhotosUpdateProfilePhotoParams, opts?: ApiCallOptions): Promise<photos.TypePhoto>;
+      /**
+       * Updates current user profile photo. The file , video and video_emoji_markup flags are mutually exclusive.
+       * @see https://core.telegram.org/method/photos.uploadProfilePhoto
+       * @throws {PhotosUploadProfilePhotoErrors}
+       */
+      uploadProfilePhoto(params: PhotosUploadProfilePhotoParams, opts?: ApiCallOptions): Promise<photos.TypePhoto>;
+      /**
+       * Deletes profile photos. The method returns a list of successfully deleted photo IDs.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/photos.deletePhotos
+       * @throws {PhotosDeletePhotosErrors}
+       */
+      deletePhotos(params: PhotosDeletePhotosParams, opts?: ApiCallOptions): Promise<long[]>;
+      /**
+       * Returns the list of user photos.
+       * @see https://core.telegram.org/method/photos.getUserPhotos
+       * @throws {PhotosGetUserPhotosErrors}
+       */
+      getUserPhotos(params: PhotosGetUserPhotosParams, opts?: ApiCallOptions): Promise<photos.TypePhotos>;
+      /**
+       * Upload a custom profile picture for a contact, or suggest a new profile picture to a contact. The file , video and video_emoji_markup flags are mutually exclusive.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/photos.uploadContactProfilePhoto
+       * @throws {PhotosUploadContactProfilePhotoErrors}
+       */
+      uploadContactProfilePhoto(params: PhotosUploadContactProfilePhotoParams, opts?: ApiCallOptions): Promise<photos.TypePhoto>;
+    };
+    upload: {
+      /**
+       * Saves a part of file for further sending to one of the methods.
+       * @see https://core.telegram.org/method/upload.saveFilePart
+       * @throws {UploadSaveFilePartErrors}
+       */
+      saveFilePart(params: UploadSaveFilePartParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Returns content of a whole file or its part.
+       * @see https://core.telegram.org/method/upload.getFile
+       * @throws {UploadGetFileErrors}
+       */
+      getFile(params: UploadGetFileParams, opts?: ApiCallOptions): Promise<upload.TypeFile>;
+      /**
+       * Saves a part of a large file (over 10 MB in size) to be later passed to one of the methods.
+       * @see https://core.telegram.org/method/upload.saveBigFilePart
+       * @throws {UploadSaveBigFilePartErrors}
+       */
+      saveBigFilePart(params: UploadSaveBigFilePartParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Returns content of a web file, by proxying the request through telegram, see the webfile docs for more info . Note : the query must be sent to the DC specified in the webfile_dc_id MTProto configuration field .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/upload.getWebFile
+       * @throws {UploadGetWebFileErrors}
+       */
+      getWebFile(params: UploadGetWebFileParams, opts?: ApiCallOptions): Promise<upload.TypeWebFile>;
+      /**
+       * Download a CDN file.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/upload.getCdnFile
+       * @throws {UploadGetCdnFileErrors}
+       */
+      getCdnFile(params: UploadGetCdnFileParams, opts?: ApiCallOptions): Promise<upload.TypeCdnFile>;
+      /**
+       * Request a reupload of a certain file to a CDN DC .
+       * @see https://core.telegram.org/method/upload.reuploadCdnFile
+       * @throws {UploadReuploadCdnFileErrors}
+       */
+      reuploadCdnFile(params: UploadReuploadCdnFileParams, opts?: ApiCallOptions): Promise<Api.TypeFileHash[]>;
+      /**
+       * Get SHA256 hashes for verifying downloaded CDN files
+       * @see https://core.telegram.org/method/upload.getCdnFileHashes
+       * @throws {UploadGetCdnFileHashesErrors}
+       */
+      getCdnFileHashes(params: UploadGetCdnFileHashesParams, opts?: ApiCallOptions): Promise<Api.TypeFileHash[]>;
+      /**
+       * Get SHA256 hashes for verifying downloaded files
+       * @see https://core.telegram.org/method/upload.getFileHashes
+       * @throws {UploadGetFileHashesErrors}
+       */
+      getFileHashes(params: UploadGetFileHashesParams, opts?: ApiCallOptions): Promise<Api.TypeFileHash[]>;
+    };
+    help: {
+      /**
+       * Returns current configuration, including data center configuration.
+       * @see https://core.telegram.org/method/help.getConfig
+       * @throws {HelpGetConfigErrors}
+       */
+      getConfig(opts?: ApiCallOptions): Promise<Api.TypeConfig>;
+      /**
+       * Returns info on data center nearest to the user.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/help.getNearestDc
+       * @throws {HelpGetNearestDcErrors}
+       */
+      getNearestDc(opts?: ApiCallOptions): Promise<Api.TypeNearestDc>;
+      /**
+       * Returns information on update availability for the current application.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/help.getAppUpdate
+       * @throws {HelpGetAppUpdateErrors}
+       */
+      getAppUpdate(params: HelpGetAppUpdateParams, opts?: ApiCallOptions): Promise<help.TypeAppUpdate>;
+      /**
+       * Returns localized text of a text message with an invitation.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/help.getInviteText
+       * @throws {HelpGetInviteTextErrors}
+       */
+      getInviteText(opts?: ApiCallOptions): Promise<help.TypeInviteText>;
+      /**
+       * Returns the support user for the "ask a question" feature.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/help.getSupport
+       * @throws {HelpGetSupportErrors}
+       */
+      getSupport(opts?: ApiCallOptions): Promise<help.TypeSupport>;
+      /**
+       * Informs the server about the number of pending bot updates if they haven't been processed for a long time; for bots only
+       * @remarks bots-only
+       * @see https://core.telegram.org/method/help.setBotUpdatesStatus
+       * @throws {HelpSetBotUpdatesStatusErrors}
+       */
+      setBotUpdatesStatus(params: HelpSetBotUpdatesStatusParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Get configuration for CDN file downloads.
+       * @see https://core.telegram.org/method/help.getCdnConfig
+       * @throws {HelpGetCdnConfigErrors}
+       */
+      getCdnConfig(opts?: ApiCallOptions): Promise<Api.TypeCdnConfig>;
+      /**
+       * Get recently used t.me links. When installing official applications from "Download Telegram" buttons present in t.me pages, a referral parameter is passed to applications after installation. If, after downloading the application, the user creates a new account (instead of logging into an existing one), the referral parameter should be imported using this method, which returns the t.me pages the user recently opened, before installing Telegram.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/help.getRecentMeUrls
+       * @throws {HelpGetRecentMeUrlsErrors}
+       */
+      getRecentMeUrls(params: HelpGetRecentMeUrlsParams, opts?: ApiCallOptions): Promise<help.TypeRecentMeUrls>;
+      /**
+       * Look for updates of telegram's terms of service
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/help.getTermsOfServiceUpdate
+       * @throws {HelpGetTermsOfServiceUpdateErrors}
+       */
+      getTermsOfServiceUpdate(opts?: ApiCallOptions): Promise<help.TypeTermsOfServiceUpdate>;
+      /**
+       * Accept the new terms of service
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/help.acceptTermsOfService
+       * @throws {HelpAcceptTermsOfServiceErrors}
+       */
+      acceptTermsOfService(params: HelpAcceptTermsOfServiceParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Get info about an unsupported deep link, see here for more info » .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/help.getDeepLinkInfo
+       * @throws {HelpGetDeepLinkInfoErrors}
+       */
+      getDeepLinkInfo(params: HelpGetDeepLinkInfoParams, opts?: ApiCallOptions): Promise<help.TypeDeepLinkInfo>;
+      /**
+       * Get app-specific configuration, see client configuration for more info on the result.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/help.getAppConfig
+       * @throws {HelpGetAppConfigErrors}
+       */
+      getAppConfig(params: HelpGetAppConfigParams, opts?: ApiCallOptions): Promise<help.TypeAppConfig>;
+      /**
+       * Saves logs of application on the server.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/help.saveAppLog
+       * @throws {HelpSaveAppLogErrors}
+       */
+      saveAppLog(params: HelpSaveAppLogParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Get passport configuration
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/help.getPassportConfig
+       * @throws {HelpGetPassportConfigErrors}
+       */
+      getPassportConfig(params: HelpGetPassportConfigParams, opts?: ApiCallOptions): Promise<help.TypePassportConfig>;
+      /**
+       * Get localized name of the telegram support user
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/help.getSupportName
+       * @throws {HelpGetSupportNameErrors}
+       */
+      getSupportName(opts?: ApiCallOptions): Promise<help.TypeSupportName>;
+      /**
+       * Can only be used by TSF members to obtain internal information.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/help.getUserInfo
+       * @throws {HelpGetUserInfoErrors}
+       */
+      getUserInfo(params: HelpGetUserInfoParams, opts?: ApiCallOptions): Promise<help.TypeUserInfo>;
+      /**
+       * Internal use
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/help.editUserInfo
+       * @throws {HelpEditUserInfoErrors}
+       */
+      editUserInfo(params: HelpEditUserInfoParams, opts?: ApiCallOptions): Promise<help.TypeUserInfo>;
+      /**
+       * Returns a set of useful suggestions and PSA/MTProxy sponsored peers, see here » for more info.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/help.getPromoData
+       * @throws {HelpGetPromoDataErrors}
+       */
+      getPromoData(opts?: ApiCallOptions): Promise<help.TypePromoData>;
+      /**
+       * Hide MTProxy/Public Service Announcement information
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/help.hidePromoData
+       * @throws {HelpHidePromoDataErrors}
+       */
+      hidePromoData(params: HelpHidePromoDataParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Dismiss a suggestion, see here for more info » .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/help.dismissSuggestion
+       * @throws {HelpDismissSuggestionErrors}
+       */
+      dismissSuggestion(params: HelpDismissSuggestionParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Get name, ISO code, localized name and phone codes/patterns of all available countries
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/help.getCountriesList
+       * @throws {HelpGetCountriesListErrors}
+       */
+      getCountriesList(params: HelpGetCountriesListParams, opts?: ApiCallOptions): Promise<help.TypeCountriesList>;
+      /**
+       * Get Telegram Premium promotion information
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/help.getPremiumPromo
+       * @throws {HelpGetPremiumPromoErrors}
+       */
+      getPremiumPromo(opts?: ApiCallOptions): Promise<help.TypePremiumPromo>;
+      /**
+       * Get the set of accent color palettes » that can be used for message accents.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/help.getPeerColors
+       * @throws {HelpGetPeerColorsErrors}
+       */
+      getPeerColors(params: HelpGetPeerColorsParams, opts?: ApiCallOptions): Promise<help.TypePeerColors>;
+      /**
+       * Get the set of accent color palettes » that can be used in profile page backgrounds.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/help.getPeerProfileColors
+       * @throws {HelpGetPeerProfileColorsErrors}
+       */
+      getPeerProfileColors(params: HelpGetPeerProfileColorsParams, opts?: ApiCallOptions): Promise<help.TypePeerColors>;
+      /**
+       * Returns timezone information that may be used elsewhere in the API, such as to set Telegram Business opening hours » .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/help.getTimezonesList
+       * @throws {HelpGetTimezonesListErrors}
+       */
+      getTimezonesList(params: HelpGetTimezonesListParams, opts?: ApiCallOptions): Promise<help.TypeTimezonesList>;
+    };
+    channels: {
+      /**
+       * Mark channel/supergroup history as read
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/channels.readHistory
+       * @throws {ChannelsReadHistoryErrors}
+       */
+      readHistory(params: ChannelsReadHistoryParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Delete messages in a channel/supergroup
+       * @see https://core.telegram.org/method/channels.deleteMessages
+       * @throws {ChannelsDeleteMessagesErrors}
+       */
+      deleteMessages(params: ChannelsDeleteMessagesParams, opts?: ApiCallOptions): Promise<messages.TypeAffectedMessages>;
+      /**
+       * Reports some messages from a user in a supergroup as spam; requires administrator rights in the supergroup
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/channels.reportSpam
+       * @throws {ChannelsReportSpamErrors}
+       */
+      reportSpam(params: ChannelsReportSpamParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Get channel/supergroup messages
+       * @see https://core.telegram.org/method/channels.getMessages
+       * @throws {ChannelsGetMessagesErrors}
+       */
+      getMessages(params: ChannelsGetMessagesParams, opts?: ApiCallOptions): Promise<messages.TypeMessages>;
+      /**
+       * Get the participants of a supergroup/channel
+       * @see https://core.telegram.org/method/channels.getParticipants
+       * @throws {ChannelsGetParticipantsErrors}
+       */
+      getParticipants(params: ChannelsGetParticipantsParams, opts?: ApiCallOptions): Promise<channels.TypeChannelParticipants>;
+      /**
+       * Get info about a channel/supergroup participant
+       * @see https://core.telegram.org/method/channels.getParticipant
+       * @throws {ChannelsGetParticipantErrors}
+       */
+      getParticipant(params: ChannelsGetParticipantParams, opts?: ApiCallOptions): Promise<channels.TypeChannelParticipant>;
+      /**
+       * Get info about channels/supergroups
+       * @see https://core.telegram.org/method/channels.getChannels
+       * @throws {ChannelsGetChannelsErrors}
+       */
+      getChannels(params: ChannelsGetChannelsParams, opts?: ApiCallOptions): Promise<messages.TypeChats>;
+      /**
+       * Get full info about a supergroup , gigagroup or channel
+       * @see https://core.telegram.org/method/channels.getFullChannel
+       * @throws {ChannelsGetFullChannelErrors}
+       */
+      getFullChannel(params: ChannelsGetFullChannelParams, opts?: ApiCallOptions): Promise<messages.TypeChatFull>;
+      /**
+       * Create a supergroup/channel .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/channels.createChannel
+       * @throws {ChannelsCreateChannelErrors}
+       */
+      createChannel(params: ChannelsCreateChannelParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * Modify the admin rights of a user in a supergroup/channel .
+       * @see https://core.telegram.org/method/channels.editAdmin
+       * @throws {ChannelsEditAdminErrors}
+       */
+      editAdmin(params: ChannelsEditAdminParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * Edit the name of a channel/supergroup
+       * @see https://core.telegram.org/method/channels.editTitle
+       * @throws {ChannelsEditTitleErrors}
+       */
+      editTitle(params: ChannelsEditTitleParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * Change the photo of a channel/supergroup
+       * @see https://core.telegram.org/method/channels.editPhoto
+       * @throws {ChannelsEditPhotoErrors}
+       */
+      editPhoto(params: ChannelsEditPhotoParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * Check if a username is free and can be assigned to a channel/supergroup
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/channels.checkUsername
+       * @throws {ChannelsCheckUsernameErrors}
+       */
+      checkUsername(params: ChannelsCheckUsernameParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Change or remove the username of a supergroup/channel
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/channels.updateUsername
+       * @throws {ChannelsUpdateUsernameErrors}
+       */
+      updateUsername(params: ChannelsUpdateUsernameParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Join a channel/supergroup
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/channels.joinChannel
+       * @throws {ChannelsJoinChannelErrors}
+       */
+      joinChannel(params: ChannelsJoinChannelParams, opts?: ApiCallOptions): Promise<messages.TypeChatInviteJoinResult>;
+      /**
+       * Leave a channel/supergroup
+       * @see https://core.telegram.org/method/channels.leaveChannel
+       * @throws {ChannelsLeaveChannelErrors}
+       */
+      leaveChannel(params: ChannelsLeaveChannelParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * Invite users to a channel/supergroup
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/channels.inviteToChannel
+       * @throws {ChannelsInviteToChannelErrors}
+       */
+      inviteToChannel(params: ChannelsInviteToChannelParams, opts?: ApiCallOptions): Promise<messages.TypeInvitedUsers>;
+      /**
+       * Delete a channel/supergroup
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/channels.deleteChannel
+       * @throws {ChannelsDeleteChannelErrors}
+       */
+      deleteChannel(params: ChannelsDeleteChannelParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * Get link and embed info of a message in a channel/supergroup
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/channels.exportMessageLink
+       * @throws {ChannelsExportMessageLinkErrors}
+       */
+      exportMessageLink(params: ChannelsExportMessageLinkParams, opts?: ApiCallOptions): Promise<Api.TypeExportedMessageLink>;
+      /**
+       * Enable/disable message signatures in channels
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/channels.toggleSignatures
+       * @throws {ChannelsToggleSignaturesErrors}
+       */
+      toggleSignatures(params: ChannelsToggleSignaturesParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * Get channels/supergroups/geogroups we're admin in. Usually called when the user exceeds the limit for owned public channels/supergroups/geogroups , and the user is given the choice to remove one of his channels/supergroups/geogroups.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/channels.getAdminedPublicChannels
+       * @throws {ChannelsGetAdminedPublicChannelsErrors}
+       */
+      getAdminedPublicChannels(params: ChannelsGetAdminedPublicChannelsParams, opts?: ApiCallOptions): Promise<messages.TypeChats>;
+      /**
+       * Ban/unban/kick a user in a supergroup/channel .
+       * @see https://core.telegram.org/method/channels.editBanned
+       * @throws {ChannelsEditBannedErrors}
+       */
+      editBanned(params: ChannelsEditBannedParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * Get the admin log of a channel/supergroup
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/channels.getAdminLog
+       * @throws {ChannelsGetAdminLogErrors}
+       */
+      getAdminLog(params: ChannelsGetAdminLogParams, opts?: ApiCallOptions): Promise<channels.TypeAdminLogResults>;
+      /**
+       * Associate a stickerset to the supergroup
+       * @see https://core.telegram.org/method/channels.setStickers
+       * @throws {ChannelsSetStickersErrors}
+       */
+      setStickers(params: ChannelsSetStickersParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Mark channel/supergroup message contents as read, emitting an updateChannelReadMessagesContents .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/channels.readMessageContents
+       * @throws {ChannelsReadMessageContentsErrors}
+       */
+      readMessageContents(params: ChannelsReadMessageContentsParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Delete the history of a supergroup
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/channels.deleteHistory
+       * @throws {ChannelsDeleteHistoryErrors}
+       */
+      deleteHistory(params: ChannelsDeleteHistoryParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * Hide/unhide message history for new channel/supergroup users
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/channels.togglePreHistoryHidden
+       * @throws {ChannelsTogglePreHistoryHiddenErrors}
+       */
+      togglePreHistoryHidden(params: ChannelsTogglePreHistoryHiddenParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * Get a list of channels/supergroups we left, requires a takeout session, see here » for more info .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/channels.getLeftChannels
+       * @throws {ChannelsGetLeftChannelsErrors}
+       */
+      getLeftChannels(params: ChannelsGetLeftChannelsParams, opts?: ApiCallOptions): Promise<messages.TypeChats>;
+      /**
+       * Get all groups that can be used as discussion groups . Returned basic group chats must be first upgraded to supergroups before they can be set as a discussion group. To set a returned supergroup as a discussion group, access to its old messages must be enabled using channels.togglePreHistoryHidden , first.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/channels.getGroupsForDiscussion
+       * @throws {ChannelsGetGroupsForDiscussionErrors}
+       */
+      getGroupsForDiscussion(opts?: ApiCallOptions): Promise<messages.TypeChats>;
+      /**
+       * Associate a group to a channel as discussion group for that channel
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/channels.setDiscussionGroup
+       * @throws {ChannelsSetDiscussionGroupErrors}
+       */
+      setDiscussionGroup(params: ChannelsSetDiscussionGroupParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Edit location of geogroup, see here » for more info on geogroups.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/channels.editLocation
+       * @throws {ChannelsEditLocationErrors}
+       */
+      editLocation(params: ChannelsEditLocationParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Toggle supergroup slow mode: if enabled, users will only be able to send one message every seconds seconds
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/channels.toggleSlowMode
+       * @throws {ChannelsToggleSlowModeErrors}
+       */
+      toggleSlowMode(params: ChannelsToggleSlowModeParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * Get inactive channels and supergroups
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/channels.getInactiveChannels
+       * @throws {ChannelsGetInactiveChannelsErrors}
+       */
+      getInactiveChannels(opts?: ApiCallOptions): Promise<messages.TypeInactiveChats>;
+      /**
+       * Convert a supergroup to a gigagroup , when requested by channel suggestions .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/channels.convertToGigagroup
+       * @throws {ChannelsConvertToGigagroupErrors}
+       */
+      convertToGigagroup(params: ChannelsConvertToGigagroupParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * Obtains a list of peers that can be used to send messages in a specific group
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/channels.getSendAs
+       * @throws {ChannelsGetSendAsErrors}
+       */
+      getSendAs(params: ChannelsGetSendAsParams, opts?: ApiCallOptions): Promise<channels.TypeSendAsPeers>;
+      /**
+       * Delete all messages sent by a specific participant of a given supergroup
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/channels.deleteParticipantHistory
+       * @throws {ChannelsDeleteParticipantHistoryErrors}
+       */
+      deleteParticipantHistory(params: ChannelsDeleteParticipantHistoryParams, opts?: ApiCallOptions): Promise<messages.TypeAffectedHistory>;
+      /**
+       * Set whether all users should join a discussion group in order to comment on a post »
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/channels.toggleJoinToSend
+       * @throws {ChannelsToggleJoinToSendErrors}
+       */
+      toggleJoinToSend(params: ChannelsToggleJoinToSendParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * Set whether all users should request admin approval to join the group » .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/channels.toggleJoinRequest
+       * @throws {ChannelsToggleJoinRequestErrors}
+       */
+      toggleJoinRequest(params: ChannelsToggleJoinRequestParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * Reorder active usernames
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/channels.reorderUsernames
+       * @throws {ChannelsReorderUsernamesErrors}
+       */
+      reorderUsernames(params: ChannelsReorderUsernamesParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Activate or deactivate a purchased fragment.com username associated to a supergroup or channel we own.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/channels.toggleUsername
+       * @throws {ChannelsToggleUsernameErrors}
+       */
+      toggleUsername(params: ChannelsToggleUsernameParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Disable all purchased usernames of a supergroup or channel
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/channels.deactivateAllUsernames
+       * @throws {ChannelsDeactivateAllUsernamesErrors}
+       */
+      deactivateAllUsernames(params: ChannelsDeactivateAllUsernamesParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Enable or disable forum functionality in a supergroup.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/channels.toggleForum
+       * @throws {ChannelsToggleForumErrors}
+       */
+      toggleForum(params: ChannelsToggleForumParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * Enable or disable the native antispam system .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/channels.toggleAntiSpam
+       * @throws {ChannelsToggleAntiSpamErrors}
+       */
+      toggleAntiSpam(params: ChannelsToggleAntiSpamParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * Report a native antispam false positive
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/channels.reportAntiSpamFalsePositive
+       * @throws {ChannelsReportAntiSpamFalsePositiveErrors}
+       */
+      reportAntiSpamFalsePositive(params: ChannelsReportAntiSpamFalsePositiveParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Hide or display the participants list in a supergroup . The supergroup must have at least hidden_members_group_size_min participants in order to use this method, as specified by the client configuration parameters » .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/channels.toggleParticipantsHidden
+       * @throws {ChannelsToggleParticipantsHiddenErrors}
+       */
+      toggleParticipantsHidden(params: ChannelsToggleParticipantsHiddenParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * Update the accent color and background custom emoji » of a channel.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/channels.updateColor
+       * @throws {ChannelsUpdateColorErrors}
+       */
+      updateColor(params: ChannelsUpdateColorParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * Users may also choose to display messages from all topics of a forum as if they were sent to a normal group, using a "View as messages" setting in the local client: this setting only affects the current account, and is synced to other logged in sessions using this method. Invoking this method will update the value of the view_forum_as_messages flag of channelFull or dialog and emit an updateChannelViewForumAsMessages .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/channels.toggleViewForumAsMessages
+       * @throws {ChannelsToggleViewForumAsMessagesErrors}
+       */
+      toggleViewForumAsMessages(params: ChannelsToggleViewForumAsMessagesParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * Obtain a list of similarly themed public channels, selected based on similarities in their subscriber bases .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/channels.getChannelRecommendations
+       * @throws {ChannelsGetChannelRecommendationsErrors}
+       */
+      getChannelRecommendations(params: ChannelsGetChannelRecommendationsParams, opts?: ApiCallOptions): Promise<messages.TypeChats>;
+      /**
+       * Set an emoji status for a channel or supergroup.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/channels.updateEmojiStatus
+       * @throws {ChannelsUpdateEmojiStatusErrors}
+       */
+      updateEmojiStatus(params: ChannelsUpdateEmojiStatusParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * Admins with ban_users admin rights » may allow users that apply a certain number of booosts » to the group to bypass slow mode » and other » supergroup restrictions, see here » for more info.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/channels.setBoostsToUnblockRestrictions
+       * @throws {ChannelsSetBoostsToUnblockRestrictionsErrors}
+       */
+      setBoostsToUnblockRestrictions(params: ChannelsSetBoostsToUnblockRestrictionsParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * Set a custom emoji stickerset for supergroups. Only usable after reaching at least the boost level » specified in the group_emoji_stickers_level_min » config parameter.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/channels.setEmojiStickers
+       * @throws {ChannelsSetEmojiStickersErrors}
+       */
+      setEmojiStickers(params: ChannelsSetEmojiStickersParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Disable ads on the specified channel, for all users. Available only after reaching at least the boost level » specified in the channel_restrict_sponsored_level_min » config parameter.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/channels.restrictSponsoredMessages
+       * @throws {ChannelsRestrictSponsoredMessagesErrors}
+       */
+      restrictSponsoredMessages(params: ChannelsRestrictSponsoredMessagesParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * Globally search for posts from public channels » ( including those we aren't a member of) containing either a specific hashtag, or a full text query. Exactly one of query and hashtag must be set.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/channels.searchPosts
+       * @throws {ChannelsSearchPostsErrors}
+       */
+      searchPosts(params: ChannelsSearchPostsParams, opts?: ApiCallOptions): Promise<messages.TypeMessages>;
+      /**
+       * Enable or disable paid messages » in this supergroup or monoforum . Also used to enable or disable monoforums aka direct messages in a channel . Note that passing the ID of the monoforum itself to channel will return a CHANNEL_MONOFORUM_UNSUPPORTED error: pass the ID of the associated channel to edit the settings of the associated monoforum, instead.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/channels.updatePaidMessagesPrice
+       * @throws {ChannelsUpdatePaidMessagesPriceErrors}
+       */
+      updatePaidMessagesPrice(params: ChannelsUpdatePaidMessagesPriceParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * Toggle autotranslation in a channel, for all users: see here » for more info.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/channels.toggleAutotranslation
+       * @throws {ChannelsToggleAutotranslationErrors}
+       */
+      toggleAutotranslation(params: ChannelsToggleAutotranslationParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * Can only be invoked by non-bot admins of a monoforum » , obtains the original sender of a message sent by other monoforum admins to the monoforum, on behalf of the channel associated to the monoforum.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/channels.getMessageAuthor
+       * @throws {ChannelsGetMessageAuthorErrors}
+       */
+      getMessageAuthor(params: ChannelsGetMessageAuthorParams, opts?: ApiCallOptions): Promise<Api.TypeUser>;
+      /**
+       * Check if the specified global post search » requires payment.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/channels.checkSearchPostsFlood
+       * @throws {ChannelsCheckSearchPostsFloodErrors}
+       */
+      checkSearchPostsFlood(params: ChannelsCheckSearchPostsFloodParams, opts?: ApiCallOptions): Promise<Api.TypeSearchPostsFlood>;
+      /**
+       * Changes the main profile tab of a channel, see here » for more info.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/channels.setMainProfileTab
+       * @throws {ChannelsSetMainProfileTabErrors}
+       */
+      setMainProfileTab(params: ChannelsSetMainProfileTabParams, opts?: ApiCallOptions): Promise<Bool>;
+    };
+    bots: {
+      /**
+       * Sends a custom request; for bots only
+       * @remarks bots-only
+       * @see https://core.telegram.org/method/bots.sendCustomRequest
+       * @throws {BotsSendCustomRequestErrors}
+       */
+      sendCustomRequest(params: BotsSendCustomRequestParams, opts?: ApiCallOptions): Promise<Api.TypeDataJSON>;
+      /**
+       * Answers a custom query; for bots only
+       * @remarks bots-only
+       * @see https://core.telegram.org/method/bots.answerWebhookJSONQuery
+       * @throws {BotsAnswerWebhookJSONQueryErrors}
+       */
+      answerWebhookJSONQuery(params: BotsAnswerWebhookJSONQueryParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Set bot command list
+       * @remarks bots-only
+       * @see https://core.telegram.org/method/bots.setBotCommands
+       * @throws {BotsSetBotCommandsErrors}
+       */
+      setBotCommands(params: BotsSetBotCommandsParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Clear bot commands for the specified bot scope and language code
+       * @remarks bots-only
+       * @see https://core.telegram.org/method/bots.resetBotCommands
+       * @throws {BotsResetBotCommandsErrors}
+       */
+      resetBotCommands(params: BotsResetBotCommandsParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Obtain a list of bot commands for the specified bot scope and language code
+       * @remarks bots-only
+       * @see https://core.telegram.org/method/bots.getBotCommands
+       * @throws {BotsGetBotCommandsErrors}
+       */
+      getBotCommands(params: BotsGetBotCommandsParams, opts?: ApiCallOptions): Promise<Api.TypeBotCommand[]>;
+      /**
+       * Sets the menu button action » for a given user or for all users
+       * @remarks bots-only
+       * @see https://core.telegram.org/method/bots.setBotMenuButton
+       * @throws {BotsSetBotMenuButtonErrors}
+       */
+      setBotMenuButton(params: BotsSetBotMenuButtonParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Gets the menu button action for a given user or for all users, previously set using bots.setBotMenuButton ; users can see this information in the botInfo constructor.
+       * @remarks bots-only
+       * @see https://core.telegram.org/method/bots.getBotMenuButton
+       * @throws {BotsGetBotMenuButtonErrors}
+       */
+      getBotMenuButton(params: BotsGetBotMenuButtonParams, opts?: ApiCallOptions): Promise<Api.TypeBotMenuButton>;
+      /**
+       * Set the default suggested admin rights for bots being added as admins to channels, see here for more info on how to handle them » .
+       * @remarks bots-only
+       * @see https://core.telegram.org/method/bots.setBotBroadcastDefaultAdminRights
+       * @throws {BotsSetBotBroadcastDefaultAdminRightsErrors}
+       */
+      setBotBroadcastDefaultAdminRights(params: BotsSetBotBroadcastDefaultAdminRightsParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Set the default suggested admin rights for bots being added as admins to groups, see here for more info on how to handle them » .
+       * @remarks bots-only
+       * @see https://core.telegram.org/method/bots.setBotGroupDefaultAdminRights
+       * @throws {BotsSetBotGroupDefaultAdminRightsErrors}
+       */
+      setBotGroupDefaultAdminRights(params: BotsSetBotGroupDefaultAdminRightsParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Set localized name, about text and description of a bot (or of the current account, if called by a bot).
+       * @see https://core.telegram.org/method/bots.setBotInfo
+       * @throws {BotsSetBotInfoErrors}
+       */
+      setBotInfo(params: BotsSetBotInfoParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Get localized name, about text and description of a bot (or of the current account, if called by a bot).
+       * @see https://core.telegram.org/method/bots.getBotInfo
+       * @throws {BotsGetBotInfoErrors}
+       */
+      getBotInfo(params: BotsGetBotInfoParams, opts?: ApiCallOptions): Promise<bots.TypeBotInfo>;
+      /**
+       * Reorder usernames associated to a bot we own.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/bots.reorderUsernames
+       * @throws {BotsReorderUsernamesErrors}
+       */
+      reorderUsernames(params: BotsReorderUsernamesParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Activate or deactivate a purchased fragment.com username associated to a bot we own.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/bots.toggleUsername
+       * @throws {BotsToggleUsernameErrors}
+       */
+      toggleUsername(params: BotsToggleUsernameParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Check whether the specified bot can send us messages
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/bots.canSendMessage
+       * @throws {BotsCanSendMessageErrors}
+       */
+      canSendMessage(params: BotsCanSendMessageParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Allow the specified bot to send us messages
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/bots.allowSendMessage
+       * @throws {BotsAllowSendMessageErrors}
+       */
+      allowSendMessage(params: BotsAllowSendMessageParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * Send a custom request from a mini bot app , triggered by a web_app_invoke_custom_method event » . The response should be sent using a custom_method_invoked event, see here » for more info on the flow.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/bots.invokeWebViewCustomMethod
+       * @throws {BotsInvokeWebViewCustomMethodErrors}
+       */
+      invokeWebViewCustomMethod(params: BotsInvokeWebViewCustomMethodParams, opts?: ApiCallOptions): Promise<Api.TypeDataJSON>;
+      /**
+       * Fetch popular Main Mini Apps , to be used in the apps tab of global search » .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/bots.getPopularAppBots
+       * @throws {BotsGetPopularAppBotsErrors}
+       */
+      getPopularAppBots(params: BotsGetPopularAppBotsParams, opts?: ApiCallOptions): Promise<bots.TypePopularAppBots>;
+      /**
+       * Add a main mini app preview, see here » for more info. Only owners of bots with a configured Main Mini App can use this method, see see here » for more info on how to check if you can invoke this method.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/bots.addPreviewMedia
+       * @throws {BotsAddPreviewMediaErrors}
+       */
+      addPreviewMedia(params: BotsAddPreviewMediaParams, opts?: ApiCallOptions): Promise<Api.TypeBotPreviewMedia>;
+      /**
+       * Edit a main mini app preview, see here » for more info. Only owners of bots with a configured Main Mini App can use this method, see see here » for more info on how to check if you can invoke this method.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/bots.editPreviewMedia
+       * @throws {BotsEditPreviewMediaErrors}
+       */
+      editPreviewMedia(params: BotsEditPreviewMediaParams, opts?: ApiCallOptions): Promise<Api.TypeBotPreviewMedia>;
+      /**
+       * Delete a main mini app preview, see here » for more info. Only owners of bots with a configured Main Mini App can use this method, see see here » for more info on how to check if you can invoke this method.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/bots.deletePreviewMedia
+       * @throws {BotsDeletePreviewMediaErrors}
+       */
+      deletePreviewMedia(params: BotsDeletePreviewMediaParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Reorder a main mini app previews, see here » for more info. Only owners of bots with a configured Main Mini App can use this method, see see here » for more info on how to check if you can invoke this method.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/bots.reorderPreviewMedias
+       * @throws {BotsReorderPreviewMediasErrors}
+       */
+      reorderPreviewMedias(params: BotsReorderPreviewMediasParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Bot owners only, fetch main mini app preview information, see here » for more info. Note: technically non-owners may also invoke this method, but it will always behave exactly as bots.getPreviewMedias , returning only previews for the current language and an empty lang_codes array, regardless of the passed lang_code , so please only use bots.getPreviewMedias if you're not the owner of the bot .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/bots.getPreviewInfo
+       * @throws {BotsGetPreviewInfoErrors}
+       */
+      getPreviewInfo(params: BotsGetPreviewInfoParams, opts?: ApiCallOptions): Promise<bots.TypePreviewInfo>;
+      /**
+       * Fetch main mini app previews, see here » for more info.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/bots.getPreviewMedias
+       * @throws {BotsGetPreviewMediasErrors}
+       */
+      getPreviewMedias(params: BotsGetPreviewMediasParams, opts?: ApiCallOptions): Promise<Api.TypeBotPreviewMedia[]>;
+      /**
+       * Change the emoji status of a user (invoked by bots, see here » for more info on the full flow)
+       * @remarks bots-only
+       * @see https://core.telegram.org/method/bots.updateUserEmojiStatus
+       * @throws {BotsUpdateUserEmojiStatusErrors}
+       */
+      updateUserEmojiStatus(params: BotsUpdateUserEmojiStatusParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Allow or prevent a bot from changing our emoji status »
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/bots.toggleUserEmojiStatusPermission
+       * @throws {BotsToggleUserEmojiStatusPermissionErrors}
+       */
+      toggleUserEmojiStatusPermission(params: BotsToggleUserEmojiStatusPermissionParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Check if a mini app can request the download of a specific file: called when handling web_app_request_file_download events »
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/bots.checkDownloadFileParams
+       * @throws {BotsCheckDownloadFileParamsErrors}
+       */
+      checkDownloadFileParams(params: BotsCheckDownloadFileParamsParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Get a list of bots owned by the current user
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/bots.getAdminedBots
+       * @throws {BotsGetAdminedBotsErrors}
+       */
+      getAdminedBots(opts?: ApiCallOptions): Promise<Api.TypeUser[]>;
+      /**
+       * Create, edit or delete the affiliate program of a bot we own
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/bots.updateStarRefProgram
+       * @throws {BotsUpdateStarRefProgramErrors}
+       */
+      updateStarRefProgram(params: BotsUpdateStarRefProgramParams, opts?: ApiCallOptions): Promise<Api.TypeStarRefProgram>;
+      /**
+       * Verify a user or chat on behalf of an organization » .
+       * @see https://core.telegram.org/method/bots.setCustomVerification
+       * @throws {BotsSetCustomVerificationErrors}
+       */
+      setCustomVerification(params: BotsSetCustomVerificationParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Obtain a list of similarly themed bots, selected based on similarities in their subscriber bases, see here » for more info.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/bots.getBotRecommendations
+       * @throws {BotsGetBotRecommendationsErrors}
+       */
+      getBotRecommendations(params: BotsGetBotRecommendationsParams, opts?: ApiCallOptions): Promise<users.TypeUsers>;
+      /**
+       * @see https://core.telegram.org/method/bots.checkUsername
+       */
+      checkUsername(params: BotsCheckUsernameParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * @see https://core.telegram.org/method/bots.createBot
+       */
+      createBot(params: BotsCreateBotParams, opts?: ApiCallOptions): Promise<Api.TypeUser>;
+      /**
+       * @see https://core.telegram.org/method/bots.exportBotToken
+       */
+      exportBotToken(params: BotsExportBotTokenParams, opts?: ApiCallOptions): Promise<bots.TypeExportedBotToken>;
+      /**
+       * @see https://core.telegram.org/method/bots.requestWebViewButton
+       */
+      requestWebViewButton(params: BotsRequestWebViewButtonParams, opts?: ApiCallOptions): Promise<bots.TypeRequestedButton>;
+      /**
+       * @see https://core.telegram.org/method/bots.getRequestedWebViewButton
+       */
+      getRequestedWebViewButton(params: BotsGetRequestedWebViewButtonParams, opts?: ApiCallOptions): Promise<Api.TypeKeyboardButton>;
+      /**
+       * @see https://core.telegram.org/method/bots.getAccessSettings
+       */
+      getAccessSettings(params: BotsGetAccessSettingsParams, opts?: ApiCallOptions): Promise<bots.TypeAccessSettings>;
+      /**
+       * @see https://core.telegram.org/method/bots.editAccessSettings
+       */
+      editAccessSettings(params: BotsEditAccessSettingsParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * @see https://core.telegram.org/method/bots.setJoinChatResults
+       */
+      setJoinChatResults(params: BotsSetJoinChatResultsParams, opts?: ApiCallOptions): Promise<Bool>;
+    };
+    payments: {
+      /**
+       * Get a payment form
+       * @remarks works over a business connection
+       * @see https://core.telegram.org/method/payments.getPaymentForm
+       * @throws {PaymentsGetPaymentFormErrors}
+       */
+      getPaymentForm(params: PaymentsGetPaymentFormParams, opts?: ApiCallOptions): Promise<payments.TypePaymentForm>;
+      /**
+       * Get payment receipt
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/payments.getPaymentReceipt
+       * @throws {PaymentsGetPaymentReceiptErrors}
+       */
+      getPaymentReceipt(params: PaymentsGetPaymentReceiptParams, opts?: ApiCallOptions): Promise<payments.TypePaymentReceipt>;
+      /**
+       * Submit requested order information for validation
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/payments.validateRequestedInfo
+       * @throws {PaymentsValidateRequestedInfoErrors}
+       */
+      validateRequestedInfo(params: PaymentsValidateRequestedInfoParams, opts?: ApiCallOptions): Promise<payments.TypeValidatedRequestedInfo>;
+      /**
+       * Send compiled payment form
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/payments.sendPaymentForm
+       * @throws {PaymentsSendPaymentFormErrors}
+       */
+      sendPaymentForm(params: PaymentsSendPaymentFormParams, opts?: ApiCallOptions): Promise<payments.TypePaymentResult>;
+      /**
+       * Get saved payment information
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/payments.getSavedInfo
+       * @throws {PaymentsGetSavedInfoErrors}
+       */
+      getSavedInfo(opts?: ApiCallOptions): Promise<payments.TypeSavedInfo>;
+      /**
+       * Clear saved payment information
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/payments.clearSavedInfo
+       * @throws {PaymentsClearSavedInfoErrors}
+       */
+      clearSavedInfo(params: PaymentsClearSavedInfoParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Get info about a credit card
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/payments.getBankCardData
+       * @throws {PaymentsGetBankCardDataErrors}
+       */
+      getBankCardData(params: PaymentsGetBankCardDataParams, opts?: ApiCallOptions): Promise<payments.TypeBankCardData>;
+      /**
+       * Generate an invoice deep link
+       * @remarks bots-only · works over a business connection
+       * @see https://core.telegram.org/method/payments.exportInvoice
+       * @throws {PaymentsExportInvoiceErrors}
+       */
+      exportInvoice(params: PaymentsExportInvoiceParams, opts?: ApiCallOptions): Promise<payments.TypeExportedInvoice>;
+      /**
+       * Informs server about a purchase made through the App Store: for official applications only.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/payments.assignAppStoreTransaction
+       * @throws {PaymentsAssignAppStoreTransactionErrors}
+       */
+      assignAppStoreTransaction(params: PaymentsAssignAppStoreTransactionParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * Informs server about a purchase made through the Play Store: for official applications only.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/payments.assignPlayMarketTransaction
+       * @throws {PaymentsAssignPlayMarketTransactionErrors}
+       */
+      assignPlayMarketTransaction(params: PaymentsAssignPlayMarketTransactionParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * Obtain a list of Telegram Premium giveaway/gift code » options.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/payments.getPremiumGiftCodeOptions
+       * @throws {PaymentsGetPremiumGiftCodeOptionsErrors}
+       */
+      getPremiumGiftCodeOptions(params: PaymentsGetPremiumGiftCodeOptionsParams, opts?: ApiCallOptions): Promise<Api.TypePremiumGiftCodeOption[]>;
+      /**
+       * Obtain information about a Telegram Premium giftcode »
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/payments.checkGiftCode
+       * @throws {PaymentsCheckGiftCodeErrors}
+       */
+      checkGiftCode(params: PaymentsCheckGiftCodeParams, opts?: ApiCallOptions): Promise<payments.TypeCheckedGiftCode>;
+      /**
+       * Apply a Telegram Premium giftcode »
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/payments.applyGiftCode
+       * @throws {PaymentsApplyGiftCodeErrors}
+       */
+      applyGiftCode(params: PaymentsApplyGiftCodeParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * Obtain information about a Telegram Premium giveaway » .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/payments.getGiveawayInfo
+       * @throws {PaymentsGetGiveawayInfoErrors}
+       */
+      getGiveawayInfo(params: PaymentsGetGiveawayInfoParams, opts?: ApiCallOptions): Promise<payments.TypeGiveawayInfo>;
+      /**
+       * Launch a prepaid giveaway » .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/payments.launchPrepaidGiveaway
+       * @throws {PaymentsLaunchPrepaidGiveawayErrors}
+       */
+      launchPrepaidGiveaway(params: PaymentsLaunchPrepaidGiveawayParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * Obtain a list of Telegram Stars topup options » as starsTopupOption constructors.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/payments.getStarsTopupOptions
+       * @throws {PaymentsGetStarsTopupOptionsErrors}
+       */
+      getStarsTopupOptions(opts?: ApiCallOptions): Promise<Api.TypeStarsTopupOption[]>;
+      /**
+       * Get the current Telegram Stars balance of the current account (with peer= inputPeerSelf ), or the stars balance of the bot specified in peer .
+       * @remarks user-only (bots rejected) · works over a business connection
+       * @see https://core.telegram.org/method/payments.getStarsStatus
+       * @throws {PaymentsGetStarsStatusErrors}
+       */
+      getStarsStatus(params: PaymentsGetStarsStatusParams, opts?: ApiCallOptions): Promise<payments.TypeStarsStatus>;
+      /**
+       * Fetch Telegram Stars transactions . The inbound and outbound flags are mutually exclusive: if none of the two are set, both incoming and outgoing transactions are fetched.
+       * @see https://core.telegram.org/method/payments.getStarsTransactions
+       * @throws {PaymentsGetStarsTransactionsErrors}
+       */
+      getStarsTransactions(params: PaymentsGetStarsTransactionsParams, opts?: ApiCallOptions): Promise<payments.TypeStarsStatus>;
+      /**
+       * Make a payment using Telegram Stars, see here » for more info.
+       * @remarks works over a business connection
+       * @see https://core.telegram.org/method/payments.sendStarsForm
+       * @throws {PaymentsSendStarsFormErrors}
+       */
+      sendStarsForm(params: PaymentsSendStarsFormParams, opts?: ApiCallOptions): Promise<payments.TypePaymentResult>;
+      /**
+       * Refund a Telegram Stars transaction, see here » for more info.
+       * @remarks bots-only
+       * @see https://core.telegram.org/method/payments.refundStarsCharge
+       * @throws {PaymentsRefundStarsChargeErrors}
+       */
+      refundStarsCharge(params: PaymentsRefundStarsChargeParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * Get Telegram Star revenue statistics » .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/payments.getStarsRevenueStats
+       * @throws {PaymentsGetStarsRevenueStatsErrors}
+       */
+      getStarsRevenueStats(params: PaymentsGetStarsRevenueStatsParams, opts?: ApiCallOptions): Promise<payments.TypeStarsRevenueStats>;
+      /**
+       * Withdraw funds from a channel or bot's star balance » .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/payments.getStarsRevenueWithdrawalUrl
+       * @throws {PaymentsGetStarsRevenueWithdrawalUrlErrors}
+       */
+      getStarsRevenueWithdrawalUrl(params: PaymentsGetStarsRevenueWithdrawalUrlParams, opts?: ApiCallOptions): Promise<payments.TypeStarsRevenueWithdrawalUrl>;
+      /**
+       * Returns a URL for a Telegram Ad platform account that can be used to set up advertisements for channel/bot in peer , paid using the Telegram Stars owned by the specified peer , see here » for more info.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/payments.getStarsRevenueAdsAccountUrl
+       * @throws {PaymentsGetStarsRevenueAdsAccountUrlErrors}
+       */
+      getStarsRevenueAdsAccountUrl(params: PaymentsGetStarsRevenueAdsAccountUrlParams, opts?: ApiCallOptions): Promise<payments.TypeStarsRevenueAdsAccountUrl>;
+      /**
+       * Obtain info about Telegram Star transactions » using specific transaction IDs.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/payments.getStarsTransactionsByID
+       * @throws {PaymentsGetStarsTransactionsByIDErrors}
+       */
+      getStarsTransactionsByID(params: PaymentsGetStarsTransactionsByIDParams, opts?: ApiCallOptions): Promise<payments.TypeStarsStatus>;
+      /**
+       * Obtain a list of Telegram Stars gift options » as starsGiftOption constructors.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/payments.getStarsGiftOptions
+       * @throws {PaymentsGetStarsGiftOptionsErrors}
+       */
+      getStarsGiftOptions(params: PaymentsGetStarsGiftOptionsParams, opts?: ApiCallOptions): Promise<Api.TypeStarsGiftOption[]>;
+      /**
+       * Obtain a list of active, expired or cancelled Telegram Star subscriptions » .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/payments.getStarsSubscriptions
+       * @throws {PaymentsGetStarsSubscriptionsErrors}
+       */
+      getStarsSubscriptions(params: PaymentsGetStarsSubscriptionsParams, opts?: ApiCallOptions): Promise<payments.TypeStarsStatus>;
+      /**
+       * Activate or deactivate a Telegram Star subscription » .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/payments.changeStarsSubscription
+       * @throws {PaymentsChangeStarsSubscriptionErrors}
+       */
+      changeStarsSubscription(params: PaymentsChangeStarsSubscriptionParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Re-join a private channel associated to an active Telegram Star subscription » .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/payments.fulfillStarsSubscription
+       * @throws {PaymentsFulfillStarsSubscriptionErrors}
+       */
+      fulfillStarsSubscription(params: PaymentsFulfillStarsSubscriptionParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Fetch a list of star giveaway options » .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/payments.getStarsGiveawayOptions
+       * @throws {PaymentsGetStarsGiveawayOptionsErrors}
+       */
+      getStarsGiveawayOptions(opts?: ApiCallOptions): Promise<Api.TypeStarsGiveawayOption[]>;
+      /**
+       * Get a list of available gifts, see here » for more info.
+       * @see https://core.telegram.org/method/payments.getStarGifts
+       * @throws {PaymentsGetStarGiftsErrors}
+       */
+      getStarGifts(params: PaymentsGetStarGiftsParams, opts?: ApiCallOptions): Promise<payments.TypeStarGifts>;
+      /**
+       * Display or remove a received gift » from our profile.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/payments.saveStarGift
+       * @throws {PaymentsSaveStarGiftErrors}
+       */
+      saveStarGift(params: PaymentsSaveStarGiftParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Convert a received gift » into Telegram Stars: this will permanently destroy the gift, converting it into starGift . convert_stars Telegram Stars , added to the user's balance. Note that starGift . convert_stars will be less than the buying price ( starGift . stars ) of the gift if it was originally bought using Telegram Stars bought a long time ago.
+       * @remarks user-only (bots rejected) · works over a business connection
+       * @see https://core.telegram.org/method/payments.convertStarGift
+       * @throws {PaymentsConvertStarGiftErrors}
+       */
+      convertStarGift(params: PaymentsConvertStarGiftParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Cancel a bot subscription
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/payments.botCancelStarsSubscription
+       * @throws {PaymentsBotCancelStarsSubscriptionErrors}
+       */
+      botCancelStarsSubscription(params: PaymentsBotCancelStarsSubscriptionParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Fetch all affiliations we have created for a certain peer
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/payments.getConnectedStarRefBots
+       * @throws {PaymentsGetConnectedStarRefBotsErrors}
+       */
+      getConnectedStarRefBots(params: PaymentsGetConnectedStarRefBotsParams, opts?: ApiCallOptions): Promise<payments.TypeConnectedStarRefBots>;
+      /**
+       * Fetch info about a specific bot affiliation »
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/payments.getConnectedStarRefBot
+       * @throws {PaymentsGetConnectedStarRefBotErrors}
+       */
+      getConnectedStarRefBot(params: PaymentsGetConnectedStarRefBotParams, opts?: ApiCallOptions): Promise<payments.TypeConnectedStarRefBots>;
+      /**
+       * Obtain a list of suggested mini apps with available affiliate programs order_by_revenue and order_by_date are mutually exclusive: if neither is set, results are sorted by profitability.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/payments.getSuggestedStarRefBots
+       * @throws {PaymentsGetSuggestedStarRefBotsErrors}
+       */
+      getSuggestedStarRefBots(params: PaymentsGetSuggestedStarRefBotsParams, opts?: ApiCallOptions): Promise<payments.TypeSuggestedStarRefBots>;
+      /**
+       * Join a bot's affiliate program, becoming an affiliate »
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/payments.connectStarRefBot
+       * @throws {PaymentsConnectStarRefBotErrors}
+       */
+      connectStarRefBot(params: PaymentsConnectStarRefBotParams, opts?: ApiCallOptions): Promise<payments.TypeConnectedStarRefBots>;
+      /**
+       * Leave a bot's affiliate program »
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/payments.editConnectedStarRefBot
+       * @throws {PaymentsEditConnectedStarRefBotErrors}
+       */
+      editConnectedStarRefBot(params: PaymentsEditConnectedStarRefBotParams, opts?: ApiCallOptions): Promise<payments.TypeConnectedStarRefBots>;
+      /**
+       * Obtain a preview of the possible attributes (chosen randomly) a gift » can receive after upgrading it to a collectible gift » , see here » for more info.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/payments.getStarGiftUpgradePreview
+       * @throws {PaymentsGetStarGiftUpgradePreviewErrors}
+       */
+      getStarGiftUpgradePreview(params: PaymentsGetStarGiftUpgradePreviewParams, opts?: ApiCallOptions): Promise<payments.TypeStarGiftUpgradePreview>;
+      /**
+       * Upgrade a gift to a collectible gift : can only be used if the upgrade was already paid by the gift sender; see here » for more info on the full flow (including the different flow to use in case the upgrade was not paid by the gift sender).
+       * @remarks user-only (bots rejected) · works over a business connection
+       * @see https://core.telegram.org/method/payments.upgradeStarGift
+       * @throws {PaymentsUpgradeStarGiftErrors}
+       */
+      upgradeStarGift(params: PaymentsUpgradeStarGiftParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * Transfer a collectible gift to another user or channel: can only be used if transfer is free (i.e. messageActionStarGiftUnique . transfer_stars is not set); see here » for more info on the full flow (including the different flow to use in case the transfer isn't free).
+       * @remarks user-only (bots rejected) · works over a business connection
+       * @see https://core.telegram.org/method/payments.transferStarGift
+       * @throws {PaymentsTransferStarGiftErrors}
+       */
+      transferStarGift(params: PaymentsTransferStarGiftParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * Obtain info about a collectible gift » using a slug obtained from a collectible gift link » .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/payments.getUniqueStarGift
+       * @throws {PaymentsGetUniqueStarGiftErrors}
+       */
+      getUniqueStarGift(params: PaymentsGetUniqueStarGiftParams, opts?: ApiCallOptions): Promise<payments.TypeUniqueStarGift>;
+      /**
+       * Fetch the full list of gifts owned by a peer. Note that unlike what the name suggests, the method can be used to fetch both "saved" and "unsaved" gifts (aka gifts both pinned and not pinned) to the profile, depending on the passed flags.
+       * @remarks user-only (bots rejected) · works over a business connection
+       * @see https://core.telegram.org/method/payments.getSavedStarGifts
+       * @throws {PaymentsGetSavedStarGiftsErrors}
+       */
+      getSavedStarGifts(params: PaymentsGetSavedStarGiftsParams, opts?: ApiCallOptions): Promise<payments.TypeSavedStarGifts>;
+      /**
+       * Fetch info about specific gifts owned by a peer we control. Note that unlike what the name suggests, the method can be used to fetch both "saved" and "unsaved" gifts (aka gifts both pinned and not pinned to the profile).
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/payments.getSavedStarGift
+       * @throws {PaymentsGetSavedStarGiftErrors}
+       */
+      getSavedStarGift(params: PaymentsGetSavedStarGiftParams, opts?: ApiCallOptions): Promise<payments.TypeSavedStarGifts>;
+      /**
+       * Convert a collectible gift » to an NFT on the TON blockchain.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/payments.getStarGiftWithdrawalUrl
+       * @throws {PaymentsGetStarGiftWithdrawalUrlErrors}
+       */
+      getStarGiftWithdrawalUrl(params: PaymentsGetStarGiftWithdrawalUrlParams, opts?: ApiCallOptions): Promise<payments.TypeStarGiftWithdrawalUrl>;
+      /**
+       * Enables or disables the reception of notifications every time a gift » is received by the specified channel, can only be invoked by admins with post_messages admin rights .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/payments.toggleChatStarGiftNotifications
+       * @throws {PaymentsToggleChatStarGiftNotificationsErrors}
+       */
+      toggleChatStarGiftNotifications(params: PaymentsToggleChatStarGiftNotificationsParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Pins a received gift on top of the profile of the user or owned channels by using payments.toggleStarGiftsPinnedToTop .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/payments.toggleStarGiftsPinnedToTop
+       * @throws {PaymentsToggleStarGiftsPinnedToTopErrors}
+       */
+      toggleStarGiftsPinnedToTop(params: PaymentsToggleStarGiftsPinnedToTopParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Checks whether a purchase is possible. Must be called before in-store purchase, official apps only.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/payments.canPurchaseStore
+       * @throws {PaymentsCanPurchaseStoreErrors}
+       */
+      canPurchaseStore(params: PaymentsCanPurchaseStoreParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Get collectible gifts of a specific type currently on resale, see here » for more info. sort_by_price and sort_by_num are mutually exclusive, if neither are set results are sorted by the unixtime (descending) when their resell price was last changed. See here » for detailed documentation on this method.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/payments.getResaleStarGifts
+       * @throws {PaymentsGetResaleStarGiftsErrors}
+       */
+      getResaleStarGifts(params: PaymentsGetResaleStarGiftsParams, opts?: ApiCallOptions): Promise<payments.TypeResaleStarGifts>;
+      /**
+       * A collectible gift we own » can be put up for sale on the gift marketplace » with this method, see here » for more info.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/payments.updateStarGiftPrice
+       * @throws {PaymentsUpdateStarGiftPriceErrors}
+       */
+      updateStarGiftPrice(params: PaymentsUpdateStarGiftPriceParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * Create a star gift collection » .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/payments.createStarGiftCollection
+       * @throws {PaymentsCreateStarGiftCollectionErrors}
+       */
+      createStarGiftCollection(params: PaymentsCreateStarGiftCollectionParams, opts?: ApiCallOptions): Promise<Api.TypeStarGiftCollection>;
+      /**
+       * Add or remove gifts from a star gift collection » , or rename the collection.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/payments.updateStarGiftCollection
+       * @throws {PaymentsUpdateStarGiftCollectionErrors}
+       */
+      updateStarGiftCollection(params: PaymentsUpdateStarGiftCollectionParams, opts?: ApiCallOptions): Promise<Api.TypeStarGiftCollection>;
+      /**
+       * Reorder the star gift collections » on an owned peer's profile.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/payments.reorderStarGiftCollections
+       * @throws {PaymentsReorderStarGiftCollectionsErrors}
+       */
+      reorderStarGiftCollections(params: PaymentsReorderStarGiftCollectionsParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Delete a star gift collection » .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/payments.deleteStarGiftCollection
+       * @throws {PaymentsDeleteStarGiftCollectionErrors}
+       */
+      deleteStarGiftCollection(params: PaymentsDeleteStarGiftCollectionParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Fetches all star gift collections » of a peer.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/payments.getStarGiftCollections
+       * @throws {PaymentsGetStarGiftCollectionsErrors}
+       */
+      getStarGiftCollections(params: PaymentsGetStarGiftCollectionsParams, opts?: ApiCallOptions): Promise<payments.TypeStarGiftCollections>;
+      /**
+       * Get information about the value of a collectible gift » .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/payments.getUniqueStarGiftValueInfo
+       * @throws {PaymentsGetUniqueStarGiftValueInfoErrors}
+       */
+      getUniqueStarGiftValueInfo(params: PaymentsGetUniqueStarGiftValueInfoParams, opts?: ApiCallOptions): Promise<payments.TypeUniqueStarGiftValueInfo>;
+      /**
+       * Check if the specified gift » can be sent.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/payments.checkCanSendGift
+       * @throws {PaymentsCheckCanSendGiftErrors}
+       */
+      checkCanSendGift(params: PaymentsCheckCanSendGiftParams, opts?: ApiCallOptions): Promise<payments.TypeCheckCanSendGiftResult>;
+      /**
+       * @see https://core.telegram.org/method/payments.getStarGiftAuctionState
+       */
+      getStarGiftAuctionState(params: PaymentsGetStarGiftAuctionStateParams, opts?: ApiCallOptions): Promise<payments.TypeStarGiftAuctionState>;
+      /**
+       * @see https://core.telegram.org/method/payments.getStarGiftAuctionAcquiredGifts
+       */
+      getStarGiftAuctionAcquiredGifts(params: PaymentsGetStarGiftAuctionAcquiredGiftsParams, opts?: ApiCallOptions): Promise<payments.TypeStarGiftAuctionAcquiredGifts>;
+      /**
+       * @see https://core.telegram.org/method/payments.getStarGiftActiveAuctions
+       */
+      getStarGiftActiveAuctions(params: PaymentsGetStarGiftActiveAuctionsParams, opts?: ApiCallOptions): Promise<payments.TypeStarGiftActiveAuctions>;
+      /**
+       * @see https://core.telegram.org/method/payments.resolveStarGiftOffer
+       */
+      resolveStarGiftOffer(params: PaymentsResolveStarGiftOfferParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * @see https://core.telegram.org/method/payments.sendStarGiftOffer
+       */
+      sendStarGiftOffer(params: PaymentsSendStarGiftOfferParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * @see https://core.telegram.org/method/payments.getStarGiftUpgradeAttributes
+       */
+      getStarGiftUpgradeAttributes(params: PaymentsGetStarGiftUpgradeAttributesParams, opts?: ApiCallOptions): Promise<payments.TypeStarGiftUpgradeAttributes>;
+      /**
+       * @see https://core.telegram.org/method/payments.getCraftStarGifts
+       */
+      getCraftStarGifts(params: PaymentsGetCraftStarGiftsParams, opts?: ApiCallOptions): Promise<payments.TypeSavedStarGifts>;
+      /**
+       * @see https://core.telegram.org/method/payments.craftStarGift
+       */
+      craftStarGift(params: PaymentsCraftStarGiftParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+    };
+    stickers: {
+      /**
+       * Create a stickerset.
+       * @see https://core.telegram.org/method/stickers.createStickerSet
+       * @throws {StickersCreateStickerSetErrors}
+       */
+      createStickerSet(params: StickersCreateStickerSetParams, opts?: ApiCallOptions): Promise<messages.TypeStickerSet>;
+      /**
+       * Remove a sticker from the set where it belongs. The sticker set must have been created by the current user/bot.
+       * @see https://core.telegram.org/method/stickers.removeStickerFromSet
+       * @throws {StickersRemoveStickerFromSetErrors}
+       */
+      removeStickerFromSet(params: StickersRemoveStickerFromSetParams, opts?: ApiCallOptions): Promise<messages.TypeStickerSet>;
+      /**
+       * Changes the absolute position of a sticker in the set to which it belongs. The sticker set must have been created by the current user/bot.
+       * @see https://core.telegram.org/method/stickers.changeStickerPosition
+       * @throws {StickersChangeStickerPositionErrors}
+       */
+      changeStickerPosition(params: StickersChangeStickerPositionParams, opts?: ApiCallOptions): Promise<messages.TypeStickerSet>;
+      /**
+       * Add a sticker to a stickerset. The sticker set must have been created by the current user/bot.
+       * @see https://core.telegram.org/method/stickers.addStickerToSet
+       * @throws {StickersAddStickerToSetErrors}
+       */
+      addStickerToSet(params: StickersAddStickerToSetParams, opts?: ApiCallOptions): Promise<messages.TypeStickerSet>;
+      /**
+       * Set stickerset thumbnail
+       * @see https://core.telegram.org/method/stickers.setStickerSetThumb
+       * @throws {StickersSetStickerSetThumbErrors}
+       */
+      setStickerSetThumb(params: StickersSetStickerSetThumbParams, opts?: ApiCallOptions): Promise<messages.TypeStickerSet>;
+      /**
+       * Check whether the given short name is available
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/stickers.checkShortName
+       * @throws {StickersCheckShortNameErrors}
+       */
+      checkShortName(params: StickersCheckShortNameParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Suggests a short name for a given stickerpack name
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/stickers.suggestShortName
+       * @throws {StickersSuggestShortNameErrors}
+       */
+      suggestShortName(params: StickersSuggestShortNameParams, opts?: ApiCallOptions): Promise<stickers.TypeSuggestedShortName>;
+      /**
+       * Update the keywords, emojis or mask coordinates of a sticker.
+       * @see https://core.telegram.org/method/stickers.changeSticker
+       * @throws {StickersChangeStickerErrors}
+       */
+      changeSticker(params: StickersChangeStickerParams, opts?: ApiCallOptions): Promise<messages.TypeStickerSet>;
+      /**
+       * Renames a stickerset.
+       * @see https://core.telegram.org/method/stickers.renameStickerSet
+       * @throws {StickersRenameStickerSetErrors}
+       */
+      renameStickerSet(params: StickersRenameStickerSetParams, opts?: ApiCallOptions): Promise<messages.TypeStickerSet>;
+      /**
+       * Deletes a stickerset we created.
+       * @see https://core.telegram.org/method/stickers.deleteStickerSet
+       * @throws {StickersDeleteStickerSetErrors}
+       */
+      deleteStickerSet(params: StickersDeleteStickerSetParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Replace a sticker in a stickerset » .
+       * @see https://core.telegram.org/method/stickers.replaceSticker
+       * @throws {StickersReplaceStickerErrors}
+       */
+      replaceSticker(params: StickersReplaceStickerParams, opts?: ApiCallOptions): Promise<messages.TypeStickerSet>;
+    };
+    phone: {
+      /**
+       * Get phone call configuration to be passed to libtgvoip's shared config
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/phone.getCallConfig
+       * @throws {PhoneGetCallConfigErrors}
+       */
+      getCallConfig(opts?: ApiCallOptions): Promise<Api.TypeDataJSON>;
+      /**
+       * Start a telegram phone call
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/phone.requestCall
+       * @throws {PhoneRequestCallErrors}
+       */
+      requestCall(params: PhoneRequestCallParams, opts?: ApiCallOptions): Promise<phone.TypePhoneCall>;
+      /**
+       * Accept incoming call
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/phone.acceptCall
+       * @throws {PhoneAcceptCallErrors}
+       */
+      acceptCall(params: PhoneAcceptCallParams, opts?: ApiCallOptions): Promise<phone.TypePhoneCall>;
+      /**
+       * Complete phone call E2E encryption key exchange »
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/phone.confirmCall
+       * @throws {PhoneConfirmCallErrors}
+       */
+      confirmCall(params: PhoneConfirmCallParams, opts?: ApiCallOptions): Promise<phone.TypePhoneCall>;
+      /**
+       * Optional: notify the server that the user is currently busy in a call: this will automatically refuse all incoming phone calls until the current phone call is ended.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/phone.receivedCall
+       * @throws {PhoneReceivedCallErrors}
+       */
+      receivedCall(params: PhoneReceivedCallParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Refuse or end running call
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/phone.discardCall
+       * @throws {PhoneDiscardCallErrors}
+       */
+      discardCall(params: PhoneDiscardCallParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * Rate a call, returns info about the rating message sent to the official VoIP bot.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/phone.setCallRating
+       * @throws {PhoneSetCallRatingErrors}
+       */
+      setCallRating(params: PhoneSetCallRatingParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * Send phone call debug data to server
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/phone.saveCallDebug
+       * @throws {PhoneSaveCallDebugErrors}
+       */
+      saveCallDebug(params: PhoneSaveCallDebugParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Send VoIP signaling data
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/phone.sendSignalingData
+       * @throws {PhoneSendSignalingDataErrors}
+       */
+      sendSignalingData(params: PhoneSendSignalingDataParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Create a group call or livestream
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/phone.createGroupCall
+       * @throws {PhoneCreateGroupCallErrors}
+       */
+      createGroupCall(params: PhoneCreateGroupCallParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * Join a group call
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/phone.joinGroupCall
+       * @throws {PhoneJoinGroupCallErrors}
+       */
+      joinGroupCall(params: PhoneJoinGroupCallParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * Leave a group call
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/phone.leaveGroupCall
+       * @throws {PhoneLeaveGroupCallErrors}
+       */
+      leaveGroupCall(params: PhoneLeaveGroupCallParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * Invite a set of users to a group call.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/phone.inviteToGroupCall
+       * @throws {PhoneInviteToGroupCallErrors}
+       */
+      inviteToGroupCall(params: PhoneInviteToGroupCallParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * Terminate a group call
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/phone.discardGroupCall
+       * @throws {PhoneDiscardGroupCallErrors}
+       */
+      discardGroupCall(params: PhoneDiscardGroupCallParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * Change group call settings
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/phone.toggleGroupCallSettings
+       * @throws {PhoneToggleGroupCallSettingsErrors}
+       */
+      toggleGroupCallSettings(params: PhoneToggleGroupCallSettingsParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * Get info about a group call
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/phone.getGroupCall
+       * @throws {PhoneGetGroupCallErrors}
+       */
+      getGroupCall(params: PhoneGetGroupCallParams, opts?: ApiCallOptions): Promise<phone.TypeGroupCall>;
+      /**
+       * Get group call participants
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/phone.getGroupParticipants
+       * @throws {PhoneGetGroupParticipantsErrors}
+       */
+      getGroupParticipants(params: PhoneGetGroupParticipantsParams, opts?: ApiCallOptions): Promise<phone.TypeGroupParticipants>;
+      /**
+       * Check whether the group call Server Forwarding Unit is currently receiving the streams with the specified WebRTC source IDs. Returns an intersection of the source IDs specified in sources , and the source IDs currently being forwarded by the SFU.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/phone.checkGroupCall
+       * @throws {PhoneCheckGroupCallErrors}
+       */
+      checkGroupCall(params: PhoneCheckGroupCallParams, opts?: ApiCallOptions): Promise<int[]>;
+      /**
+       * Start or stop recording a group call: the recorded audio and video streams will be automatically sent to Saved messages (the chat with ourselves).
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/phone.toggleGroupCallRecord
+       * @throws {PhoneToggleGroupCallRecordErrors}
+       */
+      toggleGroupCallRecord(params: PhoneToggleGroupCallRecordParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * Edit information about a given group call participant Note: flags .N? Bool parameters can have three possible values:
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/phone.editGroupCallParticipant
+       * @throws {PhoneEditGroupCallParticipantErrors}
+       */
+      editGroupCallParticipant(params: PhoneEditGroupCallParticipantParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * Edit the title of a group call or livestream
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/phone.editGroupCallTitle
+       * @throws {PhoneEditGroupCallTitleErrors}
+       */
+      editGroupCallTitle(params: PhoneEditGroupCallTitleParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * Get a list of peers that can be used to join a group call, presenting yourself as a specific user/channel.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/phone.getGroupCallJoinAs
+       * @throws {PhoneGetGroupCallJoinAsErrors}
+       */
+      getGroupCallJoinAs(params: PhoneGetGroupCallJoinAsParams, opts?: ApiCallOptions): Promise<phone.TypeJoinAsPeers>;
+      /**
+       * Get an invite link for a group call or livestream
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/phone.exportGroupCallInvite
+       * @throws {PhoneExportGroupCallInviteErrors}
+       */
+      exportGroupCallInvite(params: PhoneExportGroupCallInviteParams, opts?: ApiCallOptions): Promise<phone.TypeExportedGroupCallInvite>;
+      /**
+       * Subscribe or unsubscribe to a scheduled group call
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/phone.toggleGroupCallStartSubscription
+       * @throws {PhoneToggleGroupCallStartSubscriptionErrors}
+       */
+      toggleGroupCallStartSubscription(params: PhoneToggleGroupCallStartSubscriptionParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * Start a scheduled group call.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/phone.startScheduledGroupCall
+       * @throws {PhoneStartScheduledGroupCallErrors}
+       */
+      startScheduledGroupCall(params: PhoneStartScheduledGroupCallParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * Set the default peer that will be used to join a group call in a specific dialog.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/phone.saveDefaultGroupCallJoinAs
+       * @throws {PhoneSaveDefaultGroupCallJoinAsErrors}
+       */
+      saveDefaultGroupCallJoinAs(params: PhoneSaveDefaultGroupCallJoinAsParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Start screen sharing in a call
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/phone.joinGroupCallPresentation
+       * @throws {PhoneJoinGroupCallPresentationErrors}
+       */
+      joinGroupCallPresentation(params: PhoneJoinGroupCallPresentationParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * Stop screen sharing in a group call
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/phone.leaveGroupCallPresentation
+       * @throws {PhoneLeaveGroupCallPresentationErrors}
+       */
+      leaveGroupCallPresentation(params: PhoneLeaveGroupCallPresentationParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * Get info about RTMP streams in a group call or livestream. This method should be invoked to the same group/channel-related DC used for downloading livestream chunks . As usual, the media DC is preferred, if available.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/phone.getGroupCallStreamChannels
+       * @throws {PhoneGetGroupCallStreamChannelsErrors}
+       */
+      getGroupCallStreamChannels(params: PhoneGetGroupCallStreamChannelsParams, opts?: ApiCallOptions): Promise<phone.TypeGroupCallStreamChannels>;
+      /**
+       * Get RTMP URL and stream key for RTMP livestreams. Can be used even before creating the actual RTMP livestream with phone.createGroupCall (the rtmp_stream flag must be set).
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/phone.getGroupCallStreamRtmpUrl
+       * @throws {PhoneGetGroupCallStreamRtmpUrlErrors}
+       */
+      getGroupCallStreamRtmpUrl(params: PhoneGetGroupCallStreamRtmpUrlParams, opts?: ApiCallOptions): Promise<phone.TypeGroupCallStreamRtmpUrl>;
+      /**
+       * Save phone call debug information
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/phone.saveCallLog
+       * @throws {PhoneSaveCallLogErrors}
+       */
+      saveCallLog(params: PhoneSaveCallLogParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Create and optionally join a new conference call.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/phone.createConferenceCall
+       * @throws {PhoneCreateConferenceCallErrors}
+       */
+      createConferenceCall(params: PhoneCreateConferenceCallParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * Remove participants from a conference call. Exactly one of the only_left and kick flags must be set.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/phone.deleteConferenceCallParticipants
+       * @throws {PhoneDeleteConferenceCallParticipantsErrors}
+       */
+      deleteConferenceCallParticipants(params: PhoneDeleteConferenceCallParticipantsParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * Broadcast a blockchain block to all members of a conference call, see here » for more info.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/phone.sendConferenceCallBroadcast
+       * @throws {PhoneSendConferenceCallBroadcastErrors}
+       */
+      sendConferenceCallBroadcast(params: PhoneSendConferenceCallBroadcastParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * Invite a user to a conference call.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/phone.inviteConferenceCallParticipant
+       * @throws {PhoneInviteConferenceCallParticipantErrors}
+       */
+      inviteConferenceCallParticipant(params: PhoneInviteConferenceCallParticipantParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * Declines a conference call invite.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/phone.declineConferenceCallInvite
+       * @throws {PhoneDeclineConferenceCallInviteErrors}
+       */
+      declineConferenceCallInvite(params: PhoneDeclineConferenceCallInviteParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * Fetch the blocks of a conference blockchain » .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/phone.getGroupCallChainBlocks
+       * @throws {PhoneGetGroupCallChainBlocksErrors}
+       */
+      getGroupCallChainBlocks(params: PhoneGetGroupCallChainBlocksParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * @see https://core.telegram.org/method/phone.sendGroupCallMessage
+       */
+      sendGroupCallMessage(params: PhoneSendGroupCallMessageParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * @see https://core.telegram.org/method/phone.sendGroupCallEncryptedMessage
+       */
+      sendGroupCallEncryptedMessage(params: PhoneSendGroupCallEncryptedMessageParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * @see https://core.telegram.org/method/phone.deleteGroupCallMessages
+       */
+      deleteGroupCallMessages(params: PhoneDeleteGroupCallMessagesParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * @see https://core.telegram.org/method/phone.deleteGroupCallParticipantMessages
+       */
+      deleteGroupCallParticipantMessages(params: PhoneDeleteGroupCallParticipantMessagesParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * @see https://core.telegram.org/method/phone.getGroupCallStars
+       */
+      getGroupCallStars(params: PhoneGetGroupCallStarsParams, opts?: ApiCallOptions): Promise<phone.TypeGroupCallStars>;
+      /**
+       * @see https://core.telegram.org/method/phone.saveDefaultSendAs
+       */
+      saveDefaultSendAs(params: PhoneSaveDefaultSendAsParams, opts?: ApiCallOptions): Promise<Bool>;
+    };
+    langpack: {
+      /**
+       * Get localization pack strings
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/langpack.getLangPack
+       * @throws {LangpackGetLangPackErrors}
+       */
+      getLangPack(params: LangpackGetLangPackParams, opts?: ApiCallOptions): Promise<Api.TypeLangPackDifference>;
+      /**
+       * Get strings from a language pack
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/langpack.getStrings
+       * @throws {LangpackGetStringsErrors}
+       */
+      getStrings(params: LangpackGetStringsParams, opts?: ApiCallOptions): Promise<Api.TypeLangPackString[]>;
+      /**
+       * Get new strings in language pack
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/langpack.getDifference
+       * @throws {LangpackGetDifferenceErrors}
+       */
+      getDifference(params: LangpackGetDifferenceParams, opts?: ApiCallOptions): Promise<Api.TypeLangPackDifference>;
+      /**
+       * Get information about all languages in a localization pack
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/langpack.getLanguages
+       * @throws {LangpackGetLanguagesErrors}
+       */
+      getLanguages(params: LangpackGetLanguagesParams, opts?: ApiCallOptions): Promise<Api.TypeLangPackLanguage[]>;
+      /**
+       * Get information about a language in a localization pack
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/langpack.getLanguage
+       * @throws {LangpackGetLanguageErrors}
+       */
+      getLanguage(params: LangpackGetLanguageParams, opts?: ApiCallOptions): Promise<Api.TypeLangPackLanguage>;
+    };
+    folders: {
+      /**
+       * Edit peers in peer folder
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/folders.editPeerFolders
+       * @throws {FoldersEditPeerFoldersErrors}
+       */
+      editPeerFolders(params: FoldersEditPeerFoldersParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+    };
+    stats: {
+      /**
+       * Get channel statistics
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/stats.getBroadcastStats
+       * @throws {StatsGetBroadcastStatsErrors}
+       */
+      getBroadcastStats(params: StatsGetBroadcastStatsParams, opts?: ApiCallOptions): Promise<stats.TypeBroadcastStats>;
+      /**
+       * Load channel statistics graph asynchronously
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/stats.loadAsyncGraph
+       * @throws {StatsLoadAsyncGraphErrors}
+       */
+      loadAsyncGraph(params: StatsLoadAsyncGraphParams, opts?: ApiCallOptions): Promise<Api.TypeStatsGraph>;
+      /**
+       * Get supergroup statistics
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/stats.getMegagroupStats
+       * @throws {StatsGetMegagroupStatsErrors}
+       */
+      getMegagroupStats(params: StatsGetMegagroupStatsParams, opts?: ApiCallOptions): Promise<stats.TypeMegagroupStats>;
+      /**
+       * Obtains a list of messages, indicating to which other public channels was a channel message forwarded. Will return a list of messages with peer_id equal to the public channel to which this message was forwarded.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/stats.getMessagePublicForwards
+       * @throws {StatsGetMessagePublicForwardsErrors}
+       */
+      getMessagePublicForwards(params: StatsGetMessagePublicForwardsParams, opts?: ApiCallOptions): Promise<stats.TypePublicForwards>;
+      /**
+       * Get message statistics
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/stats.getMessageStats
+       * @throws {StatsGetMessageStatsErrors}
+       */
+      getMessageStats(params: StatsGetMessageStatsParams, opts?: ApiCallOptions): Promise<stats.TypeMessageStats>;
+      /**
+       * Get statistics for a certain story .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/stats.getStoryStats
+       * @throws {StatsGetStoryStatsErrors}
+       */
+      getStoryStats(params: StatsGetStoryStatsParams, opts?: ApiCallOptions): Promise<stats.TypeStoryStats>;
+      /**
+       * Obtain forwards of a story as a message to public chats and reposts by public channels.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/stats.getStoryPublicForwards
+       * @throws {StatsGetStoryPublicForwardsErrors}
+       */
+      getStoryPublicForwards(params: StatsGetStoryPublicForwardsParams, opts?: ApiCallOptions): Promise<stats.TypePublicForwards>;
+      /**
+       * @see https://core.telegram.org/method/stats.getPollStats
+       */
+      getPollStats(params: StatsGetPollStatsParams, opts?: ApiCallOptions): Promise<stats.TypePollStats>;
+    };
+    chatlists: {
+      /**
+       * Export a folder » , creating a chat folder deep link » .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/chatlists.exportChatlistInvite
+       * @throws {ChatlistsExportChatlistInviteErrors}
+       */
+      exportChatlistInvite(params: ChatlistsExportChatlistInviteParams, opts?: ApiCallOptions): Promise<chatlists.TypeExportedChatlistInvite>;
+      /**
+       * Delete a previously created chat folder deep link » .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/chatlists.deleteExportedInvite
+       * @throws {ChatlistsDeleteExportedInviteErrors}
+       */
+      deleteExportedInvite(params: ChatlistsDeleteExportedInviteParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Edit a chat folder deep link » .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/chatlists.editExportedInvite
+       * @throws {ChatlistsEditExportedInviteErrors}
+       */
+      editExportedInvite(params: ChatlistsEditExportedInviteParams, opts?: ApiCallOptions): Promise<Api.TypeExportedChatlistInvite>;
+      /**
+       * List all chat folder deep links » associated to a folder
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/chatlists.getExportedInvites
+       * @throws {ChatlistsGetExportedInvitesErrors}
+       */
+      getExportedInvites(params: ChatlistsGetExportedInvitesParams, opts?: ApiCallOptions): Promise<chatlists.TypeExportedInvites>;
+      /**
+       * Obtain information about a chat folder deep link » .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/chatlists.checkChatlistInvite
+       * @throws {ChatlistsCheckChatlistInviteErrors}
+       */
+      checkChatlistInvite(params: ChatlistsCheckChatlistInviteParams, opts?: ApiCallOptions): Promise<chatlists.TypeChatlistInvite>;
+      /**
+       * Import a chat folder deep link » , joining some or all the chats in the folder.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/chatlists.joinChatlistInvite
+       * @throws {ChatlistsJoinChatlistInviteErrors}
+       */
+      joinChatlistInvite(params: ChatlistsJoinChatlistInviteParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * Fetch new chats associated with an imported chat folder deep link » . Must be invoked at most every chatlist_update_period seconds (as per the related client configuration parameter » ).
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/chatlists.getChatlistUpdates
+       * @throws {ChatlistsGetChatlistUpdatesErrors}
+       */
+      getChatlistUpdates(params: ChatlistsGetChatlistUpdatesParams, opts?: ApiCallOptions): Promise<chatlists.TypeChatlistUpdates>;
+      /**
+       * Join channels and supergroups recently added to a chat folder deep link » .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/chatlists.joinChatlistUpdates
+       * @throws {ChatlistsJoinChatlistUpdatesErrors}
+       */
+      joinChatlistUpdates(params: ChatlistsJoinChatlistUpdatesParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * Dismiss new pending peers recently added to a chat folder deep link » .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/chatlists.hideChatlistUpdates
+       * @throws {ChatlistsHideChatlistUpdatesErrors}
+       */
+      hideChatlistUpdates(params: ChatlistsHideChatlistUpdatesParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Returns identifiers of pinned or always included chats from a chat folder imported using a chat folder deep link » , which are suggested to be left when the chat folder is deleted.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/chatlists.getLeaveChatlistSuggestions
+       * @throws {ChatlistsGetLeaveChatlistSuggestionsErrors}
+       */
+      getLeaveChatlistSuggestions(params: ChatlistsGetLeaveChatlistSuggestionsParams, opts?: ApiCallOptions): Promise<Api.TypePeer[]>;
+      /**
+       * Delete a folder imported using a chat folder deep link »
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/chatlists.leaveChatlist
+       * @throws {ChatlistsLeaveChatlistErrors}
+       */
+      leaveChatlist(params: ChatlistsLeaveChatlistParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+    };
+    stories: {
+      /**
+       * Check whether we can post stories as the specified peer.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/stories.canSendStory
+       * @throws {StoriesCanSendStoryErrors}
+       */
+      canSendStory(params: StoriesCanSendStoryParams, opts?: ApiCallOptions): Promise<stories.TypeCanSendStoryCount>;
+      /**
+       * Uploads a Telegram Story . May also be used in a business connection , not by wrapping the query in invokeWithBusinessConnection » , but rather by specifying the ID of a controlled business user in peer .
+       * @see https://core.telegram.org/method/stories.sendStory
+       * @throws {StoriesSendStoryErrors}
+       */
+      sendStory(params: StoriesSendStoryParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * Edit an uploaded story May also be used in a business connection , not by wrapping the query in invokeWithBusinessConnection » , but rather by specifying the ID of a controlled business user in peer : in this context, the method can only be used to edit stories posted by the same business bot on behalf of the user with stories.sendStory .
+       * @see https://core.telegram.org/method/stories.editStory
+       * @throws {StoriesEditStoryErrors}
+       */
+      editStory(params: StoriesEditStoryParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * Deletes some posted stories .
+       * @remarks user-only (bots rejected) · works over a business connection
+       * @see https://core.telegram.org/method/stories.deleteStories
+       * @throws {StoriesDeleteStoriesErrors}
+       */
+      deleteStories(params: StoriesDeleteStoriesParams, opts?: ApiCallOptions): Promise<int[]>;
+      /**
+       * Pin or unpin one or more stories
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/stories.togglePinned
+       * @throws {StoriesTogglePinnedErrors}
+       */
+      togglePinned(params: StoriesTogglePinnedParams, opts?: ApiCallOptions): Promise<int[]>;
+      /**
+       * Fetch the List of active (or active and hidden) stories, see here » for more info on watching stories.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/stories.getAllStories
+       * @throws {StoriesGetAllStoriesErrors}
+       */
+      getAllStories(params: StoriesGetAllStoriesParams, opts?: ApiCallOptions): Promise<stories.TypeAllStories>;
+      /**
+       * Fetch the stories pinned on a peer's profile.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/stories.getPinnedStories
+       * @throws {StoriesGetPinnedStoriesErrors}
+       */
+      getPinnedStories(params: StoriesGetPinnedStoriesParams, opts?: ApiCallOptions): Promise<stories.TypeStories>;
+      /**
+       * Fetch the story archive » of a peer we control.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/stories.getStoriesArchive
+       * @throws {StoriesGetStoriesArchiveErrors}
+       */
+      getStoriesArchive(params: StoriesGetStoriesArchiveParams, opts?: ApiCallOptions): Promise<stories.TypeStories>;
+      /**
+       * Obtain full info about a set of stories by their IDs.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/stories.getStoriesByID
+       * @throws {StoriesGetStoriesByIDErrors}
+       */
+      getStoriesByID(params: StoriesGetStoriesByIDParams, opts?: ApiCallOptions): Promise<stories.TypeStories>;
+      /**
+       * Hide the active stories of a specific peer, preventing them from being displayed on the action bar on the homescreen.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/stories.toggleAllStoriesHidden
+       * @throws {StoriesToggleAllStoriesHiddenErrors}
+       */
+      toggleAllStoriesHidden(params: StoriesToggleAllStoriesHiddenParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Mark all stories up to a certain ID as read, for a given peer; will emit an updateReadStories update to all logged-in sessions.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/stories.readStories
+       * @throws {StoriesReadStoriesErrors}
+       */
+      readStories(params: StoriesReadStoriesParams, opts?: ApiCallOptions): Promise<int[]>;
+      /**
+       * Increment the view counter of one or more stories.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/stories.incrementStoryViews
+       * @throws {StoriesIncrementStoryViewsErrors}
+       */
+      incrementStoryViews(params: StoriesIncrementStoryViewsParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Obtain the list of users that have viewed a specific story we posted
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/stories.getStoryViewsList
+       * @throws {StoriesGetStoryViewsListErrors}
+       */
+      getStoryViewsList(params: StoriesGetStoryViewsListParams, opts?: ApiCallOptions): Promise<stories.TypeStoryViewsList>;
+      /**
+       * Obtain info about the view count, forward count, reactions and recent viewers of one or more stories .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/stories.getStoriesViews
+       * @throws {StoriesGetStoriesViewsErrors}
+       */
+      getStoriesViews(params: StoriesGetStoriesViewsParams, opts?: ApiCallOptions): Promise<stories.TypeStoryViews>;
+      /**
+       * Generate a story deep link for a specific story
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/stories.exportStoryLink
+       * @throws {StoriesExportStoryLinkErrors}
+       */
+      exportStoryLink(params: StoriesExportStoryLinkParams, opts?: ApiCallOptions): Promise<Api.TypeExportedStoryLink>;
+      /**
+       * Report a story.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/stories.report
+       * @throws {StoriesReportErrors}
+       */
+      report(params: StoriesReportParams, opts?: ApiCallOptions): Promise<Api.TypeReportResult>;
+      /**
+       * Activates stories stealth mode , see here » for more info. Will return an updateStoriesStealthMode .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/stories.activateStealthMode
+       * @throws {StoriesActivateStealthModeErrors}
+       */
+      activateStealthMode(params: StoriesActivateStealthModeParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * React to a story.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/stories.sendReaction
+       * @throws {StoriesSendReactionErrors}
+       */
+      sendReaction(params: StoriesSendReactionParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * Fetch the full active story list of a specific peer.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/stories.getPeerStories
+       * @throws {StoriesGetPeerStoriesErrors}
+       */
+      getPeerStories(params: StoriesGetPeerStoriesParams, opts?: ApiCallOptions): Promise<stories.TypePeerStories>;
+      /**
+       * Obtain the latest read story ID for all peers when first logging in, returned as a list of updateReadStories updates, see here » for more info.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/stories.getAllReadPeerStories
+       * @throws {StoriesGetAllReadPeerStoriesErrors}
+       */
+      getAllReadPeerStories(opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      /**
+       * Get the IDs of the maximum read stories for a set of peers.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/stories.getPeerMaxIDs
+       * @throws {StoriesGetPeerMaxIDsErrors}
+       */
+      getPeerMaxIDs(params: StoriesGetPeerMaxIDsParams, opts?: ApiCallOptions): Promise<Api.TypeRecentStory[]>;
+      /**
+       * Obtain a list of channels where the user can post stories
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/stories.getChatsToSend
+       * @throws {StoriesGetChatsToSendErrors}
+       */
+      getChatsToSend(opts?: ApiCallOptions): Promise<messages.TypeChats>;
+      /**
+       * Hide the active stories of a user, preventing them from being displayed on the action bar on the homescreen, see here » for more info.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/stories.togglePeerStoriesHidden
+       * @throws {StoriesTogglePeerStoriesHiddenErrors}
+       */
+      togglePeerStoriesHidden(params: StoriesTogglePeerStoriesHiddenParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Get the reaction and interaction list of a story posted to a channel, along with the sender of each reaction. Can only be used by channel admins.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/stories.getStoryReactionsList
+       * @throws {StoriesGetStoryReactionsListErrors}
+       */
+      getStoryReactionsList(params: StoriesGetStoryReactionsListParams, opts?: ApiCallOptions): Promise<stories.TypeStoryReactionsList>;
+      /**
+       * Pin some stories to the top of the profile, see here » for more info.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/stories.togglePinnedToTop
+       * @throws {StoriesTogglePinnedToTopErrors}
+       */
+      togglePinnedToTop(params: StoriesTogglePinnedToTopParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Globally search for stories using a hashtag or a location media area , see here » for more info on the full flow. Either hashtag or area must be set when invoking the method.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/stories.searchPosts
+       * @throws {StoriesSearchPostsErrors}
+       */
+      searchPosts(params: StoriesSearchPostsParams, opts?: ApiCallOptions): Promise<stories.TypeFoundStories>;
+      /**
+       * Creates a story album .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/stories.createAlbum
+       * @throws {StoriesCreateAlbumErrors}
+       */
+      createAlbum(params: StoriesCreateAlbumParams, opts?: ApiCallOptions): Promise<Api.TypeStoryAlbum>;
+      /**
+       * Rename a story albums » , or add, delete or reorder stories in it.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/stories.updateAlbum
+       * @throws {StoriesUpdateAlbumErrors}
+       */
+      updateAlbum(params: StoriesUpdateAlbumParams, opts?: ApiCallOptions): Promise<Api.TypeStoryAlbum>;
+      /**
+       * Reorder story albums on a profile » .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/stories.reorderAlbums
+       * @throws {StoriesReorderAlbumsErrors}
+       */
+      reorderAlbums(params: StoriesReorderAlbumsParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Delete a story album .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/stories.deleteAlbum
+       * @throws {StoriesDeleteAlbumErrors}
+       */
+      deleteAlbum(params: StoriesDeleteAlbumParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Get story albums created by a peer.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/stories.getAlbums
+       * @throws {StoriesGetAlbumsErrors}
+       */
+      getAlbums(params: StoriesGetAlbumsParams, opts?: ApiCallOptions): Promise<stories.TypeAlbums>;
+      /**
+       * Get stories in a story album » .
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/stories.getAlbumStories
+       * @throws {StoriesGetAlbumStoriesErrors}
+       */
+      getAlbumStories(params: StoriesGetAlbumStoriesParams, opts?: ApiCallOptions): Promise<stories.TypeStories>;
+      /**
+       * @see https://core.telegram.org/method/stories.startLive
+       */
+      startLive(params: StoriesStartLiveParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+    };
+    premium: {
+      /**
+       * Obtains info about the boosts that were applied to a certain channel or supergroup (admins only)
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/premium.getBoostsList
+       * @throws {PremiumGetBoostsListErrors}
+       */
+      getBoostsList(params: PremiumGetBoostsListParams, opts?: ApiCallOptions): Promise<premium.TypeBoostsList>;
+      /**
+       * Obtain which peers are we currently boosting , and how many boost slots we have left.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/premium.getMyBoosts
+       * @throws {PremiumGetMyBoostsErrors}
+       */
+      getMyBoosts(opts?: ApiCallOptions): Promise<premium.TypeMyBoosts>;
+      /**
+       * Apply one or more boosts » to a peer.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/premium.applyBoost
+       * @throws {PremiumApplyBoostErrors}
+       */
+      applyBoost(params: PremiumApplyBoostParams, opts?: ApiCallOptions): Promise<premium.TypeMyBoosts>;
+      /**
+       * Gets the current number of boosts of a channel/supergroup.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/premium.getBoostsStatus
+       * @throws {PremiumGetBoostsStatusErrors}
+       */
+      getBoostsStatus(params: PremiumGetBoostsStatusParams, opts?: ApiCallOptions): Promise<premium.TypeBoostsStatus>;
+      /**
+       * Returns the lists of boost that were applied to a channel/supergroup by a specific user (admins only)
+       * @see https://core.telegram.org/method/premium.getUserBoosts
+       * @throws {PremiumGetUserBoostsErrors}
+       */
+      getUserBoosts(params: PremiumGetUserBoostsParams, opts?: ApiCallOptions): Promise<premium.TypeBoostsList>;
+    };
+    smsjobs: {
+      /**
+       * Check if we can process SMS jobs (official clients only).
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/smsjobs.isEligibleToJoin
+       * @throws {SmsjobsIsEligibleToJoinErrors}
+       */
+      isEligibleToJoin(opts?: ApiCallOptions): Promise<smsjobs.TypeEligibilityToJoin>;
+      /**
+       * Enable SMS jobs (official clients only).
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/smsjobs.join
+       * @throws {SmsjobsJoinErrors}
+       */
+      join(opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Disable SMS jobs (official clients only).
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/smsjobs.leave
+       * @throws {SmsjobsLeaveErrors}
+       */
+      leave(opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Update SMS job settings (official clients only).
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/smsjobs.updateSettings
+       * @throws {SmsjobsUpdateSettingsErrors}
+       */
+      updateSettings(params: SmsjobsUpdateSettingsParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * Get SMS jobs status (official clients only).
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/smsjobs.getStatus
+       * @throws {SmsjobsGetStatusErrors}
+       */
+      getStatus(opts?: ApiCallOptions): Promise<smsjobs.TypeStatus>;
+      /**
+       * Get info about an SMS job (official clients only).
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/smsjobs.getSmsJob
+       * @throws {SmsjobsGetSmsJobErrors}
+       */
+      getSmsJob(params: SmsjobsGetSmsJobParams, opts?: ApiCallOptions): Promise<Api.TypeSmsJob>;
+      /**
+       * Finish an SMS job (official clients only).
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/smsjobs.finishJob
+       * @throws {SmsjobsFinishJobErrors}
+       */
+      finishJob(params: SmsjobsFinishJobParams, opts?: ApiCallOptions): Promise<Bool>;
+    };
+    fragment: {
+      /**
+       * Fetch information about a fragment collectible, see here » for more info on the full flow.
+       * @remarks user-only (bots rejected)
+       * @see https://core.telegram.org/method/fragment.getCollectibleInfo
+       * @throws {FragmentGetCollectibleInfoErrors}
+       */
+      getCollectibleInfo(params: FragmentGetCollectibleInfoParams, opts?: ApiCallOptions): Promise<fragment.TypeCollectibleInfo>;
+    };
+    aicompose: {
+      /**
+       * @see https://core.telegram.org/method/aicompose.createTone
+       */
+      createTone(params: AicomposeCreateToneParams, opts?: ApiCallOptions): Promise<Api.TypeAiComposeTone>;
+      /**
+       * @see https://core.telegram.org/method/aicompose.updateTone
+       */
+      updateTone(params: AicomposeUpdateToneParams, opts?: ApiCallOptions): Promise<Api.TypeAiComposeTone>;
+      /**
+       * @see https://core.telegram.org/method/aicompose.saveTone
+       */
+      saveTone(params: AicomposeSaveToneParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * @see https://core.telegram.org/method/aicompose.deleteTone
+       */
+      deleteTone(params: AicomposeDeleteToneParams, opts?: ApiCallOptions): Promise<Bool>;
+      /**
+       * @see https://core.telegram.org/method/aicompose.getTone
+       */
+      getTone(params: AicomposeGetToneParams, opts?: ApiCallOptions): Promise<aicompose.TypeTones>;
+      /**
+       * @see https://core.telegram.org/method/aicompose.getTones
+       */
+      getTones(params: AicomposeGetTonesParams, opts?: ApiCallOptions): Promise<aicompose.TypeTones>;
+      /**
+       * @see https://core.telegram.org/method/aicompose.getToneExample
+       */
+      getToneExample(params: AicomposeGetToneExampleParams, opts?: ApiCallOptions): Promise<Api.TypeAiComposeToneExample>;
+    };
   }
   export type TypeEntityLike = EntityLike;
   export type TypeInputPeer = InputPeerEmpty | InputPeerSelf | InputPeerChat | InputPeerUser | InputPeerChannel | InputPeerUserFromMessage | InputPeerChannelFromMessage;

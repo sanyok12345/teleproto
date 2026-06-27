@@ -1,54 +1,55 @@
 {
-  "name": "teleproto",
-  "version": "1.227.1",
-  "description": "Telegram MTProto API client library written in TypeScript",
-  "main": "index.js",
-  "types": "index.d.ts",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/sanyok12345/teleproto.git"
-  },
-  "scripts": {
-    "clean": "rm -rf dist",
-    "build": "tsc -p tsconfig.json && cp teleproto/tl/generated/api.js dist/tl/generated/api.js && cp teleproto/tl/generated/api.d.ts dist/tl/generated/api.d.ts",
-    "typecheck": "tsc --noEmit",
-    "generate:tl": "ts-node --transpile-only teleproto_generator/generate.ts",
-    "generate:errors": "ts-node --transpile-only teleproto_generator/generate-errors.ts",
-    "generate": "npm run generate:tl && npm run generate:errors",
-    "publish:dist-manifest": "node -e \"const fs=require('fs');const pkg=require('./package.json');const out={name:pkg.name,version:pkg.version,description:pkg.description,main:pkg.main,types:pkg.types,repository:pkg.repository,license:pkg.license,bugs:pkg.bugs,keywords:pkg.keywords,homepage:pkg.homepage,dependencies:pkg.dependencies};fs.writeFileSync('dist/package.json',JSON.stringify(out,null,2)+'\\n');\"",
-    "publish:prepare": "npm run clean && npm run generate:tl && npm run generate:errors && npm run build && npm run typecheck && npm run publish:dist-manifest && cp README.md LICENSE dist/ && cp teleproto/define.d.ts dist/define.d.ts && cp teleproto/tl/generated/api.js dist/tl/generated/api.js && cp teleproto/tl/generated/api.d.ts dist/tl/generated/api.d.ts && rm -f dist/tsconfig.tsbuildinfo",
-    "publish:check": "npm run publish:prepare && npm pack ./dist --dry-run",
-    "publish:latest": "npm run publish:prepare && npm publish ./dist --tag latest",
-    "publishOnly": "npm run publish:latest",
-    "docs": "typedoc"
-  },
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/sanyok12345/teleproto/issues"
-  },
-  "keywords": [
-    "telegram",
-    "mtproto",
-    "userbot",
-    "typescript",
-    "nodejs"
-  ],
-  "homepage": "https://docs.teleproto.dev",
-  "devDependencies": {
-    "@types/mime": "^2.0.3",
-    "@types/node": "^22.15.18",
-    "@types/node-localstorage": "^1.3.0",
-    "ts-node": "^9.1.1",
-    "typedoc": "^0.28.7",
-    "typescript": "^5.8.3"
-  },
-  "dependencies": {
-    "async-mutex": "^0.3.0",
-    "big-integer": "^1.6.48",
-    "mime": "^3.0.0",
-    "node-localstorage": "^2.2.1",
-    "socks": "^2.6.2",
-    "store2": "^2.13.0",
-    "ts-custom-error": "^3.2.0"
-  }
+    "name": "teleproto",
+    "version": "1.227.1",
+    "description": "Telegram MTProto API client library written in TypeScript",
+    "main": "index.js",
+    "types": "index.d.ts",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/sanyok12345/teleproto.git"
+    },
+    "scripts": {
+        "clean": "rm -rf dist",
+        "build": "tsc -p tsconfig.json && cp teleproto/tl/generated/api.js dist/tl/generated/api.js && cp teleproto/tl/generated/api.d.ts dist/tl/generated/api.d.ts",
+        "typecheck": "tsc --noEmit",
+        "generate:tl": "ts-node --transpile-only teleproto_generator/generate.ts",
+        "generate:errors": "ts-node --transpile-only teleproto_generator/generate-errors.ts",
+        "generate:docs": "ts-node --transpile-only teleproto_generator/harvest-docs.ts",
+        "generate": "npm run generate:tl && npm run generate:errors",
+        "publish:dist-manifest": "node -e \"const fs=require('fs');const pkg=require('./package.json');const out={name:pkg.name,version:pkg.version,description:pkg.description,main:pkg.main,types:pkg.types,repository:pkg.repository,license:pkg.license,bugs:pkg.bugs,keywords:pkg.keywords,homepage:pkg.homepage,dependencies:pkg.dependencies};fs.writeFileSync('dist/package.json',JSON.stringify(out,null,2)+'\\n');\"",
+        "publish:prepare": "npm run clean && npm run generate:tl && npm run generate:errors && npm run build && npm run typecheck && npm run publish:dist-manifest && cp README.md LICENSE dist/ && cp teleproto/define.d.ts dist/define.d.ts && cp teleproto/tl/generated/api.js dist/tl/generated/api.js && cp teleproto/tl/generated/api.d.ts dist/tl/generated/api.d.ts && rm -f dist/tsconfig.tsbuildinfo",
+        "publish:check": "npm run publish:prepare && npm pack ./dist --dry-run",
+        "publish:latest": "npm run publish:prepare && npm publish ./dist --tag latest",
+        "publishOnly": "npm run publish:latest",
+        "docs": "typedoc"
+    },
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/sanyok12345/teleproto/issues"
+    },
+    "keywords": [
+        "telegram",
+        "mtproto",
+        "userbot",
+        "typescript",
+        "nodejs"
+    ],
+    "homepage": "https://docs.teleproto.dev",
+    "devDependencies": {
+        "@types/mime": "^2.0.3",
+        "@types/node": "^22.15.18",
+        "@types/node-localstorage": "^1.3.0",
+        "ts-node": "^9.1.1",
+        "typedoc": "^0.28.7",
+        "typescript": "^5.8.3"
+    },
+    "dependencies": {
+        "async-mutex": "^0.3.0",
+        "big-integer": "^1.6.48",
+        "mime": "^3.0.0",
+        "node-localstorage": "^2.2.1",
+        "socks": "^2.6.2",
+        "store2": "^2.13.0",
+        "ts-custom-error": "^3.2.0"
+    }
 }

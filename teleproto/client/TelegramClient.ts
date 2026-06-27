@@ -21,6 +21,7 @@ import * as dialogMethods from "./dialogs";
 import * as twoFA from "./2fa";
 import type { ButtonLike, Entity, EntityLike, MessageIDLike } from "../define";
 import { Api } from "../tl";
+import { createApiProxy } from "../tl/runtime/apiProxy";
 import { HTMLParser } from "../extensions/html";
 import { MarkdownParser } from "../extensions/markdown";
 import { MarkdownV2Parser } from "../extensions/markdownv2";
@@ -1430,6 +1431,33 @@ export class TelegramClient extends TelegramBaseClient {
         sender?: MTProtoSender
     ): Promise<R["__response"]> {
         return userMethods.invoke(this, request, undefined, sender);
+    }
+
+    private _apiProxy?: Api.ApiFacade;
+
+    /**
+     * Typed 1:1 facade over the raw MTProto methods.
+     *
+     * Call `client.api.messages.getDialogs({ limit: 10 })` instead of
+     * `client.invoke(new Api.messages.GetDialogs({ limit: 10 }))` — no `new`,
+     * no manual `invoke`, with full autocomplete and strict typing (including
+     * the return type) generated straight from the schema.
+     *
+     * @example
+     * ```ts
+     * const dialogs = await client.api.messages.getDialogs({ limit: 10 });
+     * const full = await client.api.users.getFullUser({ id: "me" });
+     * ```
+     */
+    get api(): Api.ApiFacade {
+        if (!this._apiProxy) {
+            this._apiProxy = createApiProxy(
+                Api as unknown as Record<string, unknown>,
+                (request, dcId) =>
+                    this.invoke(request as Api.AnyRequest, dcId)
+            ) as Api.ApiFacade;
+        }
+        return this._apiProxy;
     }
 
     /**

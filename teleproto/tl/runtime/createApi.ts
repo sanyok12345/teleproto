@@ -7,6 +7,14 @@ import {
 } from "../../Helpers";
 import { serializeBytes, serializeDate } from "./helpers";
 
+const INSPECT_CUSTOM = Symbol.for("nodejs.util.inspect.custom");
+
+function lowerFirst(value: string): string {
+    return value ? `${value[0].toLowerCase()}${value.slice(1)}` : value;
+}
+
+type TlConstructor = new (args?: Record<string, unknown>) => unknown;
+
 type PrimitiveArgType =
     | "int"
     | "long"
@@ -232,6 +240,43 @@ function createClasses(
     const classes: Record<string, unknown> = {};
     const { getArgFromReader } = helpers;
 
+    const byTag = new Map<string, TlConstructor>(); // "inputPeerUser" -> class
+    const byResult = new Map<string, TlConstructor[]>(); // "InputPeer" -> [classes]
+
+    function coerce(value: unknown, expectedType: string | null): unknown {
+        if (
+            !value ||
+            typeof value !== "object" ||
+            Array.isArray(value) ||
+            typeof (value as { getBytes?: unknown }).getBytes === "function"
+        ) {
+            return value;
+        }
+
+        let Cls: TlConstructor | undefined;
+        const tag = (value as { _?: string })._;
+        if (tag) {
+            Cls = byTag.get(tag);
+            if (!Cls) {
+                throw new Error(`Unknown TL "_" tag: ${JSON.stringify(tag)}`);
+            }
+        } else if (expectedType) {
+            const candidates = byResult.get(expectedType);
+            if (candidates && candidates.length === 1) {
+                Cls = candidates[0];
+            } else if (candidates && candidates.length > 1) {
+                throw new Error(
+                    `Ambiguous type "${expectedType}" — add "_" to pick a constructor ` +
+                        `(one of: ${candidates
+                            .map((c) => (c as { className?: string }).className)
+                            .join(", ")})`
+                );
+            }
+        }
+
+        return Cls ? new Cls(value as Record<string, unknown>) : value;
+    }
+
     for (const classParams of params) {
         const {
             name,
@@ -320,6 +365,35 @@ function createClasses(
                 const constructorBuffer = Buffer.alloc(4);
                 constructorBuffer.writeUInt32LE(this.CONSTRUCTOR_ID, 0);
                 const buffers: Buffer[] = [constructorBuffer];
+
+                for (const arg in argsConfig) {
+                    if (!Object.prototype.hasOwnProperty.call(argsConfig, arg)) {
+                        continue;
+                    }
+                    const cfg = argsConfig[arg];
+                    if (cfg.flagIndicator) {
+                        continue;
+                    }
+                    const value = (this as Record<string, unknown>)[arg];
+                    if (!value || typeof value !== "object") {
+                        continue;
+                    }
+                    if (cfg.isVector) {
+                        if (Array.isArray(value)) {
+                            (this as Record<string, unknown>)[arg] = value.map(
+                                (item) => coerce(item, cfg.type)
+                            );
+                        }
+                    } else if (
+                        typeof (value as { getBytes?: unknown }).getBytes !==
+                        "function"
+                    ) {
+                        (this as Record<string, unknown>)[arg] = coerce(
+                            value,
+                            cfg.type
+                        );
+                    }
+                }
 
                 for (const arg in argsConfig) {
                     if (!Object.prototype.hasOwnProperty.call(argsConfig, arg)) {
@@ -489,6 +563,39 @@ function createClasses(
                 return { ...this.originalArgs, className: fullName };
             }
         }
+
+        Object.defineProperty(VirtualClass, "name", {
+            value: fullName,
+            configurable: true,
+        });
+
+        const tag = namespace ? `${namespace}.${lowerFirst(name)}` : lowerFirst(name);
+        byTag.set(tag, VirtualClass as TlConstructor);
+        const sameResult = byResult.get(result);
+        if (sameResult) {
+            sameResult.push(VirtualClass as TlConstructor);
+        } else {
+            byResult.set(result, [VirtualClass as TlConstructor]);
+        }
+
+        (VirtualClass.prototype as unknown as Record<symbol, unknown>)[INSPECT_CUSTOM] =
+            function (
+                this: Record<string, unknown>,
+                _depth: number,
+                options: unknown,
+                inspect?: (value: unknown, opts: unknown) => string
+            ): string {
+                const view: Record<string, unknown> = {};
+                for (const argName in argsConfig) {
+                    const value = this[argName];
+                    if (value === null || value === undefined) continue;
+                    view[argName] = value;
+                }
+                const render =
+                    inspect ||
+                    ((value: unknown): string => JSON.stringify(value));
+                return `${fullName} ${render(view, options)}`;
+            };
 
         if (namespace) {
             if (!classes[namespace]) {

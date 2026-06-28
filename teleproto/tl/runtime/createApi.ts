@@ -105,6 +105,11 @@ function argToBytes(
     argName: string,
     requestName?: string
 ): Buffer {
+    if (value == null && type !== "true" && type !== "Bool") {
+        throw new Error(
+            `Required field "${argName}" of ${requestName || "request"} is missing`
+        );
+    }
     switch (type as PrimitiveArgType) {
         case "int": {
             const intBuffer = Buffer.alloc(4);
@@ -361,11 +366,7 @@ function createClasses(
                 return new this(args);
             }
 
-            getBytes(): Buffer {
-                const constructorBuffer = Buffer.alloc(4);
-                constructorBuffer.writeUInt32LE(this.CONSTRUCTOR_ID, 0);
-                const buffers: Buffer[] = [constructorBuffer];
-
+            _coerceArgs(): void {
                 for (const arg in argsConfig) {
                     if (!Object.prototype.hasOwnProperty.call(argsConfig, arg)) {
                         continue;
@@ -394,6 +395,13 @@ function createClasses(
                         );
                     }
                 }
+            }
+
+            getBytes(): Buffer {
+                this._coerceArgs();
+                const constructorBuffer = Buffer.alloc(4);
+                constructorBuffer.writeUInt32LE(this.CONSTRUCTOR_ID, 0);
+                const buffers: Buffer[] = [constructorBuffer];
 
                 for (const arg in argsConfig) {
                     if (!Object.prototype.hasOwnProperty.call(argsConfig, arg)) {
@@ -516,6 +524,8 @@ function createClasses(
                 if (!isFunction) {
                     throw new Error("`resolve()` called for non-request instance");
                 }
+
+                this._coerceArgs();
 
                 for (const arg in argsConfig) {
                     if (!Object.prototype.hasOwnProperty.call(argsConfig, arg)) {

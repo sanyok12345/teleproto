@@ -657,7 +657,14 @@ export class CustomMessage extends SenderGetter {
                 bot = this._neededMarkupBot();
             } catch (e) {
                 await this._reloadMessage();
-                bot = this._neededMarkupBot();
+                try {
+                    bot = this._neededMarkupBot();
+                } catch (err) {
+                    bot = this.viaBotId
+                        ? await this.client!.getInputEntity(this.viaBotId)
+                        : await this.getInputSender();
+                    if (!bot) throw err;
+                }
             }
             this._setButtons(chat, bot);
         }

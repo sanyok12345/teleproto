@@ -13,6 +13,7 @@ import { Api } from "../tl";
 import os from "os";
 import type { AuthKey } from "../crypto/AuthKey";
 import { EntityCache } from "../entityCache";
+import type { EntityCacheOptions } from "../entityCache";
 import type { ParseInterface } from "./messageParse";
 import type { EventBuilder } from "../events/common";
 import { MarkdownParser } from "../extensions/markdown";
@@ -197,6 +198,15 @@ export interface TelegramClientParams {
      * 128 KB parts, 15 s idle release. See {@link FilePoolOptions}.
      */
     downloadPool?: Partial<FilePoolOptions>;
+    /**
+     * Bounds the in-memory entity cache (the hot working set of resolved
+     * peers; the session remains the storage tier).
+     *
+     * omitted / `true` - default limit (4096 peers per user/chat segment);
+     * `false` - disabled, peers are resolved straight from the session store;
+     * `{ max?, ttl? }` - explicit policy, `ttl` in milliseconds, `{ max: 0 }` for an unbounded cache.
+     */
+    entityCache?: EntityCacheOptions;
 }
 
 const clientParamsDefault = {
@@ -380,7 +390,7 @@ export abstract class TelegramBaseClient {
         this._bot = undefined;
         this._selfInputPeer = undefined;
         this._securityChecks = !!clientParams.securityChecks;
-        this._entityCache = new EntityCache();
+        this._entityCache = new EntityCache(clientParams.entityCache);
         this._config = undefined;
         this._loopStarted = false;
         this._reconnecting = false;
@@ -396,6 +406,15 @@ export abstract class TelegramBaseClient {
             idleTimeoutMs: API_SENDER_IDLE_TIMEOUT_MS,
         });
         this._filePool = new FilePool(this, clientParams.downloadPool);
+    }
+
+    /**
+     * The in-memory entity cache. Exposes `size`, `has`, `delete` and
+     * `clear` so stale peers can be invalidated without touching internals.
+     * See {@link TelegramClientParams.entityCache} for bounding it.
+     */
+    get entityCache(): EntityCache {
+        return this._entityCache;
     }
 
     get floodSleepThreshold() {

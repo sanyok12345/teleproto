@@ -157,7 +157,9 @@ export abstract class Session {
     /**
      * Processes the input ``TLObject`` or ``list`` and saves
      * whatever information is relevant (e.g., ID or access hash).
+     * May be asynchronous; the library awaits the result where possible,
+     * and a storage failure never fails the request that produced it.
      * @param tlo
      */
-    abstract processEntities(tlo: any): void;
+    abstract processEntities(tlo: any): void | Promise<void>;
 }

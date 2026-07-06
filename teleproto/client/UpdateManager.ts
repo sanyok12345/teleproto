@@ -132,7 +132,7 @@ export class UpdateManager {
         try {
             this.lastUpdateTime = Date.now();
             this.client._entityCache.add(update as never);
-            this.client.session.processEntities(update);
+            void this.saveEntities(update);
 
             if (update instanceof Api.Updates || update instanceof Api.UpdatesCombined) {
                 this.handleContainer(update);
@@ -368,6 +368,14 @@ export class UpdateManager {
         return false;
     }
 
+    private async saveEntities(tlo: unknown): Promise<void> {
+        try {
+            await this.client.session.processEntities(tlo);
+        } catch (e) {
+            this.client._log.warn(`session.processEntities failed: ${e}`);
+        }
+    }
+
     private collectEntities(
         users: Api.TypeUser[],
         chats: Api.TypeChat[],
@@ -502,7 +510,7 @@ export class UpdateManager {
     private async processDifference(diff: Api.updates.Difference | Api.updates.DifferenceSlice): Promise<void> {
         const entities = this.collectEntities(diff.users, diff.chats);
         this.client._entityCache.add(diff);
-        this.client.session.processEntities(diff);
+        await this.saveEntities(diff);
 
         for (const message of diff.newMessages) {
             if (message instanceof Api.Message || message instanceof Api.MessageService) {
@@ -562,7 +570,7 @@ export class UpdateManager {
                 } else if (diff instanceof Api.updates.ChannelDifference) {
                     const entities = this.collectEntities(diff.users, diff.chats);
                     this.client._entityCache.add(diff);
-                    this.client.session.processEntities(diff);
+                    await this.saveEntities(diff);
 
                     for (const message of diff.newMessages) {
                         if (message instanceof Api.Message || message instanceof Api.MessageService) {

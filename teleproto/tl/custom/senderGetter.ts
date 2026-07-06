@@ -60,6 +60,12 @@ export class SenderGetter extends ChatGetter {
 
     async getInputSender() {
         if (!this.inputSender && this._senderId && this._client) {
+            try {
+                this._inputSender = await this._client.getInputEntity(
+                    this._senderId
+                );
+                return this._inputSender;
+            } catch (e) {}
             await this._refetchSender();
         }
         return this._inputSender;

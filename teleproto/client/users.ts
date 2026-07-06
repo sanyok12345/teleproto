@@ -75,7 +75,11 @@ export async function invoke<R extends Api.AnyRequest>(
         try {
             const result = await state.promise;
             state.finished.resolve();
-            client.session.processEntities(result);
+            try {
+                await client.session.processEntities(result);
+            } catch (err) {
+                client._log.warn(`session.processEntities failed: ${err}`);
+            }
             client._entityCache.add(result);
 
             return result;
@@ -388,7 +392,7 @@ export async function getInputEntity(
     // No InputPeer, cached peer, or known string. Fetch from disk cache
     try {
         if (peer != undefined) {
-            return client.session.getInputEntity(peer);
+            return await client.session.getInputEntity(peer);
         }
         // eslint-disable-next-line no-empty
     } catch (e) {}

@@ -22,9 +22,7 @@ export async function _replaceWithMention(
         entities[i] = new Api.InputMessageEntityMentionName({
             offset: entities[i].offset,
             length: entities[i].length,
-            userId: (await client.getInputEntity(
-                user
-            )) as unknown as Api.TypeInputUser,
+            userId: utils.getInputUser(await client.getInputEntity(user)),
         });
         return true;
     } catch (e) {
@@ -52,8 +50,10 @@ export async function _parseMessageText(
     const [rawMessage, msgEntities] = parseMode.parse(message);
     for (let i = msgEntities.length - 1; i >= 0; i--) {
         const e = msgEntities[i];
-        if (e instanceof Api.MessageEntityTextUrl) {
-            const m = /^@|\+|tg:\/\/user\?id=(\d+)/.exec(e.url);
+        if (e instanceof Api.MessageEntityMentionName) {
+            await _replaceWithMention(client, msgEntities, i, e.userId);
+        } else if (e instanceof Api.MessageEntityTextUrl) {
+            const m = /^(?:@|\+|tg:\/\/user\?id=(\d+))/.exec(e.url);
             if (m) {
                 const userIdOrUsername = m[1] ? Number(m[1]) : e.url;
                 const isMention = await _replaceWithMention(

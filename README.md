@@ -66,7 +66,14 @@ client.addEventHandler(
 
 # Raw MTProto API
 
-Every method in Telegram's TL schema is callable directly through `Api.*`. teleproto follows the schema layer-for-layer, so what Telegram adds is usually available here within days.
+Every method in Telegram's TL schema is callable through `client.api`, typed and autocompleted:
+
+```ts
+const dialogs = await client.api.messages.getDialogs({ limit: 10 });
+const full = await client.api.users.getFullUser({ id: "me" });
+```
+
+Or construct requests manually:
 
 ```ts
 import { Api } from "teleproto";

@@ -1,5 +1,5 @@
-<!DOCTYPE html><html class="default" lang="en" data-base="../"><head><meta charset="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>IterMessagesParams | teleproto - v1.227.2</title><meta name="description" content="Documentation for teleproto"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="../assets/style.css"/><link rel="stylesheet" href="../assets/highlight.css"/><script defer src="../assets/main.js"></script><script async src="../assets/icons.js" id="tsd-icons-script"></script><script async src="../assets/search.js" id="tsd-search-script"></script><script async src="../assets/navigation.js" id="tsd-nav-script"></script><script async src="../assets/hierarchy.js" id="tsd-hierarchy-script"></script></head><body><script>document.documentElement.dataset.theme = localStorage.getItem("tsd-theme") || "os";document.body.style.display="none";setTimeout(() => window.app?app.showPage():document.body.style.removeProperty("display"),500)</script><header class="tsd-page-toolbar">
-<div class="tsd-toolbar-contents container"><a href="../index.html" class="title">teleproto - v1.227.2</a>
+<!DOCTYPE html><html class="default" lang="en" data-base="../"><head><meta charset="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>IterMessagesParams | teleproto - v1.227.3</title><meta name="description" content="Documentation for teleproto"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="../assets/style.css"/><link rel="stylesheet" href="../assets/highlight.css"/><script defer src="../assets/main.js"></script><script async src="../assets/icons.js" id="tsd-icons-script"></script><script async src="../assets/search.js" id="tsd-search-script"></script><script async src="../assets/navigation.js" id="tsd-nav-script"></script><script async src="../assets/hierarchy.js" id="tsd-hierarchy-script"></script></head><body><script>document.documentElement.dataset.theme = localStorage.getItem("tsd-theme") || "os";document.body.style.display="none";setTimeout(() => window.app?app.showPage():document.body.style.removeProperty("display"),500)</script><header class="tsd-page-toolbar">
+<div class="tsd-toolbar-contents container"><a href="../index.html" class="title">teleproto - v1.227.3</a>
 <div id="tsd-toolbar-links"></div><button id="tsd-search-trigger" class="tsd-widget" aria-label="Search"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-search"></use></svg></button><dialog id="tsd-search" aria-label="Search"><input role="combobox" id="tsd-search-input" aria-controls="tsd-search-results" aria-autocomplete="list" aria-expanded="true" autocapitalize="off" autocomplete="off" placeholder="Search the docs" maxLength="100"/>
 <ul role="listbox" id="tsd-search-results"></ul>
 <div id="tsd-search-status" aria-live="polite" aria-atomic="true">
@@ -17,7 +17,7 @@
 </div></section>
 <div class="tsd-signature"><span class="tsd-signature-keyword">interface</span> <span class="tsd-kind-interface">IterMessagesParams</span> <span class="tsd-signature-symbol">{</span><br/>    <a class="tsd-kind-property" href="#addoffset">addOffset</a><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#filter">filter</a><span class="tsd-signature-symbol">?:</span> <a href="../types/Api.TypeMessagesFilter.html" class="tsd-signature-type tsd-kind-type-alias">TypeMessagesFilter</a> <span class="tsd-signature-symbol">|</span> <a href="../types/Api.TypeMessagesFilter.html" class="tsd-signature-type tsd-kind-type-alias">TypeMessagesFilter</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#fromuser">fromUser</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">EntityLike</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#ids">ids</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">[]</span> <span class="tsd-signature-symbol">|</span> <a href="../types/Api.TypeInputMessage.html" class="tsd-signature-type tsd-kind-type-alias">TypeInputMessage</a> <span class="tsd-signature-symbol">|</span> <a href="../types/Api.TypeInputMessage.html" class="tsd-signature-type tsd-kind-type-alias">TypeInputMessage</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#limit">limit</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#maxid">maxId</a><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#minid">minId</a><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#offsetdate">offsetDate</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#offsetid">offsetId</a><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#replyto">replyTo</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#reverse">reverse</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#scheduled">scheduled</a><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#search">search</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#waittime">waitTime</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">;</span><br/><span class="tsd-signature-symbol">}</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/messages.ts#L405">teleproto/client/messages.ts:405</a></li></ul></aside>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/messages.ts#L404">teleproto/client/messages.ts:404</a></li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-accordion" open><summary class="tsd-accordion-summary tsd-index-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
@@ -49,7 +49,7 @@
 <div class="tsd-comment tsd-typography"><p>Additional message offset (all of the specified offsets + this offset = older messages).</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/messages.ts#L419">teleproto/client/messages.ts:419</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/messages.ts#L418">teleproto/client/messages.ts:418</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="filter"><code class="tsd-tag">Optional</code><span>filter</span><a href="#filter" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">filter</span><span class="tsd-signature-symbol">?:</span> <a href="../types/Api.TypeMessagesFilter.html" class="tsd-signature-type tsd-kind-type-alias">TypeMessagesFilter</a> <span class="tsd-signature-symbol">|</span> <a href="../types/Api.TypeMessagesFilter.html" class="tsd-signature-type tsd-kind-type-alias">TypeMessagesFilter</a><span class="tsd-signature-symbol">[]</span></div>
@@ -57,14 +57,14 @@
 For instance, InputMessagesFilterPhotos would yield only messages containing photos.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/messages.ts#L425">teleproto/client/messages.ts:425</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/messages.ts#L424">teleproto/client/messages.ts:424</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="fromuser"><code class="tsd-tag">Optional</code><span>from<wbr/>User</span><a href="#fromuser" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">fromUser</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">EntityLike</span></div>
 <div class="tsd-comment tsd-typography"><p>Only messages from this user will be returned.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/messages.ts#L427">teleproto/client/messages.ts:427</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/messages.ts#L426">teleproto/client/messages.ts:426</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="ids"><code class="tsd-tag">Optional</code><span>ids</span><a href="#ids" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">ids</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">[]</span> <span class="tsd-signature-symbol">|</span> <a href="../types/Api.TypeInputMessage.html" class="tsd-signature-type tsd-kind-type-alias">TypeInputMessage</a> <span class="tsd-signature-symbol">|</span> <a href="../types/Api.TypeInputMessage.html" class="tsd-signature-type tsd-kind-type-alias">TypeInputMessage</a><span class="tsd-signature-symbol">[]</span></div>
@@ -74,7 +74,7 @@ This can for instance be used to get the message with ID 123 from a channel.<br/
 <strong>Note</strong> that if the message doesn&quot;t exist, undefined will appear in its place.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/messages.ts#L439">teleproto/client/messages.ts:439</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/messages.ts#L438">teleproto/client/messages.ts:438</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="limit"><code class="tsd-tag">Optional</code><span>limit</span><a href="#limit" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">limit</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span></div>
@@ -83,35 +83,35 @@ Due to limitations with the API retrieving more than 3000 messages will take lon
 if undefined is passed instead of a number the library will try to retrieve all the messages.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/messages.ts#L409">teleproto/client/messages.ts:409</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/messages.ts#L408">teleproto/client/messages.ts:408</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="maxid"><span>max<wbr/>Id</span><a href="#maxid" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">maxId</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 <div class="tsd-comment tsd-typography"><p>All the messages with a higher (newer) ID or equal to this will be excluded.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/messages.ts#L415">teleproto/client/messages.ts:415</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/messages.ts#L414">teleproto/client/messages.ts:414</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="minid"><span>min<wbr/>Id</span><a href="#minid" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">minId</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 <div class="tsd-comment tsd-typography"><p>All the messages with a lower (older) ID or equal to this will be excluded.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/messages.ts#L417">teleproto/client/messages.ts:417</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/messages.ts#L416">teleproto/client/messages.ts:416</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="offsetdate"><code class="tsd-tag">Optional</code><span>offset<wbr/>Date</span><a href="#offsetdate" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">offsetDate</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span></div>
 <div class="tsd-comment tsd-typography"><p>Offset date (messages previous to this date will be retrieved). Exclusive.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/messages.ts#L411">teleproto/client/messages.ts:411</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/messages.ts#L410">teleproto/client/messages.ts:410</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="offsetid"><span>offset<wbr/>Id</span><a href="#offsetid" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">offsetId</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 <div class="tsd-comment tsd-typography"><p>Offset message ID (only messages previous to the given ID will be retrieved). Exclusive.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/messages.ts#L413">teleproto/client/messages.ts:413</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/messages.ts#L412">teleproto/client/messages.ts:412</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="replyto"><code class="tsd-tag">Optional</code><span>reply<wbr/>To</span><a href="#replyto" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">replyTo</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span></div>
@@ -121,7 +121,7 @@ This feature can only be used in broadcast channels and their linked supergroups
 When using this parameter, the filter and search parameters have no effect, since Telegram's API doesn't support searching messages in replies.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/messages.ts#L451">teleproto/client/messages.ts:451</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/messages.ts#L450">teleproto/client/messages.ts:450</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="reverse"><code class="tsd-tag">Optional</code><span>reverse</span><a href="#reverse" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">reverse</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span></div>
@@ -131,7 +131,7 @@ This also means that the meaning of offsetId and offsetDate parameters is revers
 You cannot use this if both entity and ids are undefined.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/messages.ts#L445">teleproto/client/messages.ts:445</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/messages.ts#L444">teleproto/client/messages.ts:444</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="scheduled"><span>scheduled</span><a href="#scheduled" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">scheduled</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
@@ -139,14 +139,14 @@ You cannot use this if both entity and ids are undefined.</p>
 All other parameters will be ignored for this, except <code>entity</code>.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/messages.ts#L455">teleproto/client/messages.ts:455</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/messages.ts#L454">teleproto/client/messages.ts:454</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="search"><code class="tsd-tag">Optional</code><span>search</span><a href="#search" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">search</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">string</span></div>
 <div class="tsd-comment tsd-typography"><p>The string to be used as a search query.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/messages.ts#L421">teleproto/client/messages.ts:421</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/messages.ts#L420">teleproto/client/messages.ts:420</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="waittime"><code class="tsd-tag">Optional</code><span>wait<wbr/>Time</span><a href="#waittime" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">waitTime</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span></div>
@@ -156,7 +156,7 @@ If left to undefined, it will default to 1 second only if the number of messages
 If the ids parameter is used, this time will default to 10 seconds only if the amount of IDs is higher than 300.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/messages.ts#L433">teleproto/client/messages.ts:433</a></li></ul></aside></section></section></details></div>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/messages.ts#L432">teleproto/client/messages.ts:432</a></li></ul></aside></section></section></details></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">
@@ -173,7 +173,7 @@ If the ids parameter is used, this time will default to 10 seconds only if the a
 <details open class="tsd-accordion tsd-page-navigation-section"><summary class="tsd-accordion-summary" data-key="section-Properties"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>Properties</summary>
 <div><a href="#addoffset"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>add<wbr/>Offset</span></a><a href="#filter"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>filter</span></a><a href="#fromuser"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>from<wbr/>User</span></a><a href="#ids"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>ids</span></a><a href="#limit"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>limit</span></a><a href="#maxid"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>max<wbr/>Id</span></a><a href="#minid"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>min<wbr/>Id</span></a><a href="#offsetdate"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>offset<wbr/>Date</span></a><a href="#offsetid"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>offset<wbr/>Id</span></a><a href="#replyto"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>reply<wbr/>To</span></a><a href="#reverse"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>reverse</span></a><a href="#scheduled"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>scheduled</span></a><a href="#search"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>search</span></a><a href="#waittime"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>wait<wbr/>Time</span></a></div></details></div></details></div>
 <div class="site-menu">
-<nav class="tsd-navigation"><a href="../modules.html">teleproto - v1.227.2</a>
+<nav class="tsd-navigation"><a href="../modules.html">teleproto - v1.227.3</a>
 <ul class="tsd-small-nested-navigation" id="tsd-nav-container">
 <li>Loading...</li></ul></nav></div></div></div><footer></footer>
 <div class="overlay"></div></body></html>

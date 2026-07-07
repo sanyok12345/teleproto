@@ -5,18 +5,23 @@ import type { TelegramBaseClient } from "../client/telegramBaseClient";
 export interface ApiSenderPoolOptions {
     /**
      * Disconnect an idle borrowed sender after this many ms of inactivity.
-     * The next {@link ApiSenderPool.borrow} call will lazily reconnect.
+     * The next {@link ApiSenderPool.lease} call will lazily reconnect.
      */
     idleTimeoutMs: number;
+}
+
+export interface SenderLease {
+    sender: MTProtoSender;
+    release: () => void;
 }
 
 /**
  * One borrowed MTProtoSender per non-main DC for arbitrary API calls
  * (everything except file transfer, which uses {@link FilePool}).
  *
- * Slots are lazily connected on first borrow. A broken auth key on a
+ * Slots are lazily connected on first lease. A broken auth key on a
  * non-main DC purges the session's stored key for that DC and the slot
- * is discarded; the next borrow rebuilds it.
+ * is discarded; the next lease rebuilds it.
  */
 export class ApiSenderPool {
     private readonly _slots = new Map<number, SenderSlot>();
@@ -29,7 +34,7 @@ export class ApiSenderPool {
         this._idleTimeoutMs = opts.idleTimeoutMs;
     }
 
-    async borrow(dcId: number): Promise<MTProtoSender> {
+    async lease(dcId: number): Promise<SenderLease> {
         if (this._closed) {
             throw new Error("ApiSenderPool is closed");
         }
@@ -37,7 +42,18 @@ export class ApiSenderPool {
         if (!slot || slot.state === "dead") {
             slot = this._createSlot(dcId);
         }
-        return slot.ensureConnected();
+        const sender = await slot.ensureConnected();
+        const activeSlot = slot;
+        activeSlot.enter();
+        let released = false;
+        return {
+            sender,
+            release: () => {
+                if (released) return;
+                released = true;
+                activeSlot.leave();
+            },
+        };
     }
 
     has(dcId: number): boolean {

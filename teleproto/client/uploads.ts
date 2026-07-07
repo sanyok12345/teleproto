@@ -133,7 +133,7 @@ export async function uploadFile(
     );
 
     // Make sure a new sender can be created before starting upload
-    await client.getSender(client.session.dcId);
+    (await client.getSender(client.session.dcId)).release();
 
     if (!workers || !size) {
         workers = 1;
@@ -169,13 +169,13 @@ export async function uploadFile(
             sendingParts.push(
                 (async (jMemo: number, bytesMemo: Buffer) => {
                     while (true) {
-                        let sender;
+                        let lease;
                         try {
                             // We always upload from the DC we are in
-                            sender = await client.getSender(
+                            lease = await client.getSender(
                                 client.session.dcId
                             );
-                            await sender.send(
+                            await lease.sender.send(
                                 isLarge
                                     ? new Api.upload.SaveBigFilePart({
                                         fileId,
@@ -190,7 +190,7 @@ export async function uploadFile(
                                     })
                             );
                         } catch (err: any) {
-                            if (sender && !sender.isConnected()) {
+                            if (lease && !lease.sender.isConnected()) {
                                 await sleep(DISCONNECT_SLEEP);
                                 continue;
                             } else if (err instanceof errors.FloodWaitError) {
@@ -198,6 +198,8 @@ export async function uploadFile(
                                 continue;
                             }
                             throw err;
+                        } finally {
+                            lease?.release();
                         }
 
                         if (onProgress) {

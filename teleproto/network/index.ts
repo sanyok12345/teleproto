@@ -18,7 +18,7 @@ export {
     SenderSlotDeathReason,
     SenderSlotOptions,
 } from "./SenderSlot";
-export { ApiSenderPool, ApiSenderPoolOptions } from "./ApiSenderPool";
+export { ApiSenderPool, ApiSenderPoolOptions, SenderLease } from "./ApiSenderPool";
 export {
     FilePool,
     FilePoolOptions,

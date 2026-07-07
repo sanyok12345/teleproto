@@ -14,6 +14,7 @@ import type { TelegramClient } from "./TelegramClient";
 import bigInt from "big-integer";
 import { RequestState } from "../network/RequestState";
 import { MTProtoSender } from "../network";
+import type { SenderLease } from "../network/ApiSenderPool";
 
 // UserMethods {
 // region Invoking Telegram request
@@ -44,8 +45,10 @@ export async function invoke<R extends Api.AnyRequest>(
         throw new Error("You can only invoke MTProtoRequests");
     }
     let sender = client._sender;
+    let lease: SenderLease | undefined;
     if (dcId) {
-        sender = await client.getSender(dcId);
+        lease = await client.getSender(dcId);
+        sender = lease.sender;
     }
     if (otherSender != undefined) {
         sender = otherSender;
@@ -62,114 +65,122 @@ export async function invoke<R extends Api.AnyRequest>(
         );
     }
 
-    await client._connectedDeferred.promise;
+    try {
+        await client._connectedDeferred.promise;
 
-    await request.resolve(client, utils);
-    client._lastRequest = new Date().getTime();
-    const state = new RequestState(request);
+        await request.resolve(client, utils);
+        client._lastRequest = new Date().getTime();
+        const state = new RequestState(request);
 
-    let attempt: number = 0;
-    for (attempt = 0; attempt < client._requestRetries; attempt++) {
-        sender!.addStateToQueue(state);
+        let attempt: number = 0;
+        for (attempt = 0; attempt < client._requestRetries; attempt++) {
+            sender!.addStateToQueue(state);
 
-        try {
-            const result = await state.promise;
-            state.finished.resolve();
             try {
-                await client.session.processEntities(result);
-            } catch (err) {
-                client._log.warn(`session.processEntities failed: ${err}`);
-            }
-            client._entityCache.add(result);
-
-            return result;
-        } catch (e: any) {
-            if (
-                e instanceof errors.ServerError ||
-                e.errorMessage === "RPC_CALL_FAIL" ||
-                e.errorMessage === "RPC_MCGET_FAIL"
-            ) {
-                client._log.warn(
-                    `Telegram is having internal issues ${e.constructor.name}`
-                );
-                await sleep(2000);
-            } else if (
-                e instanceof errors.FloodWaitError ||
-                e instanceof errors.FloodTestPhoneWaitError
-            ) {
-                if (e.seconds <= client.floodSleepThreshold) {
-                    client._log.info(
-                        `Sleeping for ${e.seconds}s on flood wait (Caused by ${request.className})`
-                    );
-                    await sleep(e.seconds * 1000);
-                } else {
-                    state.finished.resolve();
-
-                    throw e;
-                }
-            } else if (
-                e instanceof errors.PhoneMigrateError ||
-                e instanceof errors.NetworkMigrateError ||
-                e instanceof errors.UserMigrateError
-            ) {
-                client._log.info(`Phone migrated to ${e.newDc}`);
-                const shouldRaise =
-                    e instanceof errors.PhoneMigrateError ||
-                    e instanceof errors.NetworkMigrateError;
-                if (shouldRaise && (await client.isUserAuthorized())) {
-                    state.finished.resolve();
-
-                    throw e;
-                }
-                await client._switchDC(e.newDc);
-                sender =
-                    dcId === undefined
-                        ? client._sender
-                        : await client.getSender(dcId);
-            } else if (e instanceof errors.MsgWaitError) {
-                // We need to resend this after the old one was confirmed.
-                await state.isReady();
-
-                state.after = undefined;
-            } else if (
-                e.errorMessage &&
-                e.errorMessage.startsWith("RECAPTCHA_CHECK_") &&
-                client._reCaptchaCallback
-            ) {
-                const match = e.errorMessage.match(
-                    /RECAPTCHA_CHECK_.*(6Le[-\w]+)/
-                );
-                if (match) {
-                    const siteKey = match[1];
-                    const token = await client._reCaptchaCallback(siteKey);
-                    const newRequest = new Api.InvokeWithReCaptcha({
-                        token: token,
-                        query: request,
-                    });
-                    await newRequest.resolve(client, utils);
-                    state.request = newRequest;
-                    state.data = newRequest.getBytes();
-                } else {
-                    state.finished.resolve();
-                    throw e;
-                }
-            } else if (e.message === "CONNECTION_NOT_INITED") {
-                const targetSender = sender || client._sender;
-                if (targetSender) {
-                    targetSender._needsInitConnection = true;
-                }
-                client._log.warn(
-                    "CONNECTION_NOT_INITED, will re-wrap next request with initConnection"
-                );
-            } else {
+                const result = await state.promise;
                 state.finished.resolve();
+                try {
+                    await client.session.processEntities(result);
+                } catch (err) {
+                    client._log.warn(`session.processEntities failed: ${err}`);
+                }
+                client._entityCache.add(result);
 
-                throw e;
+                return result;
+            } catch (e: any) {
+                if (
+                    e instanceof errors.ServerError ||
+                    e.errorMessage === "RPC_CALL_FAIL" ||
+                    e.errorMessage === "RPC_MCGET_FAIL"
+                ) {
+                    client._log.warn(
+                        `Telegram is having internal issues ${e.constructor.name}`
+                    );
+                    await sleep(2000);
+                } else if (
+                    e instanceof errors.FloodWaitError ||
+                    e instanceof errors.FloodTestPhoneWaitError
+                ) {
+                    if (e.seconds <= client.floodSleepThreshold) {
+                        client._log.info(
+                            `Sleeping for ${e.seconds}s on flood wait (Caused by ${request.className})`
+                        );
+                        await sleep(e.seconds * 1000);
+                    } else {
+                        state.finished.resolve();
+
+                        throw e;
+                    }
+                } else if (
+                    e instanceof errors.PhoneMigrateError ||
+                    e instanceof errors.NetworkMigrateError ||
+                    e instanceof errors.UserMigrateError
+                ) {
+                    client._log.info(`Phone migrated to ${e.newDc}`);
+                    const shouldRaise =
+                        e instanceof errors.PhoneMigrateError ||
+                        e instanceof errors.NetworkMigrateError;
+                    if (shouldRaise && (await client.isUserAuthorized())) {
+                        state.finished.resolve();
+
+                        throw e;
+                    }
+                    await client._switchDC(e.newDc);
+                    lease?.release();
+                    lease = undefined;
+                    if (dcId === undefined) {
+                        sender = client._sender;
+                    } else {
+                        lease = await client.getSender(dcId);
+                        sender = lease.sender;
+                    }
+                } else if (e instanceof errors.MsgWaitError) {
+                    // We need to resend this after the old one was confirmed.
+                    await state.isReady();
+
+                    state.after = undefined;
+                } else if (
+                    e.errorMessage &&
+                    e.errorMessage.startsWith("RECAPTCHA_CHECK_") &&
+                    client._reCaptchaCallback
+                ) {
+                    const match = e.errorMessage.match(
+                        /RECAPTCHA_CHECK_.*(6Le[-\w]+)/
+                    );
+                    if (match) {
+                        const siteKey = match[1];
+                        const token = await client._reCaptchaCallback(siteKey);
+                        const newRequest = new Api.InvokeWithReCaptcha({
+                            token: token,
+                            query: request,
+                        });
+                        await newRequest.resolve(client, utils);
+                        state.request = newRequest;
+                        state.data = newRequest.getBytes();
+                    } else {
+                        state.finished.resolve();
+                        throw e;
+                    }
+                } else if (e.message === "CONNECTION_NOT_INITED") {
+                    const targetSender = sender || client._sender;
+                    if (targetSender) {
+                        targetSender._needsInitConnection = true;
+                    }
+                    client._log.warn(
+                        "CONNECTION_NOT_INITED, will re-wrap next request with initConnection"
+                    );
+                } else {
+                    state.finished.resolve();
+
+                    throw e;
+                }
             }
+            state.resetPromise();
         }
-        state.resetPromise();
+        throw new Error(`Request was unsuccessful ${attempt} time(s)`);
+    } finally {
+        lease?.release();
     }
-    throw new Error(`Request was unsuccessful ${attempt} time(s)`);
 }
 
 /**

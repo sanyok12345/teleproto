@@ -19,6 +19,7 @@ import type { EventBuilder } from "../events/common";
 import { MarkdownParser } from "../extensions/markdown";
 import { MTProtoSender } from "../network";
 import { ApiSenderPool } from "../network/ApiSenderPool";
+import type { SenderLease } from "../network/ApiSenderPool";
 import { FilePool, FilePoolOptions } from "../network/FilePool";
 import { LAYER } from "../tl/runtime/registry";
 import {
@@ -622,10 +623,10 @@ export abstract class TelegramBaseClient {
     }
 
     /** @hidden */
-    getSender(dcId: number): Promise<MTProtoSender> {
+    getSender(dcId: number): Promise<SenderLease> {
         return dcId
-            ? this._apiSenderPool.borrow(dcId)
-            : Promise.resolve(this._sender!);
+            ? this._apiSenderPool.lease(dcId)
+            : Promise.resolve({ sender: this._sender!, release: () => {} });
     }
 
     // endregion

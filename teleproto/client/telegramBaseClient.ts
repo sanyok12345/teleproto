@@ -380,9 +380,11 @@ export abstract class TelegramBaseClient {
             systemVersion:
                 clientParams.systemVersion || os.release().toString() || "1.0",
             appVersion: clientParams.appVersion || "1.0",
-            langCode: clientParams.langCode,
+            langCode: clientParams.langCode || clientParamsDefault.langCode,
             langPack: "", // this should be left empty.
-            systemLangCode: clientParams.systemLangCode,
+            systemLangCode:
+                clientParams.systemLangCode ||
+                clientParamsDefault.systemLangCode,
             proxy: initProxy,
         });
         this._eventBuilders = [];

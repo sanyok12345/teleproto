@@ -219,7 +219,7 @@ export class CallbackQueryEvent extends EventCommonSender {
         return await this._client!.invoke(
             new Api.messages.SetBotCallbackAnswer({
                 queryId: this.query.queryId,
-                cacheTime,
+                cacheTime: cacheTime ?? 0,
                 alert,
                 message,
                 url,

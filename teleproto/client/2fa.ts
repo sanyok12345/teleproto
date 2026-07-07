@@ -75,7 +75,7 @@ export async function updateTwoFaSettings(
         );
     }
 
-    const pwd = await client.invoke(new Api.account.GetPassword());
+    const pwd = await client.api.account.getPassword();
 
     if (!(pwd.newAlgo instanceof Api.PasswordKdfAlgoUnknown)) {
         pwd.newAlgo.salt1 = Buffer.concat([
@@ -125,9 +125,7 @@ export async function updateTwoFaSettings(
                         throw new Error("Code is empty");
                     }
 
-                    await client.invoke(
-                        new Api.account.ConfirmPasswordEmail({ code })
-                    );
+                    await client.api.account.confirmPasswordEmail({ code });
                     break;
                 } catch (err: any) {
                     onEmailCodeError!(err);

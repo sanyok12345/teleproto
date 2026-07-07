@@ -222,7 +222,7 @@ export async function _updateLoop(client: TelegramClient) {
         // for Telegram to keep delivering updates. Refresh state every 30 minutes.
         if (Date.now() - (client._lastRequest || 0) > 30 * 60 * 1000) {
             try {
-                const state = await client.invoke(new Api.updates.GetState());
+                const state = await client.api.updates.getState();
                 client.updateManager.refreshFromState(state);
             } catch {
                 // ignore — user may not be authorized yet

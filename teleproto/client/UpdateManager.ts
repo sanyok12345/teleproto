@@ -155,7 +155,7 @@ export class UpdateManager {
     async catchUp(): Promise<void> {
         try {
             if (!this.state) {
-                const s = await this.client.invoke(new Api.updates.GetState());
+                const s = await this.client.api.updates.getState();
                 this.state = { pts: s.pts, qts: s.qts, date: s.date, seq: s.seq };
                 this.globalPts.init(s.pts);
                 this.client._log.debug("Initialized update state");
@@ -172,7 +172,7 @@ export class UpdateManager {
     async ensureState(): Promise<void> {
         if (this.state) return;
         try {
-            const s = await this.client.invoke(new Api.updates.GetState());
+            const s = await this.client.api.updates.getState();
             this.state = { pts: s.pts, qts: s.qts, date: s.date, seq: s.seq };
             this.globalPts.init(s.pts);
             this.lastUpdateTime = Date.now();
@@ -480,13 +480,12 @@ export class UpdateManager {
         if (!this.state) return;
         let fetching = true;
         while (fetching) {
-            const diff: Api.updates.TypeDifference = await this.client.invoke(
-                new Api.updates.GetDifference({
+            const diff: Api.updates.TypeDifference =
+                await this.client.api.updates.getDifference({
                     pts: this.state.pts,
                     date: this.state.date,
                     qts: this.state.qts,
-                }),
-            );
+                });
 
             if (diff instanceof Api.updates.DifferenceEmpty) {
                 this.state.date = diff.date;

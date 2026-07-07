@@ -1128,9 +1128,13 @@ export class CustomMessage extends SenderGetter {
             }
 
             const options = findPoll(this.poll.poll.answers as Api.PollAnswer[]) || [];
+            const chat = await this.getInputChat();
+            if (!chat) {
+                return;
+            }
             return await this.client.invoke(
                 new Api.messages.SendVote({
-                    peer: this.inputChat,
+                    peer: chat,
                     msgId: this.id,
                     options: options,
                 })

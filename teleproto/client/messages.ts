@@ -118,10 +118,9 @@ export class _MessagesIter extends RequestIter {
             this.request = new Api.messages.SearchGlobal({
                 q: search || "",
                 filter: filter,
-                minDate: undefined,
-                // TODO fix this smh
-                maxDate: offsetDate,
-                offsetRate: undefined,
+                minDate: 0,
+                maxDate: offsetDate ?? 0,
+                offsetRate: 0,
                 offsetPeer: new Api.InputPeerEmpty(),
                 offsetId: offsetId,
                 limit: 1,
@@ -131,7 +130,7 @@ export class _MessagesIter extends RequestIter {
                 peer: this.entity,
                 msgId: replyTo,
                 offsetId: offsetId,
-                offsetDate: offsetDate,
+                offsetDate: offsetDate ?? 0,
                 addOffset: addOffset,
                 limit: 0,
                 maxId: 0,
@@ -147,8 +146,8 @@ export class _MessagesIter extends RequestIter {
                 peer: this.entity,
                 q: search || "",
                 filter: typeof filter === "function" ? new filter() : filter,
-                minDate: undefined,
-                maxDate: offsetDate,
+                minDate: 0,
+                maxDate: offsetDate ?? 0,
                 offsetId: offsetId,
                 addOffset: addOffset,
                 limit: 0,
@@ -174,7 +173,7 @@ export class _MessagesIter extends RequestIter {
             this.request = new Api.messages.GetHistory({
                 peer: this.entity,
                 limit: 1,
-                offsetDate: offsetDate,
+                offsetDate: offsetDate ?? 0,
                 offsetId: offsetId,
                 minId: 0,
                 maxId: 0,
@@ -1078,23 +1077,19 @@ export async function deleteMessages(
     if (ty == _EntityType.CHANNEL) {
         for (const chunk of utils.chunks(ids)) {
             results.push(
-                client.invoke(
-                    new Api.channels.DeleteMessages({
-                        channel: entity,
-                        id: chunk,
-                    })
-                )
+                client.api.channels.deleteMessages({
+                    channel: entity!,
+                    id: chunk,
+                })
             );
         }
     } else {
         for (const chunk of utils.chunks(ids)) {
             results.push(
-                client.invoke(
-                    new Api.messages.DeleteMessages({
-                        id: chunk,
-                        revoke: revoke,
-                    })
-                )
+                client.api.messages.deleteMessages({
+                    id: chunk,
+                    revoke: revoke,
+                })
             );
         }
     }
@@ -1147,11 +1142,9 @@ export async function _pin(
     message = utils.getMessageId(message) || 0;
 
     if (message === 0) {
-        return await client.invoke(
-            new Api.messages.UnpinAllMessages({
-                peer: entity,
-            })
-        );
+        return await client.api.messages.unpinAllMessages({
+            peer: entity,
+        });
     }
 
     entity = await client.getInputEntity(entity);
@@ -1213,13 +1206,12 @@ export async function markAsRead(
     }
 
     if (_entityType(entity) === _EntityType.CHANNEL) {
-        return await client.invoke(
-            new Api.channels.ReadHistory({ channel: entity, maxId })
-        );
+        return await client.api.channels.readHistory({
+            channel: entity,
+            maxId,
+        });
     } else {
-        await client.invoke(
-            new Api.messages.ReadHistory({ peer: entity, maxId })
-        );
+        await client.api.messages.readHistory({ peer: entity, maxId });
         return true;
     }
 }
@@ -1230,12 +1222,14 @@ export async function getCommentData(
     entity: EntityLike,
     message: number | Api.Message
 ) {
-    const result = await client.invoke(
-        new Api.messages.GetDiscussionMessage({
-            peer: entity,
-            msgId: utils.getMessageId(message),
-        })
-    );
+    const msgId = utils.getMessageId(message);
+    if (msgId == undefined) {
+        throw new Error(`Cannot convert ${message} to a message ID`);
+    }
+    const result = await client.api.messages.getDiscussionMessage({
+        peer: entity,
+        msgId,
+    });
     const relevantMessage = result.messages.reduce(
         (p: Api.TypeMessage, c: Api.TypeMessage) => (p && p.id < c.id ? p : c)
     );

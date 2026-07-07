@@ -198,9 +198,7 @@ export async function getMe<
         return client._selfInputPeer as unknown as R;
     }
     const me = (
-        await client.invoke(
-            new Api.users.GetUsers({ id: [new Api.InputUserSelf()] })
-        )
+        await client.api.users.getUsers({ id: [new Api.InputUserSelf()] })
     )[0] as Api.User;
     client._bot = me.bot;
 
@@ -229,7 +227,7 @@ export async function isBot(client: TelegramClient) {
 /** @hidden */
 export async function isUserAuthorized(client: TelegramClient) {
     try {
-        await client.invoke(new Api.updates.GetState());
+        await client.api.updates.getState();
         return true;
     } catch (e) {
         return false;
@@ -286,21 +284,17 @@ export async function getEntity(
     let channels = lists.get(_EntityType.CHANNEL)!;
 
     if (users.length) {
-        users = await client.invoke(
-            new Api.users.GetUsers({
-                id: users,
-            })
-        );
+        users = await client.api.users.getUsers({
+            id: users,
+        });
     }
     if (chats.length) {
         const chatIds = chats.map((x) => x.chatId);
-        chats = (
-            await client.invoke(new Api.messages.GetChats({ id: chatIds }))
-        ).chats;
+        chats = (await client.api.messages.getChats({ id: chatIds })).chats;
     }
     if (channels.length) {
         channels = (
-            await client.invoke(new Api.channels.GetChannels({ id: channels }))
+            await client.api.channels.getChannels({ id: channels })
         ).chats;
     }
     const idEntity = new Map<string, any>();
@@ -421,16 +415,14 @@ export async function getInputEntity(
     }
     peer = utils.getPeer(peer);
     if (peer instanceof Api.PeerUser) {
-        const users = await client.invoke(
-            new Api.users.GetUsers({
-                id: [
-                    new Api.InputUser({
-                        userId: peer.userId,
-                        accessHash: bigInt.zero,
-                    }),
-                ],
-            })
-        );
+        const users = await client.api.users.getUsers({
+            id: [
+                new Api.InputUser({
+                    userId: peer.userId,
+                    accessHash: bigInt.zero,
+                }),
+            ],
+        });
         if (users.length && !(users[0] instanceof Api.UserEmpty)) {
             // If the user passed a valid ID they expect to work for
             // channels but would be valid for users, we get UserEmpty.
@@ -447,16 +439,14 @@ export async function getInputEntity(
         });
     } else if (peer instanceof Api.PeerChannel) {
         try {
-            const channels = await client.invoke(
-                new Api.channels.GetChannels({
-                    id: [
-                        new Api.InputChannel({
-                            channelId: peer.channelId,
-                            accessHash: bigInt.zero,
-                        }),
-                    ],
-                })
-            );
+            const channels = await client.api.channels.getChannels({
+                id: [
+                    new Api.InputChannel({
+                        channelId: peer.channelId,
+                        accessHash: bigInt.zero,
+                    }),
+                ],
+            });
 
             return utils.getInputPeer(channels.chats[0]);
         } catch (e) {
@@ -482,11 +472,9 @@ export async function _getEntityFromString(
     const phone = utils.parsePhone(string);
     if (phone) {
         try {
-            const result = await client.invoke(
-                new Api.contacts.GetContacts({
-                    hash: bigInt.zero,
-                })
-            );
+            const result = await client.api.contacts.getContacts({
+                hash: bigInt.zero,
+            });
             if (!(result instanceof Api.contacts.ContactsNotModified)) {
                 for (const user of result.users) {
                     if (user instanceof Api.User && user.phone === phone) {
@@ -512,11 +500,9 @@ export async function _getEntityFromString(
     } else {
         const { username, isInvite } = utils.parseUsername(string);
         if (isInvite) {
-            const invite = await client.invoke(
-                new Api.messages.CheckChatInvite({
-                    hash: username,
-                })
-            );
+            const invite = await client.api.messages.checkChatInvite({
+                hash: username,
+            });
             if (invite instanceof Api.ChatInvite) {
                 throw new Error(
                     "Cannot get entity from a channel (or group) " +
@@ -527,9 +513,9 @@ export async function _getEntityFromString(
             }
         } else if (username) {
             try {
-                const result = await client.invoke(
-                    new Api.contacts.ResolveUsername({ username: username })
-                );
+                const result = await client.api.contacts.resolveUsername({
+                    username: username,
+                });
                 const pid = utils.getPeerId(result.peer, false);
                 if (result.peer instanceof Api.PeerUser) {
                     for (const x of result.users) {

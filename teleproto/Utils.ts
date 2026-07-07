@@ -1326,10 +1326,11 @@ export function resolveInviteLink(link: string): string | undefined {
  * @param username {string}
  */
 
-export function parseUsername(username: string): {
-    username?: string;
-    isInvite: boolean;
-} {
+export function parseUsername(
+    username: string
+):
+    | { username: string; isInvite: true }
+    | { username?: string; isInvite: false } {
     username = username.trim();
     const m = username.match(USERNAME_RE) || username.match(TG_JOIN_RE);
     if (m) {

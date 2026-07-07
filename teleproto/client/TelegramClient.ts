@@ -1714,7 +1714,7 @@ export class TelegramClient extends TelegramBaseClient {
         this._log.debug(`Getting DC ${dcId}`);
         if (!this._config) {
             try {
-                this._config = await this.invoke(new Api.help.GetConfig());
+                this._config = await this.api.help.getConfig();
             } catch (e) {
                 this._log.warn(
                     `help.GetConfig failed, falling back to built-in DC seeds: ${e}`
@@ -1762,9 +1762,7 @@ export class TelegramClient extends TelegramBaseClient {
     async _getDownloadConcurrency(fileSize: number): Promise<number> {
         if (!this._appConfig) {
             try {
-                const result = await this.invoke(
-                    new Api.help.GetAppConfig({ hash: 0 })
-                );
+                const result = await this.api.help.getAppConfig({ hash: 0 });
                 if (result instanceof Api.help.AppConfig) {
                     this._appConfig = {};
                     const walk = (v: any): any => {

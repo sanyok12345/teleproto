@@ -133,7 +133,7 @@ export async function start(
     // SessionRevokedError on a revoked session — rather than discarding it.
     let authError: Error | undefined;
     try {
-        await client.invoke(new Api.updates.GetState());
+        await client.api.updates.getState();
         return;
     } catch (e: any) {
         authError = e;
@@ -165,7 +165,7 @@ export async function start(
 /** @hidden */
 export async function checkAuthorization(client: TelegramClient) {
     try {
-        await client.invoke(new Api.updates.GetState());
+        await client.api.updates.getState();
         return true;
     } catch (e) {
         return false;
@@ -176,7 +176,7 @@ export async function checkAuthorization(client: TelegramClient) {
 export async function logOut(client: TelegramClient): Promise<boolean> {
     let success = true;
     try {
-        await client.invoke(new Api.auth.LogOut());
+        await client.api.auth.logOut();
     } catch (e) {
         client._log.warn("auth.LogOut failed: " + (e as Error).message);
         success = false;

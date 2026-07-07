@@ -182,10 +182,8 @@ export class _ParticipantsIter extends RequestIter {
         this.requests = [];
         if (ty == helpers._EntityType.CHANNEL) {
             if (showTotal) {
-                const channel = await this.client.invoke(
-                    new Api.channels.GetFullChannel({
-                        channel: entity,
-                    })
+                const channel = await this.client.api.channels.getFullChannel(
+                    { channel: entity }
                 );
                 if (!(channel.fullChat instanceof Api.ChatFull)) {
                     this.total = channel.fullChat.participantsCount;
@@ -213,11 +211,9 @@ export class _ParticipantsIter extends RequestIter {
                     "Found chat without id " + JSON.stringify(entity)
                 );
             }
-            const full = await this.client.invoke(
-                new Api.messages.GetFullChat({
-                    chatId: entity.chatId,
-                })
-            );
+            const full = await this.client.api.messages.getFullChat({
+                chatId: entity.chatId,
+            });
 
             if (full.fullChat instanceof Api.ChatFull) {
                 if (
@@ -363,8 +359,8 @@ class _AdminLogIter extends RequestIter {
         this.request = new Api.channels.GetAdminLog({
             channel: this.entity,
             q: searchArgs?.search || "",
-            minId: searchArgs?.minId,
-            maxId: searchArgs?.maxId,
+            minId: searchArgs?.minId ?? bigInt.zero,
+            maxId: searchArgs?.maxId ?? bigInt.zero,
             limit: 0,
             eventsFilter: eventsFilter,
             admins: adminList || undefined,

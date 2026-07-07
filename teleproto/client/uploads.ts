@@ -10,6 +10,7 @@ import * as errors from "../errors";
 import * as utils from "../Utils";
 import { _parseMessageText } from "./messageParse";
 import bigInt, { BigInteger } from "big-integer";
+import { BoundedSemaphore } from "../network/OrderedWriter";
 
 interface OnProgress {
     // Float between 0 and 1.
@@ -147,27 +148,35 @@ export async function uploadFile(
         onProgress(progress);
     }
 
-    for (let i = 0; i < partCount; i += workers) {
-        const sendingParts = [];
-        let end = i + workers;
-        if (end > partCount) {
-            end = partCount;
+    const inflight = new BoundedSemaphore(workers);
+    let firstError: any;
+    const tasks: Promise<void>[] = [];
+
+    for (let j = 0; j < partCount; j++) {
+        let endPart = (j + 1) * partSize;
+        if (endPart > size) {
+            endPart = size;
+        }
+        if (endPart == j * partSize) {
+            break;
         }
 
-        for (let j = i; j < end; j++) {
-            let endPart = (j + 1) * partSize;
-            if (endPart > size) {
-                endPart = size;
-            }
-            if (endPart == j * partSize) {
-                break;
-            }
+        if (firstError) break;
+        await inflight.acquire();
+        if (firstError) {
+            inflight.release();
+            break;
+        }
 
-            const bytes = await buffer.slice(j * partSize, endPart);
+        const jMemo = j;
+        const startPart = j * partSize;
+        const endPartMemo = endPart;
 
-            // eslint-disable-next-line no-loop-func
-            sendingParts.push(
-                (async (jMemo: number, bytesMemo: Buffer) => {
+        // eslint-disable-next-line no-loop-func
+        tasks.push(
+            (async () => {
+                try {
+                    const bytesMemo = await buffer.slice(startPart, endPartMemo);
                     while (true) {
                         let lease;
                         try {
@@ -212,11 +221,18 @@ export async function uploadFile(
                         }
                         break;
                     }
-                })(j, bytes)
-            );
-        }
+                } catch (err: any) {
+                    if (!firstError) firstError = err;
+                } finally {
+                    inflight.release();
+                }
+            })()
+        );
+    }
 
-        await Promise.all(sendingParts);
+    await Promise.all(tasks);
+    if (firstError) {
+        throw firstError;
     }
 
     return isLarge

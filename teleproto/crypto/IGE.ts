@@ -21,18 +21,6 @@ class IGE {
     return res;
   }
 
-  private aesEncryptBlock(block: Buffer): Buffer {
-    const cipher = crypto.createCipheriv("aes-256-ecb", this.key, null);
-    cipher.setAutoPadding(false);
-    return Buffer.concat([cipher.update(block), cipher.final()]);
-  }
-
-  private aesDecryptBlock(block: Buffer): Buffer {
-    const decipher = crypto.createDecipheriv("aes-256-ecb", this.key, null);
-    decipher.setAutoPadding(false);
-    return Buffer.concat([decipher.update(block), decipher.final()]);
-  }
-
   encryptIge(plainText: Buffer): Buffer {
     const blockSize = 16;
     const padding = plainText.length % blockSize;
@@ -51,10 +39,13 @@ class IGE {
 
     const output = Buffer.alloc(plainText.length);
 
+    const cipher = crypto.createCipheriv("aes-256-ecb", this.key, null);
+    cipher.setAutoPadding(false);
+
     for (let i = 0; i < plainText.length; i += blockSize) {
       const plainBlock = plainText.subarray(i, i + blockSize);
       const xored = this.xorBuffers(plainBlock, prevCipher);
-      const encrypted = this.aesEncryptBlock(xored);
+      const encrypted = cipher.update(xored);
       const cipherBlock = this.xorBuffers(encrypted, prevPlain);
       cipherBlock.copy(output, i);
 
@@ -79,10 +70,13 @@ class IGE {
 
     const output = Buffer.alloc(cipherText.length);
 
+    const decipher = crypto.createDecipheriv("aes-256-ecb", this.key, null);
+    decipher.setAutoPadding(false);
+
     for (let i = 0; i < cipherText.length; i += blockSize) {
       const cipherBlock = cipherText.subarray(i, i + blockSize);
       const xored = this.xorBuffers(cipherBlock, prevPlain);
-      const decrypted = this.aesDecryptBlock(xored);
+      const decrypted = decipher.update(xored);
       const plainBlock = this.xorBuffers(decrypted, prevCipher);
       plainBlock.copy(output, i);
 

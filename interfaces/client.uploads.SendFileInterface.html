@@ -1,5 +1,5 @@
-<!DOCTYPE html><html class="default" lang="en" data-base="../"><head><meta charset="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>SendFileInterface | teleproto - v1.227.3</title><meta name="description" content="Documentation for teleproto"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="../assets/style.css"/><link rel="stylesheet" href="../assets/highlight.css"/><script defer src="../assets/main.js"></script><script async src="../assets/icons.js" id="tsd-icons-script"></script><script async src="../assets/search.js" id="tsd-search-script"></script><script async src="../assets/navigation.js" id="tsd-nav-script"></script><script async src="../assets/hierarchy.js" id="tsd-hierarchy-script"></script></head><body><script>document.documentElement.dataset.theme = localStorage.getItem("tsd-theme") || "os";document.body.style.display="none";setTimeout(() => window.app?app.showPage():document.body.style.removeProperty("display"),500)</script><header class="tsd-page-toolbar">
-<div class="tsd-toolbar-contents container"><a href="../index.html" class="title">teleproto - v1.227.3</a>
+<!DOCTYPE html><html class="default" lang="en" data-base="../"><head><meta charset="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>SendFileInterface | teleproto - v1.227.4</title><meta name="description" content="Documentation for teleproto"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="../assets/style.css"/><link rel="stylesheet" href="../assets/highlight.css"/><script defer src="../assets/main.js"></script><script async src="../assets/icons.js" id="tsd-icons-script"></script><script async src="../assets/search.js" id="tsd-search-script"></script><script async src="../assets/navigation.js" id="tsd-nav-script"></script><script async src="../assets/hierarchy.js" id="tsd-hierarchy-script"></script></head><body><script>document.documentElement.dataset.theme = localStorage.getItem("tsd-theme") || "os";document.body.style.display="none";setTimeout(() => window.app?app.showPage():document.body.style.removeProperty("display"),500)</script><header class="tsd-page-toolbar">
+<div class="tsd-toolbar-contents container"><a href="../index.html" class="title">teleproto - v1.227.4</a>
 <div id="tsd-toolbar-links"></div><button id="tsd-search-trigger" class="tsd-widget" aria-label="Search"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-search"></use></svg></button><dialog id="tsd-search" aria-label="Search"><input role="combobox" id="tsd-search-input" aria-controls="tsd-search-results" aria-autocomplete="list" aria-expanded="true" autocapitalize="off" autocomplete="off" placeholder="Search the docs" maxLength="100"/>
 <ul role="listbox" id="tsd-search-results"></ul>
 <div id="tsd-search-status" aria-live="polite" aria-atomic="true">
@@ -17,7 +17,7 @@
 </div></section>
 <div class="tsd-signature"><span class="tsd-signature-keyword">interface</span> <span class="tsd-kind-interface">SendFileInterface</span> <span class="tsd-signature-symbol">{</span><br/>    <a class="tsd-kind-property" href="#attributes">attributes</a><span class="tsd-signature-symbol">?:</span> <a href="../types/Api.TypeDocumentAttribute.html" class="tsd-signature-type tsd-kind-type-alias">TypeDocumentAttribute</a><span class="tsd-signature-symbol">[]</span> <span class="tsd-signature-symbol">|</span> <a href="../types/Api.TypeDocumentAttribute.html" class="tsd-signature-type tsd-kind-type-alias">TypeDocumentAttribute</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#buttons">buttons</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">MarkupLike</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#caption">caption</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">string</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#cleardraft">clearDraft</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#commentto">commentTo</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span> <span class="tsd-signature-symbol">|</span> <a href="../classes/Api.Message.html" class="tsd-signature-type tsd-kind-class">Message</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#effect">effect</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">BigInteger</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#file">file</a><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">FileLike</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">FileLike</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#filesize">fileSize</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#forcedocument">forceDocument</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#formattingentities">formattingEntities</a><span class="tsd-signature-symbol">?:</span> <a href="../types/Api.TypeMessageEntity.html" class="tsd-signature-type tsd-kind-type-alias">TypeMessageEntity</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#invertmedia">invertMedia</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#noforwards">noforwards</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#parsemode">parseMode</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#progresscallback">progressCallback</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">OnProgress</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#replyto">replyTo</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">MessageIDLike</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#scheduledate">scheduleDate</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#sendas">sendAs</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">EntityLike</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#silent">silent</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#supportsstreaming">supportsStreaming</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#thumb">thumb</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">FileLike</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#topmsgid">topMsgId</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span> <span class="tsd-signature-symbol">|</span> <a href="../classes/Api.Message.html" class="tsd-signature-type tsd-kind-class">Message</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#videonote">videoNote</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#voicenote">voiceNote</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#workers">workers</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">;</span><br/><span class="tsd-signature-symbol">}</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/uploads.ts#L255">teleproto/client/uploads.ts:255</a></li></ul></aside>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/uploads.ts#L238">teleproto/client/uploads.ts:238</a></li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-accordion" open><summary class="tsd-accordion-summary tsd-index-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
@@ -59,7 +59,7 @@
 <div class="tsd-comment tsd-typography"><p>Optional attributes that override the inferred ones, like <a href="../classes/Api.DocumentAttributeFilename.html" class="tsd-kind-class">Api.DocumentAttributeFilename</a> and so on.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/uploads.ts#L279">teleproto/client/uploads.ts:279</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/uploads.ts#L262">teleproto/client/uploads.ts:262</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="buttons"><code class="tsd-tag">Optional</code><span>buttons</span><a href="#buttons" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">buttons</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">MarkupLike</span></div>
@@ -67,21 +67,21 @@
 This parameter will only work if you have signed in as a bot. You can also pass your own ReplyMarkup here.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/uploads.ts#L308">teleproto/client/uploads.ts:308</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/uploads.ts#L291">teleproto/client/uploads.ts:291</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="caption"><code class="tsd-tag">Optional</code><span>caption</span><a href="#caption" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">caption</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">string</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></div>
 <div class="tsd-comment tsd-typography"><p>Optional caption for the sent media message. can be a list for albums</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/uploads.ts#L267">teleproto/client/uploads.ts:267</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/uploads.ts#L250">teleproto/client/uploads.ts:250</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="cleardraft"><code class="tsd-tag">Optional</code><span>clear<wbr/>Draft</span><a href="#cleardraft" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">clearDraft</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span></div>
 <div class="tsd-comment tsd-typography"><p>Whether the existing draft should be cleared or not.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/uploads.ts#L273">teleproto/client/uploads.ts:273</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/uploads.ts#L256">teleproto/client/uploads.ts:256</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="commentto"><code class="tsd-tag">Optional</code><span>comment<wbr/>To</span><a href="#commentto" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">commentTo</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span> <span class="tsd-signature-symbol">|</span> <a href="../classes/Api.Message.html" class="tsd-signature-type tsd-kind-class">Message</a></div>
@@ -90,14 +90,14 @@ This parameter will only work if you have signed in as a bot. You can also pass 
 If there is no linked chat, <code>SG_ID_INVALID</code> is thrown.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/uploads.ts#L317">teleproto/client/uploads.ts:317</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/uploads.ts#L300">teleproto/client/uploads.ts:300</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="effect"><code class="tsd-tag">Optional</code><span>effect</span><a href="#effect" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">effect</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">BigInteger</span></div>
 <div class="tsd-comment tsd-typography"><p>Message effect ID (animation/visual effect).</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/uploads.ts#L325">teleproto/client/uploads.ts:325</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/uploads.ts#L308">teleproto/client/uploads.ts:308</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="file"><span>file</span><a href="#file" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">file</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">FileLike</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">FileLike</span><span class="tsd-signature-symbol">[]</span></div>
@@ -113,82 +113,82 @@ If there is no linked chat, <code>SG_ID_INVALID</code> is thrown.</p>
 </ul>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/uploads.ts#L265">teleproto/client/uploads.ts:265</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/uploads.ts#L248">teleproto/client/uploads.ts:248</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="filesize"><code class="tsd-tag">Optional</code><span>file<wbr/>Size</span><a href="#filesize" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">fileSize</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span></div>
 <div class="tsd-comment tsd-typography"><p>The size of the file to be uploaded if it needs to be uploaded, which will be determined automatically if not specified.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/uploads.ts#L271">teleproto/client/uploads.ts:271</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/uploads.ts#L254">teleproto/client/uploads.ts:254</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="forcedocument"><code class="tsd-tag">Optional</code><span>force<wbr/>Document</span><a href="#forcedocument" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">forceDocument</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span></div>
 <div class="tsd-comment tsd-typography"><p>If left to false and the file is a path that ends with the extension of an image file or a video file, it will be sent as such. Otherwise always as a document.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/uploads.ts#L269">teleproto/client/uploads.ts:269</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/uploads.ts#L252">teleproto/client/uploads.ts:252</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="formattingentities"><code class="tsd-tag">Optional</code><span>formatting<wbr/>Entities</span><a href="#formattingentities" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">formattingEntities</span><span class="tsd-signature-symbol">?:</span> <a href="../types/Api.TypeMessageEntity.html" class="tsd-signature-type tsd-kind-type-alias">TypeMessageEntity</a><span class="tsd-signature-symbol">[]</span></div>
 <div class="tsd-comment tsd-typography"><p>A list of message formatting entities. When provided, the parseMode is ignored.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/uploads.ts#L297">teleproto/client/uploads.ts:297</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/uploads.ts#L280">teleproto/client/uploads.ts:280</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="invertmedia"><code class="tsd-tag">Optional</code><span>invert<wbr/>Media</span><a href="#invertmedia" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">invertMedia</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span></div>
 <div class="tsd-comment tsd-typography"><p>If true, media will be shown below the text instead of above.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/uploads.ts#L327">teleproto/client/uploads.ts:327</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/uploads.ts#L310">teleproto/client/uploads.ts:310</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="noforwards"><code class="tsd-tag">Optional</code><span>noforwards</span><a href="#noforwards" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">noforwards</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/uploads.ts#L311">teleproto/client/uploads.ts:311</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/uploads.ts#L294">teleproto/client/uploads.ts:294</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="parsemode"><code class="tsd-tag">Optional</code><span>parse<wbr/>Mode</span><a href="#parsemode" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">parseMode</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">any</span></div>
 <div class="tsd-comment tsd-typography"><p>See the <a href="#parsemode" class="tsd-kind-property">parseMode</a> property for allowed values. Markdown parsing will be used by default.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/uploads.ts#L295">teleproto/client/uploads.ts:295</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/uploads.ts#L278">teleproto/client/uploads.ts:278</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="progresscallback"><code class="tsd-tag">Optional</code><span>progress<wbr/>Callback</span><a href="#progresscallback" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">progressCallback</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">OnProgress</span></div>
 <div class="tsd-comment tsd-typography"><p>progress callback that will be called each time a new chunk is downloaded.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/uploads.ts#L275">teleproto/client/uploads.ts:275</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/uploads.ts#L258">teleproto/client/uploads.ts:258</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="replyto"><code class="tsd-tag">Optional</code><span>reply<wbr/>To</span><a href="#replyto" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">replyTo</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">MessageIDLike</span></div>
 <div class="tsd-comment tsd-typography"><p>Same as <code>replyTo</code> from sendMessage.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/uploads.ts#L277">teleproto/client/uploads.ts:277</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/uploads.ts#L260">teleproto/client/uploads.ts:260</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="scheduledate"><code class="tsd-tag">Optional</code><span>schedule<wbr/>Date</span><a href="#scheduledate" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">scheduleDate</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span></div>
 <div class="tsd-comment tsd-typography"><p>If set, the file won't send immediately, and instead it will be scheduled to be automatically sent at a later time.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/uploads.ts#L303">teleproto/client/uploads.ts:303</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/uploads.ts#L286">teleproto/client/uploads.ts:286</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="sendas"><code class="tsd-tag">Optional</code><span>send<wbr/>As</span><a href="#sendas" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">sendAs</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">EntityLike</span></div>
 <div class="tsd-comment tsd-typography"><p>Send the file as a specific entity (channel/user).</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/uploads.ts#L323">teleproto/client/uploads.ts:323</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/uploads.ts#L306">teleproto/client/uploads.ts:306</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="silent"><code class="tsd-tag">Optional</code><span>silent</span><a href="#silent" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">silent</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span></div>
 <div class="tsd-comment tsd-typography"><p>Whether the message should notify people in a broadcast channel or not. Defaults to false, which means it will notify them. Set it to True to alter this behaviour.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/uploads.ts#L299">teleproto/client/uploads.ts:299</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/uploads.ts#L282">teleproto/client/uploads.ts:282</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="supportsstreaming"><code class="tsd-tag">Optional</code><span>supports<wbr/>Streaming</span><a href="#supportsstreaming" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">supportsStreaming</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span></div>
@@ -197,7 +197,7 @@ Note that Telegram only recognizes as streamable some formats like MP4, and othe
 You should convert these to MP4 before sending if you want them to be streamable. Unsupported formats will result in VideoContentTypeError.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/uploads.ts#L293">teleproto/client/uploads.ts:293</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/uploads.ts#L276">teleproto/client/uploads.ts:276</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="thumb"><code class="tsd-tag">Optional</code><span>thumb</span><a href="#thumb" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">thumb</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">FileLike</span></div>
@@ -207,35 +207,35 @@ Width/height and dimensions/size ratios may be important.
 For Telegram to accept a thumbnail, you must provide the dimensions of the underlying media through <code>attributes:</code> with DocumentAttributesVideo.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/uploads.ts#L285">teleproto/client/uploads.ts:285</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/uploads.ts#L268">teleproto/client/uploads.ts:268</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="topmsgid"><code class="tsd-tag">Optional</code><span>top<wbr/>Msg<wbr/>Id</span><a href="#topmsgid" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">topMsgId</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span> <span class="tsd-signature-symbol">|</span> <a href="../classes/Api.Message.html" class="tsd-signature-type tsd-kind-class">Message</a></div>
 <div class="tsd-comment tsd-typography"><p>Used for threads to reply to a specific thread</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/uploads.ts#L321">teleproto/client/uploads.ts:321</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/uploads.ts#L304">teleproto/client/uploads.ts:304</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="videonote"><code class="tsd-tag">Optional</code><span>video<wbr/>Note</span><a href="#videonote" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">videoNote</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span></div>
 <div class="tsd-comment tsd-typography"><p>If true the video will be sent as a video note, also known as a round video message.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/uploads.ts#L289">teleproto/client/uploads.ts:289</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/uploads.ts#L272">teleproto/client/uploads.ts:272</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="voicenote"><code class="tsd-tag">Optional</code><span>voice<wbr/>Note</span><a href="#voicenote" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">voiceNote</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span></div>
 <div class="tsd-comment tsd-typography"><p>If true the audio will be sent as a voice note.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/uploads.ts#L287">teleproto/client/uploads.ts:287</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/uploads.ts#L270">teleproto/client/uploads.ts:270</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="workers"><code class="tsd-tag">Optional</code><span>workers</span><a href="#workers" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">workers</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span></div>
 <div class="tsd-comment tsd-typography"><p>How many workers to use to upload the file. anything above 16 is unstable.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/uploads.ts#L310">teleproto/client/uploads.ts:310</a></li></ul></aside></section></section></details></div>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/uploads.ts#L293">teleproto/client/uploads.ts:293</a></li></ul></aside></section></section></details></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">
@@ -252,7 +252,7 @@ For Telegram to accept a thumbnail, you must provide the dimensions of the under
 <details open class="tsd-accordion tsd-page-navigation-section"><summary class="tsd-accordion-summary" data-key="section-Properties"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>Properties</summary>
 <div><a href="#attributes"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>attributes</span></a><a href="#buttons"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>buttons</span></a><a href="#caption"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>caption</span></a><a href="#cleardraft"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>clear<wbr/>Draft</span></a><a href="#commentto"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>comment<wbr/>To</span></a><a href="#effect"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>effect</span></a><a href="#file"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>file</span></a><a href="#filesize"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>file<wbr/>Size</span></a><a href="#forcedocument"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>force<wbr/>Document</span></a><a href="#formattingentities"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>formatting<wbr/>Entities</span></a><a href="#invertmedia"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>invert<wbr/>Media</span></a><a href="#noforwards"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>noforwards</span></a><a href="#parsemode"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>parse<wbr/>Mode</span></a><a href="#progresscallback"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>progress<wbr/>Callback</span></a><a href="#replyto"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>reply<wbr/>To</span></a><a href="#scheduledate"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>schedule<wbr/>Date</span></a><a href="#sendas"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>send<wbr/>As</span></a><a href="#silent"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>silent</span></a><a href="#supportsstreaming"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>supports<wbr/>Streaming</span></a><a href="#thumb"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>thumb</span></a><a href="#topmsgid"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>top<wbr/>Msg<wbr/>Id</span></a><a href="#videonote"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>video<wbr/>Note</span></a><a href="#voicenote"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>voice<wbr/>Note</span></a><a href="#workers"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>workers</span></a></div></details></div></details></div>
 <div class="site-menu">
-<nav class="tsd-navigation"><a href="../modules.html">teleproto - v1.227.3</a>
+<nav class="tsd-navigation"><a href="../modules.html">teleproto - v1.227.4</a>
 <ul class="tsd-small-nested-navigation" id="tsd-nav-container">
 <li>Loading...</li></ul></nav></div></div></div><footer></footer>
 <div class="overlay"></div></body></html>

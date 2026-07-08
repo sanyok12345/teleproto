@@ -148,7 +148,7 @@ class Connection {
                     throw new Error("no data received");
                 }
             } catch (e) {
-                this._log.info("connection closed");
+                this._log.debug("connection closed");
                 // await this._recvArray.push()
 
                 this.disconnect();

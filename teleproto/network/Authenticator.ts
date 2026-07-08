@@ -1,9 +1,3 @@
-/**
- * Executes the authentication process with the Telegram servers.
- * @param sender a connected {MTProtoPlainSender}.
- * @param log
- * @returns {Promise<{authKey: *, timeOffset: *}>}
- */
 import { MTProtoPlainSender } from "./MTProtoPlainSender";
 import {
     bufferXor,
@@ -28,8 +22,16 @@ import { AuthKey } from "../crypto/AuthKey";
 
 const RETRIES = 20;
 
-export async function doAuthentication(sender: MTProtoPlainSender, log: any) {
-    // Step 1 sending: PQ Request, endianness doesn't matter since it's random
+export interface TempKeyParams {
+    expiresIn: number;
+    dc: number;
+}
+
+export async function doAuthentication(
+    sender: MTProtoPlainSender,
+    log: any,
+    temp?: TempKeyParams
+) {
     let bytes = generateRandomBytes(16);
 
     const nonce = readBigIntFromBuffer(bytes, false, true);
@@ -44,7 +46,7 @@ export async function doAuthentication(sender: MTProtoPlainSender, log: any) {
     }
     const pq = readBigIntFromBuffer(resPQ.pq, false, true);
     log.debug("Finished authKey generation step 1");
-    // Step 2 sending: DH Exchange
+
     const { p, q } = Factorizator.factorize(pq);
 
     const pBuffer = getByteArray(p);
@@ -52,16 +54,28 @@ export async function doAuthentication(sender: MTProtoPlainSender, log: any) {
 
     bytes = generateRandomBytes(32);
     const newNonce = readBigIntFromBuffer(bytes, true, true);
-    const pqInnerData = new Api.PQInnerData({
-        pq: getByteArray(pq), // unsigned
-        p: pBuffer,
-        q: qBuffer,
-        nonce: resPQ.nonce,
-        serverNonce: resPQ.serverNonce,
-        newNonce,
-    }).getBytes();
+    const pqInnerData = (temp
+        ? new Api.PQInnerDataTempDc({
+              pq: getByteArray(pq),
+              p: pBuffer,
+              q: qBuffer,
+              nonce: resPQ.nonce,
+              serverNonce: resPQ.serverNonce,
+              newNonce,
+              dc: temp.dc,
+              expiresIn: temp.expiresIn,
+          })
+        : new Api.PQInnerData({
+              pq: getByteArray(pq),
+              p: pBuffer,
+              q: qBuffer,
+              nonce: resPQ.nonce,
+              serverNonce: resPQ.serverNonce,
+              newNonce,
+          })
+    ).getBytes();
     if (pqInnerData.length > 144) {
-        throw new SecurityError("Step 1 invalid nonce from server");
+        throw new SecurityError("Invalid nonce from server");
     }
     let targetFingerprint;
     let targetKey;
@@ -74,10 +88,10 @@ export async function doAuthentication(sender: MTProtoPlainSender, log: any) {
     }
     if (targetFingerprint === undefined || targetKey === undefined) {
         throw new SecurityError(
-            "Step 2 could not find a valid key for fingerprints"
+            "Could not find a valid key for fingerprints"
         );
     }
-    // Value should be padded to be made 192 exactly
+
     const padding = generateRandomBytes(192 - pqInnerData.length);
     const dataWithPadding = Buffer.concat([pqInnerData, padding]);
     const dataPadReversed = Buffer.from(dataWithPadding).reverse();
@@ -122,9 +136,9 @@ export async function doAuthentication(sender: MTProtoPlainSender, log: any) {
         break;
     }
     if (encryptedData === undefined) {
-        throw new SecurityError("Step 2 could create a secure encrypted key");
+        throw new SecurityError("Could create a secure encrypted key");
     }
-    log.debug("Step 2 : Generated a secure aes encrypted data");
+    log.debug("Generated a secure aes encrypted data");
 
     const serverDhParams = await sender.send(
         new Api.ReqDHParams({
@@ -143,53 +157,51 @@ export async function doAuthentication(sender: MTProtoPlainSender, log: any) {
             serverDhParams instanceof Api.ServerDHParamsFail
         )
     ) {
-        throw new Error(`Step 2.1 answer was ${serverDhParams}`);
+        throw new Error(`Answer was ${serverDhParams}`);
     }
     if (serverDhParams.nonce.neq(resPQ.nonce)) {
-        throw new SecurityError("Step 2 invalid nonce from server");
+        throw new SecurityError("Invalid nonce from server");
     }
 
     if (serverDhParams.serverNonce.neq(resPQ.serverNonce)) {
-        throw new SecurityError("Step 2 invalid server nonce from server");
+        throw new SecurityError("Invalid server nonce from server");
     }
 
     if (serverDhParams instanceof Api.ServerDHParamsFail) {
         const sh = await sha1(toSignedLittleBuffer(newNonce, 32).slice(4, 20));
         const nnh = readBigIntFromBuffer(sh, true, true);
         if (serverDhParams.newNonceHash.neq(nnh)) {
-            throw new SecurityError("Step 2 invalid DH fail nonce from server");
+            throw new SecurityError("Invalid DH fail nonce from server");
         }
     }
     if (!(serverDhParams instanceof Api.ServerDHParamsOk)) {
-        throw new Error(`Step 2.2 answer was ${serverDhParams}`);
+        throw new Error(`Answer was ${serverDhParams}`);
     }
-    log.debug("Finished authKey generation step 2");
-    log.debug("Starting authKey generation step 3");
+    log.debug("Finished authKey generation");
+    log.debug("Starting authKey generation");
 
-    // Step 3 sending: Complete DH Exchange
     const { key, iv } = await generateKeyDataFromNonce(
         resPQ.serverNonce,
         newNonce
     );
     if (serverDhParams.encryptedAnswer.length % 16 !== 0) {
-        // See PR#453
-        throw new SecurityError("Step 3 AES block size mismatch");
+        throw new SecurityError("AES block size mismatch");
     }
     const ige = new IGE(key, iv);
     const plainTextAnswer = ige.decryptIge(serverDhParams.encryptedAnswer);
     const reader = new BinaryReader(plainTextAnswer);
-    reader.read(20); // hash sum
+    reader.read(20);
     const serverDhInner = reader.tgReadObject();
     if (!(serverDhInner instanceof Api.ServerDHInnerData)) {
-        throw new Error(`Step 3 answer was ${serverDhInner}`);
+        throw new Error(`Answer was ${serverDhInner}`);
     }
 
     if (serverDhInner.nonce.neq(resPQ.nonce)) {
-        throw new SecurityError("Step 3 Invalid nonce in encrypted answer");
+        throw new SecurityError("Invalid nonce in encrypted answer");
     }
     if (serverDhInner.serverNonce.neq(resPQ.serverNonce)) {
         throw new SecurityError(
-            "Step 3 Invalid server nonce in encrypted answer"
+            "Invalid server nonce in encrypted answer"
         );
     }
     const dhPrime = readBigIntFromBuffer(serverDhInner.dhPrime, false, false);
@@ -200,11 +212,10 @@ export async function doAuthentication(sender: MTProtoPlainSender, log: any) {
     const gb = modExp(bigInt(serverDhInner.g), b, dhPrime);
     const gab = modExp(ga, b, dhPrime);
 
-    // Prepare client DH Inner Data
     const clientDhInner = new Api.ClientDHInnerData({
         nonce: resPQ.nonce,
         serverNonce: resPQ.serverNonce,
-        retryId: bigInt.zero, // TODO Actual retry ID
+        retryId: bigInt.zero,
         gB: getByteArray(gb, false),
     }).getBytes();
 
@@ -212,7 +223,6 @@ export async function doAuthentication(sender: MTProtoPlainSender, log: any) {
         await sha1(clientDhInner),
         clientDhInner,
     ]);
-    // Encryption
 
     const clientDhEncrypted = ige.encryptIge(clientDdhInnerHashed);
     const dhGen = await sender.send(
@@ -223,7 +233,6 @@ export async function doAuthentication(sender: MTProtoPlainSender, log: any) {
         })
     );
     const nonceTypes = [Api.DhGenOk, Api.DhGenRetry, Api.DhGenFail];
-    // TS being weird again.
     const nonceTypesString = ["DhGenOk", "DhGenRetry", "DhGenFail"];
     if (
         !(
@@ -232,15 +241,15 @@ export async function doAuthentication(sender: MTProtoPlainSender, log: any) {
             dhGen instanceof nonceTypes[2]
         )
     ) {
-        throw new Error(`Step 3.1 answer was ${dhGen}`);
+        throw new Error(`Answer was ${dhGen}`);
     }
     const { name } = dhGen.constructor;
     if (dhGen.nonce.neq(resPQ.nonce)) {
-        throw new SecurityError(`Step 3 invalid ${name} nonce from server`);
+        throw new SecurityError(`Invalid ${name} nonce from server`);
     }
     if (dhGen.serverNonce.neq(resPQ.serverNonce)) {
         throw new SecurityError(
-            `Step 3 invalid ${name} server nonce from server`
+            `Invalid ${name} server nonce from server`
         );
     }
     const authKey = new AuthKey();
@@ -249,17 +258,18 @@ export async function doAuthentication(sender: MTProtoPlainSender, log: any) {
     const nonceNumber = 1 + nonceTypesString.indexOf(dhGen.className);
 
     const newNonceHash = await authKey.calcNewNonceHash(newNonce, nonceNumber);
+
     // @ts-ignore
     const dhHash = dhGen[`newNonceHash${nonceNumber}`];
 
     if (dhHash.neq(newNonceHash)) {
-        throw new SecurityError("Step 3 invalid new nonce hash");
+        throw new SecurityError("Invalid new nonce hash");
     }
 
     if (!(dhGen instanceof Api.DhGenOk)) {
-        throw new Error(`Step 3.2 answer was ${dhGen}`);
+        throw new Error(`Answer was ${dhGen}`);
     }
-    log.debug("Finished authKey generation step 3");
+    log.debug("Finished authKey generation");
 
     return { authKey, timeOffset };
 }

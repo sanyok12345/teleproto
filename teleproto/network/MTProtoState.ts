@@ -16,6 +16,7 @@ export class MTProtoState {
     timeOffset: number;
     salt: bigInt.BigInteger;
     private id: bigInt.BigInteger;
+
     _sequence: number;
     private _lastMsgId: bigInt.BigInteger;
     private receivedIds: ReceivedIdsManager;
@@ -55,9 +56,10 @@ export class MTProtoState {
         this.reset();
     }
 
-    /**
-     * Resets the state
-     */
+    get sessionId(): bigInt.BigInteger {
+        return this.id;
+    }
+
     reset() {
         // Session IDs can be random on every connection
         this.id = generateRandomLong(true);
@@ -113,9 +115,10 @@ export class MTProtoState {
         buffer: BinaryWriter,
         data: Buffer,
         contentRelated: boolean,
-        afterId?: bigInt.BigInteger
+        afterId?: bigInt.BigInteger,
+        predeterminedMsgId?: bigInt.BigInteger
     ) {
-        const msgId = this._getNewMsgId();
+        const msgId = predeterminedMsgId ?? this._getNewMsgId();
         const seqNo = this._getSeqNo(contentRelated);
         let body;
         if (!afterId) {

@@ -5,6 +5,7 @@ import { Api } from "../tl";
 export class RequestState {
     public containerId?: bigInt.BigInteger;
     public msgId?: bigInt.BigInteger;
+    public forcedMsgId?: bigInt.BigInteger;
     public request: any;
     public data: Buffer;
     public after: any;

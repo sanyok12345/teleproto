@@ -12,6 +12,7 @@
  * key exists yet.
  */
 import { AuthKey } from "../crypto/AuthKey";
+import { Dcenter } from "./Dcenter";
 import { MTProtoState } from "./MTProtoState";
 
 import { BinaryReader, Logger, MessagePacker } from "../extensions";
@@ -21,6 +22,7 @@ import bigInt from "big-integer";
 import { sleep } from "../Helpers";
 import { RequestState } from "./RequestState";
 import { doAuthentication } from "./Authenticator";
+import { buildBindTempAuthKeyRequest } from "./TempAuthKey";
 import { MTProtoPlainSender } from "./MTProtoPlainSender";
 import {
     BadMessageError,
@@ -38,6 +40,8 @@ import { Mutex } from "async-mutex";
 import { PendingState } from "../extensions/PendingState";
 import MsgsAck = Api.MsgsAck;
 
+export type SenderTempBinding = NonNullable<DEFAULT_OPTIONS["tempBinding"]>;
+
 interface DEFAULT_OPTIONS {
     logger: any;
     retries: number;
@@ -54,6 +58,15 @@ interface DEFAULT_OPTIONS {
     client: TelegramClient;
     onConnectionBreak?: CallableFunction;
     securityChecks: boolean;
+    dcenter?: Dcenter;
+    tempBinding?: {
+        permAuthKey: AuthKey;
+        dcParam: number;
+        expiresIn: number;
+        isBound: () => boolean;
+        onBound: (expiresAt: number) => void;
+        onFailed: (err: unknown) => void;
+    };
 }
 
 export class MTProtoSender {
@@ -109,6 +122,8 @@ export class MTProtoSender {
     _authenticated: boolean;
     _needsInitConnection: boolean = true;
     private _securityChecks: boolean;
+    private readonly _dcenter?: Dcenter;
+    private readonly _tempBinding?: DEFAULT_OPTIONS["tempBinding"];
     private _connectMutex: Mutex;
     private _cancelSend: boolean;
     private _abortController: AbortController;
@@ -143,6 +158,8 @@ export class MTProtoSender {
         this._client = args.client;
         this._onConnectionBreak = args.onConnectionBreak;
         this._securityChecks = args.securityChecks;
+        this._dcenter = args.dcenter;
+        this._tempBinding = args.tempBinding;
 
         this._connectMutex = new Mutex();
         /**
@@ -314,7 +331,7 @@ export class MTProtoSender {
      */
     async disconnect() {
         this.userDisconnected = true;
-        this._log.warn("Disconnecting...");
+        this._log.debug("Disconnecting...");
         await this._disconnect();
     }
 
@@ -399,7 +416,7 @@ export class MTProtoSender {
         const connection = this._connection!;
 
         if (!connection.isConnected()) {
-            this._log.info(
+            this._log.debug(
                 "Connecting to {0}...".replace("{0}", connection.toString())
             );
             await connection.connect();
@@ -409,18 +426,31 @@ export class MTProtoSender {
         if (!this.authKey.getKey()) {
             const plain = new MTProtoPlainSender(connection, this._log);
             this._log.debug("New auth_key attempt ...");
-            const res = await doAuthentication(plain, this._log);
+            const res = await doAuthentication(
+                plain,
+                this._log,
+                this._tempBinding
+                    ? {
+                          expiresIn: this._tempBinding.expiresIn,
+                          dc: this._tempBinding.dcParam,
+                      }
+                    : undefined
+            );
             this._log.debug("Generated new auth_key successfully");
             await this.authKey.setKey(res.authKey);
 
             this._state.timeOffset = res.timeOffset;
 
-            if (this._authKeyCallback) {
+            // Temporary keys are never persisted — they live in the Dcenter.
+            if (this._authKeyCallback && !this._tempBinding) {
                 await this._authKeyCallback(this.authKey, this._dcId);
             }
         } else {
             this._authenticated = true;
             this._log.debug("Already have an auth key ...");
+        }
+        if (this._dcenter && !this._dcenter.salt.isZero()) {
+            this._state.salt = this._dcenter.salt;
         }
         this._userConnected = true;
         this._disconnected = false;
@@ -436,11 +466,41 @@ export class MTProtoSender {
             this._recvLoopHandle = this._recvLoop();
         }
 
+        if (this._tempBinding && !this._tempBinding.isBound()) {
+            try {
+                const expiresAt =
+                    Math.floor(Date.now() / 1000) +
+                    this._state.timeOffset +
+                    this._tempBinding.expiresIn;
+                const msgId = this._state._getNewMsgId();
+                const request = buildBindTempAuthKeyRequest(
+                    this._tempBinding.permAuthKey,
+                    this.authKey,
+                    this._state.sessionId,
+                    msgId,
+                    expiresAt
+                );
+                const state = new RequestState(request);
+                state.forcedMsgId = msgId;
+                this._sendQueue.append(state);
+                const ok = await state.promise;
+                if (ok === true) {
+                    this._tempBinding.onBound(expiresAt);
+                    this._log.debug(`Bound temp auth key for dc ${this._dcId}`);
+                } else {
+                    throw new Error(`bindTempAuthKey answered ${ok}`);
+                }
+            } catch (err) {
+                this._tempBinding.onFailed(err);
+                throw err;
+            }
+        }
+
         // _disconnected only completes after manual disconnection
         // or errors after which the sender cannot continue such
         // as failing to reconnect or any unexpected error.
 
-        this._log.info(
+        this._log.debug(
             "Connection to %s complete!".replace("%s", connection.toString())
         );
     }
@@ -459,7 +519,7 @@ export class MTProtoSender {
             return;
         }
 
-        this._log.info(
+        this._log.debug(
             "Disconnecting from %s...".replace("%s", connection.toString())
         );
         this._userConnected = false;
@@ -611,7 +671,9 @@ export class MTProtoSender {
 
                 /** when the server disconnects us we want to reconnect */
                 if (!this.userDisconnected) {
-                    this._log.warn("Connection closed while receiving data", e);
+                    this._log.info(
+                        `Connection to DC ${this._dcId} closed by server, reconnecting`
+                    );
                     this.reconnect();
                 }
                 this._recvLoopHandle = undefined;
@@ -620,6 +682,7 @@ export class MTProtoSender {
 
             try {
                 message = await this._state.decryptMessageData(body);
+                if (this._client) this._client._lastReceivedAt = Date.now();
                 this._log.debug(
                     `[RECV] Decrypted msgId=${message.msgId} type=${message.obj?.className || "unknown"} bodyLen=${body.length}`
                 );
@@ -917,6 +980,7 @@ export class MTProtoSender {
         const badSalt = message.obj;
         this._log.debug(`Handling bad salt for message ${badSalt.badMsgId}`);
         this._state.salt = badSalt.newServerSalt;
+        this._dcenter?.updateSalt(badSalt.newServerSalt);
         const states = this._popStates(badSalt.badMsgId);
         this._sendQueue.extend(states);
         this._log.debug(`${states.length} message(s) will be resent`);
@@ -1004,6 +1068,7 @@ export class MTProtoSender {
     async _handleNewSessionCreated(message: TLMessage) {
         this._log.debug("Handling new session created");
         this._state.salt = message.obj.serverSalt;
+        this._dcenter?.updateSalt(message.obj.serverSalt);
         this._needsInitConnection = true;
     }
 
@@ -1069,9 +1134,21 @@ export class MTProtoSender {
     reconnect() {
         if (this._userConnected && !this.isReconnecting) {
             this.isReconnecting = true;
+            if (!this._autoReconnect) {
+                this.userDisconnected = true;
+                this._disconnect().catch(() => {});
+                if (!this._isMainSender && this._onConnectionBreak) {
+                    this._onConnectionBreak(this._dcId);
+                }
+                return;
+            }
+            const delay =
+                this._currentRetries === 0
+                    ? 0
+                    : Math.min(1000 * this._currentRetries, 5000);
             this._currentRetries++;
-            sleep(1000).then(() => {
-                this._log.info("Started reconnecting");
+            sleep(delay).then(() => {
+                this._log.debug("Started reconnecting");
                 this._reconnect();
             });
         }
@@ -1079,7 +1156,7 @@ export class MTProtoSender {
 
     async _reconnect() {
         try {
-            this._log.warn("[Reconnect] Closing current connection...");
+            this._log.debug("[Reconnect] Closing current connection...");
             await this._disconnect();
         } catch (err) {
             this._log.warn("Error happened while disconnecting", err);

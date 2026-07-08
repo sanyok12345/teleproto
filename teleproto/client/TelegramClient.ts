@@ -1644,6 +1644,10 @@ export class TelegramClient extends TelegramBaseClient {
                 securityChecks: this._securityChecks,
                 autoReconnectCallback: this._handleReconnect.bind(this),
                 reconnectRetries: this._reconnectRetries,
+                dcenter: this._dcenters.get(
+                    this.session.dcId || 4,
+                    this.session.getAuthKey()
+                ),
             });
         }
 
@@ -1692,8 +1696,8 @@ export class TelegramClient extends TelegramBaseClient {
         this.session.setAuthKey(undefined);
         this.session.save();
         this._isSwitchingDc = true;
-        await this._filePool.purge();
-        await this._apiSenderPool.purge();
+        await this._media.purge();
+        await this._network.purge();
         await this._disconnect();
         this._sender = undefined;
         return await this.connect();
@@ -1755,7 +1759,11 @@ export class TelegramClient extends TelegramBaseClient {
             candidates = candidates.filter((DC) => DC.static);
         }
         const chosen = candidates[0];
-        return { id: chosen.id, ipAddress: chosen.ipAddress, port: 443 };
+        return {
+            id: chosen.id,
+            ipAddress: chosen.ipAddress,
+            port: chosen.port || 443,
+        };
     }
 
     /** @hidden */

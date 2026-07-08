@@ -12,7 +12,8 @@ import {
     BoundedSemaphore,
     OrderedWriter,
 } from "../network/OrderedWriter";
-import { FilePoolAbortError } from "../network/FilePool";
+import { MediaAbortError } from "../network/MediaScheduler";
+import { createHash } from "node:crypto";
 
 export interface progressCallback {
     (
@@ -31,6 +32,7 @@ export interface DownloadFileParams {
     partSizeKb?: number;
     progressCallback?: progressCallback;
     msgData?: [EntityLike, number];
+    verifyHashes?: boolean;
 }
 
 export interface DownloadProfilePhotoParams {
@@ -93,12 +95,62 @@ function returnWriterValue(writer: any): Buffer | string | undefined {
 function resolvePartSize(client: TelegramClient, partSizeKb?: number): number {
     let size = partSizeKb && partSizeKb > 0
         ? Math.floor(partSizeKb * 1024)
-        : client._filePool.opts.partSize;
+        : client._media.opts.partSize;
     if (size > ONE_MB) size = ONE_MB;
     if (size % MIN_CHUNK_SIZE !== 0) {
         throw new Error("partSizeKb must be a multiple of 4 (KB)");
     }
     return size;
+}
+
+const HASH_BLOCK = 128 * 1024;
+
+class FileHashChecker {
+    private readonly _hashes = new Map<number, Buffer>();
+    private _unsupported = false;
+
+    constructor(
+        private readonly client: TelegramClient,
+        private readonly location: Api.TypeInputFileLocation
+    ) {}
+
+    async verify(absOffset: number, data: Buffer): Promise<void> {
+        if (this._unsupported || !data.length) return;
+        if (absOffset % HASH_BLOCK !== 0) return; // parts are block-aligned
+        for (let o = 0; o < data.length; o += HASH_BLOCK) {
+            const abs = absOffset + o;
+            let expected = this._hashes.get(abs);
+            if (!expected) {
+                await this._fetch(abs);
+                expected = this._hashes.get(abs);
+            }
+            if (!expected) return; // unsupported location or past EOF
+            const block = data.subarray(o, Math.min(o + HASH_BLOCK, data.length));
+            const actual = createHash("sha256").update(block).digest();
+            if (!actual.equals(expected)) {
+                throw new Error(
+                    `File hash mismatch at offset ${abs} — corrupted part`
+                );
+            }
+        }
+    }
+
+    private async _fetch(absOffset: number): Promise<void> {
+        try {
+            const res = await this.client.invoke(
+                new Api.upload.GetFileHashes({
+                    location: this.location,
+                    offset: bigInt(absOffset),
+                })
+            );
+            for (const h of res) {
+                this._hashes.set(h.offset.toJSNumber(), Buffer.from(h.hash));
+            }
+        } catch (e) {
+            this._unsupported = true;
+            this.client._log.debug(`getFileHashes unsupported: ${e}`);
+        }
+    }
 }
 
 /** @hidden */
@@ -111,6 +163,7 @@ export async function downloadFile(
         fileSize = undefined,
         progressCallback = undefined,
         dcId = undefined,
+        verifyHashes = false,
     }: DownloadFileParams
 ): Promise<Buffer | string | undefined> {
     const info = utils.getFileInfo(inputLocation);
@@ -122,6 +175,9 @@ export async function downloadFile(
 
     const writer = getWriter(outputFile);
     const abort = new AbortController();
+    const hashChecker = verifyHashes
+        ? new FileHashChecker(client, location)
+        : undefined;
     let downloaded = 0;
 
     const reportProgress = async (bytes: number) => {
@@ -147,6 +203,7 @@ export async function downloadFile(
                 writer,
                 abort.signal,
                 reportProgress,
+                hashChecker,
             );
         } else {
             await streamParallel(
@@ -158,6 +215,7 @@ export async function downloadFile(
                 writer,
                 abort.signal,
                 reportProgress,
+                hashChecker,
             );
         }
         await closeWriter(writer);
@@ -176,12 +234,13 @@ async function streamSequential(
     writer: any,
     signal: AbortSignal,
     onBytes: (n: number) => Promise<void>,
+    hashChecker?: FileHashChecker,
 ): Promise<void> {
     let idx = 0;
     while (true) {
         if (signal.aborted) return;
         const offset = bigInt(idx).multiply(partSize);
-        const data = await client._filePool.getFile(
+        const data = await client._media.getFile(
             dcId,
             location,
             offset,
@@ -189,6 +248,9 @@ async function streamSequential(
             signal,
         );
         if (data.length > 0) {
+            if (hashChecker) {
+                await hashChecker.verify(idx * partSize, data);
+            }
             await writer.write(data);
             await onBytes(data.length);
         }
@@ -206,11 +268,21 @@ async function streamParallel(
     writer: any,
     signal: AbortSignal,
     onBytes: (n: number) => Promise<void>,
+    hashChecker?: FileHashChecker,
 ): Promise<void> {
     const totalParts = Math.max(1, Math.ceil(totalBytes / partSize));
     const ordered = new OrderedWriter(writer);
+    // High-water mark only: the real rate gate is the MediaScheduler's
+    // per-session windows. We let enough parts race into the scheduler to keep
+    // every session's window fillable at maximum scale-out; the surplus queues
+    // there (that queue IS the demand signal that grows windows/sessions).
+    // This also bounds the OrderedWriter stash memory.
+    const dl = client._media.opts.download;
     const inflight = new BoundedSemaphore(
-        Math.max(1, client._filePool.opts.inflightPerDc),
+        Math.max(
+            1,
+            dl.maxSessions * Math.ceil(dl.maxWindow / Math.max(1, partSize))
+        )
     );
 
     let firstError: any;
@@ -227,7 +299,7 @@ async function streamParallel(
         const offset = bigInt(idx).multiply(partSize);
         tasks.push((async () => {
             try {
-                const data = await client._filePool.getFile(
+                const data = await client._media.getFile(
                     dcId,
                     location,
                     offset,
@@ -235,11 +307,15 @@ async function streamParallel(
                     signal,
                 );
                 if (!firstError) {
+                    if (hashChecker) {
+                        await hashChecker.verify(idx * partSize, data);
+                    }
+                    await onBytes(data.length);
                     // Always push to the ordered writer, even if the part
                     // came back empty — otherwise `nextIdx` would stall on
                     // the gap and every later part would stay stuck in the
                     // stash, silently truncating the output.
-                    await ordered.write(idx, data, onBytes);
+                    await ordered.write(idx, data);
                 }
             } catch (err: any) {
                 if (!firstError) firstError = err;
@@ -254,7 +330,7 @@ async function streamParallel(
     }
 
     await Promise.all(tasks);
-    if (firstError && !(firstError instanceof FilePoolAbortError)) {
+    if (firstError && !(firstError instanceof MediaAbortError)) {
         throw firstError;
     }
 }

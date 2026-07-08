@@ -18,9 +18,13 @@ import type { ParseInterface } from "./messageParse";
 import type { EventBuilder } from "../events/common";
 import { MarkdownParser } from "../extensions/markdown";
 import { MTProtoSender } from "../network";
-import { ApiSenderPool } from "../network/ApiSenderPool";
-import type { SenderLease } from "../network/ApiSenderPool";
-import { FilePool, FilePoolOptions } from "../network/FilePool";
+import { DcenterRegistry } from "../network/Dcenter";
+import { Network } from "../network/Network";
+import type { SessionLease } from "../network/Network";
+import {
+    MediaScheduler,
+    MediaSchedulerOptions,
+} from "../network/MediaScheduler";
 import { LAYER } from "../tl/runtime/registry";
 import {
     ConnectionTCPMTProxyAbridged,
@@ -31,8 +35,10 @@ import { LogLevel } from "../extensions/Logger";
 import Deferred from "../extensions/Deferred";
 import { UpdateManager } from "./UpdateManager";
 
-const API_SENDER_IDLE_TIMEOUT_MS = 30000;
-const FILE_POOL_CLOSE_GRACE_MS = 5000;
+// tdesktop kKillSessionTimeout: an idle session is torn down after 15s and
+// rebuilt lazily on next use (the main session never idles — it pings).
+const SESSION_IDLE_TIMEOUT_MS = 15000;
+const SESSION_STARTUP_DELAY_MS = 800;
 
 const PROD_DEFAULT_DC_ID = 2;
 const TEST_DEFAULT_DC_ID = 2;
@@ -194,11 +200,11 @@ export interface TelegramClientParams {
      * It should return the token obtained after solving the CAPTCHA.
      */
     reCaptchaCallback?: (siteKey: string) => Promise<string>;
-    /**
-     * File-download pool tuning. Defaults follow tdesktop: 1→8 sessions per DC,
-     * 128 KB parts, 15 s idle release. See {@link FilePoolOptions}.
-     */
-    downloadPool?: Partial<FilePoolOptions>;
+    downloadPool?: Partial<MediaSchedulerOptions> & {
+        inflightPerDc?: number;
+        maxSessions?: number;
+        sessions?: number;
+    };
     /**
      * Bounds the in-memory entity cache (the hot working set of resolved
      * peers; the session remains the storage tier).
@@ -286,6 +292,14 @@ export abstract class TelegramBaseClient {
     public _entityCache: EntityCache;
     /** @hidden */
     public _lastRequest?: number;
+    /**
+     * Epoch ms of the last message decrypted on ANY session. Distinguishes a
+     * genuinely dead main connection from a ping that merely timed out because
+     * the single JS thread was busy decrypting media — if data is still
+     * arriving, the stack is alive and a ping hiccup must not force a reconnect.
+     * @hidden
+     */
+    public _lastReceivedAt = 0;
     /** @hidden */
     public _parseMode?: ParseInterface;
     /** @hidden */
@@ -295,10 +309,17 @@ export abstract class TelegramBaseClient {
         string,
         [ReturnType<typeof setTimeout>, Api.TypeUpdate[]]
     >();
-    /** @hidden */
-    public _apiSenderPool!: ApiSenderPool;
-    /** @hidden */
-    public _filePool!: FilePool;
+    /** All MTProto sessions, keyed by ShiftedDcId (tdesktop's Instance). @hidden */
+    public _network!: Network;
+    /** File-part scheduler shared by downloads and uploads. @hidden */
+    public _media!: MediaScheduler;
+    /**
+     * Shared per-DC state (auth key + server salt), tdesktop's `Dcenter`.
+     * Every sender of one DC reads/writes here so fresh sessions start with a
+     * valid salt and share one auth key.
+     * @hidden
+     */
+    public readonly _dcenters = new DcenterRegistry();
     /** @hidden */
     _loopStarted: boolean;
     /** @hidden */
@@ -405,10 +426,15 @@ export abstract class TelegramBaseClient {
 
         this.updateManager = new UpdateManager(this as unknown as TelegramClient);
 
-        this._apiSenderPool = new ApiSenderPool(this, {
-            idleTimeoutMs: API_SENDER_IDLE_TIMEOUT_MS,
+        this._network = new Network(this, {
+            idleTimeoutMs: SESSION_IDLE_TIMEOUT_MS,
+            sessionStartupDelayMs: SESSION_STARTUP_DELAY_MS,
         });
-        this._filePool = new FilePool(this, clientParams.downloadPool);
+        this._media = new MediaScheduler(
+            this,
+            this._network,
+            clientParams.downloadPool
+        );
     }
 
     /**
@@ -473,8 +499,8 @@ export abstract class TelegramBaseClient {
 
     async disconnect() {
         await this._disconnect();
-        await this._filePool.purge();
-        await this._apiSenderPool.purge();
+        await this._media.purge();
+        await this._network.purge();
         this._teardownUpdateState();
     }
 
@@ -508,8 +534,8 @@ export abstract class TelegramBaseClient {
     async destroy() {
         this._destroyed = true;
         await this.disconnect();
-        await this._filePool.close({ waitMs: FILE_POOL_CLOSE_GRACE_MS });
-        await this._apiSenderPool.close();
+        await this._media.close();
+        await this._network.close();
         this._eventBuilders = [];
     }
 
@@ -526,18 +552,6 @@ export abstract class TelegramBaseClient {
 
         while (true) {
             try {
-                await sender.connect(
-                    new this._connection({
-                        ip: dc.ipAddress,
-                        port: dc.port,
-                        dcId: dcId,
-                        loggers: this._log,
-                        proxy: this._proxy,
-                        socket: this.networkSocket,
-                    }),
-                    false
-                );
-
                 // Every fresh TCP connection needs an `InvokeWithLayer(InitConnection(...))`
                 // before any other API request — otherwise the server rejects subsequent
                 // calls with CONNECTION_NOT_INITED (or, on some media DCs, silently drops
@@ -561,6 +575,18 @@ export abstract class TelegramBaseClient {
                 } else {
                     innerQuery = new Api.help.GetConfig();
                 }
+
+                await sender.connect(
+                    new this._connection({
+                        ip: dc.ipAddress,
+                        port: dc.port,
+                        dcId: dcId,
+                        loggers: this._log,
+                        proxy: this._proxy,
+                        socket: this.networkSocket,
+                    }),
+                    false
+                );
                 // Build a fresh InitConnection per call — the client-level
                 // `_initRequest` instance is shared across DCs and must not
                 // be mutated concurrently.
@@ -607,13 +633,15 @@ export abstract class TelegramBaseClient {
         dcId: number,
         onBreak: (dcId: number) => void,
         authKey?: AuthKey,
+        autoReconnect: boolean = true,
+        tempBinding?: import("../network/MTProtoSender").SenderTempBinding,
     ): MTProtoSender {
         return new MTProtoSender(authKey ?? this.session.getAuthKey(dcId), {
             logger: this._log,
             dcId,
             retries: this._connectionRetries,
             delay: this._retryDelay,
-            autoReconnect: this._autoReconnect,
+            autoReconnect: autoReconnect && this._autoReconnect,
             connectTimeout: this._timeout,
             authKeyCallback: this._authKeyCallback.bind(this),
             isMainSender: dcId === this.session.dcId,
@@ -621,13 +649,15 @@ export abstract class TelegramBaseClient {
             client: this as unknown as TelegramClient,
             securityChecks: this._securityChecks,
             reconnectRetries: this._reconnectRetries,
+            dcenter: this._dcenters.get(dcId),
+            tempBinding,
         });
     }
 
     /** @hidden */
-    getSender(dcId: number): Promise<SenderLease> {
+    getSender(dcId: number): Promise<SessionLease> {
         return dcId
-            ? this._apiSenderPool.lease(dcId)
+            ? this._network.lease(dcId)
             : Promise.resolve({ sender: this._sender!, release: () => {} });
     }
 

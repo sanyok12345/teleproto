@@ -14,7 +14,7 @@ import type { TelegramClient } from "./TelegramClient";
 import bigInt from "big-integer";
 import { RequestState } from "../network/RequestState";
 import { MTProtoSender } from "../network";
-import type { SenderLease } from "../network/ApiSenderPool";
+import type { SessionLease } from "../network/Network";
 
 // UserMethods {
 // region Invoking Telegram request
@@ -45,7 +45,7 @@ export async function invoke<R extends Api.AnyRequest>(
         throw new Error("You can only invoke MTProtoRequests");
     }
     let sender = client._sender;
-    let lease: SenderLease | undefined;
+    let lease: SessionLease | undefined;
     if (dcId) {
         lease = await client.getSender(dcId);
         sender = lease.sender;

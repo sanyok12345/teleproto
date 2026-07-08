@@ -1,12 +1,11 @@
 import { Api } from "../tl";
 
 import { TelegramClient } from "./TelegramClient";
-import { generateRandomBytes, readBigIntFromBuffer, sleep } from "../Helpers";
+import { generateRandomBytes, readBigIntFromBuffer } from "../Helpers";
 import { getAppropriatedPartSize, getInputMedia, getMessageId } from "../Utils";
 import { EntityLike, FileLike, MarkupLike, MessageIDLike } from "../define";
 import path from "path";
 import { promises as fs } from "fs";
-import * as errors from "../errors";
 import * as utils from "../Utils";
 import { _parseMessageText } from "./messageParse";
 import bigInt, { BigInteger } from "big-integer";
@@ -27,8 +26,9 @@ export interface UploadFileParams {
      * On Node.js you should use {@link CustomFile} class to wrap your file.
      */
     file: File | CustomFile;
-    /** How many workers to use to upload the file. anything above 16 is unstable. */
-    workers: number;
+    /** Parts to keep in flight. Defaults to a parallel value when omitted;
+     * anything above 16 is unstable. */
+    workers?: number;
     /** a progress callback for the upload. */
     onProgress?: OnProgress;
     maxBufferSize?: number;
@@ -93,9 +93,6 @@ class CustomBuffer {
 
 const KB_TO_BYTES = 1024;
 const LARGE_FILE_THRESHOLD = 10 * 1024 * 1024;
-const UPLOAD_TIMEOUT = 15 * 1000;
-const DISCONNECT_SLEEP = 1000;
-const BUFFER_SIZE_2GB = 2 ** 31;
 const BUFFER_SIZE_20MB = 20 * 1024 * 1024;
 
 async function getFileBuffer(
@@ -133,14 +130,16 @@ export async function uploadFile(
         fileParams.maxBufferSize || BUFFER_SIZE_20MB - 1
     );
 
-    // Make sure a new sender can be created before starting upload
-    (await client.getSender(client.session.dcId)).release();
-
-    if (!workers || !size) {
-        workers = 1;
+    const ul = client._media.opts.upload;
+    let readAhead = Math.max(
+        1,
+        ul.maxSessions * Math.ceil(ul.maxWindow / Math.max(1, partSize))
+    );
+    if (workers && workers > 0) {
+        readAhead = Math.min(readAhead, workers);
     }
-    if (workers >= partCount) {
-        workers = partCount;
+    if (readAhead > partCount) {
+        readAhead = partCount;
     }
 
     let progress = 0;
@@ -148,7 +147,9 @@ export async function uploadFile(
         onProgress(progress);
     }
 
-    const inflight = new BoundedSemaphore(workers);
+    const dcId = client.session.dcId;
+    const abort = new AbortController();
+    const inflight = new BoundedSemaphore(Math.max(1, readAhead));
     let firstError: any;
     const tasks: Promise<void>[] = [];
 
@@ -177,52 +178,34 @@ export async function uploadFile(
             (async () => {
                 try {
                     const bytesMemo = await buffer.slice(startPart, endPartMemo);
-                    while (true) {
-                        let lease;
-                        try {
-                            // We always upload from the DC we are in
-                            lease = await client.getSender(
-                                client.session.dcId
-                            );
-                            await lease.sender.send(
-                                isLarge
-                                    ? new Api.upload.SaveBigFilePart({
-                                        fileId,
-                                        filePart: jMemo,
-                                        fileTotalParts: partCount,
-                                        bytes: bytesMemo,
-                                    })
-                                    : new Api.upload.SaveFilePart({
-                                        fileId,
-                                        filePart: jMemo,
-                                        bytes: bytesMemo,
-                                    })
-                            );
-                        } catch (err: any) {
-                            if (lease && !lease.sender.isConnected()) {
-                                await sleep(DISCONNECT_SLEEP);
-                                continue;
-                            } else if (err instanceof errors.FloodWaitError) {
-                                await sleep(err.seconds * 1000);
-                                continue;
-                            }
-                            throw err;
-                        } finally {
-                            lease?.release();
+                    await client._media.savePart(
+                        dcId,
+                        isLarge
+                            ? new Api.upload.SaveBigFilePart({
+                                fileId,
+                                filePart: jMemo,
+                                fileTotalParts: partCount,
+                                bytes: bytesMemo,
+                            })
+                            : new Api.upload.SaveFilePart({
+                                fileId,
+                                filePart: jMemo,
+                                bytes: bytesMemo,
+                            }),
+                        abort.signal
+                    );
+
+                    if (onProgress) {
+                        if (onProgress.isCanceled) {
+                            throw new Error("USER_CANCELED");
                         }
 
-                        if (onProgress) {
-                            if (onProgress.isCanceled) {
-                                throw new Error("USER_CANCELED");
-                            }
-
-                            progress += 1 / partCount;
-                            onProgress(progress);
-                        }
-                        break;
+                        progress += 1 / partCount;
+                        onProgress(progress);
                     }
                 } catch (err: any) {
                     if (!firstError) firstError = err;
+                    abort.abort();
                 } finally {
                     inflight.release();
                 }
@@ -357,7 +340,7 @@ export async function _fileToMedia(
         supportsStreaming = false,
         mimeType,
         asImage,
-        workers = 1,
+        workers,
     }: FileToMediaInterface
 ): Promise<{
     fileHandle?: any;
@@ -549,7 +532,7 @@ export async function _sendAlbum(
         silent,
         supportsStreaming = false,
         scheduleDate,
-        workers = 1,
+        workers,
         noforwards,
         commentTo,
         topMsgId,
@@ -698,7 +681,7 @@ export async function sendFile(
         silent,
         supportsStreaming = false,
         scheduleDate,
-        workers = 1,
+        workers,
         noforwards,
         commentTo,
         topMsgId,

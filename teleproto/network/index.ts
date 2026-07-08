@@ -18,13 +18,14 @@ export {
     SenderSlotDeathReason,
     SenderSlotOptions,
 } from "./SenderSlot";
-export { ApiSenderPool, ApiSenderPoolOptions, SenderLease } from "./ApiSenderPool";
+export { Network, NetworkOptions, SessionLease } from "./Network";
 export {
-    FilePool,
-    FilePoolOptions,
-    DEFAULT_FILE_POOL_OPTIONS,
+    MediaScheduler,
+    MediaSchedulerOptions,
     CdnRedirectError,
-    FilePoolClosedError,
-    FilePoolAbortError,
-} from "./FilePool";
+    MediaAbortError,
+} from "./MediaScheduler";
+export { BalancePolicy, DOWNLOAD_BALANCE, UPLOAD_BALANCE } from "./BalancePolicy";
+export { Dcenter, DcenterRegistry } from "./Dcenter";
+export * from "./core_types";
 export { OrderedWriter, BoundedSemaphore } from "./OrderedWriter";

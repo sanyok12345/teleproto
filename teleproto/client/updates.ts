@@ -204,13 +204,19 @@ export async function _updateLoop(client: TelegramClient) {
 
             lastPongAt = Date.now();
         } catch (err) {
+            lastPongAt = undefined;
+            if (client._destroyed) break;
+
+            if (Date.now() - client._lastReceivedAt < PING_INTERVAL + PING_TIMEOUT) {
+                client._log.debug(`Ping timed out but transfer is active, ignoring`);
+                continue;
+            }
+
             if (client._errorHandler) {
                 await client._errorHandler(err as Error);
             }
-            client._log.error(`Ping failed: ${err}`);
-            lastPongAt = undefined;
+            client._log.warn(`Ping failed: ${err}, reconnecting`);
 
-            if (client._destroyed) break;
             if (client._sender?.isReconnecting || client._isSwitchingDc) continue;
             if (client.disconnected) break;
             client._sender!.reconnect();

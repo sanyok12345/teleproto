@@ -1,8 +1,16 @@
 import { readBufferFromBigInt } from "../../Helpers";
 import { Connection, PacketCodec } from "./Connection";
+import { InvalidBufferError } from "../../errors";
 import type { PromisedNetSockets } from "../../extensions";
 
 import bigInt from "big-integer";
+
+const TRANSPORT_ERROR_HEAD = new Set([
+    0x6c, // -404
+    0x53, // -429
+    0x44, // -444
+]);
+const TRANSPORT_ERROR_CODES = new Set([-404, -429, -444]);
 
 export class AbridgedPacketCodec extends PacketCodec {
     static tag = Buffer.from("ef", "hex");
@@ -42,6 +50,14 @@ export class AbridgedPacketCodec extends PacketCodec {
                 await reader.read(3),
                 Buffer.alloc(1),
             ]).readInt32LE(0);
+        } else if (TRANSPORT_ERROR_HEAD.has(length)) {
+            const tail = await reader.readExactly(3);
+            const candidate = Buffer.concat([Buffer.from([length]), tail]);
+            if (TRANSPORT_ERROR_CODES.has(candidate.readInt32LE(0))) {
+                throw new InvalidBufferError(candidate);
+            }
+            const rest = await reader.read((length << 2) - 3);
+            return Buffer.concat([tail, rest]);
         }
 
         return reader.read(length << 2);

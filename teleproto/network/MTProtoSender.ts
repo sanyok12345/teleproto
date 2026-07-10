@@ -665,6 +665,19 @@ export class MTProtoSender {
                     return;
                 }
 
+                if (e instanceof InvalidBufferError) {
+                    if (e.code === 404) {
+                        this._handleBadAuthKey();
+                    } else {
+                        this._log.warn(
+                            `Transport error ${e.code} for dc ${this._dcId}, reconnecting`
+                        );
+                        this.reconnect();
+                    }
+                    this._recvLoopHandle = undefined;
+                    return;
+                }
+
                 if (this._currentRetries > this._reconnectRetries) {
                     for (const state of this._pendingState.values()) {
                         state.reject(
@@ -776,12 +789,34 @@ export class MTProtoSender {
             `Broken authorization key for dc ${this._dcId}, resetting...`
         );
 
-        if (this._isMainSender && this._updateCallback) {
-            this._updateCallback(
-                this._client,
-                new UpdateConnectionState(UpdateConnectionState.broken)
-            );
-        } else if (!this._isMainSender && this._onConnectionBreak) {
+        if (this._tempBinding) {
+            // A dead temp key must never touch the permanent one. Drop the
+            // slot — Network resets the Dcenter temp-key state on break and
+            // the next slot performs a fresh DH + bindTempAuthKey.
+            if (this._onConnectionBreak) {
+                this._onConnectionBreak(this._dcId);
+            }
+            return;
+        }
+
+        if (this._isMainSender) {
+            if (this._updateCallback) {
+                this._updateCallback(
+                    this._client,
+                    new UpdateConnectionState(UpdateConnectionState.broken)
+                );
+            }
+            this.authKey
+                .setKey(undefined)
+                .catch(() => {})
+                .then(() => {
+                    if (this._authKeyCallback) {
+                        return this._authKeyCallback(undefined, this._dcId);
+                    }
+                })
+                .catch(() => {})
+                .then(() => this.reconnect());
+        } else if (this._onConnectionBreak) {
             this._onConnectionBreak(this._dcId);
         }
     }

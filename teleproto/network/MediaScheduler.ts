@@ -131,12 +131,9 @@ export class MediaScheduler {
             if (opts.inflightPerDc && opts.inflightPerDc > 0) {
                 const w = opts.inflightPerDc * merged.partSize;
                 merged.download.startWindow = w;
-                merged.download.maxWindow = Math.max(
-                    merged.download.maxWindow,
-                    w
-                );
+                merged.download.maxWindow = w;
                 merged.upload.startWindow = w;
-                merged.upload.maxWindow = Math.max(merged.upload.maxWindow, w);
+                merged.upload.maxWindow = w;
             }
             if (opts.maxSessions && opts.maxSessions > 0) {
                 merged.download.maxSessions = opts.maxSessions;

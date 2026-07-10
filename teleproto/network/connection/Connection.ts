@@ -42,6 +42,7 @@ class Connection {
     _sendArray: AsyncQueue;
     _recvArray: AsyncQueue;
     private _abortController: AbortController;
+    private _recvError?: Error;
     socket: PromisedNetSockets;
 
     constructor({
@@ -80,7 +81,8 @@ class Connection {
     async connect() {
         // Reset abort controller to have a fresh signal
         this._abortController = new AbortController();
-        
+        this._recvError = undefined;
+
         await this._connect();
         this._connected = true;
 
@@ -117,7 +119,7 @@ class Connection {
                 return result;
             }
         }
-        throw new Error("Not connected");
+        throw this._recvError ?? new Error("Not connected");
     }
 
     async _sendLoop() {
@@ -149,7 +151,7 @@ class Connection {
                 }
             } catch (e) {
                 this._log.debug("connection closed");
-                // await this._recvArray.push()
+                this._recvError = e as Error;
 
                 this.disconnect();
                 return;

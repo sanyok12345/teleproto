@@ -180,6 +180,9 @@ export class Network {
         if (shift === 0 && dcId !== this._client.session.dcId) {
             this._client.session.setAuthKey(undefined, dcId);
         }
+        if (isDownloadDcId(shiftedDcId) || isUploadDcId(shiftedDcId)) {
+            this.dcenter(dcId).resetMediaTempKey();
+        }
         slot.markDead("manual").catch(() => {});
     }
 

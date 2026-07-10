@@ -27,6 +27,7 @@ import { MarkdownParser } from "../extensions/markdown";
 import { MarkdownV2Parser } from "../extensions/markdownv2";
 import type { EventBuilder } from "../events/common";
 import { MTProtoSender } from "../network";
+import type { SessionLease } from "../network/Network";
 
 import { LAYER } from "../tl/runtime/registry";
 import { DownloadMediaInterface } from "./downloads";
@@ -1426,9 +1427,10 @@ export class TelegramClient extends TelegramBaseClient {
     ): Promise<R["__response"]> {
         return userMethods.invoke(this, request, dcId);
     }
+    
     invokeWithSender<R extends Api.AnyRequest>(
         request: R,
-        sender?: MTProtoSender
+        sender?: MTProtoSender | SessionLease
     ): Promise<R["__response"]> {
         return userMethods.invoke(this, request, undefined, sender);
     }

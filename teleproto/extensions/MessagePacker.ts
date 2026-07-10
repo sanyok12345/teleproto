@@ -34,6 +34,10 @@ export class MessagePacker {
         return this._queue;
     }
 
+    get length() {
+        return this._queue.length + this._pendingStates.length;
+    }
+
     append(state?: RequestState, setReady = true, atStart = false) {
         // We need to check if there is already a `USE_INVOKE_AFTER_WITH` request
         if (state && USE_INVOKE_AFTER_WITH.has(state.request.className)) {

@@ -317,6 +317,12 @@ export class MTProtoSender {
         return this._userConnected;
     }
 
+    get hasPendingWork(): boolean {
+        return (
+            this._sendQueue.length > 0 || this._pendingState._pending.size > 0
+        );
+    }
+
     _transportConnected() {
         return (
             !this._reconnecting &&

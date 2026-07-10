@@ -39,7 +39,7 @@ export async function invoke<R extends Api.AnyRequest>(
     client: TelegramClient,
     request: R,
     dcId?: number,
-    otherSender?: MTProtoSender
+    otherSender?: MTProtoSender | SessionLease
 ): Promise<R["__response"]> {
     if (request.classType !== "request") {
         throw new Error("You can only invoke MTProtoRequests");
@@ -47,11 +47,14 @@ export async function invoke<R extends Api.AnyRequest>(
     let sender = client._sender;
     let lease: SessionLease | undefined;
     if (dcId) {
-        lease = await client.getSender(dcId);
+        lease = await client._leaseSender(dcId);
         sender = lease.sender;
     }
     if (otherSender != undefined) {
-        sender = otherSender;
+        sender =
+            otherSender instanceof MTProtoSender
+                ? otherSender
+                : (otherSender as unknown as SessionLease).sender;
     }
     if (sender == undefined) {
         throw new Error(
@@ -131,7 +134,7 @@ export async function invoke<R extends Api.AnyRequest>(
                     if (dcId === undefined) {
                         sender = client._sender;
                     } else {
-                        lease = await client.getSender(dcId);
+                        lease = await client._leaseSender(dcId);
                         sender = lease.sender;
                     }
                 } else if (e instanceof errors.MsgWaitError) {

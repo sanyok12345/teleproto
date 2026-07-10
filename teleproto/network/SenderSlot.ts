@@ -160,6 +160,10 @@ export class SenderSlot {
 
     private _idleTick(): void {
         if (this.state !== "ready" || this._active > 0) return;
+        if (this._sender && this._sender.hasPendingWork) {
+            this._armIdle();
+            return;
+        }
         const s = this._sender;
         this._sender = undefined;
         this.state = "idle";

@@ -11,6 +11,9 @@ export interface ParseInterface {
     unparse: (text: string, entities: Api.TypeMessageEntity[]) => string;
 }
 
+export { DEFAULT_DELIMITERS } from "../extensions/markdown";
+export type { messageEntities } from "../extensions/markdown";
+
 /** @hidden */
 export async function _replaceWithMention(
     client: TelegramClient,

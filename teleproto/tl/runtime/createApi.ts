@@ -105,10 +105,24 @@ function argToBytes(
     argName: string,
     requestName?: string
 ): Buffer {
-    if (value == null && type !== "true" && type !== "Bool") {
-        throw new Error(
-            `Required field "${argName}" of ${requestName || "request"} is missing`
-        );
+    if (value == null) {
+        switch (type as PrimitiveArgType) {
+            case "int":
+            case "long":
+            case "int128":
+            case "int256":
+            case "double":
+            case "date":
+                value = 0;
+                break;
+            case "true":
+            case "Bool":
+                break;
+            default:
+                throw new Error(
+                    `Required field "${argName}" of ${requestName || "request"} is missing`
+                );
+        }
     }
     switch (type as PrimitiveArgType) {
         case "int": {

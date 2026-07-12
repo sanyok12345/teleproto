@@ -15,8 +15,9 @@ import { AuthKey } from "../crypto/AuthKey";
 import { Dcenter } from "./Dcenter";
 import { MTProtoState } from "./MTProtoState";
 
-import { BinaryReader, Logger, MessagePacker } from "../extensions";
-import { GZIPPacked, MessageContainer, RPCResult, TLMessage } from "../tl/core";
+import { Logger } from "../extensions";
+import { packRequestBatch } from "./packing";
+import { MtpDispatcher } from "./MtpDispatcher";
 import { Api } from "../tl";
 import bigInt from "big-integer";
 import { sleep } from "../Helpers";
@@ -25,10 +26,8 @@ import { doAuthentication } from "./Authenticator";
 import { buildBindTempAuthKeyRequest } from "./TempAuthKey";
 import { MTProtoPlainSender } from "./MTProtoPlainSender";
 import {
-    BadMessageError,
     InvalidBufferError,
     RPCError,
-    RPCMessageToError,
     SecurityError,
     TypeNotFoundError,
 } from "../errors";
@@ -36,52 +35,66 @@ import { Connection } from "./connection";
 import { UpdateConnectionState } from "./UpdateConnectionState";
 import type { TelegramClient } from "../client/TelegramClient";
 import { LAYER } from "../tl/runtime/registry";
-import { Mutex } from "async-mutex";
 import { PendingState } from "../extensions/PendingState";
 import MsgsAck = Api.MsgsAck;
 
+const USE_INVOKE_AFTER_WITH = new Set([
+    "messages.SendMessage",
+    "messages.SendMedia",
+    "messages.SendMultiMedia",
+    "messages.ForwardMessages",
+    "messages.SendInlineBotResult",
+]);
+
 export type SenderTempBinding = NonNullable<DEFAULT_OPTIONS["tempBinding"]>;
 
+export type SenderLifecycle =
+    | "disconnected"
+    | "connecting"
+    | "connected"
+    | "reconnecting"
+    | "dead";
+
 interface DEFAULT_OPTIONS {
-    logger: any;
+    logger: Logger;
     retries: number;
     reconnectRetries: number;
     delay: number;
     autoReconnect: boolean;
-    connectTimeout: any;
-    authKeyCallback: any;
-    updateCallback?: any;
-    autoReconnectCallback?: any;
+    connectTimeout: number | null;
+    authKeyCallback?: (
+        authKey: AuthKey | undefined,
+        dcId: number
+    ) => Promise<void> | void;
+    updateCallback?: (
+        client: TelegramClient,
+        update: UpdateConnectionState | Api.TypeUpdates
+    ) => void;
+    autoReconnectCallback?: () => Promise<void> | void;
     isMainSender: boolean;
     dcId: number;
-    senderCallback?: any;
     client: TelegramClient;
-    onConnectionBreak?: CallableFunction;
+    onConnectionBreak?: (dcId: number) => void;
     securityChecks: boolean;
     dcenter?: Dcenter;
     tempBinding?: {
         permAuthKey: AuthKey;
         dcParam: number;
         expiresIn: number;
-        isBound: () => boolean;
-        onBound: (expiresAt: number) => void;
         onFailed: (err: unknown) => void;
     };
 }
 
 export class MTProtoSender {
     static DEFAULT_OPTIONS = {
-        logger: null,
         reconnectRetries: Infinity,
         retries: Infinity,
         delay: 2000,
         autoReconnect: true,
         connectTimeout: null,
-        authKeyCallback: null,
-        updateCallback: null,
-        autoReconnectCallback: null,
-        isMainSender: null,
-        senderCallback: null,
+        authKeyCallback: undefined,
+        updateCallback: undefined,
+        autoReconnectCallback: undefined,
         onConnectionBreak: undefined,
         securityChecks: true,
     };
@@ -92,42 +105,30 @@ export class MTProtoSender {
     private _reconnectRetries: number;
     private _currentRetries: number;
     private readonly _delay: number;
-    private _connectTimeout: null;
+    private _connectTimeout: number | null;
     private _autoReconnect: boolean;
-    private readonly _authKeyCallback: any;
-    public _updateCallback: (
-        client: TelegramClient,
-        update: UpdateConnectionState
-    ) => void;
-    private readonly _autoReconnectCallback?: any;
-    private readonly _senderCallback: any;
+    private readonly _authKeyCallback?: DEFAULT_OPTIONS["authKeyCallback"];
+    public _updateCallback?: DEFAULT_OPTIONS["updateCallback"];
+    private readonly _autoReconnectCallback?: DEFAULT_OPTIONS["autoReconnectCallback"];
     private readonly _isMainSender: boolean;
-    _userConnected: boolean;
-    isReconnecting: boolean;
-    _reconnecting: boolean;
-    _disconnected: boolean;
-    private _sendLoopHandle: any;
-    private _recvLoopHandle: any;
+    private _lifecycle: SenderLifecycle = "disconnected";
     readonly authKey: AuthKey;
     private readonly _state: MTProtoState;
-    private _sendQueue: MessagePacker;
+    private _queued: RequestState[] = [];
+    private _io?: { alive: boolean; connection: Connection };
+    private _wakeWriter?: () => void;
     _pendingState: PendingState;
-    private readonly _pendingAck: Set<any>;
-    private readonly _lastAcks: any[];
-    private readonly _handlers: any;
+    private readonly _pendingAck: Set<bigInt.BigInteger>;
+    private readonly _lastAcks: RequestState[];
+    private readonly _dispatcher: MtpDispatcher;
     private readonly _client: TelegramClient;
-    private readonly _onConnectionBreak?: CallableFunction;
-    userDisconnected: boolean;
-    isConnecting: boolean;
+    private readonly _onConnectionBreak?: (dcId: number) => void;
     _authenticated: boolean;
     _needsInitConnection: boolean = true;
     private _securityChecks: boolean;
     private readonly _dcenter?: Dcenter;
     private readonly _tempBinding?: DEFAULT_OPTIONS["tempBinding"];
-    private _connectMutex: Mutex;
-    private _cancelSend: boolean;
-    private _abortController: AbortController;
-    private _finishedConnecting: boolean;
+    private _tempBound: boolean = false;
 
     /**
      * @param authKey
@@ -138,9 +139,6 @@ export class MTProtoSender {
             ...MTProtoSender.DEFAULT_OPTIONS,
             ...opts,
         };
-        this._finishedConnecting = false;
-        this._cancelSend = false;
-        this._abortController = new AbortController();
         this._connection = undefined;
         this._log = args.logger;
         this._dcId = args.dcId;
@@ -154,38 +152,13 @@ export class MTProtoSender {
         this._updateCallback = args.updateCallback;
         this._autoReconnectCallback = args.autoReconnectCallback;
         this._isMainSender = args.isMainSender;
-        this._senderCallback = args.senderCallback;
         this._client = args.client;
         this._onConnectionBreak = args.onConnectionBreak;
         this._securityChecks = args.securityChecks;
         this._dcenter = args.dcenter;
         this._tempBinding = args.tempBinding;
 
-        this._connectMutex = new Mutex();
-        /**
-         * whether we disconnected ourself or telegram did it.
-         */
-        this.userDisconnected = false;
-
-        /**
-         * If a disconnection happens for any other reason and it
-         * was *not* user action then the pending messages won't
-         * be cleared but on explicit user disconnection all the
-         * pending futures should be cancelled.
-         */
-        this.isConnecting = false;
         this._authenticated = false;
-        this._userConnected = false;
-        this.isReconnecting = false;
-
-        this._reconnecting = false;
-        this._disconnected = true;
-
-        /**
-         * We need to join the loops upon disconnection
-         */
-        this._sendLoopHandle = null;
-        this._recvLoopHandle = null;
 
         /**
          * Preserving the references of the AuthKey and state is important
@@ -196,12 +169,6 @@ export class MTProtoSender {
             this._log,
             this._securityChecks
         );
-
-        /**
-         * Outgoing messages are put in a queue and sent in a batch.
-         * Note that here we're also storing their ``_RequestState``.
-         */
-        this._sendQueue = new MessagePacker(this._state, this._log);
 
         /**
          * Sent states are remembered until a response is received.
@@ -220,38 +187,32 @@ export class MTProtoSender {
          */
         this._lastAcks = [];
 
-        /**
-         * Jump table from response ID to method that handles it
-         */
-
-        this._handlers = {
-            [RPCResult.CONSTRUCTOR_ID.toString()]:
-                this._handleRPCResult.bind(this),
-            [MessageContainer.CONSTRUCTOR_ID.toString()]:
-                this._handleContainer.bind(this),
-            [GZIPPacked.CONSTRUCTOR_ID.toString()]:
-                this._handleGzipPacked.bind(this),
-            [Api.Pong.CONSTRUCTOR_ID.toString()]: this._handlePong.bind(this),
-            [Api.BadServerSalt.CONSTRUCTOR_ID.toString()]:
-                this._handleBadServerSalt.bind(this),
-            [Api.BadMsgNotification.CONSTRUCTOR_ID.toString()]:
-                this._handleBadNotification.bind(this),
-            [Api.MsgDetailedInfo.CONSTRUCTOR_ID.toString()]:
-                this._handleDetailedInfo.bind(this),
-            [Api.MsgNewDetailedInfo.CONSTRUCTOR_ID.toString()]:
-                this._handleNewDetailedInfo.bind(this),
-            [Api.NewSessionCreated.CONSTRUCTOR_ID.toString()]:
-                this._handleNewSessionCreated.bind(this),
-            [Api.MsgsAck.CONSTRUCTOR_ID.toString()]: this._handleAck.bind(this),
-            [Api.FutureSalts.CONSTRUCTOR_ID.toString()]:
-                this._handleFutureSalts.bind(this),
-            [Api.MsgsStateReq.CONSTRUCTOR_ID.toString()]:
-                this._handleStateForgotten.bind(this),
-            [Api.MsgResendReq.CONSTRUCTOR_ID.toString()]:
-                this._handleStateForgotten.bind(this),
-            [Api.MsgsAllInfo.CONSTRUCTOR_ID.toString()]:
-                this._handleMsgAll.bind(this),
-        };
+        this._dispatcher = new MtpDispatcher({
+            log: this._log,
+            pendingState: this._pendingState,
+            lastAcks: this._lastAcks,
+            state: this._state,
+            dcenter: this._dcenter,
+            isMainSender: this._isMainSender,
+            ack: (msgId) => {
+                this._pendingAck.add(msgId);
+                if (this._pendingAck.size >= 16) {
+                    this._wakeUp();
+                }
+            },
+            enqueue: (state) => this._enqueue(state),
+            requeue: (states) => this._requeue(states),
+            onBadAuthKey: (shouldSkipForMain) =>
+                this._handleBadAuthKey(shouldSkipForMain),
+            markNeedsInitConnection: () => {
+                this._needsInitConnection = true;
+            },
+            dispatchUpdate: (update) => {
+                if (this._updateCallback) {
+                    this._updateCallback(this._client, update);
+                }
+            },
+        });
     }
 
     set dcId(dcId: number) {
@@ -268,14 +229,19 @@ export class MTProtoSender {
      * Connects to the specified given connection using the given auth key.
      */
     async connect(connection: Connection, force: boolean): Promise<boolean> {
-        this.userDisconnected = false;
-        if (this._userConnected && !force) {
+        if (this._lifecycle === "connected" && !force) {
             this._log.info("User is already connected!");
             return false;
         }
-        this.isConnecting = true;
+        if (this._lifecycle !== "reconnecting") {
+            this._lifecycle = "connecting";
+        }
         this._connection = connection;
-        this._finishedConnecting = false;
+        if (this._tempBinding) {
+            this._tempBound = false;
+            await this.authKey.setKey(undefined);
+        }
+        let lastError: unknown;
         for (let attempt = 0; attempt < this._retries; attempt++) {
             try {
                 await this._connect();
@@ -287,9 +253,12 @@ export class MTProtoSender {
                         )
                     );
                 }
-                this._finishedConnecting = true;
-                break;
+                return true;
             } catch (err) {
+                lastError = err;
+                if ((this._lifecycle as SenderLifecycle) === "dead") {
+                    break;
+                }
                 if (this._updateCallback && attempt === 0) {
                     this._updateCallback(
                         this._client,
@@ -308,26 +277,51 @@ export class MTProtoSender {
                 await sleep(this._delay);
             }
         }
-        this.isConnecting = false;
-
-        return this._finishedConnecting;
+        await this._disconnect().catch(() => {});
+        throw lastError instanceof Error
+            ? lastError
+            : new Error(`Failed to connect to dc ${this._dcId}`);
     }
 
     isConnected() {
-        return this._userConnected;
+        return this._lifecycle === "connected";
+    }
+
+    get lifecycle(): SenderLifecycle {
+        return this._lifecycle;
+    }
+
+    get userDisconnected(): boolean {
+        return this._lifecycle === "dead";
+    }
+
+    set userDisconnected(value: boolean) {
+        if (value) {
+            this._lifecycle = "dead";
+        } else if (this._lifecycle === "dead") {
+            this._lifecycle = "disconnected";
+        }
+    }
+
+    get _userConnected(): boolean {
+        return this._lifecycle === "connected";
+    }
+
+    get isReconnecting(): boolean {
+        return this._lifecycle === "reconnecting";
+    }
+
+    get _disconnected(): boolean {
+        return this._lifecycle !== "connected";
+    }
+
+    get isConnecting(): boolean {
+        return this._lifecycle === "connecting";
     }
 
     get hasPendingWork(): boolean {
         return (
-            this._sendQueue.length > 0 || this._pendingState._pending.size > 0
-        );
-    }
-
-    _transportConnected() {
-        return (
-            !this._reconnecting &&
-            this._connection &&
-            this._connection._connected
+            this._queued.length > 0 || this._pendingState._pending.size > 0
         );
     }
 
@@ -336,59 +330,83 @@ export class MTProtoSender {
      * all pending requests, and closes the send and receive loops.
      */
     async disconnect() {
-        this.userDisconnected = true;
+        this._lifecycle = "dead";
         this._log.debug("Disconnecting...");
         await this._disconnect();
+        this._failAllPending(
+            new Error(`Disconnected from dc ${this._dcId}`)
+        );
     }
 
     /**
-     *
-     This method enqueues the given request to be sent. Its send
-     state will be saved until a response arrives, and a ``Future``
-     that will be resolved when the response arrives will be returned:
-
-     .. code-block:: javascript
-
-     async def method():
-     # Sending (enqueued for the send loop)
-     future = sender.send(request)
-     # Receiving (waits for the receive loop to read the result)
-     result = await future
-
-     Designed like this because Telegram may send the response at
-     any point, and it can send other items while one waits for it.
-     Once the response for this future arrives, it is set with the
-     received result, quite similar to how a ``receive()`` call
-     would otherwise work.
-
-     Since the receiving part is "built in" the future, it's
-     impossible to await receive a result that was never sent.
-     * @param request
-     * @returns {RequestState}
+     * TCP dial bounded by the client's `timeout` option. Without this an
+     * unreachable DC address blocks for the OS default (~75s on macOS),
+     * silently burning every request deadline stacked behind the connect.
      */
+    private async _connectWithTimeout(connection: Connection) {
+        const seconds =
+            typeof this._connectTimeout === "number" &&
+            this._connectTimeout > 0
+                ? this._connectTimeout
+                : 10;
+        let timer: ReturnType<typeof setTimeout> | undefined;
+        const dial = connection.connect();
+        dial.catch(() => {});
+        try {
+            await Promise.race([
+                dial,
+                new Promise<never>((_, reject) => {
+                    timer = setTimeout(
+                        () =>
+                            reject(
+                                new Error(
+                                    `Connection to ${connection.toString()} timed out after ${seconds}s`
+                                )
+                            ),
+                        seconds * 1000
+                    );
+                }),
+            ]);
+        } catch (err) {
+            // Kill the half-open dial so it cannot complete into a ghost
+            // connection nobody owns.
+            connection.socket.close().catch(() => {});
+            throw err;
+        } finally {
+            if (timer) clearTimeout(timer);
+        }
+    }
+
+    private _failAllPending(error: Error) {
+        for (const state of this._pendingState.values()) {
+            state.reject(error);
+        }
+        this._pendingState.clear();
+        for (const state of this._queued) {
+            if (!(state.request instanceof MsgsAck)) state.reject(error);
+        }
+        this._queued.length = 0;
+    }
+
     send(request: Api.AnyRequest) {
+        if (this._lifecycle === "dead") {
+            return Promise.reject(
+                new Error(
+                    `Cannot send ${request.className}: sender for dc ${this._dcId} is disconnected`
+                )
+            );
+        }
         if (this._needsInitConnection && this._isApiRequest(request)) {
-            const initConnection = new Api.InitConnection({
-                apiId: this._client.apiId,
-                deviceModel: this._client._initRequest.deviceModel,
-                systemVersion: this._client._initRequest.systemVersion,
-                appVersion: this._client._initRequest.appVersion,
-                langCode: this._client._initRequest.langCode,
-                langPack: this._client._initRequest.langPack,
-                systemLangCode: this._client._initRequest.systemLangCode,
-                proxy: this._client._initRequest.proxy,
-                query: request,
-            });
             request = new Api.InvokeWithLayer({
                 layer: LAYER,
-                query: initConnection,
+                query: this._buildInitConnection(request),
             }) as unknown as Api.AnyRequest;
             this._needsInitConnection = false;
             this._log.debug("Wrapping request with initConnection");
         }
         const state = new RequestState(request);
         this._log.debug(`Send ${request.className}`);
-        this._sendQueue.append(state);
+        this._enqueue(state);
         return state.promise;
     }
 
@@ -408,7 +426,92 @@ export class MTProtoSender {
     }
 
     addStateToQueue(state: RequestState) {
-        this._sendQueue.append(state);
+        if (this._lifecycle === "dead") {
+            // No loops will ever service the queue of a dead sender —
+            // settle the caller instead of stranding it.
+            state.reject(
+                new Error(
+                    `Cannot send ${state.request.className}: sender for dc ${this._dcId} is disconnected`
+                )
+            );
+            return;
+        }
+
+        if (
+            this._needsInitConnection &&
+            this._isApiRequest(state.request)
+        ) {
+            state.request = new Api.InvokeWithLayer({
+                layer: LAYER,
+                query: this._buildInitConnection(state.request),
+            }) as unknown as Api.AnyRequest;
+            state.data = state.request.getBytes();
+            this._needsInitConnection = false;
+            this._log.debug("Wrapping request with initConnection");
+        }
+        this._enqueue(state);
+    }
+
+    private _buildInitConnection(query: Api.AnyRequest) {
+        return new Api.InitConnection({
+            apiId: this._client.apiId,
+            deviceModel: this._client._initRequest.deviceModel,
+            systemVersion: this._client._initRequest.systemVersion,
+            appVersion: this._client._initRequest.appVersion,
+            langCode: this._client._initRequest.langCode,
+            langPack: this._client._initRequest.langPack,
+            systemLangCode: this._client._initRequest.systemLangCode,
+            proxy: this._client._initRequest.proxy,
+            query,
+        });
+    }
+
+    private _enqueue(state: RequestState, atStart = false) {
+        if (
+            state.request.className &&
+            USE_INVOKE_AFTER_WITH.has(state.request.className)
+        ) {
+            if (atStart) {
+                for (const queued of this._queued) {
+                    if (USE_INVOKE_AFTER_WITH.has(queued.request.className)) {
+                        queued.after = state;
+                        break;
+                    }
+                }
+            } else {
+                for (let i = this._queued.length - 1; i >= 0; i--) {
+                    if (
+                        USE_INVOKE_AFTER_WITH.has(
+                            this._queued[i].request.className
+                        )
+                    ) {
+                        state.after = this._queued[i];
+                        break;
+                    }
+                }
+            }
+        }
+        if (atStart) {
+            this._queued.unshift(state);
+        } else {
+            this._queued.push(state);
+        }
+        this._wakeUp();
+    }
+
+    private _requeue(states: RequestState[]) {
+        for (const state of states) {
+            state.msgId = undefined;
+            state.containerId = undefined;
+        }
+        this._queued.unshift(...states);
+        this._wakeUp();
+    }
+
+    private _wakeUp() {
+        const wake = this._wakeWriter;
+        this._wakeWriter = undefined;
+        if (wake) wake();
     }
 
     /**
@@ -425,7 +528,7 @@ export class MTProtoSender {
             this._log.debug(
                 "Connecting to {0}...".replace("{0}", connection.toString())
             );
-            await connection.connect();
+            await this._connectWithTimeout(connection);
             this._log.debug("Connection success!");
         }
 
@@ -458,21 +561,11 @@ export class MTProtoSender {
         if (this._dcenter && !this._dcenter.salt.isZero()) {
             this._state.salt = this._dcenter.salt;
         }
-        this._userConnected = true;
-        this._disconnected = false;
-        this.isReconnecting = false;
+        this._lifecycle = "connected";
 
-        if (!this._sendLoopHandle) {
-            this._log.debug("Starting send loop");
-            this._sendLoopHandle = this._sendLoop();
-        }
+        this._startIo(connection);
 
-        if (!this._recvLoopHandle) {
-            this._log.debug("Starting receive loop");
-            this._recvLoopHandle = this._recvLoop();
-        }
-
-        if (this._tempBinding && !this._tempBinding.isBound()) {
+        if (this._tempBinding && !this._tempBound) {
             try {
                 const expiresAt =
                     Math.floor(Date.now() / 1000) +
@@ -488,10 +581,10 @@ export class MTProtoSender {
                 );
                 const state = new RequestState(request);
                 state.forcedMsgId = msgId;
-                this._sendQueue.append(state);
+                this._enqueue(state);
                 const ok = await state.promise;
                 if (ok === true) {
-                    this._tempBinding.onBound(expiresAt);
+                    this._tempBound = true;
                     this._log.debug(`Bound temp auth key for dc ${this._dcId}`);
                 } else {
                     throw new Error(`bindTempAuthKey answered ${ok}`);
@@ -528,140 +621,127 @@ export class MTProtoSender {
         this._log.debug(
             "Disconnecting from %s...".replace("%s", connection.toString())
         );
-        this._userConnected = false;
-        this._disconnected = true;
+
+        if (
+            this._lifecycle !== "reconnecting" &&
+            this._lifecycle !== "dead"
+        ) {
+            this._lifecycle = "disconnected";
+        }
         this._log.debug("Closing current connection...");
-        
-        // Signal abort to any ongoing operations
-        this._abortController.abort();
-        
+        this._stopIo();
         await connection.disconnect();
     }
 
-    _cancelLoops() {
-        this._cancelSend = true;
-        this._abortController.abort();
+    private _startIo(connection: Connection) {
+        if (this._io?.alive && this._io.connection === connection) {
+            return;
+        }
+        const io = { alive: true, connection };
+        this._io = io;
+        this._log.debug("Starting I/O loops");
+        this._readLoop(io).catch((err) =>
+            this._log.error(
+                `Read loop crashed for dc ${this._dcId}`,
+                err as Error
+            )
+        );
+        this._writeLoop(io).catch((err) =>
+            this._log.error(
+                `Write loop crashed for dc ${this._dcId}`,
+                err as Error
+            )
+        );
     }
 
-    /**
-     * This loop is responsible for popping items off the send
-     * queue, encrypting them, and sending them over the network.
-     * Besides `connect`, only this method ever sends data.
-     * @returns {Promise<void>}
-     * @private
-     */
-    async _sendLoop() {
+    private _stopIo() {
+        if (this._io) {
+            this._io.alive = false;
+            this._io = undefined;
+        }
+        this._wakeUp();
+    }
 
-        while (this._userConnected && !this.isReconnecting) {
-            const appendAcks = () => {
-                if (this._pendingAck.size) {
-                    const ack = new RequestState(
-                        new MsgsAck({ msgIds: Array(...this._pendingAck) })
-                    );
-                    this._sendQueue.append(ack);
-                    this._lastAcks.push(ack);
-                    if (this._lastAcks.length >= 10) {
-                        this._lastAcks.shift();
-                    }
-                    this._pendingAck.clear();
+    private async _writeLoop(io: { alive: boolean; connection: Connection }) {
+        while (io.alive) {
+            if (this._pendingAck.size) {
+                const ack = new RequestState(
+                    new MsgsAck({ msgIds: Array(...this._pendingAck) })
+                );
+                this._pendingAck.clear();
+                this._lastAcks.push(ack);
+                if (this._lastAcks.length >= 10) {
+                    this._lastAcks.shift();
                 }
-            };
-
-            appendAcks();
-
-            this._log.debug(
-                `Waiting for messages to send... ${this.isReconnecting}`
-            );
-            // TODO Wait for the connection send queue to be empty?
-            // This means that while it's not empty we can wait for
-            // more messages to be added to the send queue.
-            await this._sendQueue.wait();
-
-            // If we've had new ACKs appended while waiting for messages to send, add them to queue
-            appendAcks();
-
-            const res = await this._sendQueue.get();
-
-            this._log.debug(`Got ${res?.batch.length} message(s) to send`);
-
-            if (this.isReconnecting) {
-                this._log.debug("Reconnecting");
-                this._sendLoopHandle = undefined;
-                return;
+                this._queued.push(ack);
             }
-
-            if (!res) {
+            if (!this._queued.length) {
+                await new Promise<void>((resolve) => {
+                    this._wakeWriter = resolve;
+                });
                 continue;
             }
+
+            const res = await packRequestBatch(
+                this._state,
+                this._queued,
+                this._log
+            );
+            if (!res) continue;
             let { data } = res;
             const { batch } = res;
             this._log.debug(
-                `Encrypting ${batch.length} message(s) in ${data.length} bytes for sending`
+                `Sending ${batch.length} message(s): ${batch
+                    .map((m: RequestState) => m.request.className)
+                    .join(",")}`
             );
-            this._log.debug(
-                `Sending   ${batch.map((m) => m.request.className)}`
-            );
-
-            data = await this._state.encryptMessageData(data);
-            for (const state of batch) {
-                if (!Array.isArray(state)) {
-                    if (state.request.classType === "request") {
-                        this._pendingState.set(state.msgId, state);
-                    }
-                } else {
-                    for (const s of state) {
-                        if (s.request.classType === "request") {
-                            this._pendingState.set(s.msgId, s);
-                        }
-                    }
-                }
-            }
             try {
-                await this._connection!.send(data);
+                data = await this._state.encryptMessageData(data);
             } catch (e) {
-                /** when the server disconnects us we want to reconnect */
-                if (!this.userDisconnected) {
-                    this._log.debug(
-                        `Connection closed while sending data ${e}`,
-                        e
+                this._requeue(batch);
+                if (io.alive) {
+                    this._log.error(
+                        `Failed to encrypt batch for dc ${this._dcId}`,
+                        e as Error
                     );
                     this.reconnect();
                 }
-                this._sendLoopHandle = undefined;
                 return;
             }
 
-            this._log.debug("Encrypted messages put in a queue to be sent");
+            if (!io.alive) {
+                this._requeue(batch);
+                return;
+            }
+            try {
+                await io.connection.send(data);
+            } catch (e) {
+                if (io.alive) {
+                    this._requeue(batch);
+                    this._log.debug(
+                        `Connection closed while sending data ${e}`
+                    );
+                    this.reconnect();
+                }
+                return;
+            }
+            for (const state of batch) {
+                if (state.request.classType === "request") {
+                    this._pendingState.set(state.msgId!, state);
+                }
+            }
         }
-
-        this._sendLoopHandle = undefined;
     }
 
-    async _recvLoop() {
-        // Create a new abort controller for this loop
-        this._abortController = new AbortController();
-        const signal = this._abortController.signal;
-        
+    private async _readLoop(io: { alive: boolean; connection: Connection }) {
         let body;
         let message;
 
-        while (this._userConnected && !this.isReconnecting) {
-            // Check if the operation has been aborted
-            if (signal.aborted) {
-                this._log.debug("Receive loop aborted");
-                this._recvLoopHandle = undefined;
-                return;
-            }
-
-            this._log.debug("Receiving items from the network...");
+        while (io.alive) {
             try {
-                // Here we could pass the signal to connection.recv() if that method supports abort signals
-                body = await this._connection!.recv();
+                body = await io.connection.recv();
             } catch (e) {
-                // If aborted, exit gracefully
-                if (signal.aborted) {
-                    this._log.debug("Receive operation was aborted");
-                    this._recvLoopHandle = undefined;
+                if (!io.alive) {
                     return;
                 }
 
@@ -674,34 +754,33 @@ export class MTProtoSender {
                         );
                         this.reconnect();
                     }
-                    this._recvLoopHandle = undefined;
                     return;
                 }
 
                 if (this._currentRetries > this._reconnectRetries) {
-                    for (const state of this._pendingState.values()) {
-                        state.reject(
+                    this._lifecycle = "dead";
+                    this._failAllPending(
+                        new Error(
                             "Maximum reconnection retries reached. Aborting!"
-                        );
-                    }
-                    this.userDisconnected = true;
+                        )
+                    );
                     return;
                 }
 
-                /** when the server disconnects us we want to reconnect */
-                if (!this.userDisconnected) {
+                if (this._lifecycle !== "dead") {
                     this._log.info(
                         `Connection to DC ${this._dcId} closed by server, reconnecting`
                     );
                     this.reconnect();
                 }
-                this._recvLoopHandle = undefined;
                 return;
             }
 
             try {
                 message = await this._state.decryptMessageData(body);
-                if (this._client) this._client._lastReceivedAt = Date.now();
+                if (this._client && this._isMainSender) {
+                    this._client._lastReceivedAt = Date.now();
+                }
                 this._log.debug(
                     `[RECV] Decrypted msgId=${message.msgId} type=${message.obj?.className || "unknown"} bodyLen=${body.length}`
                 );
@@ -716,6 +795,10 @@ export class MTProtoSender {
                     );
                     continue;
                 } else if (e instanceof SecurityError) {
+                    if (/invalid auth key/i.test(e.message)) {
+                        this._handleBadAuthKey();
+                        return;
+                    }
                     // A step while decoding had the incorrect data. This message
                     // should not be considered safe and it should be ignored.
                     this._log.warn(
@@ -735,7 +818,6 @@ export class MTProtoSender {
                         );
                         this.reconnect();
                     }
-                    this._recvLoopHandle = undefined;
                     return;
                 } else {
                     this._log.error("Unhandled error while receiving data", e);
@@ -743,30 +825,19 @@ export class MTProtoSender {
                         await this._client._errorHandler(e as Error);
                     }
                     this.reconnect();
-                    this._recvLoopHandle = undefined;
                     return;
                 }
             }
             try {
-                await this._processMessage(message);
+                await this._dispatcher.process(message);
             } catch (e) {
-                // `RPCError` errors except for 'AUTH_KEY_UNREGISTERED' should be handled by the client
-                if (e instanceof RPCError) {
-                    const rpcMessage = e.errorMessage;
-                    if (
-                        rpcMessage === "AUTH_KEY_UNREGISTERED" ||
-                        rpcMessage === "SESSION_REVOKED"
-                    ) {
-                        // 'AUTH_KEY_UNREGISTERED' for the main sender is thrown when unauthorized and should be ignored
-                        this._handleBadAuthKey(true);
-                    }
-                } else if (e instanceof TypeNotFoundError) {
+                if (e instanceof TypeNotFoundError) {
                     // Unknown constructor in an update (e.g. new TL objects not in our schema).
                     // Safe to skip — no reconnect needed.
                     this._log.info(
                         `Unknown constructor ${e.invalidConstructorId} in update, skipping (remaining: ${e.remaining.length} bytes)`
                     );
-                } else {
+                } else if (!(e instanceof RPCError)) {
                     this._log.error("Unhandled error while receiving data", e);
                     if (this._client._errorHandler) {
                         await this._client._errorHandler(e as Error);
@@ -775,8 +846,6 @@ export class MTProtoSender {
             }
             this._currentRetries = 0;
         }
-
-        this._recvLoopHandle = undefined;
     }
 
     // Response Handlers
@@ -785,17 +854,27 @@ export class MTProtoSender {
             return;
         }
 
-        this._log.warn(
-            `Broken authorization key for dc ${this._dcId}, resetting...`
-        );
+        if (this._tempBinding) {
+            this._log.info(
+                `Temp auth key for dc ${this._dcId} expired on the server, re-keying on a fresh session`
+            );
+        } else {
+            this._log.warn(
+                `Broken authorization key for dc ${this._dcId}, resetting...`
+            );
+        }
 
         if (this._tempBinding) {
-            // A dead temp key must never touch the permanent one. Drop the
-            // slot — Network resets the Dcenter temp-key state on break and
-            // the next slot performs a fresh DH + bindTempAuthKey.
+            this._lifecycle = "dead";
+            this.authKey.setKey(undefined).catch(() => {});
             if (this._onConnectionBreak) {
                 this._onConnectionBreak(this._dcId);
             }
+            this._failAllPending(
+                new Error(
+                    `Temporary auth key for dc ${this._dcId} was rejected by the server`
+                )
+            );
             return;
         }
 
@@ -817,382 +896,49 @@ export class MTProtoSender {
                 .catch(() => {})
                 .then(() => this.reconnect());
         } else if (this._onConnectionBreak) {
+            this._lifecycle = "dead";
             this._onConnectionBreak(this._dcId);
-        }
-    }
-
-    /**
-     * Adds the given message to the list of messages that must be
-     * acknowledged and dispatches control to different ``_handle_*``
-     * method based on its type.
-     * @param message
-     * @returns {Promise<void>}
-     * @private
-     */
-    async _processMessage(message: TLMessage) {
-        this._pendingAck.add(message.msgId);
-
-        message.obj = await message.obj;
-        this._log.debug(
-            `[MSG] Processing msgId=${message.msgId} type=${message.obj.className} constructorId=${message.obj.CONSTRUCTOR_ID}`
-        );
-        let handler = this._handlers[message.obj.CONSTRUCTOR_ID.toString()];
-        if (!handler) {
-            handler = this._handleUpdate.bind(this);
-        }
-
-        await handler(message);
-    }
-
-    /**
-     * Pops the states known to match the given ID from pending messages.
-     * This method should be used when the response isn't specific.
-     * @param msgId
-     * @returns {*[]}
-     * @private
-     */
-    _popStates(msgId: bigInt.BigInteger) {
-        const state = this._pendingState.getAndDelete(msgId);
-        if (state) {
-            return [state];
-        }
-
-        const toPop = [];
-
-        for (const pendingState of this._pendingState.values()) {
-            if (pendingState.containerId?.equals(msgId)) {
-                toPop.push(pendingState.msgId!);
-            }
-        }
-
-        if (toPop.length) {
-            const temp = [];
-            for (const x of toPop) {
-                temp.push(this._pendingState.getAndDelete(x));
-            }
-            return temp;
-        }
-
-        for (const ack of this._lastAcks) {
-            if (ack.msgId === msgId) {
-                return [ack];
-            }
-        }
-
-        return [];
-    }
-
-    /**
-     * Handles the result for Remote Procedure Calls:
-     * rpc_result#f35c6d01 req_msg_id:long result:bytes = RpcResult;
-     * This is where the future results for sent requests are set.
-     * @param message
-     * @returns {Promise<void>}
-     * @private
-     */
-    _handleRPCResult(message: TLMessage) {
-        const result = message.obj;
-        const state = this._pendingState.getAndDelete(result.reqMsgId);
-        this._log.debug(`Handling RPC result for message ${result.reqMsgId}`);
-
-        if (!state) {
-            // TODO We should not get responses to things we never sent
-            // However receiving a File() with empty bytes is "common".
-            // See #658, #759 and #958. They seem to happen in a container
-            // which contain the real response right after.
-            try {
-                const reader = new BinaryReader(result.body);
-                if (!(reader.tgReadObject() instanceof Api.upload.File)) {
-                    throw new TypeNotFoundError(0, Buffer.alloc(0));
-                }
-            } catch (e) {
-                if (e instanceof TypeNotFoundError) {
-                    this._log.info(
-                        `Received response without parent request: ${result.body}`
-                    );
-                    return;
-                }
-
-                throw e;
-            }
-            return;
-        }
-
-        if (result.error) {
-            // eslint-disable-next-line new-cap
-            const error = RPCMessageToError(result.error, state.request);
-            this._sendQueue.append(
-                new RequestState(new MsgsAck({ msgIds: [state.msgId!] }))
+            this._failAllPending(
+                new Error(
+                    `Authorization key for dc ${this._dcId} was rejected by the server`
+                )
             );
-            state.reject(error);
-            throw error;
-        } else {
-            try {
-                const reader = new BinaryReader(result.body);
-                const read = state.request.readResult(reader);
-                this._log.debug(`Handling RPC result ${read?.className}`);
-                state.resolve(read);
-            } catch (err) {
-                state.reject(err);
-                throw err;
-            }
         }
     }
-
-    /**
-     * Processes the inner messages of a container with many of them:
-     * msg_container#73f1f8dc messages:vector<%Message> = MessageContainer;
-     * @param message
-     * @returns {Promise<void>}
-     * @private
-     */
-    async _handleContainer(message: TLMessage) {
-        this._log.debug(
-            `[CONTAINER] msgId=${message.msgId} contains ${message.obj.messages.length} messages`
-        );
-        for (const innerMessage of message.obj.messages) {
-            await this._processMessage(innerMessage);
-        }
-    }
-
-    /**
-     * Unpacks the data from a gzipped object and processes it:
-     * gzip_packed#3072cfa1 packed_data:bytes = Object;
-     * @param message
-     * @returns {Promise<void>}
-     * @private
-     */
-    async _handleGzipPacked(message: TLMessage) {
-        this._log.debug("Handling gzipped data");
-        const reader = new BinaryReader(message.obj.data);
-        message.obj = reader.tgReadObject();
-        await this._processMessage(message);
-    }
-
-    async _handleUpdate(message: TLMessage) {
-        if (message.obj.SUBCLASS_OF_ID !== 0x8af52aac) {
-            // crc32(b'Updates')
-            this._log.warn(
-                `Note: ${message.obj.className} is not an update, not dispatching it`
-            );
-            return;
-        }
-        this._log.debug(
-            `[UPDATE] msgId=${message.msgId} type=${message.obj.className}` +
-            (message.obj.updates
-                ? ` innerUpdates=${message.obj.updates.length}:[${message.obj.updates.map((u: any) => u.className).join(",")}]`
-                : "")
-        );
-        if (this._updateCallback) {
-            this._updateCallback(this._client, message.obj);
-        }
-    }
-
-    /**
-     * Handles pong results, which don't come inside a ``RPCResult``
-     * but are still sent through a request:
-     * pong#347773c5 msg_id:long ping_id:long = Pong;
-     * @param message
-     * @returns {Promise<void>}
-     * @private
-     */
-    async _handlePong(message: TLMessage) {
-        const pong = message.obj;
-        this._log.debug(`Handling pong for message ${pong.msgId}`);
-        const state = this._pendingState.get(pong.msgId.toString());
-        this._pendingState.delete(pong.msgId.toString());
-
-        // Todo Check result
-        if (state) {
-            state.resolve(pong);
-        }
-    }
-
-    /**
-     * Corrects the currently used server salt to use the right value
-     * before enqueuing the rejected message to be re-sent:
-     * bad_server_salt#edab447b bad_msg_id:long bad_msg_seqno:int
-     * error_code:int new_server_salt:long = BadMsgNotification;
-     * @param message
-     * @returns {Promise<void>}
-     * @private
-     */
-    async _handleBadServerSalt(message: TLMessage) {
-        const badSalt = message.obj;
-        this._log.debug(`Handling bad salt for message ${badSalt.badMsgId}`);
-        this._state.salt = badSalt.newServerSalt;
-        this._dcenter?.updateSalt(badSalt.newServerSalt);
-        const states = this._popStates(badSalt.badMsgId);
-        this._sendQueue.extend(states);
-        this._log.debug(`${states.length} message(s) will be resent`);
-    }
-
-    /**
-     * Adjusts the current state to be correct based on the
-     * received bad message notification whenever possible:
-     * bad_msg_notification#a7eff811 bad_msg_id:long bad_msg_seqno:int
-     * error_code:int = BadMsgNotification;
-     * @param message
-     * @returns {Promise<void>}
-     * @private
-     */
-    async _handleBadNotification(message: TLMessage) {
-        const badMsg = message.obj;
-        const states = this._popStates(badMsg.badMsgId);
-        this._log.debug(`Handling bad msg ${JSON.stringify(badMsg)}`);
-        if ([16, 17].includes(badMsg.errorCode)) {
-            // Sent msg_id too low or too high (respectively).
-            // Use the current msg_id to determine the right time offset.
-            const to = this._state.updateTimeOffset(bigInt(message.msgId));
-            this._log.info(`System clock is wrong, set time offset to ${to}s`);
-        } else if (badMsg.errorCode === 32) {
-            // msg_seqno too low, so just pump it up by some "large" amount
-            // TODO A better fix would be to start with a new fresh session ID
-            this._state._sequence += 64;
-        } else if (badMsg.errorCode === 33) {
-            // msg_seqno too high never seems to happen but just in case
-            this._state._sequence -= 16;
-        } else {
-            for (const state of states) {
-                state.reject(
-                    new BadMessageError(state.request, badMsg.errorCode)
-                );
-            }
-
-            return;
-        }
-        // Messages are to be re-sent once we've corrected the issue
-        this._sendQueue.extend(states);
-        this._log.debug(
-            `${states.length} messages will be resent due to bad msg`
-        );
-    }
-
-    /**
-     * Updates the current status with the received detailed information:
-     * msg_detailed_info#276d3ec6 msg_id:long answer_msg_id:long
-     * bytes:int status:int = MsgDetailedInfo;
-     * @param message
-     * @returns {Promise<void>}
-     * @private
-     */
-    async _handleDetailedInfo(message: TLMessage) {
-        // TODO https://goo.gl/VvpCC6
-        const msgId = message.obj.answerMsgId;
-        this._log.debug(`Handling detailed info for message ${msgId}`);
-        this._pendingAck.add(msgId);
-    }
-
-    /**
-     * Updates the current status with the received detailed information:
-     * msg_new_detailed_info#809db6df answer_msg_id:long
-     * bytes:int status:int = MsgDetailedInfo;
-     * @param message
-     * @returns {Promise<void>}
-     * @private
-     */
-    async _handleNewDetailedInfo(message: TLMessage) {
-        // TODO https://goo.gl/VvpCC6
-        const msgId = message.obj.answerMsgId;
-        this._log.debug(`Handling new detailed info for message ${msgId}`);
-        this._pendingAck.add(msgId);
-    }
-
-    /**
-     * Updates the current status with the received session information:
-     * new_session_created#9ec20908 first_msg_id:long unique_id:long
-     * server_salt:long = NewSession;
-     * @param message
-     * @returns {Promise<void>}
-     * @private
-     */
-    async _handleNewSessionCreated(message: TLMessage) {
-        this._log.debug("Handling new session created");
-        this._state.salt = message.obj.serverSalt;
-        this._dcenter?.updateSalt(message.obj.serverSalt);
-        this._needsInitConnection = true;
-    }
-
-    /**
-     * Handles a server acknowledge about our messages.
-     * Marks requests as acknowledged so we know the server received them.
-     */
-    _handleAck(message: TLMessage) {
-        if (message.obj.msgIds) {
-            for (const msgId of message.obj.msgIds) {
-                const state = this._pendingState.get(msgId);
-                if (state) {
-                    state.acknowledged = true;
-                }
-            }
-        }
-    }
-
-    /**
-     * Handles future salt results, which don't come inside a
-     * ``rpc_result`` but are still sent through a request:
-     *     future_salts#ae500895 req_msg_id:long now:int
-     *     salts:vector<future_salt> = FutureSalts;
-     * @param message
-     * @returns {Promise<void>}
-     * @private
-     */
-    async _handleFutureSalts(message: TLMessage) {
-        this._log.debug(`Handling future salts for message ${message.msgId}`);
-        const state = this._pendingState.getAndDelete(message.msgId);
-
-        if (state) {
-            state.resolve(message.obj);
-        }
-    }
-
-    /**
-     * Handles both :tl:`MsgsStateReq` and :tl:`MsgResendReq` by
-     * enqueuing a :tl:`MsgsStateInfo` to be sent at a later point.
-     * @param message
-     * @returns {Promise<void>}
-     * @private
-     */
-    async _handleStateForgotten(message: TLMessage) {
-        this._sendQueue.append(
-            new RequestState(
-                new Api.MsgsStateInfo({
-                    reqMsgId: message.msgId,
-                    info: String.fromCharCode(1).repeat(message.obj.msgIds),
-                })
-            )
-        );
-    }
-
-    /**
-     * Handles :tl:`MsgsAllInfo` by doing nothing (yet).
-     * @param message
-     * @returns {Promise<void>}
-     * @private
-     */
-    async _handleMsgAll(message: TLMessage) {}
 
     reconnect() {
-        if (this._userConnected && !this.isReconnecting) {
-            this.isReconnecting = true;
-            if (!this._autoReconnect) {
-                this.userDisconnected = true;
-                this._disconnect().catch(() => {});
-                if (!this._isMainSender && this._onConnectionBreak) {
-                    this._onConnectionBreak(this._dcId);
-                }
-                return;
-            }
-            const delay =
-                this._currentRetries === 0
-                    ? 0
-                    : Math.min(1000 * this._currentRetries, 5000);
-            this._currentRetries++;
-            sleep(delay).then(() => {
-                this._log.debug("Started reconnecting");
-                this._reconnect();
-            });
+        if (this._lifecycle !== "connected") {
+            return;
         }
+        if (!this._autoReconnect) {
+            this._lifecycle = "dead";
+            this._disconnect().catch(() => {});
+            if (!this._isMainSender && this._onConnectionBreak) {
+                this._onConnectionBreak(this._dcId);
+            }
+            this._failAllPending(
+                new Error(`Connection to dc ${this._dcId} was lost`)
+            );
+            return;
+        }
+        this._lifecycle = "reconnecting";
+        const delay =
+            this._currentRetries === 0
+                ? 0
+                : Math.min(1000 * this._currentRetries, 5000);
+        this._currentRetries++;
+        sleep(delay).then(() =>
+            this._reconnect().catch((err) => {
+                this._log.error(
+                    `Unexpected error during reconnect to dc ${this._dcId}`,
+                    err as Error
+                );
+                this._lifecycle = "dead";
+                this._failAllPending(
+                    new Error(`Could not reconnect to dc ${this._dcId}`)
+                );
+            })
+        );
     }
 
     async _reconnect() {
@@ -1205,19 +951,10 @@ export class MTProtoSender {
                 await this._client._errorHandler(err as Error);
             }
         }
-        this._log.debug(
-            `Adding ${this._sendQueue._pendingStates.length} old request to resend`
-        );
-        for (let i = 0; i < this._sendQueue._pendingStates.length; i++) {
-            if (this._sendQueue._pendingStates[i].msgId != undefined) {
-                this._pendingState.set(
-                    this._sendQueue._pendingStates[i].msgId!,
-                    this._sendQueue._pendingStates[i]
-                );
-            }
-        }
 
-        this._sendQueue.clear();
+        const queued = this._queued.splice(0, this._queued.length);
+
+        this._pendingAck.clear();
         this._state.reset();
         this._needsInitConnection = true;
         const connection = this._connection!;
@@ -1232,38 +969,34 @@ export class MTProtoSender {
             proxy: connection._proxy,
             socket: this._client.networkSocket,
         });
-        await this.connect(newConnection, true);
-
-        this.isReconnecting = false;
-
-        // Split pending states: resend unacknowledged, query status of acknowledged
-        const toResend: RequestState[] = [];
-        const toQueryStatus: RequestState[] = [];
-        for (const state of this._pendingState.values()) {
-            if (state.acknowledged) {
-                toQueryStatus.push(state);
-            } else {
-                toResend.push(state);
+        try {
+            await this.connect(newConnection, true);
+        } catch (err) {
+            this._log.error(
+                `Failed to reconnect to dc ${this._dcId}`,
+                err as Error
+            );
+            this._lifecycle = "dead";
+            if (this._updateCallback) {
+                this._updateCallback(
+                    this._client,
+                    new UpdateConnectionState(UpdateConnectionState.broken)
+                );
             }
+            if (!this._isMainSender && this._onConnectionBreak) {
+                this._onConnectionBreak(this._dcId);
+            }
+            this._failAllPending(
+                new Error(`Could not reconnect to dc ${this._dcId}`)
+            );
+            return;
         }
-        this._sendQueue.prepend(toResend);
 
-        if (toQueryStatus.length > 0) {
-            const msgIds = toQueryStatus
-                .filter((s) => s.msgId != undefined)
-                .map((s) => s.msgId!);
-            if (msgIds.length > 0) {
-                this._log.debug(
-                    `Querying status of ${msgIds.length} acknowledged requests`
-                );
-                this.send(
-                    new Api.MsgsStateReq({ msgIds }) as unknown as Api.AnyRequest
-                );
-            }
-            // Keep acknowledged states in pending — server may re-deliver results
-            // They'll be resolved when the RPC result arrives or timeout
-        } else {
-            this._pendingState.clear();
+        const toResend = [...this._pendingState.values(), ...queued];
+        this._pendingState.clear();
+        if (toResend.length > 0) {
+            this._log.debug(`Resending ${toResend.length} pending requests`);
+            this._requeue(toResend);
         }
 
         if (this._autoReconnectCallback) {

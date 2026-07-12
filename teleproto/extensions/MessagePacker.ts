@@ -177,7 +177,7 @@ export class MessagePacker {
                     state.request.className || state.request.constructor.name
                 } is too long ${state.data.length} and cannot be sent`
             );
-            state.promise.reject("Request Payload is too big");
+            state.reject(new Error("Request payload is too big"));
             size = 0;
         }
         if (!batch.length) {

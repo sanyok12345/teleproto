@@ -2,7 +2,6 @@ import {
     Logger,
     PromisedNetSockets,
 } from "../../extensions";
-import { AsyncQueue } from "../../extensions";
 import { AbridgedPacketCodec } from "./TCPAbridged";
 import { FullPacketCodec } from "./TCPFull";
 import { ProxyInterface } from "./TCPMTProxy";
@@ -17,15 +16,13 @@ interface ConnectionInterfaceParams {
 }
 
 /**
- * The `Connection` class is a wrapper around ``asyncio.open_connection``.
+ * Thin transport pipe: codec framing over one socket.
  *
- * Subclasses will implement different transport modes as atomic operations,
- * which this class eases doing since the exposed interface simply puts and
- * gets complete data payloads to and from queues.
- *
- * The only error that will raise from send and receive methods is
- * ``ConnectionError``, which will raise when attempting to send if
- * the client is disconnected (includes remote disconnections).
+ * There are deliberately no internal loops, queues or buffers here the
+ * sender owns exactly one reader and one writer, so `send()` and `recv()`
+ * talk to the codec and socket directly. Transport-level failures (including
+ * MTProto transport errors such as -404) propagate to the caller as thrown
+ * errors from these two methods.
  */
 class Connection {
     PacketCodecClass?: typeof AbridgedPacketCodec | typeof FullPacketCodec;
@@ -35,14 +32,8 @@ class Connection {
     _log: Logger;
     _proxy?: ProxyInterface;
     _connected: boolean;
-    private _sendTask?: Promise<void>;
-    private _recvTask?: Promise<void>;
     protected _codec: any;
     protected _obfuscation: any;
-    _sendArray: AsyncQueue;
-    _recvArray: AsyncQueue;
-    private _abortController: AbortController;
-    private _recvError?: Error;
     socket: PromisedNetSockets;
 
     constructor({
@@ -59,48 +50,25 @@ class Connection {
         this._log = loggers;
         this._proxy = proxy;
         this._connected = false;
-        this._sendTask = undefined;
-        this._recvTask = undefined;
         this._codec = undefined;
         this._obfuscation = undefined; // TcpObfuscated and MTProxy
-        this._sendArray = new AsyncQueue();
-        this._recvArray = new AsyncQueue();
-        this._abortController = new AbortController();
         this.socket = new socket(proxy);
     }
 
-    async _connect() {
+    async connect() {
         this._log.debug("Connecting");
         this._codec = new this.PacketCodecClass!(this);
         await this.socket.connect(this._port, this._ip);
         this._log.debug("Finished connecting");
-        // await this.socket.connect({host: this._ip, port: this._port});
         await this._initConn();
-    }
-
-    async connect() {
-        // Reset abort controller to have a fresh signal
-        this._abortController = new AbortController();
-        this._recvError = undefined;
-
-        await this._connect();
         this._connected = true;
-
-        if (!this._sendTask) {
-            this._sendTask = this._sendLoop();
-        }
-        this._recvTask = this._recvLoop();
     }
 
     async disconnect() {
         if (!this._connected) {
             return;
         }
-
         this._connected = false;
-        // Signal abort to any pending operations
-        this._abortController.abort();
-        void this._recvArray.push(undefined);
         await this.socket.close();
     }
 
@@ -108,56 +76,22 @@ class Connection {
         if (!this._connected) {
             throw new Error("Not connected");
         }
-        await this._sendArray.push(data);
+        await this._send(data);
     }
 
     async recv() {
-        while (this._connected) {
-            const result = await this._recvArray.pop();
-            // null = sentinel value = keep trying
-            if (result) {
-                return result;
-            }
+        if (!this._connected) {
+            throw new Error("Not connected");
         }
-        throw this._recvError ?? new Error("Not connected");
-    }
-
-    async _sendLoop() {
-        try {
-            while (this._connected) {
-                const data = await this._sendArray.pop();
-                if (!data) {
-                    this._sendTask = undefined;
-                    return;
-                }
-                await this._send(data);
-            }
-        } catch (e) {
-            this._log.info("The server closed the connection while sending");
+        const data = await this._recv();
+        if (!data || !data.length) {
+            throw new Error("No data received");
         }
+        return data;
     }
 
     isConnected() {
         return this._connected;
-    }
-
-    async _recvLoop() {
-        let data;
-        while (this._connected) {
-            try {
-                data = await this._recv();
-                if (!data) {
-                    throw new Error("no data received");
-                }
-            } catch (e) {
-                this._log.debug("connection closed");
-                this._recvError = e as Error;
-
-                this.disconnect();
-                return;
-            }
-            await this._recvArray.push(data);
-        }
     }
 
     async _initConn() {
@@ -202,9 +136,9 @@ class ObfuscatedConnection extends Connection {
 }
 
 class PacketCodec {
-    private _conn: Buffer;
+    private _conn: Connection;
 
-    constructor(connection: Buffer) {
+    constructor(connection: Connection) {
         this._conn = connection;
     }
 

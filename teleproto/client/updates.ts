@@ -10,7 +10,7 @@ const PING_INTERVAL = 9000; // 9 sec
 const PING_TIMEOUT = 10000; // 10 sec
 const PING_FAIL_ATTEMPTS = 3;
 const PING_FAIL_INTERVAL = 100; // ms
-const PING_DISCONNECT_DELAY = 60000; // 1 min
+const PING_DISCONNECT_DELAY = 75;
 const PING_INTERVAL_TO_WAKE_UP = 5000;
 const PING_WAKE_UP_TIMEOUT = 3000;
 const PING_WAKE_UP_WARNING_TIMEOUT = 1000;
@@ -62,7 +62,11 @@ export async function catchUp(client: TelegramClient): Promise<void> {
 /** @hidden */
 export function _handleUpdate(
     client: TelegramClient,
-    update: Api.TypeUpdate | Api.TypeUpdates | number,
+    update:
+        | Api.TypeUpdate
+        | Api.TypeUpdates
+        | UpdateConnectionState
+        | number,
 ): void {
     try {
         if (typeof update === "number") {
@@ -73,6 +77,12 @@ export function _handleUpdate(
                     client._log.error(`Error dispatching connection state: ${e}`);
                 });
             }
+            return;
+        }
+        if (update instanceof UpdateConnectionState) {
+            _dispatchUpdate(client, { update }).catch((e) => {
+                client._log.error(`Error dispatching connection state: ${e}`);
+            });
             return;
         }
         client.updateManager.onUpdates(update);

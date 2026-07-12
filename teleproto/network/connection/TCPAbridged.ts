@@ -43,11 +43,11 @@ export class AbridgedPacketCodec extends PacketCodec {
     async readPacket(
         reader: PromisedNetSockets
     ): Promise<Buffer> {
-        const readData = await reader.read(1);
+        const readData = await reader.readExactly(1);
         let length = readData[0];
         if (length >= 127) {
             length = Buffer.concat([
-                await reader.read(3),
+                await reader.readExactly(3),
                 Buffer.alloc(1),
             ]).readInt32LE(0);
         } else if (TRANSPORT_ERROR_HEAD.has(length)) {
@@ -56,11 +56,11 @@ export class AbridgedPacketCodec extends PacketCodec {
             if (TRANSPORT_ERROR_CODES.has(candidate.readInt32LE(0))) {
                 throw new InvalidBufferError(candidate);
             }
-            const rest = await reader.read((length << 2) - 3);
+            const rest = await reader.readExactly((length << 2) - 3);
             return Buffer.concat([tail, rest]);
         }
 
-        return reader.read(length << 2);
+        return reader.readExactly(length << 2);
     }
 }
 

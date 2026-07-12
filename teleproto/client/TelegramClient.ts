@@ -571,10 +571,17 @@ export class TelegramClient extends TelegramBaseClient {
      */
     downloadProfilePhoto(
         entity: EntityLike,
-        downloadProfilePhotoParams: downloadMethods.DownloadProfilePhotoParams = {
+        downloadProfilePhotoParams:
+            | downloadMethods.DownloadProfilePhotoParams
+            | string = {
             isBig: false,
         }
     ) {
+        if (typeof downloadProfilePhotoParams === "string") {
+            downloadProfilePhotoParams = {
+                outputFile: downloadProfilePhotoParams,
+            };
+        }
         return downloadMethods.downloadProfilePhoto(
             this,
             entity,
@@ -601,8 +608,11 @@ export class TelegramClient extends TelegramBaseClient {
      */
     downloadMedia(
         messageOrMedia: Api.Message | Api.TypeMessageMedia,
-        downloadParams?: DownloadMediaInterface
+        downloadParams?: DownloadMediaInterface | string
     ) {
+        if (typeof downloadParams === "string") {
+            downloadParams = { outputFile: downloadParams };
+        }
         return downloadMethods.downloadMedia(
             this,
             messageOrMedia,
@@ -1614,6 +1624,14 @@ export class TelegramClient extends TelegramBaseClient {
         try {
             const res = await this.getMe();
         } catch (e) {
+            if (this._sender?.userDisconnected) {
+                this._log.debug(
+                    `Reconnect probe cancelled by disconnect: ${
+                        e instanceof Error ? e.message : e
+                    }`
+                );
+                return;
+            }
             this._log.error(`Error while trying to reconnect`, e);
             if (this._errorHandler) {
                 await this._errorHandler(e as Error);
@@ -1653,6 +1671,14 @@ export class TelegramClient extends TelegramBaseClient {
             });
         }
 
+        if (this._sender.isConnected()) {
+            if (!this._loopStarted) {
+                _updateLoop(this);
+                this._loopStarted = true;
+            }
+            return false;
+        }
+
         const connection = new this._connection({
             ip: this.session.serverAddress,
             port: this.session.port || 80,
@@ -1661,24 +1687,11 @@ export class TelegramClient extends TelegramBaseClient {
             proxy: this._proxy,
             socket: this.networkSocket,
         });
-        if (!(await this._sender.connect(connection, false))) {
-            if (!this._loopStarted) {
-                _updateLoop(this);
-                this._loopStarted = true;
-            }
-            return false;
-        }
+        this._log.info(`Using LAYER ${LAYER} for initial connect`);
+        await this._connectSender(this._sender, this.session.dcId, connection);
         this.session.setAuthKey(this._sender.authKey);
         this.session.save();
 
-        this._initRequest.query = new Api.help.GetConfig();
-        this._log.info(`Using LAYER ${LAYER} for initial connect`);
-        await this._sender.send(
-            new Api.InvokeWithLayer({
-                layer: LAYER,
-                query: this._initRequest,
-            })
-        );
         if (!this._loopStarted) {
             _updateLoop(this);
             this._loopStarted = true;
@@ -1760,7 +1773,9 @@ export class TelegramClient extends TelegramBaseClient {
         if (this._proxy && candidates.some((DC) => DC.static)) {
             candidates = candidates.filter((DC) => DC.static);
         }
-        const chosen = candidates[0];
+        const failures =
+            this._dcConnectFailures.get(`${dcId}:${mediaCluster}`) ?? 0;
+        const chosen = candidates[failures % candidates.length];
         return {
             id: chosen.id,
             ipAddress: chosen.ipAddress,

@@ -1,7 +1,6 @@
 import { Connection } from "../network";
 import { TelegramClient } from "./TelegramClient";
 import { version } from "../Version";
-import { sleep } from "../Helpers";
 import {
     ConnectionTCPFull,
     ConnectionTCPObfuscated,
@@ -30,14 +29,17 @@ import {
     ConnectionTCPMTProxyAbridged,
     ProxyInterface,
 } from "../network/connection/TCPMTProxy";
-import { Semaphore } from "async-mutex";
 import { LogLevel } from "../extensions/Logger";
 import Deferred from "../extensions/Deferred";
 import { UpdateManager } from "./UpdateManager";
 
-// tdesktop kKillSessionTimeout: an idle session is torn down after 15s and
-// rebuilt lazily on next use (the main session never idles — it pings).
-const SESSION_IDLE_TIMEOUT_MS = 15000;
+// An idle media session is torn down and rebuilt lazily on next use (the
+// main session never idles — it pings). With per-connection PFS keys a
+// rebuild costs a full DH handshake (network + server time, ~0.5-1s), so
+// the reclaim window follows mtcute's 60s rather than tdesktop's 15s —
+// bursty traffic (one photo per minute) stays warm instead of paying the
+// handshake on every burst.
+const SESSION_IDLE_TIMEOUT_MS = 60_000;
 const SESSION_STARTUP_DELAY_MS = 800;
 
 const PROD_DEFAULT_DC_ID = 2;
@@ -110,7 +112,9 @@ export interface TelegramClientParams {
      */
     testServers?: boolean;
     /**
-     * The timeout in seconds to be used when connecting. This does nothing for now.
+     * The timeout in seconds for establishing a TCP connection to a DC.
+     * An address that exceeds it is closed, the attempt fails fast and the
+     * next attempt rotates to an alternative address of that DC.
      */
     timeout?: number;
     /**
@@ -313,6 +317,12 @@ export abstract class TelegramBaseClient {
     >();
     /** All MTProto sessions, keyed by ShiftedDcId (tdesktop's Instance). @hidden */
     public _network!: Network;
+    /**
+     * Connect failures per `"dcId:mediaCluster"`, used to rotate through a
+     * DC's published addresses — one dead IP must not blackhole the DC.
+     * @hidden
+     */
+    public _dcConnectFailures = new Map<string, number>();
     /** File-part scheduler shared by downloads and uploads. @hidden */
     public _media!: MediaScheduler;
     /**
@@ -332,8 +342,12 @@ export abstract class TelegramBaseClient {
     _isSwitchingDc: boolean;
     /** @hidden */
     protected _proxy?: ProxyInterface;
-    /** @hidden */
-    _semaphore: Semaphore;
+    /**
+     * Retained for contract compatibility; concurrency of file transfers is
+     * governed by the download pool (MediaScheduler), not this number.
+     * @hidden
+     */
+    _maxConcurrentDownloads: number;
     /** @hidden */
     _securityChecks: boolean;
     public networkSocket: typeof PromisedNetSockets;
@@ -379,9 +393,7 @@ export abstract class TelegramBaseClient {
         this._timeout = clientParams.timeout!;
         this._autoReconnect = clientParams.autoReconnect!;
         this._proxy = clientParams.proxy;
-        this._semaphore = new Semaphore(
-            clientParams.maxConcurrentDownloads || 1
-        );
+        this._maxConcurrentDownloads = clientParams.maxConcurrentDownloads || 1;
         this.networkSocket = clientParams.networkSocket || PromisedNetSockets;
         this._reCaptchaCallback = clientParams.reCaptchaCallback;
         if (!(clientParams.connection instanceof Function)) {
@@ -461,8 +473,7 @@ export abstract class TelegramBaseClient {
     }
 
     set maxConcurrentDownloads(value: number) {
-        // @ts-ignore
-        this._semaphore._value = value;
+        this._maxConcurrentDownloads = value;
     }
 
     // region connecting
@@ -546,91 +557,79 @@ export abstract class TelegramBaseClient {
     }
 
     /** @hidden */
-    async _authKeyCallback(authKey: AuthKey, dcId: number) {
+    async _authKeyCallback(authKey: AuthKey | undefined, dcId: number) {
         this.session.setAuthKey(authKey, dcId);
         await this.session.save();
     }
 
-    /** @hidden */
-    async _connectSender(sender: MTProtoSender, dcId: number) {
-        // if we don't already have an auth key we want to use normal DCs not -1
-        const dc = await this.getDC(dcId, !!sender.authKey.getKey());
-
-        while (true) {
-            try {
-                // Every fresh TCP connection needs an `InvokeWithLayer(InitConnection(...))`
-                // before any other API request — otherwise the server rejects subsequent
-                // calls with CONNECTION_NOT_INITED (or, on some media DCs, silently drops
-                // the connection). For non-main DCs without a granted authorization we
-                // piggy-back `auth.ImportAuthorization` on the init; otherwise we send a
-                // cheap `help.GetConfig` as a no-op carrier.
-                const needAuth =
-                    this.session.dcId !== dcId && !sender._authenticated;
-                let innerQuery: Api.AnyRequest;
-                if (needAuth) {
-                    this._log.info(
-                        `Exporting authorization for data center ${dc.ipAddress} with layer ${LAYER}`
-                    );
-                    const auth = await this.invoke(
-                        new Api.auth.ExportAuthorization({ dcId: dcId })
-                    );
-                    innerQuery = new Api.auth.ImportAuthorization({
-                        id: auth.id,
-                        bytes: auth.bytes,
-                    });
-                } else {
-                    innerQuery = new Api.help.GetConfig();
-                }
-
-                await sender.connect(
-                    new this._connection({
-                        ip: dc.ipAddress,
-                        port: dc.port,
-                        dcId: dcId,
-                        loggers: this._log,
-                        proxy: this._proxy,
-                        socket: this.networkSocket,
-                    }),
-                    false
+    async _connectSender(
+        sender: MTProtoSender,
+        dcId: number,
+        connection?: Connection
+    ) {
+        const useMediaCluster = !!sender.authKey.getKey();
+        if (!connection) {
+            const dc = await this.getDC(dcId, useMediaCluster);
+            connection = new this._connection({
+                ip: dc.ipAddress,
+                port: dc.port,
+                dcId: dcId,
+                loggers: this._log,
+                proxy: this._proxy,
+                socket: this.networkSocket,
+            });
+        }
+        try {
+            const needAuth =
+                this.session.dcId !== dcId && !sender._authenticated;
+            let innerQuery: Api.AnyRequest;
+            if (needAuth) {
+                this._log.info(
+                    `Exporting authorization for data center ${dcId} with layer ${LAYER}`
                 );
-                // Build a fresh InitConnection per call — the client-level
-                // `_initRequest` instance is shared across DCs and must not
-                // be mutated concurrently.
-                const initConn = new Api.InitConnection({
-                    apiId: this._initRequest.apiId,
-                    deviceModel: this._initRequest.deviceModel,
-                    systemVersion: this._initRequest.systemVersion,
-                    appVersion: this._initRequest.appVersion,
-                    langCode: this._initRequest.langCode,
-                    langPack: this._initRequest.langPack,
-                    systemLangCode: this._initRequest.systemLangCode,
-                    proxy: this._initRequest.proxy,
-                    query: innerQuery,
+                const auth = await this.invoke(
+                    new Api.auth.ExportAuthorization({ dcId: dcId })
+                );
+                innerQuery = new Api.auth.ImportAuthorization({
+                    id: auth.id,
+                    bytes: auth.bytes,
                 });
-                await sender.send(
-                    new Api.InvokeWithLayer({ layer: LAYER, query: initConn })
-                );
-                sender._authenticated = true;
-                sender._needsInitConnection = false;
-                sender.dcId = dcId;
-                sender.userDisconnected = false;
-
-                return sender;
-            } catch (err: any) {
-                if (err.errorMessage === "DC_ID_INVALID") {
-                    sender._authenticated = true;
-                    sender.userDisconnected = false;
-                    return sender;
-                }
-                if (this._errorHandler) {
-                    await this._errorHandler(err as Error);
-                } else {
-                    this._log.error("Error while connecting sender", err);
-                }
-
-                await sleep(1000);
-                await sender.disconnect();
+            } else {
+                innerQuery = new Api.help.GetConfig();
             }
+
+            await sender.connect(connection, false);
+
+            const initConn = new Api.InitConnection({
+                apiId: this._initRequest.apiId,
+                deviceModel: this._initRequest.deviceModel,
+                systemVersion: this._initRequest.systemVersion,
+                appVersion: this._initRequest.appVersion,
+                langCode: this._initRequest.langCode,
+                langPack: this._initRequest.langPack,
+                systemLangCode: this._initRequest.systemLangCode,
+                proxy: this._initRequest.proxy,
+                query: innerQuery,
+            });
+            await sender.send(
+                new Api.InvokeWithLayer({ layer: LAYER, query: initConn })
+            );
+            sender._authenticated = true;
+            sender._needsInitConnection = false;
+            return sender;
+        } catch (err: any) {
+            if (err.errorMessage === "DC_ID_INVALID") {
+                sender._authenticated = true;
+                sender.userDisconnected = false;
+                return sender;
+            }
+            const failKey = `${dcId}:${useMediaCluster}`;
+            this._dcConnectFailures.set(
+                failKey,
+                (this._dcConnectFailures.get(failKey) ?? 0) + 1
+            );
+            sender.disconnect().catch(() => {});
+            throw err;
         }
     }
 
@@ -650,7 +649,7 @@ export abstract class TelegramBaseClient {
             autoReconnect: autoReconnect && this._autoReconnect,
             connectTimeout: this._timeout,
             authKeyCallback: this._authKeyCallback.bind(this),
-            isMainSender: dcId === this.session.dcId,
+            isMainSender: false,
             onConnectionBreak: onBreak,
             client: this as unknown as TelegramClient,
             securityChecks: this._securityChecks,

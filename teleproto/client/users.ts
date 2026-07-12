@@ -35,6 +35,139 @@ import type { SessionLease } from "../network/Network";
  * @throws {Error} If the request fails after all retries.
  * @hidden
  */
+interface InvokeAttempt {
+    client: TelegramClient;
+    request: Api.AnyRequest;
+    state: RequestState;
+    dcId?: number;
+    sender: MTProtoSender;
+    lease?: SessionLease;
+}
+
+type InvokeErrorPolicy = (e: any, ctx: InvokeAttempt) => Promise<boolean>;
+
+const telegramInternalErrors: InvokeErrorPolicy = async (e, ctx) => {
+    if (
+        !(
+            e instanceof errors.ServerError ||
+            e.errorMessage === "RPC_CALL_FAIL" ||
+            e.errorMessage === "RPC_MCGET_FAIL"
+        )
+    ) {
+        return false;
+    }
+    ctx.client._log.warn(
+        `Telegram is having internal issues ${e.constructor.name}`
+    );
+    await sleep(2000);
+    return true;
+};
+
+const floodWait: InvokeErrorPolicy = async (e, ctx) => {
+    if (
+        !(
+            e instanceof errors.FloodWaitError ||
+            e instanceof errors.FloodTestPhoneWaitError
+        )
+    ) {
+        return false;
+    }
+    if (e.seconds > ctx.client.floodSleepThreshold) {
+        throw e;
+    }
+    ctx.client._log.info(
+        `Sleeping for ${e.seconds}s on flood wait (Caused by ${ctx.request.className})`
+    );
+    await sleep(e.seconds * 1000);
+    return true;
+};
+
+const dcMigration: InvokeErrorPolicy = async (e, ctx) => {
+    if (
+        !(
+            e instanceof errors.PhoneMigrateError ||
+            e instanceof errors.NetworkMigrateError ||
+            e instanceof errors.UserMigrateError
+        )
+    ) {
+        return false;
+    }
+    ctx.client._log.info(`Phone migrated to ${e.newDc}`);
+    const shouldRaise =
+        e instanceof errors.PhoneMigrateError ||
+        e instanceof errors.NetworkMigrateError;
+    if (shouldRaise && (await ctx.client.isUserAuthorized())) {
+        throw e;
+    }
+    await ctx.client._switchDC(e.newDc);
+    ctx.lease?.release();
+    ctx.lease = undefined;
+    if (ctx.dcId === undefined) {
+        ctx.sender = ctx.client._sender!;
+    } else {
+        ctx.lease = await ctx.client._leaseSender(ctx.dcId);
+        ctx.sender = ctx.lease.sender;
+    }
+    return true;
+};
+
+const msgWait: InvokeErrorPolicy = async (e, ctx) => {
+    if (!(e instanceof errors.MsgWaitError)) {
+        return false;
+    }
+    await ctx.state.isReady();
+    ctx.state.after = undefined;
+    return true;
+};
+
+const reCaptcha: InvokeErrorPolicy = async (e, ctx) => {
+    if (
+        !(
+            e.errorMessage &&
+            e.errorMessage.startsWith("RECAPTCHA_CHECK_") &&
+            ctx.client._reCaptchaCallback
+        )
+    ) {
+        return false;
+    }
+    const match = e.errorMessage.match(/RECAPTCHA_CHECK_.*(6Le[-\w]+)/);
+    if (!match) {
+        throw e;
+    }
+    const token = await ctx.client._reCaptchaCallback(match[1]);
+    const newRequest = new Api.InvokeWithReCaptcha({
+        token: token,
+        query: ctx.request,
+    });
+    await newRequest.resolve(ctx.client, utils);
+    ctx.state.request = newRequest;
+    ctx.state.data = newRequest.getBytes();
+    return true;
+};
+
+const connectionNotInited: InvokeErrorPolicy = async (e, ctx) => {
+    if (e.message !== "CONNECTION_NOT_INITED") {
+        return false;
+    }
+    const targetSender = ctx.sender || ctx.client._sender;
+    if (targetSender) {
+        targetSender._needsInitConnection = true;
+    }
+    ctx.client._log.warn(
+        "CONNECTION_NOT_INITED, will re-wrap next request with initConnection"
+    );
+    return true;
+};
+
+const INVOKE_ERROR_POLICIES: InvokeErrorPolicy[] = [
+    telegramInternalErrors,
+    floodWait,
+    dcMigration,
+    msgWait,
+    reCaptcha,
+    connectionNotInited,
+];
+
 export async function invoke<R extends Api.AnyRequest>(
     client: TelegramClient,
     request: R,
@@ -68,16 +201,19 @@ export async function invoke<R extends Api.AnyRequest>(
         );
     }
 
+    const ctx: InvokeAttempt = { client, request, state: undefined!, dcId, sender };
     try {
         await client._connectedDeferred.promise;
 
         await request.resolve(client, utils);
         client._lastRequest = new Date().getTime();
         const state = new RequestState(request);
+        ctx.state = state;
+        ctx.lease = lease;
 
         let attempt: number = 0;
         for (attempt = 0; attempt < client._requestRetries; attempt++) {
-            sender!.addStateToQueue(state);
+            ctx.sender.addStateToQueue(state);
 
             try {
                 const result = await state.promise;
@@ -91,98 +227,27 @@ export async function invoke<R extends Api.AnyRequest>(
 
                 return result;
             } catch (e: any) {
-                if (
-                    e instanceof errors.ServerError ||
-                    e.errorMessage === "RPC_CALL_FAIL" ||
-                    e.errorMessage === "RPC_MCGET_FAIL"
-                ) {
-                    client._log.warn(
-                        `Telegram is having internal issues ${e.constructor.name}`
-                    );
-                    await sleep(2000);
-                } else if (
-                    e instanceof errors.FloodWaitError ||
-                    e instanceof errors.FloodTestPhoneWaitError
-                ) {
-                    if (e.seconds <= client.floodSleepThreshold) {
-                        client._log.info(
-                            `Sleeping for ${e.seconds}s on flood wait (Caused by ${request.className})`
-                        );
-                        await sleep(e.seconds * 1000);
-                    } else {
+                let recovered = false;
+                for (const policy of INVOKE_ERROR_POLICIES) {
+                    try {
+                        recovered = await policy(e, ctx);
+                    } catch (fatal) {
                         state.finished.resolve();
-
-                        throw e;
+                        throw fatal;
                     }
-                } else if (
-                    e instanceof errors.PhoneMigrateError ||
-                    e instanceof errors.NetworkMigrateError ||
-                    e instanceof errors.UserMigrateError
-                ) {
-                    client._log.info(`Phone migrated to ${e.newDc}`);
-                    const shouldRaise =
-                        e instanceof errors.PhoneMigrateError ||
-                        e instanceof errors.NetworkMigrateError;
-                    if (shouldRaise && (await client.isUserAuthorized())) {
-                        state.finished.resolve();
-
-                        throw e;
-                    }
-                    await client._switchDC(e.newDc);
-                    lease?.release();
-                    lease = undefined;
-                    if (dcId === undefined) {
-                        sender = client._sender;
-                    } else {
-                        lease = await client._leaseSender(dcId);
-                        sender = lease.sender;
-                    }
-                } else if (e instanceof errors.MsgWaitError) {
-                    // We need to resend this after the old one was confirmed.
-                    await state.isReady();
-
-                    state.after = undefined;
-                } else if (
-                    e.errorMessage &&
-                    e.errorMessage.startsWith("RECAPTCHA_CHECK_") &&
-                    client._reCaptchaCallback
-                ) {
-                    const match = e.errorMessage.match(
-                        /RECAPTCHA_CHECK_.*(6Le[-\w]+)/
-                    );
-                    if (match) {
-                        const siteKey = match[1];
-                        const token = await client._reCaptchaCallback(siteKey);
-                        const newRequest = new Api.InvokeWithReCaptcha({
-                            token: token,
-                            query: request,
-                        });
-                        await newRequest.resolve(client, utils);
-                        state.request = newRequest;
-                        state.data = newRequest.getBytes();
-                    } else {
-                        state.finished.resolve();
-                        throw e;
-                    }
-                } else if (e.message === "CONNECTION_NOT_INITED") {
-                    const targetSender = sender || client._sender;
-                    if (targetSender) {
-                        targetSender._needsInitConnection = true;
-                    }
-                    client._log.warn(
-                        "CONNECTION_NOT_INITED, will re-wrap next request with initConnection"
-                    );
-                } else {
+                    if (recovered) break;
+                }
+                if (!recovered) {
                     state.finished.resolve();
-
                     throw e;
                 }
+                lease = ctx.lease;
             }
             state.resetPromise();
         }
         throw new Error(`Request was unsuccessful ${attempt} time(s)`);
     } finally {
-        lease?.release();
+        (ctx.lease ?? lease)?.release();
     }
 }
 

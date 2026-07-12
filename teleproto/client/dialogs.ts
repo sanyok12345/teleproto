@@ -139,7 +139,10 @@ export class _DialogsIter extends RequestIter {
         }
 
         for (const d of r.dialogs) {
-            if (d instanceof Api.DialogFolder) {
+            if (
+                d instanceof Api.DialogFolder ||
+                d instanceof Api.DialogCommunity
+            ) {
                 continue;
             }
             const message = messages.get(
@@ -179,6 +182,9 @@ export class _DialogsIter extends RequestIter {
         }
         let lastMessage;
         for (let dialog of r.dialogs.reverse()) {
+            if (dialog instanceof Api.DialogCommunity) {
+                continue;
+            }
             lastMessage = messages.get(
                 _dialogMessageKey(dialog.peer, dialog.topMessage)
             );

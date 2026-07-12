@@ -383,7 +383,8 @@ async function raceWithSlotDeath<T>(
     const death = new Promise<never>((_, reject) => {
         unsub = slot.onDeath((reason) => reject(new SlotRemovedError(reason)));
     });
-    const races: Promise<any>[] = [req, death];
+
+    const races: Promise<any>[] = [death, req];
     if (signal) {
         races.push(
             new Promise<never>((_, reject) => {

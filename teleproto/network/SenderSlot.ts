@@ -43,8 +43,8 @@ export class SlotRemovedError extends Error {
  */
 export class SenderSlot {
     readonly dcId: number;
-    state: SenderSlotState = "idle";
 
+    private _dead?: SenderSlotDeathReason;
     private _sender?: MTProtoSender;
     private _connectPromise?: Promise<MTProtoSender>;
     private _idleTimer?: ReturnType<typeof setTimeout>;
@@ -57,6 +57,13 @@ export class SenderSlot {
         this._opts = opts;
     }
 
+    get state(): SenderSlotState {
+        if (this._dead) return "dead";
+        if (this._sender?.isConnected()) return "ready";
+        if (this._connectPromise) return "connecting";
+        return "idle";
+    }
+
     get sender(): MTProtoSender | undefined {
         return this._sender;
     }
@@ -67,30 +74,33 @@ export class SenderSlot {
      * {@link SlotRemovedError}.
      */
     async ensureConnected(): Promise<MTProtoSender> {
-        if (this.state === "dead") {
-            throw new SlotRemovedError("manual");
+        if (this._dead) {
+            throw new SlotRemovedError(this._dead);
         }
-        if (this._sender && this._sender.isConnected() && this.state === "ready") {
+        if (this._sender && this._sender.isConnected()) {
             return this._sender;
         }
         if (this._connectPromise) {
             return this._connectPromise;
         }
-        this.state = "connecting";
         this._clearIdle();
         this._connectPromise = (async () => {
             try {
                 const sender = await this._opts.connect(this);
-                if ((this.state as SenderSlotState) === "dead") {
+                if (this._dead) {
                     try { await sender.disconnect(); } catch {}
-                    throw new SlotRemovedError("manual");
+                    throw new SlotRemovedError(this._dead);
                 }
                 this._sender = sender;
-                this.state = "ready";
                 if (this._active === 0) this._armIdle();
                 return sender;
             } catch (err) {
-                if ((this.state as SenderSlotState) !== "dead") this.state = "idle";
+                if (this._dead) {
+                    if (!(err instanceof SlotRemovedError)) {
+                        throw new SlotRemovedError(this._dead);
+                    }
+                    throw err;
+                }
                 throw err;
             } finally {
                 this._connectPromise = undefined;
@@ -113,8 +123,8 @@ export class SenderSlot {
 
     /** Subscribe to a one-shot "this slot died" callback. */
     onDeath(listener: (reason: SenderSlotDeathReason) => void): () => void {
-        if (this.state === "dead") {
-            listener("manual");
+        if (this._dead) {
+            listener(this._dead);
             return () => {};
         }
         this._deathListeners.add(listener);
@@ -127,8 +137,8 @@ export class SenderSlot {
      * basis; failures are swallowed because the slot is about to be GC'd.
      */
     async markDead(reason: SenderSlotDeathReason): Promise<void> {
-        if (this.state === "dead") return;
-        this.state = "dead";
+        if (this._dead) return;
+        this._dead = reason;
         this._clearIdle();
         for (const listener of this._deathListeners) {
             try { listener(reason); } catch {}
@@ -164,9 +174,9 @@ export class SenderSlot {
             this._armIdle();
             return;
         }
+
         const s = this._sender;
         this._sender = undefined;
-        this.state = "idle";
         if (s) {
             s.disconnect().catch(() => {});
         }

@@ -6,12 +6,6 @@ export class Dcenter {
     readonly authKey: AuthKey;
     private _salt: bigInt.BigInteger;
 
-    readonly mediaTempKey = new AuthKey();
-
-    mediaTempExpiresAt = 0;
-
-    mediaBound = false;
-
     mediaTempFailed = false;
 
     constructor(dcId: number, authKey?: AuthKey) {
@@ -22,12 +16,6 @@ export class Dcenter {
 
     get mediaTempUsable(): boolean {
         return !this.mediaTempFailed;
-    }
-
-    resetMediaTempKey(): void {
-        this.mediaTempKey.setKey(undefined).catch(() => {});
-        this.mediaTempExpiresAt = 0;
-        this.mediaBound = false;
     }
 
     get salt(): bigInt.BigInteger {

@@ -8,6 +8,7 @@ import {
     isUploadDcId,
 } from "./core_types";
 import { TEMP_KEY_EXPIRES_IN } from "./TempAuthKey";
+import { AuthKey } from "../crypto/AuthKey";
 import { sleep } from "../Helpers";
 import type { MTProtoSender } from "./MTProtoSender";
 import type { TelegramBaseClient } from "../client/telegramBaseClient";
@@ -109,7 +110,7 @@ export class Network {
         dcenter: Dcenter
     ): Promise<MTProtoSender> {
         const gap = this._opts.sessionStartupDelayMs;
-        const last = this._lastConnectAt.get(dcId) ?? 0;
+        const last = this._lastConnectAt.get(shiftedDcId) ?? 0;
         if (gap > 0 && last > 0) {
             const wait = gap - (Date.now() - last);
             if (wait > 0) await sleep(wait);
@@ -122,20 +123,11 @@ export class Network {
                 isMedia &&
                 dcenter.mediaTempUsable &&
                 !!dcenter.authKey.getKey();
-            if (
-                useTemp &&
-                dcenter.mediaTempExpiresAt > 0 &&
-                dcenter.mediaTempExpiresAt <
-                    Math.floor(Date.now() / 1000) + 60
-            ) {
-                dcenter.resetMediaTempKey();
-            }
             const log = this._client._log;
-
             const sender = this._client._makeSender(
                 dcId,
                 () => this._onSenderBreak(shiftedDcId, slot),
-                useTemp ? dcenter.mediaTempKey : dcenter.authKey,
+                useTemp ? new AuthKey() : dcenter.authKey,
                 false,
                 useTemp
                     ? {
@@ -146,14 +138,8 @@ export class Network {
                               ((this._client as any)._testServers ? 10000 : 0)
                           ),
                           expiresIn: TEMP_KEY_EXPIRES_IN,
-                          isBound: () => dcenter.mediaBound,
-                          onBound: (expiresAt: number) => {
-                              dcenter.mediaBound = true;
-                              dcenter.mediaTempExpiresAt = expiresAt;
-                          },
                           onFailed: (err: unknown) => {
                               dcenter.mediaTempFailed = true;
-                              dcenter.resetMediaTempKey();
                               log.info(
                                   `Temp-key binding failed for dc ${dcId}, media sessions fall back to the permanent key (${
                                       err instanceof Error ? err.message : err
@@ -165,7 +151,7 @@ export class Network {
             );
             return await this._client._connectSender(sender, dcId);
         } finally {
-            this._lastConnectAt.set(dcId, Date.now());
+            this._lastConnectAt.set(shiftedDcId, Date.now());
         }
     }
 
@@ -180,10 +166,8 @@ export class Network {
         if (shift === 0 && dcId !== this._client.session.dcId) {
             this._client.session.setAuthKey(undefined, dcId);
         }
-        if (isDownloadDcId(shiftedDcId) || isUploadDcId(shiftedDcId)) {
-            this.dcenter(dcId).resetMediaTempKey();
-        }
-        slot.markDead("manual").catch(() => {});
+
+        slot.markDead("auth-broken").catch(() => {});
     }
 
     async purge(): Promise<void> {

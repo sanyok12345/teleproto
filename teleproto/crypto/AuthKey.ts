@@ -48,6 +48,9 @@ export class AuthKey {
 
     async waitForKey() {
         while (!this.keyId) {
+            if (!this._key) {
+                throw new Error("Auth key is unset");
+            }
             await sleep(20);
         }
     }

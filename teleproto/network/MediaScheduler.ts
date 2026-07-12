@@ -19,13 +19,13 @@ import type { TelegramBaseClient } from "../client/telegramBaseClient";
 const ONE_MB = 1024 * 1024;
 const MIN_CHUNK = 4096;
 
-const REQUEST_DEADLINE_MS = 15_000;
-
 export interface MediaSchedulerOptions {
 
     partSize: number;
 
     requestRetries: number;
+
+    requestDeadlineMs: number;
 
     cdnSupported: boolean;
 
@@ -37,6 +37,7 @@ export interface MediaSchedulerOptions {
 export const DEFAULT_MEDIA_SCHEDULER_OPTIONS: MediaSchedulerOptions = {
     partSize: 512 * 1024,
     requestRetries: 5,
+    requestDeadlineMs: 15_000,
     cdnSupported: false,
     download: DOWNLOAD_BALANCE,
     upload: UPLOAD_BALANCE,
@@ -305,7 +306,7 @@ export class MediaScheduler {
                         signal
                     );
                 })(),
-                REQUEST_DEADLINE_MS
+                this.opts.requestDeadlineMs,
             );
             const { addedSession, addedId } = b.policy.succeed(
                 id,

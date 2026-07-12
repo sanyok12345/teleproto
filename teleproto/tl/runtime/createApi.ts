@@ -99,6 +99,48 @@ function generateRandomBigInt(): BigInteger {
     return readBigIntFromBuffer(generateRandomBytes(8), false, true);
 }
 
+function isFlagFieldAbsent(cfg: ArgConfig, value: unknown): boolean {
+    return (
+        (value === false && cfg.type !== "Bool") ||
+        value === null ||
+        value === undefined
+    );
+}
+
+function isBitSetBySibling(
+    arg: string,
+    argsConfig: Record<string, ArgConfig>,
+    instance: unknown
+): boolean {
+    const self = argsConfig[arg];
+    const values = instance as Record<string, unknown>;
+    for (const other in argsConfig) {
+        const cfg = argsConfig[other];
+        if (
+            other !== arg &&
+            cfg.isFlag &&
+            cfg.type !== "true" &&
+            cfg.flagName === self.flagName &&
+            cfg.flagIndex === self.flagIndex &&
+            !isFlagFieldAbsent(cfg, values[other])
+        ) {
+            return true;
+        }
+    }
+    return false;
+}
+
+function emptyFlagValue(cfg: ArgConfig): unknown {
+    if (cfg.isVector) return [];
+    const type = cfg.type ?? "";
+    if (type === "string") return "";
+    if (type === "bytes") return Buffer.alloc(0);
+    if (type === "int" || type === "long" || type === "double") return 0;
+    throw new Error(
+        `Cannot co-serialize flag field of type "${type}": a sibling on the same flag bit is set but this field is missing and has no empty form`
+    );
+}
+
 function argToBytes(
     value: unknown,
     type: string | null,
@@ -422,15 +464,18 @@ function createClasses(
                         continue;
                     }
 
+                    let argValue = (this as Record<string, unknown>)[arg];
+
                     if (argsConfig[arg].isFlag) {
-                        const flagValue = (this as Record<string, unknown>)[arg];
-                        if (
-                            (flagValue === false && argsConfig[arg].type !== "Bool") ||
-                            flagValue === null ||
-                            flagValue === undefined ||
-                            argsConfig[arg].type === "true"
-                        ) {
+                        if (argsConfig[arg].type === "true") {
                             continue;
+                        }
+                        if (isFlagFieldAbsent(argsConfig[arg], argValue)) {
+                            if (isBitSetBySibling(arg, argsConfig, this)) {
+                                argValue = emptyFlagValue(argsConfig[arg]);
+                            } else {
+                                continue;
+                            }
                         }
                     }
 
@@ -438,7 +483,7 @@ function createClasses(
                         if (argsConfig[arg].useVectorId) {
                             buffers.push(Buffer.from("15c4b51c", "hex"));
                         }
-                        const list = ((this as Record<string, unknown>)[arg] || []) as unknown[];
+                        const list = (argValue || []) as unknown[];
                         const lengthBuffer = Buffer.alloc(4);
                         lengthBuffer.writeInt32LE(list.length, 0);
                         buffers.push(
@@ -466,13 +511,11 @@ function createClasses(
                                 const currentValue =
                                     (this as Record<string, unknown>)[flagArg];
                                 if (
-                                    (currentValue === false &&
-                                        argsConfig[flagArg].type !== "Bool") ||
-                                    currentValue === undefined ||
-                                    currentValue === null
+                                    !isFlagFieldAbsent(
+                                        argsConfig[flagArg],
+                                        currentValue
+                                    )
                                 ) {
-                                    flagValue |= 0;
-                                } else {
                                     flagValue |=
                                         1 << (argsConfig[flagArg].flagIndex as number);
                                 }
@@ -485,14 +528,14 @@ function createClasses(
                     }
 
                     const serializedArg = argToBytes(
-                        (this as Record<string, unknown>)[arg],
+                        argValue,
                         argsConfig[arg].type,
                         arg,
                         fullName
                     );
                     buffers.push(serializedArg);
 
-                    const objectArg = (this as Record<string, unknown>)[arg] as {
+                    const objectArg = argValue as {
                         getBytes?: () => Buffer;
                     };
                     if (objectArg && typeof objectArg.getBytes === "function") {

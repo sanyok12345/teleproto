@@ -1,8 +1,9 @@
+import crypto from "node:crypto";
 import bigInt from "big-integer";
 import type { AuthKey } from "../crypto/AuthKey";
-import { generateRandomLong, generateRandomBytes, mod, readBufferFromBigInt, readBigIntFromBuffer } from "../Helpers";
+import { generateRandomLong, mod, readBufferFromBigInt, readBigIntFromBuffer } from "../Helpers";
 import { Api } from "../tl";
-import { sha256, toSignedLittleBuffer } from "../Helpers";
+import { toSignedLittleBuffer } from "../Helpers";
 import { GZIPPacked, TLMessage } from "../tl/core";
 import { BinaryReader } from "../extensions";
 import type { BinaryWriter } from "../extensions";
@@ -22,28 +23,6 @@ export class MTProtoState {
     private receivedIds: ReceivedIdsManager;
     private securityChecks: boolean;
 
-    /**
-     *
-     `MTProtoSender` needs to hold a state in order to encrypt and decrypt
-     incoming/outgoing messages, as well as generate message IDs. Instances
-     of this class hold together all the required information.
-
-     A `Session` is intentionally not used here: the sender should *not* be
-     concerned with persisting this state to disk. Multiple senders may
-     exist for different data centers or CDNs, each requiring its own
-     authkey — "copying" a session along with unrelated entities or update
-     state would make no sense.
-
-     A `MTProtoPlainState` doing no encryption could in principle be used
-     through `MTProtoLayer` and remove the need for `MTProtoPlainSender`,
-     but `MTProtoLayer` targets efficient throughput and this state class
-     is also more advanced (gzipping, invoking after other message IDs).
-     Too many helper methods would be needed to make it convenient during
-     authentication, where `MTProtoPlainSender` is the better fit.
-     * @param authKey
-     * @param loggers
-     * @param securityChecks
-     */
     constructor(authKey?: AuthKey, loggers?: any, securityChecks = true) {
         this.authKey = authKey;
         this._log = loggers;
@@ -69,36 +48,33 @@ export class MTProtoState {
     }
 
     /**
-     * Updates the message ID to a new one,
-     * used when the time offset changed.
-     * @param message
-     */
-    updateMessageId(message: any) {
-        message.msgId = this._getNewMsgId();
-    }
-
-    /**
      * Calculate the key based on Telegram guidelines, specifying whether it's the client or not
      * @param authKey
      * @param msgKey
      * @param client
      * @returns {{iv: Buffer, key: Buffer}}
      */
-    async _calcKey(authKey: Buffer, msgKey: Buffer, client: boolean) {
+    _calcKey(authKey: Buffer, msgKey: Buffer, client: boolean) {
         const x = client ? 0 : 8;
-        const [sha256a, sha256b] = await Promise.all([
-            sha256(Buffer.concat([msgKey, authKey.slice(x, x + 36)])),
-            sha256(Buffer.concat([authKey.slice(x + 40, x + 76), msgKey])),
-        ]);
+        const sha256a = crypto
+            .createHash("sha256")
+            .update(msgKey)
+            .update(authKey.subarray(x, x + 36))
+            .digest();
+        const sha256b = crypto
+            .createHash("sha256")
+            .update(authKey.subarray(x + 40, x + 76))
+            .update(msgKey)
+            .digest();
         const key = Buffer.concat([
-            sha256a.slice(0, 8),
-            sha256b.slice(8, 24),
-            sha256a.slice(24, 32),
+            sha256a.subarray(0, 8),
+            sha256b.subarray(8, 24),
+            sha256a.subarray(24, 32),
         ]);
         const iv = Buffer.concat([
-            sha256b.slice(0, 8),
-            sha256a.slice(8, 24),
-            sha256b.slice(24, 32),
+            sha256b.subarray(0, 8),
+            sha256a.subarray(8, 24),
+            sha256b.subarray(24, 32),
         ]);
         return { key, iv };
     }
@@ -165,27 +141,28 @@ export class MTProtoState {
         if (!this.salt || !this.id || !authKey || !this.authKey.keyId) {
             throw new Error("Unset params");
         }
-        const s = toSignedLittleBuffer(this.salt, 8);
-        const i = toSignedLittleBuffer(this.id, 8);
-        data = Buffer.concat([Buffer.concat([s, i]), data]);
-        const padding = generateRandomBytes(
-            mod(-(data.length + 12), 16) + 12
-        );
-        // Being substr(what, offset, length); x = 0 for client
-        // "msg_key_large = SHA256(substr(auth_key, 88+x, 32) + pt + padding)"
-        const msgKeyLarge = await sha256(
-            Buffer.concat([authKey.slice(88, 88 + 32), data, padding])
-        );
-        // "msg_key = substr (msg_key_large, 8, 16)"
-        const msgKey = msgKeyLarge.slice(8, 24);
+        const padLen = mod(-(16 + data.length + 12), 16) + 12;
+        const plain = Buffer.allocUnsafe(16 + data.length + padLen);
+        toSignedLittleBuffer(this.salt, 8).copy(plain, 0);
+        toSignedLittleBuffer(this.id, 8).copy(plain, 8);
+        data.copy(plain, 16);
+        crypto.randomFillSync(plain, 16 + data.length, padLen);
 
-        const { iv, key } = await this._calcKey(authKey, msgKey, true);
+        const msgKeyLarge = crypto
+            .createHash("sha256")
+            .update(authKey.subarray(88, 120))
+            .update(plain)
+            .digest();
+
+        const msgKey = msgKeyLarge.subarray(8, 24);
+
+        const { iv, key } = this._calcKey(authKey, msgKey, true);
 
         const keyId = readBufferFromBigInt(this.authKey.keyId, 8);
         return Buffer.concat([
             keyId,
             msgKey,
-            new IGE(key, iv).encryptIge(Buffer.concat([data, padding])),
+            new IGE(key, iv).encryptIge(plain),
         ]);
     }
 
@@ -211,18 +188,19 @@ export class MTProtoState {
         if (!authKey) {
             throw new SecurityError("Unset AuthKey");
         }
-        const msgKey = body.slice(8, 24);
-        const { iv, key } = await this._calcKey(authKey, msgKey, false);
-        body = new IGE(key, iv).decryptIge(body.slice(24));
+        const msgKey = body.subarray(8, 24);
+        const { iv, key } = this._calcKey(authKey, msgKey, false);
+        body = new IGE(key, iv).decryptIge(body.subarray(24));
 
         // https://core.telegram.org/mtproto/security_guidelines
         // Sections "checking sha256 hash" and "message length"
+        const ourKey = crypto
+            .createHash("sha256")
+            .update(authKey.subarray(96, 128))
+            .update(body)
+            .digest();
 
-        const ourKey = await sha256(
-            Buffer.concat([authKey.slice(96, 96 + 32), body])
-        );
-
-        if (!msgKey.equals(ourKey.slice(8, 24))) {
+        if (!msgKey.equals(ourKey.subarray(8, 24))) {
             throw new SecurityError(
                 "Received msg_key doesn't match with expected one"
             );
@@ -231,14 +209,14 @@ export class MTProtoState {
         const reader = new BinaryReader(body);
         reader.readLong(); // removeSalt
         const serverId = reader.readLong();
-        if (serverId.neq(this.id)) {
-            // throw new SecurityError('Server replied with a wrong session ID');
+        if (serverId.neq(this.id) && this.securityChecks) {
+            throw new SecurityError("Server replied with a wrong session ID");
         }
 
         const remoteMsgId = reader.readLong();
-        const registerResult = this.receivedIds.registerMsgId(remoteMsgId, true);
-        if (registerResult === "duplicate" && this.securityChecks) {
-            throw new SecurityError("Duplicate msgIds");
+        const registerResult = this.receivedIds.registerMsgId(remoteMsgId);
+        if (registerResult !== "success" && this.securityChecks) {
+            throw new SecurityError(`Rejected message: ${registerResult}`);
         }
         this.receivedIds.shrink();
         const remoteSequence = reader.readInt();

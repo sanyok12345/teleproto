@@ -1,5 +1,5 @@
-<!DOCTYPE html><html class="default" lang="en" data-base="../"><head><meta charset="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>PaymentsBotCancelStarsSubscriptionParams | teleproto - v1.227.5</title><meta name="description" content="Documentation for teleproto"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="../assets/style.css"/><link rel="stylesheet" href="../assets/highlight.css"/><script defer src="../assets/main.js"></script><script async src="../assets/icons.js" id="tsd-icons-script"></script><script async src="../assets/search.js" id="tsd-search-script"></script><script async src="../assets/navigation.js" id="tsd-nav-script"></script><script async src="../assets/hierarchy.js" id="tsd-hierarchy-script"></script></head><body><script>document.documentElement.dataset.theme = localStorage.getItem("tsd-theme") || "os";document.body.style.display="none";setTimeout(() => window.app?app.showPage():document.body.style.removeProperty("display"),500)</script><header class="tsd-page-toolbar">
-<div class="tsd-toolbar-contents container"><a href="../index.html" class="title">teleproto - v1.227.5</a>
+<!DOCTYPE html><html class="default" lang="en" data-base="../"><head><meta charset="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>PaymentsBotCancelStarsSubscriptionParams | teleproto - v1.228.0</title><meta name="description" content="Documentation for teleproto"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="../assets/style.css"/><link rel="stylesheet" href="../assets/highlight.css"/><script defer src="../assets/main.js"></script><script async src="../assets/icons.js" id="tsd-icons-script"></script><script async src="../assets/search.js" id="tsd-search-script"></script><script async src="../assets/navigation.js" id="tsd-nav-script"></script><script async src="../assets/hierarchy.js" id="tsd-hierarchy-script"></script></head><body><script>document.documentElement.dataset.theme = localStorage.getItem("tsd-theme") || "os";document.body.style.display="none";setTimeout(() => window.app?app.showPage():document.body.style.removeProperty("display"),500)</script><header class="tsd-page-toolbar">
+<div class="tsd-toolbar-contents container"><a href="../index.html" class="title">teleproto - v1.228.0</a>
 <div id="tsd-toolbar-links"></div><button id="tsd-search-trigger" class="tsd-widget" aria-label="Search"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-search"></use></svg></button><dialog id="tsd-search" aria-label="Search"><input role="combobox" id="tsd-search-input" aria-controls="tsd-search-results" aria-autocomplete="list" aria-expanded="true" autocapitalize="off" autocomplete="off" placeholder="Search the docs" maxLength="100"/>
 <ul role="listbox" id="tsd-search-results"></ul>
 <div id="tsd-search-status" aria-live="polite" aria-atomic="true">
@@ -13,7 +13,7 @@
 <h1>Interface PaymentsBotCancelStarsSubscriptionParams</h1></div>
 <div class="tsd-signature"><span class="tsd-signature-keyword">interface</span> <span class="tsd-kind-interface">PaymentsBotCancelStarsSubscriptionParams</span> <span class="tsd-signature-symbol">{</span><br/>    <a class="tsd-kind-property" href="#chargeid">chargeId</a><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#restore">restore</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#userid">userId</a><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">EntityLike</span><span class="tsd-signature-symbol">;</span><br/><span class="tsd-signature-symbol">}</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/tl/generated/api.d.ts#L39386">teleproto/tl/generated/api.d.ts:39386</a></li></ul></aside>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/tl/generated/api.d.ts#L40070">teleproto/tl/generated/api.d.ts:40070</a></li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-accordion" open><summary class="tsd-accordion-summary tsd-index-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
@@ -34,21 +34,21 @@
 <div class="tsd-comment tsd-typography"><p>The provider_charge_id from the messageActionPaymentSentMe service message sent to the bot for the first subscription payment.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/tl/generated/api.d.ts#L39392">teleproto/tl/generated/api.d.ts:39392</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/tl/generated/api.d.ts#L40076">teleproto/tl/generated/api.d.ts:40076</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="restore"><code class="tsd-tag">Optional</code><span>restore</span><a href="#restore" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">restore</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span></div>
 <div class="tsd-comment tsd-typography"><p>If not set, disables autorenewal of the subscriptions, and prevents the user from reactivating the subscription once the current period expires: a subscription cancelled by the bot will have the starsSubscription . bot_canceled flag set. The bot can can partially undo this operation by setting this flag: this will allow the user to reactivate the subscription.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/tl/generated/api.d.ts#L39388">teleproto/tl/generated/api.d.ts:39388</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/tl/generated/api.d.ts#L40072">teleproto/tl/generated/api.d.ts:40072</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="userid"><span>user<wbr/>Id</span><a href="#userid" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">userId</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">EntityLike</span></div>
 <div class="tsd-comment tsd-typography"><p>The ID of the user whose subscription should be (un)cancelled</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/tl/generated/api.d.ts#L39390">teleproto/tl/generated/api.d.ts:39390</a></li></ul></aside></section></section></details></div>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/tl/generated/api.d.ts#L40074">teleproto/tl/generated/api.d.ts:40074</a></li></ul></aside></section></section></details></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">
@@ -65,7 +65,7 @@
 <details open class="tsd-accordion tsd-page-navigation-section"><summary class="tsd-accordion-summary" data-key="section-Properties"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>Properties</summary>
 <div><a href="#chargeid"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>charge<wbr/>Id</span></a><a href="#restore"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>restore</span></a><a href="#userid"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>user<wbr/>Id</span></a></div></details></div></details></div>
 <div class="site-menu">
-<nav class="tsd-navigation"><a href="../modules.html">teleproto - v1.227.5</a>
+<nav class="tsd-navigation"><a href="../modules.html">teleproto - v1.228.0</a>
 <ul class="tsd-small-nested-navigation" id="tsd-nav-container">
 <li>Loading...</li></ul></nav></div></div></div><footer></footer>
 <div class="overlay"></div></body></html>

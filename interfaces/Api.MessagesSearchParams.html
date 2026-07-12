@@ -1,5 +1,5 @@
-<!DOCTYPE html><html class="default" lang="en" data-base="../"><head><meta charset="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>MessagesSearchParams | teleproto - v1.227.5</title><meta name="description" content="Documentation for teleproto"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="../assets/style.css"/><link rel="stylesheet" href="../assets/highlight.css"/><script defer src="../assets/main.js"></script><script async src="../assets/icons.js" id="tsd-icons-script"></script><script async src="../assets/search.js" id="tsd-search-script"></script><script async src="../assets/navigation.js" id="tsd-nav-script"></script><script async src="../assets/hierarchy.js" id="tsd-hierarchy-script"></script></head><body><script>document.documentElement.dataset.theme = localStorage.getItem("tsd-theme") || "os";document.body.style.display="none";setTimeout(() => window.app?app.showPage():document.body.style.removeProperty("display"),500)</script><header class="tsd-page-toolbar">
-<div class="tsd-toolbar-contents container"><a href="../index.html" class="title">teleproto - v1.227.5</a>
+<!DOCTYPE html><html class="default" lang="en" data-base="../"><head><meta charset="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>MessagesSearchParams | teleproto - v1.228.0</title><meta name="description" content="Documentation for teleproto"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="../assets/style.css"/><link rel="stylesheet" href="../assets/highlight.css"/><script defer src="../assets/main.js"></script><script async src="../assets/icons.js" id="tsd-icons-script"></script><script async src="../assets/search.js" id="tsd-search-script"></script><script async src="../assets/navigation.js" id="tsd-nav-script"></script><script async src="../assets/hierarchy.js" id="tsd-hierarchy-script"></script></head><body><script>document.documentElement.dataset.theme = localStorage.getItem("tsd-theme") || "os";document.body.style.display="none";setTimeout(() => window.app?app.showPage():document.body.style.removeProperty("display"),500)</script><header class="tsd-page-toolbar">
+<div class="tsd-toolbar-contents container"><a href="../index.html" class="title">teleproto - v1.228.0</a>
 <div id="tsd-toolbar-links"></div><button id="tsd-search-trigger" class="tsd-widget" aria-label="Search"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-search"></use></svg></button><dialog id="tsd-search" aria-label="Search"><input role="combobox" id="tsd-search-input" aria-controls="tsd-search-results" aria-autocomplete="list" aria-expanded="true" autocapitalize="off" autocomplete="off" placeholder="Search the docs" maxLength="100"/>
 <ul role="listbox" id="tsd-search-results"></ul>
 <div id="tsd-search-status" aria-live="polite" aria-atomic="true">
@@ -13,7 +13,7 @@
 <h1>Interface MessagesSearchParams</h1></div>
 <div class="tsd-signature"><span class="tsd-signature-keyword">interface</span> <span class="tsd-kind-interface">MessagesSearchParams</span> <span class="tsd-signature-symbol">{</span><br/>    <a class="tsd-kind-property" href="#addoffset">addOffset</a><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#filter">filter</a><span class="tsd-signature-symbol">:</span> <a href="../types/Api.MessagesFilterIn.html" class="tsd-signature-type tsd-kind-type-alias">MessagesFilterIn</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#fromid">fromId</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">EntityLike</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#hash">hash</a><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">BigInteger</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#limit">limit</a><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#maxdate">maxDate</a><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#maxid">maxId</a><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#mindate">minDate</a><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#minid">minId</a><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#offsetid">offsetId</a><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#peer">peer</a><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">EntityLike</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#q">q</a><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#savedpeerid">savedPeerId</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">EntityLike</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#savedreaction">savedReaction</a><span class="tsd-signature-symbol">?:</span> <a href="../types/Api.ReactionIn.html" class="tsd-signature-type tsd-kind-type-alias">ReactionIn</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#topmsgid">topMsgId</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">MessageIDLike</span><span class="tsd-signature-symbol">;</span><br/><span class="tsd-signature-symbol">}</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/tl/generated/api.d.ts#L36335">teleproto/tl/generated/api.d.ts:36335</a></li></ul></aside>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/tl/generated/api.d.ts#L36998">teleproto/tl/generated/api.d.ts:36998</a></li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-accordion" open><summary class="tsd-accordion-summary tsd-index-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
@@ -46,105 +46,105 @@
 <div class="tsd-comment tsd-typography"><p>Additional offset</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/tl/generated/api.d.ts#L36357">teleproto/tl/generated/api.d.ts:36357</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/tl/generated/api.d.ts#L37020">teleproto/tl/generated/api.d.ts:37020</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="filter"><span>filter</span><a href="#filter" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">filter</span><span class="tsd-signature-symbol">:</span> <a href="../types/Api.MessagesFilterIn.html" class="tsd-signature-type tsd-kind-type-alias">MessagesFilterIn</a></div>
 <div class="tsd-comment tsd-typography"><p>Filter to return only specified message types</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/tl/generated/api.d.ts#L36349">teleproto/tl/generated/api.d.ts:36349</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/tl/generated/api.d.ts#L37012">teleproto/tl/generated/api.d.ts:37012</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="fromid"><code class="tsd-tag">Optional</code><span>from<wbr/>Id</span><a href="#fromid" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">fromId</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">EntityLike</span></div>
 <div class="tsd-comment tsd-typography"><p>Only return messages sent by the specified user ID</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/tl/generated/api.d.ts#L36341">teleproto/tl/generated/api.d.ts:36341</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/tl/generated/api.d.ts#L37004">teleproto/tl/generated/api.d.ts:37004</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="hash"><span>hash</span><a href="#hash" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">hash</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">BigInteger</span></div>
 <div class="tsd-comment tsd-typography"><p>Hash</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/tl/generated/api.d.ts#L36365">teleproto/tl/generated/api.d.ts:36365</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/tl/generated/api.d.ts#L37028">teleproto/tl/generated/api.d.ts:37028</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="limit"><span>limit</span><a href="#limit" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">limit</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 <div class="tsd-comment tsd-typography"><p>Number of results to return , can be 0 to only return the message counter.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/tl/generated/api.d.ts#L36359">teleproto/tl/generated/api.d.ts:36359</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/tl/generated/api.d.ts#L37022">teleproto/tl/generated/api.d.ts:37022</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="maxdate"><span>max<wbr/>Date</span><a href="#maxdate" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">maxDate</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 <div class="tsd-comment tsd-typography"><p>If a positive value was transferred, only messages with a sending date smaller than the transferred one will be returned</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/tl/generated/api.d.ts#L36353">teleproto/tl/generated/api.d.ts:36353</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/tl/generated/api.d.ts#L37016">teleproto/tl/generated/api.d.ts:37016</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="maxid"><span>max<wbr/>Id</span><a href="#maxid" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">maxId</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 <div class="tsd-comment tsd-typography"><p>Maximum message ID to return</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/tl/generated/api.d.ts#L36361">teleproto/tl/generated/api.d.ts:36361</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/tl/generated/api.d.ts#L37024">teleproto/tl/generated/api.d.ts:37024</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="mindate"><span>min<wbr/>Date</span><a href="#mindate" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">minDate</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 <div class="tsd-comment tsd-typography"><p>If a positive value was transferred, only messages with a sending date bigger than the transferred one will be returned</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/tl/generated/api.d.ts#L36351">teleproto/tl/generated/api.d.ts:36351</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/tl/generated/api.d.ts#L37014">teleproto/tl/generated/api.d.ts:37014</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="minid"><span>min<wbr/>Id</span><a href="#minid" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">minId</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 <div class="tsd-comment tsd-typography"><p>Minimum message ID to return</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/tl/generated/api.d.ts#L36363">teleproto/tl/generated/api.d.ts:36363</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/tl/generated/api.d.ts#L37026">teleproto/tl/generated/api.d.ts:37026</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="offsetid"><span>offset<wbr/>Id</span><a href="#offsetid" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">offsetId</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 <div class="tsd-comment tsd-typography"><p>Only return messages starting from the specified message ID</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/tl/generated/api.d.ts#L36355">teleproto/tl/generated/api.d.ts:36355</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/tl/generated/api.d.ts#L37018">teleproto/tl/generated/api.d.ts:37018</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="peer"><span>peer</span><a href="#peer" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">peer</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">EntityLike</span></div>
 <div class="tsd-comment tsd-typography"><p>User or chat, histories with which are searched, or (inputPeerEmpty) constructor to search in all private chats and normal groups (not channels) » . Use messages.searchGlobal to search globally in all chats, groups, supergroups and channels.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/tl/generated/api.d.ts#L36337">teleproto/tl/generated/api.d.ts:36337</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/tl/generated/api.d.ts#L37000">teleproto/tl/generated/api.d.ts:37000</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="q"><span>q</span><a href="#q" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">q</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 <div class="tsd-comment tsd-typography"><p>Text search request</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/tl/generated/api.d.ts#L36339">teleproto/tl/generated/api.d.ts:36339</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/tl/generated/api.d.ts#L37002">teleproto/tl/generated/api.d.ts:37002</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="savedpeerid"><code class="tsd-tag">Optional</code><span>saved<wbr/>Peer<wbr/>Id</span><a href="#savedpeerid" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">savedPeerId</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">EntityLike</span></div>
 <div class="tsd-comment tsd-typography"><p>Search within the saved message dialog » with this ID.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/tl/generated/api.d.ts#L36343">teleproto/tl/generated/api.d.ts:36343</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/tl/generated/api.d.ts#L37006">teleproto/tl/generated/api.d.ts:37006</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="savedreaction"><code class="tsd-tag">Optional</code><span>saved<wbr/>Reaction</span><a href="#savedreaction" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">savedReaction</span><span class="tsd-signature-symbol">?:</span> <a href="../types/Api.ReactionIn.html" class="tsd-signature-type tsd-kind-type-alias">ReactionIn</a><span class="tsd-signature-symbol">[]</span></div>
 <div class="tsd-comment tsd-typography"><p>You may search for saved messages tagged » with one or more reactions using this flag.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/tl/generated/api.d.ts#L36345">teleproto/tl/generated/api.d.ts:36345</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/tl/generated/api.d.ts#L37008">teleproto/tl/generated/api.d.ts:37008</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="topmsgid"><code class="tsd-tag">Optional</code><span>top<wbr/>Msg<wbr/>Id</span><a href="#topmsgid" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">topMsgId</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">MessageIDLike</span></div>
 <div class="tsd-comment tsd-typography"><p>Thread ID</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/tl/generated/api.d.ts#L36347">teleproto/tl/generated/api.d.ts:36347</a></li></ul></aside></section></section></details></div>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/tl/generated/api.d.ts#L37010">teleproto/tl/generated/api.d.ts:37010</a></li></ul></aside></section></section></details></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">
@@ -161,7 +161,7 @@
 <details open class="tsd-accordion tsd-page-navigation-section"><summary class="tsd-accordion-summary" data-key="section-Properties"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>Properties</summary>
 <div><a href="#addoffset"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>add<wbr/>Offset</span></a><a href="#filter"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>filter</span></a><a href="#fromid"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>from<wbr/>Id</span></a><a href="#hash"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>hash</span></a><a href="#limit"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>limit</span></a><a href="#maxdate"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>max<wbr/>Date</span></a><a href="#maxid"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>max<wbr/>Id</span></a><a href="#mindate"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>min<wbr/>Date</span></a><a href="#minid"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>min<wbr/>Id</span></a><a href="#offsetid"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>offset<wbr/>Id</span></a><a href="#peer"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>peer</span></a><a href="#q"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>q</span></a><a href="#savedpeerid"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>saved<wbr/>Peer<wbr/>Id</span></a><a href="#savedreaction"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>saved<wbr/>Reaction</span></a><a href="#topmsgid"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>top<wbr/>Msg<wbr/>Id</span></a></div></details></div></details></div>
 <div class="site-menu">
-<nav class="tsd-navigation"><a href="../modules.html">teleproto - v1.227.5</a>
+<nav class="tsd-navigation"><a href="../modules.html">teleproto - v1.228.0</a>
 <ul class="tsd-small-nested-navigation" id="tsd-nav-container">
 <li>Loading...</li></ul></nav></div></div></div><footer></footer>
 <div class="overlay"></div></body></html>

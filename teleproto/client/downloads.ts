@@ -366,6 +366,16 @@ export async function downloadMedia(
     if (typeof media == "string") {
         throw new Error("not implemented");
     }
+    if (
+        media instanceof Api.UserProfilePhoto ||
+        media instanceof Api.ChatPhoto
+    ) {
+        throw new Error(
+            `${
+                (media as any).className
+            } cannot be downloaded from the photo object alone its file location is bound to the owner: use client.downloadProfilePhoto(entity)`
+        );
+    }
     if (media instanceof Api.MessageMediaWebPage) {
         if (media.webpage instanceof Api.WebPage) {
             media = media.webpage.document || media.webpage.photo;
@@ -400,8 +410,14 @@ export async function downloadMedia(
         media instanceof Api.WebDocumentNoProxy
     ) {
         return _downloadWebDocument(client, media, {});
+    } else if (!media) {
+        return undefined;
     } else {
-        return Buffer.alloc(0);
+        throw new Error(
+            `Cannot download media of type ${
+                (media as any).className ?? typeof media
+            }`
+        );
     }
 }
 

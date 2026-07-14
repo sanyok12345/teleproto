@@ -200,6 +200,11 @@ export interface TelegramClientParams {
      */
     networkSocket?: typeof PromisedNetSockets;
     /**
+     * TCP keep-alive probe interval in milliseconds. Defaults to 30000.
+     * Set to 0 to disable keep-alive probes.
+     */
+    keepAliveInterval?: number;
+    /**
      * Callback for handling reCAPTCHA verification.
      * It should return the token obtained after solving the CAPTCHA.
      */
@@ -351,6 +356,8 @@ export abstract class TelegramBaseClient {
     /** @hidden */
     _securityChecks: boolean;
     public networkSocket: typeof PromisedNetSockets;
+    /** @hidden */
+    public _keepAliveInterval?: number;
     _connectedDeferred: Deferred<void>;
     /** Centralised pts/qts/seq tracker and gap recovery driver. */
     public updateManager!: UpdateManager;
@@ -395,6 +402,7 @@ export abstract class TelegramBaseClient {
         this._proxy = clientParams.proxy;
         this._maxConcurrentDownloads = clientParams.maxConcurrentDownloads || 1;
         this.networkSocket = clientParams.networkSocket || PromisedNetSockets;
+        this._keepAliveInterval = clientParams.keepAliveInterval;
         this._reCaptchaCallback = clientParams.reCaptchaCallback;
         if (!(clientParams.connection instanceof Function)) {
             throw new Error("Connection should be a class not an instance");
@@ -577,6 +585,7 @@ export abstract class TelegramBaseClient {
                 loggers: this._log,
                 proxy: this._proxy,
                 socket: this.networkSocket,
+                keepAliveInterval: this._keepAliveInterval,
             });
         }
         try {

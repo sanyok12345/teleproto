@@ -8,6 +8,8 @@ import {
 
 const closeError = new Error("NetSocket was closed");
 
+const DEFAULT_KEEP_ALIVE_INTERVAL = 30_000;
+
 /**
  * Promise-based TCP socket wrapper used as the network transport layer.
  *
@@ -24,13 +26,16 @@ export class PromisedNetSockets {
     private canRead?: Promise<boolean>;
     private resolveRead: ((value?: any) => void) | undefined;
     private proxy?: SocksProxyType;
+    private keepAliveInterval: number;
 
-    constructor(proxy?: ProxyInterface) {
+    constructor(proxy?: ProxyInterface, keepAliveInterval?: number) {
         this.client = undefined;
         this.closed = true;
         this.chunks = [];
         this.headOffset = 0;
         this.available = 0;
+        this.keepAliveInterval =
+            keepAliveInterval ?? DEFAULT_KEEP_ALIVE_INTERVAL;
         if (proxy) {
             // we only want to use this when it's not an MTProto proxy.
             if (!("MTProxy" in proxy)) {
@@ -166,7 +171,10 @@ export class PromisedNetSockets {
             if (this.client) {
                 const tune = (socket: net.Socket) => {
                     socket.setNoDelay(true);
-                    socket.setKeepAlive(true, 30_000);
+                    socket.setKeepAlive(
+                        this.keepAliveInterval > 0,
+                        Math.max(0, this.keepAliveInterval)
+                    );
                 };
                 if (connected) {
                     tune(this.client);

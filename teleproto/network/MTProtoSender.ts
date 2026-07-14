@@ -968,6 +968,7 @@ export class MTProtoSender {
             loggers: connection._log,
             proxy: connection._proxy,
             socket: this._client.networkSocket,
+            keepAliveInterval: connection._keepAliveInterval,
         });
         try {
             await this.connect(newConnection, true);

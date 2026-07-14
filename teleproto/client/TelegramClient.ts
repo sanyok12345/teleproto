@@ -1686,6 +1686,7 @@ export class TelegramClient extends TelegramBaseClient {
             loggers: this._log,
             proxy: this._proxy,
             socket: this.networkSocket,
+            keepAliveInterval: this._keepAliveInterval,
         });
         this._log.info(`Using LAYER ${LAYER} for initial connect`);
         await this._connectSender(this._sender, this.session.dcId, connection);

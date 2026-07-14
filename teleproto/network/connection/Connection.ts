@@ -13,6 +13,7 @@ interface ConnectionInterfaceParams {
     loggers: Logger;
     proxy?: ProxyInterface;
     socket: typeof PromisedNetSockets;
+    keepAliveInterval?: number;
 }
 
 /**
@@ -31,6 +32,7 @@ class Connection {
     _dcId: number;
     _log: Logger;
     _proxy?: ProxyInterface;
+    _keepAliveInterval?: number;
     _connected: boolean;
     protected _codec: any;
     protected _obfuscation: any;
@@ -43,16 +45,18 @@ class Connection {
         loggers,
         proxy,
         socket,
+        keepAliveInterval,
     }: ConnectionInterfaceParams) {
         this._ip = ip;
         this._port = port;
         this._dcId = dcId;
         this._log = loggers;
         this._proxy = proxy;
+        this._keepAliveInterval = keepAliveInterval;
         this._connected = false;
         this._codec = undefined;
         this._obfuscation = undefined; // TcpObfuscated and MTProxy
-        this.socket = new socket(proxy);
+        this.socket = new socket(proxy, keepAliveInterval);
     }
 
     async connect() {

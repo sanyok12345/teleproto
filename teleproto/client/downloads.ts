@@ -25,7 +25,12 @@ export interface progressCallback {
     acceptsBuffer?: boolean;
 }
 
-export interface DownloadFileParams {
+export interface DownloadCancelParams {
+    signal?: AbortSignal;
+    requestTimeout?: number;
+}
+
+export interface DownloadFileParams extends DownloadCancelParams {
     outputFile?: OutFile;
     dcId?: number;
     fileSize?: bigInt.BigInteger;
@@ -35,7 +40,7 @@ export interface DownloadFileParams {
     verifyHashes?: boolean;
 }
 
-export interface DownloadProfilePhotoParams {
+export interface DownloadProfilePhotoParams extends DownloadCancelParams {
     isBig?: boolean;
     outputFile?: OutFile;
 }
@@ -164,6 +169,8 @@ export async function downloadFile(
         progressCallback = undefined,
         dcId = undefined,
         verifyHashes = false,
+        signal = undefined,
+        requestTimeout = undefined,
     }: DownloadFileParams
 ): Promise<Buffer | string | undefined> {
     const info = utils.getFileInfo(inputLocation);
@@ -175,6 +182,16 @@ export async function downloadFile(
 
     const writer = getWriter(outputFile);
     const abort = new AbortController();
+    let timeoutTimer: ReturnType<typeof setTimeout> | undefined;
+    if (signal) {
+        if (signal.aborted) abort.abort();
+        else signal.addEventListener("abort", () => abort.abort(), {
+            once: true,
+        });
+    }
+    if (requestTimeout && requestTimeout > 0) {
+        timeoutTimer = setTimeout(() => abort.abort(), requestTimeout);
+    }
     const hashChecker = verifyHashes
         ? new FileHashChecker(client, location)
         : undefined;
@@ -223,6 +240,8 @@ export async function downloadFile(
     } catch (err) {
         await closeWriter(writer).catch(() => {});
         throw err;
+    } finally {
+        if (timeoutTimer) clearTimeout(timeoutTimer);
     }
 }
 
@@ -335,7 +354,7 @@ async function streamParallel(
     }
 }
 
-export interface DownloadMediaInterface {
+export interface DownloadMediaInterface extends DownloadCancelParams {
     outputFile?: OutFile;
     thumb?: number | Api.TypePhotoSize;
     progressCallback?: ProgressCallback;
@@ -347,7 +366,8 @@ export async function downloadMedia(
     messageOrMedia: Api.Message | Api.TypeMessageMedia,
     outputFile?: OutFile,
     thumb?: number | Api.TypePhotoSize,
-    progressCallback?: ProgressCallback
+    progressCallback?: ProgressCallback,
+    extra?: DownloadCancelParams
 ): Promise<Buffer | string | undefined> {
     let msgData: [EntityLike, number] | undefined;
     let date;
@@ -388,7 +408,8 @@ export async function downloadMedia(
             outputFile,
             date,
             thumb,
-            progressCallback
+            progressCallback,
+            extra
         );
     } else if (
         media instanceof Api.MessageMediaDocument ||
@@ -401,7 +422,8 @@ export async function downloadMedia(
             date,
             thumb,
             progressCallback,
-            msgData
+            msgData,
+            extra
         );
     } else if (media instanceof Api.MessageMediaContact) {
         return _downloadContact(client, media, {});
@@ -429,7 +451,8 @@ export async function _downloadDocument(
     date: number,
     thumb?: number | string | Api.TypePhotoSize,
     progressCallback?: ProgressCallback,
-    msgData?: [EntityLike, number]
+    msgData?: [EntityLike, number],
+    extra?: DownloadCancelParams
 ): Promise<Buffer | string | undefined> {
     if (doc instanceof Api.MessageMediaDocument) {
         if (!doc.document) {
@@ -471,6 +494,8 @@ export async function _downloadDocument(
             fileSize: size && "size" in size ? bigInt(size.size) : doc.size,
             progressCallback: progressCallback,
             msgData: msgData,
+            signal: extra?.signal,
+            requestTimeout: extra?.requestTimeout,
         }
     );
 }
@@ -605,7 +630,8 @@ export async function _downloadPhoto(
     file?: OutFile,
     date?: number,
     thumb?: number | string | Api.TypePhotoSize,
-    progressCallback?: progressCallback
+    progressCallback?: progressCallback,
+    extra?: DownloadCancelParams
 ): Promise<Buffer | string | undefined> {
     if (photo instanceof Api.MessageMediaPhoto) {
         if (photo.photo instanceof Api.PhotoEmpty || !photo.photo) {
@@ -652,6 +678,8 @@ export async function _downloadPhoto(
             fileSize: bigInt(fileSize),
             progressCallback: progressCallback,
             dcId: photo.dcId,
+            signal: extra?.signal,
+            requestTimeout: extra?.requestTimeout,
         }
     );
 }
@@ -695,5 +723,7 @@ export async function downloadProfilePhoto(
     return client.downloadFile(loc, {
         outputFile: fileParams.outputFile,
         dcId,
+        signal: fileParams.signal,
+        requestTimeout: fileParams.requestTimeout,
     });
 }

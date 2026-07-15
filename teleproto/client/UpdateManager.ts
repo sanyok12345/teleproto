@@ -4,7 +4,7 @@ import * as utils from "../Utils";
 import { returnBigInt } from "../Helpers";
 import type { TelegramClient } from "./TelegramClient";
 import { _dispatchUpdate } from "./updates";
-import { PtsWaiter, type PtsWaiterHost } from "./PtsWaiter";
+import { PtsWaiter, WAIT_FOR_SKIPPED_TIMEOUT_MS, type PtsWaiterHost } from "./PtsWaiter";
 
 const NO_UPDATES_TIMEOUT_MS = 15 * 60 * 1000;
 const FAIL_DIFFERENCE_INITIAL_S = 1;
@@ -81,6 +81,7 @@ export class UpdateManager {
     private globalPtsTimer?: NodeJS.Timeout;
     private readonly channels = new Map<string, ChannelTracker>();
     private readonly pendingSeq: PendingSeqUpdate[] = [];
+    private seqGapTimer?: NodeJS.Timeout;
     private readonly recentMessageKeys = new Set<string>();
     private readonly recentMessageQueue: string[] = [];
 
@@ -112,6 +113,10 @@ export class UpdateManager {
         if (this.failRetryTimer) {
             clearTimeout(this.failRetryTimer);
             this.failRetryTimer = undefined;
+        }
+        if (this.seqGapTimer) {
+            clearTimeout(this.seqGapTimer);
+            this.seqGapTimer = undefined;
         }
         for (const t of this.channelFailRetryTimers.values()) clearTimeout(t);
         this.channelFailRetryTimers.clear();
@@ -250,9 +255,9 @@ export class UpdateManager {
                     return;
                 }
                 if (localSeq + 1 < seqStart) {
-                    this.client._log.debug(`Seq gap (local=${localSeq}, start=${seqStart}); requesting difference`);
+                    this.client._log.debug(`Seq gap (local=${localSeq}, start=${seqStart}); buffering`);
                     this.pendingSeq.push({ update, seqStart, seq: update.seq });
-                    this.scheduleCommonDifference();
+                    this.armSeqGapTimer();
                     return;
                 }
             }
@@ -264,6 +269,18 @@ export class UpdateManager {
         for (const u of update.updates) {
             this.feedUpdate(u, { others: update.updates, entities });
         }
+        if (this.state && update.seq !== 0) {
+            this.drainPendingSeq();
+        }
+    }
+
+    private armSeqGapTimer(): void {
+        if (this.seqGapTimer) return;
+        this.seqGapTimer = setTimeout(() => {
+            this.seqGapTimer = undefined;
+            this.client._log.debug("Seq gap was not filled in time; requesting difference");
+            this.scheduleCommonDifference();
+        }, WAIT_FOR_SKIPPED_TIMEOUT_MS);
     }
 
     private handleShortMessage(update: Api.UpdateShortMessage | Api.UpdateShortChatMessage): void {
@@ -571,14 +588,28 @@ export class UpdateManager {
     }
 
     private drainPendingSeq(): void {
-        if (!this.state || this.pendingSeq.length === 0) return;
-        const list = this.pendingSeq.splice(0);
-        list.sort((a, b) => a.seqStart - b.seqStart);
-        for (const entry of list) {
-            if (this.state.seq + 1 === entry.seqStart) {
-                this.onUpdates(entry.update);
+        if (!this.state) return;
+        this.pendingSeq.sort((a, b) => a.seqStart - b.seqStart);
+        while (this.pendingSeq.length > 0) {
+            const entry = this.pendingSeq[0];
+            if (entry.seqStart <= this.state.seq) {
+                this.pendingSeq.shift();
+                continue;
             }
-            // else drop — diff has covered it
+            if (entry.seqStart === this.state.seq + 1) {
+                this.pendingSeq.shift();
+                this.handleContainer(entry.update);
+                continue;
+            }
+            break;
+        }
+        if (this.pendingSeq.length === 0) {
+            if (this.seqGapTimer) {
+                clearTimeout(this.seqGapTimer);
+                this.seqGapTimer = undefined;
+            }
+        } else {
+            this.armSeqGapTimer();
         }
     }
 

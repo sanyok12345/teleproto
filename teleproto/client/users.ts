@@ -225,6 +225,18 @@ export async function invoke<R extends Api.AnyRequest>(
                 }
                 client._entityCache.add(result);
 
+                if (
+                    !dcId &&
+                    !otherSender &&
+                    (result as { SUBCLASS_OF_ID?: number })?.SUBCLASS_OF_ID ===
+                        0x8af52aac // Updates
+                ) {
+                    client.updateManager.onUpdates(
+                        result as Api.TypeUpdates,
+                        true
+                    );
+                }
+
                 return result;
             } catch (e: any) {
                 let recovered = false;

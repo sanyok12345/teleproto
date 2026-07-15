@@ -127,12 +127,14 @@ export class UpdateManager {
         this.channelFailTimeoutS.clear();
     }
 
-    onUpdates(update: Api.TypeUpdate | Api.TypeUpdates): void {
+    onUpdates(update: Api.TypeUpdate | Api.TypeUpdates, noDispatch = false): void {
         if (!this.running) return;
         try {
             this.lastUpdateTime = Date.now();
             this.client._entityCache.add(update as never);
             void this.saveEntities(update);
+
+            if (noDispatch) this.markNoDispatch(update);
 
             if (update instanceof Api.Updates || update instanceof Api.UpdatesCombined) {
                 this.handleContainer(update);
@@ -141,6 +143,8 @@ export class UpdateManager {
                 this.feedUpdate(update.update, { others: null });
             } else if (update instanceof Api.UpdateShortMessage || update instanceof Api.UpdateShortChatMessage) {
                 this.handleShortMessage(update);
+            } else if (update instanceof Api.UpdateShortSentMessage) {
+                this.handleShortSentMessage(update);
             } else if ((update as { className?: string }).className === "UpdatesTooLong") {
                 this.client._log.warn("Received UpdatesTooLong, requesting common difference");
                 this.scheduleCommonDifference();
@@ -150,6 +154,34 @@ export class UpdateManager {
         } catch (e) {
             this.client._log.error(`Error in onUpdates: ${e}`);
         }
+    }
+
+    private markNoDispatch(update: Api.TypeUpdate | Api.TypeUpdates): void {
+        const mark = (obj: object) =>
+            Object.defineProperty(obj, "_noDispatch", {
+                value: true,
+                configurable: true,
+            });
+        mark(update);
+        if (update instanceof Api.Updates || update instanceof Api.UpdatesCombined) {
+            for (const u of update.updates) mark(u);
+        } else if (update instanceof Api.UpdateShort) {
+            mark(update.update);
+        }
+    }
+
+    private handleShortSentMessage(update: Api.UpdateShortSentMessage): void {
+        if (!this.state || this.fetchingDifference) return;
+        this.globalPts.updateAndApply(
+            update.pts,
+            update.ptsCount,
+            { tag: "update", update: update as unknown as Api.TypeUpdate },
+            () => {
+                if (this.state) this.state.pts = update.pts;
+            },
+            () => {},
+        );
+        this.state.date = update.date;
     }
 
     async catchUp(): Promise<void> {
@@ -334,6 +366,9 @@ export class UpdateManager {
     private dispatch(update: Api.TypeUpdate, payload: DispatchPayload): void {
         if (this.isDuplicateMessage(update)) {
             this.client._log.debug("Skip duplicate message update (already dispatched)");
+            return;
+        }
+        if ((update as { _noDispatch?: boolean })._noDispatch) {
             return;
         }
         (update as unknown as { _entities: Map<string, unknown> })._entities = payload.entities ?? new Map();

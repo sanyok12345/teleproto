@@ -515,7 +515,7 @@ export function _entityType(entity: EntityLike) {
         return _EntityType.USER;
     } else if (name.includes("Chat")) {
         return _EntityType.CHAT;
-    } else if (name.includes("Channel")) {
+    } else if (name.includes("Channel") || name.includes("Community")) {
         return _EntityType.CHANNEL;
     } else if (name.includes("Self")) {
         return _EntityType.USER;

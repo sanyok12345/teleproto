@@ -1,6 +1,6 @@
 {
     "name": "teleproto",
-    "version": "1.228.1",
+    "version": "1.228.2",
     "description": "Modern Telegram MTProto client for Node.js, written in TypeScript",
     "main": "index.js",
     "types": "index.d.ts",

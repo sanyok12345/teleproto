@@ -271,6 +271,7 @@ export class UpdateManager {
             this.dispatch(update as unknown as Api.TypeUpdate, { others: null });
             return;
         }
+        if (this.fetchingDifference) return;
         const applied = this.globalPts.updateAndApply(
             update.pts,
             update.ptsCount,
@@ -308,6 +309,7 @@ export class UpdateManager {
         }
 
         if (isCommonPtsUpdate(update)) {
+            if (this.fetchingDifference) return;
             const u = update as Api.TypeUpdate & { pts: number; ptsCount: number };
             this.globalPts.updateAndApply(
                 u.pts,
@@ -330,6 +332,7 @@ export class UpdateManager {
                 return;
             }
             const tracker = this.getOrCreateChannel(channelId);
+            if (this.fetchingDifference || tracker.pts.requesting()) return;
             if (!tracker.pts.inited()) {
                 tracker.pts.init(u.pts);
                 this.dispatch(update, payload);
@@ -346,6 +349,7 @@ export class UpdateManager {
         }
 
         if (hasQts(update)) {
+            if (this.fetchingDifference) return;
             const localQts = this.state.qts;
             const qts = update.qts;
             if (localQts + 1 > qts) {

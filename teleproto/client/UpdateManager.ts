@@ -199,7 +199,7 @@ export class UpdateManager {
                 return;
             }
             this.client._log.debug("Catching up on missed updates...");
-            await this.fetchDifferenceLoop();
+            await this.fetchCommonDifference();
             this.client._log.debug("Catch up complete");
         } catch (e) {
             this.client._log.error(`Error during catch up: ${e}`);
@@ -237,11 +237,7 @@ export class UpdateManager {
     async recoverIfStale(): Promise<void> {
         if (!this.isStale()) return;
         this.client._log.debug("No updates for 15 minutes, fetching difference");
-        try {
-            await this.fetchDifferenceLoop();
-        } catch (e) {
-            this.client._log.error(`Stale-recovery failed: ${e}`);
-        }
+        await this.fetchCommonDifference();
         this.lastUpdateTime = Date.now();
     }
 

@@ -235,11 +235,10 @@ export async function _updateLoop(client: TelegramClient) {
         await client.updateManager.recoverIfStale();
 
         // Per Telegram docs, we need a content-related request at least hourly
-        // for Telegram to keep delivering updates. Refresh state every 30 minutes.
+        // for Telegram to keep delivering updates. Catch up every 30 minutes.
         if (Date.now() - (client._lastRequest || 0) > 30 * 60 * 1000) {
             try {
-                const state = await client.api.updates.getState();
-                client.updateManager.refreshFromState(state);
+                await client.updateManager.catchUp();
             } catch {
                 // ignore — user may not be authorized yet
             }

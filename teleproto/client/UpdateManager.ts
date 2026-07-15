@@ -496,8 +496,15 @@ export class UpdateManager {
             await this.fetchDifferenceLoop();
             this.failTimeoutS = FAIL_DIFFERENCE_INITIAL_S;
         } catch (e) {
-            failed = true;
-            this.client._log.error(`fetchCommonDifference: ${e}`);
+            const msg = (e as { errorMessage?: string })?.errorMessage;
+            if (msg === "PERSISTENT_TIMESTAMP_INVALID") {
+                this.client._log.warn("Common pts is invalid; reinitializing update state");
+                this.state = undefined;
+                void this.ensureState();
+            } else {
+                failed = true;
+                this.client._log.warn(`fetchCommonDifference: ${e}`);
+            }
         } finally {
             this.globalPts.setRequesting(false);
             if (this.state) this.globalPts.init(this.state.pts);
@@ -647,8 +654,21 @@ export class UpdateManager {
             }
             this.channelFailTimeoutS.delete(channelId);
         } catch (e) {
+            const msg = (e as { errorMessage?: string })?.errorMessage;
+            if (msg === "CHANNEL_PRIVATE" || msg === "CHANNEL_INVALID") {
+                this.client._log.info(
+                    `Channel ${channelId} is inaccessible (${msg}); dropping difference tracking`,
+                );
+                this.dropChannel(channelId);
+                return;
+            }
+            if (msg === "PERSISTENT_TIMESTAMP_INVALID") {
+                this.client._log.warn(`Channel ${channelId} pts is invalid; resetting tracker`);
+                this.dropChannel(channelId);
+                return;
+            }
             failed = true;
-            this.client._log.error(`fetchChannelDifference ${channelId}: ${e}`);
+            this.client._log.warn(`fetchChannelDifference ${channelId}: ${e}`);
         } finally {
             tracker.pts.setRequesting(false);
         }
@@ -685,6 +705,21 @@ export class UpdateManager {
         if (this.failTimeoutS < FAIL_DIFFERENCE_CAP_S) {
             this.failTimeoutS = Math.min(this.failTimeoutS * 2, FAIL_DIFFERENCE_CAP_S);
         }
+    }
+
+    private dropChannel(channelId: string): void {
+        const tracker = this.channels.get(channelId);
+        if (tracker) {
+            if (tracker.timer) clearTimeout(tracker.timer);
+            tracker.pts.clearSkippedUpdates();
+            this.channels.delete(channelId);
+        }
+        const retry = this.channelFailRetryTimers.get(channelId);
+        if (retry) {
+            clearTimeout(retry);
+            this.channelFailRetryTimers.delete(channelId);
+        }
+        this.channelFailTimeoutS.delete(channelId);
     }
 
     private bumpChannelFailTimeout(channelId: string): void {

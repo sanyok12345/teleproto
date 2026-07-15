@@ -625,8 +625,23 @@ export class UpdateManager {
                     fetching = !diff.final;
                 } else if (diff instanceof Api.updates.ChannelDifferenceTooLong) {
                     this.client._log.warn(`Channel ${channelId} difference too long`);
-                    const dialog = diff.dialog as { pts?: number };
-                    if (dialog.pts !== undefined) tracker.pts.init(dialog.pts);
+                    if (diff.dialog instanceof Api.Dialog && diff.dialog.pts !== undefined) {
+                        tracker.pts.init(diff.dialog.pts);
+                    }
+                    const entities = this.collectEntities(diff.users, diff.chats);
+                    this.client._entityCache.add(diff);
+                    await this.saveEntities(diff);
+                    const included = diff.messages.filter(
+                        (m): m is Api.Message | Api.MessageService =>
+                            m instanceof Api.Message || m instanceof Api.MessageService,
+                    );
+                    included.sort((a, b) => a.id - b.id);
+                    for (const message of included) {
+                        this.dispatch(
+                            new Api.UpdateNewChannelMessage({ message, pts: 0, ptsCount: 0 }),
+                            { others: null, entities },
+                        );
+                    }
                     fetching = false;
                 }
             }

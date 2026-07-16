@@ -391,9 +391,7 @@ export async function getEntity(
         chats = (await client.api.messages.getChats({ id: chatIds })).chats;
     }
     if (channels.length) {
-        channels = (
-            await client.api.channels.getChannels({ id: channels })
-        ).chats;
+        channels = await _getChannelsWithCommunityFallback(client, channels);
     }
     const idEntity = new Map<string, any>();
 
@@ -425,6 +423,36 @@ export async function getEntity(
         }
     }
     return single ? result[0] : result;
+}
+
+async function _getChannelsWithCommunityFallback(
+    client: TelegramClient,
+    inputs: Api.TypeInputChannel[]
+): Promise<Api.TypeChat[]> {
+    try {
+        return (await client.api.channels.getChannels({ id: inputs })).chats;
+    } catch (e: any) {
+        if (e?.errorMessage !== "COMMUNITY_ID_INVALID") throw e;
+    }
+    const joined = await client.api.communities.getJoinedCommunities();
+    const byId = new Map<string, Api.TypeChat>();
+    for (const chat of joined.chats) {
+        byId.set(chat.id.toString(), chat);
+    }
+    const resolved: Api.TypeChat[] = [];
+    const rest: Api.TypeInputChannel[] = [];
+    for (const input of inputs) {
+        const id = (input as { channelId?: bigInt.BigInteger }).channelId;
+        const hit = id && byId.get(id.toString());
+        if (hit) resolved.push(hit);
+        else rest.push(input);
+    }
+    if (rest.length) {
+        resolved.push(
+            ...(await client.api.channels.getChannels({ id: rest })).chats
+        );
+    }
+    return resolved;
 }
 
 /**

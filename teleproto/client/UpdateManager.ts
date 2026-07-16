@@ -189,6 +189,34 @@ export class UpdateManager {
         this.state.date = update.date;
     }
 
+    applyAffected(pts: number, ptsCount: number, channelId?: string): void {
+        if (!this.running || !this.state || this.fetchingDifference) return;
+        if (channelId) {
+            const tracker = this.getOrCreateChannel(channelId);
+            if (tracker.pts.requesting()) return;
+            if (!tracker.pts.inited()) {
+                tracker.pts.init(pts);
+                return;
+            }
+            tracker.pts.updateAndApply(
+                pts,
+                ptsCount,
+                { tag: "update" },
+                () => {},
+                () => {},
+            );
+            return;
+        }
+        this.globalPts.updateAndApply(
+            pts,
+            ptsCount,
+            { tag: "update" },
+            () => {},
+            () => {},
+        );
+        this.state.pts = this.globalPts.current();
+    }
+
     async catchUp(): Promise<void> {
         try {
             if (!this.state) {

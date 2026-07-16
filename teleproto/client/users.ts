@@ -225,16 +225,34 @@ export async function invoke<R extends Api.AnyRequest>(
                 }
                 client._entityCache.add(result);
 
-                if (
-                    !dcId &&
-                    !otherSender &&
-                    (result as { SUBCLASS_OF_ID?: number })?.SUBCLASS_OF_ID ===
-                        0x8af52aac // Updates
-                ) {
-                    client.updateManager.onUpdates(
-                        result as Api.TypeUpdates,
-                        true
-                    );
+                if (!dcId && !otherSender) {
+                    const sub = (result as { SUBCLASS_OF_ID?: number })
+                        ?.SUBCLASS_OF_ID;
+                    if (sub === 0x8af52aac /* Updates */) {
+                        client.updateManager.onUpdates(
+                            result as Api.TypeUpdates,
+                            true
+                        );
+                    } else if (
+                        sub === 0xced3c06e /* AffectedMessages */ ||
+                        sub === 0x2c49c116 /* AffectedHistory */ ||
+                        sub === 0xf817652e /* AffectedFoundMessages */
+                    ) {
+                        const affected = result as {
+                            pts: number;
+                            ptsCount: number;
+                        };
+                        const channel = (
+                            request as unknown as {
+                                channel?: { channelId?: bigInt.BigInteger };
+                            }
+                        ).channel;
+                        client.updateManager.applyAffected(
+                            affected.pts,
+                            affected.ptsCount,
+                            channel?.channelId?.toString()
+                        );
+                    }
                 }
 
                 return result;

@@ -2,7 +2,7 @@ import { Api } from "../tl";
 import type { ButtonLike } from "../define";
 import { Button } from "../tl/custom/button";
 import { MessageButton } from "../tl/custom/messageButton";
-import { isArrayLike } from "../Helpers";
+import { isArrayLike, unionId } from "../Helpers";
 
 // ButtonMethods
 /**
@@ -30,12 +30,12 @@ export function buildReplyMarkup(
         return undefined;
     }
     if ("SUBCLASS_OF_ID" in buttons) {
-        if (buttons.SUBCLASS_OF_ID == 0xe2e10ef2) {
-            return buttons;
+        if (buttons.SUBCLASS_OF_ID == unionId("ReplyMarkup")) {
+            return buttons as Api.TypeReplyMarkup;
         }
     }
     if (!isArrayLike(buttons)) {
-        buttons = [[buttons]];
+        buttons = [[buttons as ButtonLike]];
     } else if (!buttons || !isArrayLike(buttons[0])) {
         // @ts-ignore
         buttons = [buttons];
@@ -72,8 +72,8 @@ export function buildReplyMarkup(
             if (!isNormal && inline) {
                 isNormal = false;
             }
-            if (button.SUBCLASS_OF_ID == 0xbad74a3) {
-                // 0xbad74a3 == crc32(b'KeyboardButton')
+            if (button.SUBCLASS_OF_ID == unionId("KeyboardButton")) {
+
                 current.push(button);
             }
         }

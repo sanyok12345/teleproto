@@ -474,6 +474,17 @@ export function crc32(buf: Buffer | string) {
     return (crc ^ -1) >>> 0;
 }
 
+const unionIdCache = new Map<string, number>();
+
+export function unionId(name: string): number {
+    let id = unionIdCache.get(name);
+    if (id === undefined) {
+        id = crc32(name) >>> 0;
+        unionIdCache.set(name, id);
+    }
+    return id;
+}
+
 export class TotalList<T> extends Array<T> {
     public total?: number;
 
@@ -498,14 +509,14 @@ export function _entityType(entity: EntityLike) {
     }
     if (
         ![
-            0x2d45687, // crc32('Peer')
-            0xc91c90b6, // crc32('InputPeer')
-            0xe669bf46, // crc32('InputUser')
-            0x40f202fd, // crc32('InputChannel')
-            0x2da17977, // crc32('User')
-            0xc5af5d94, // crc32('Chat')
-            0x1f4661b9, // crc32('UserFull')
-            0xd49a2697, // crc32('ChatFull')
+            unionId("Peer"),
+            unionId("InputPeer"),
+            unionId("InputUser"),
+            unionId("InputChannel"),
+            unionId("User"),
+            unionId("Chat"),
+            unionId("UserFull"),
+            unionId("ChatFull"),
         ].includes(entity.SUBCLASS_OF_ID)
     ) {
         throw new Error(`${entity} does not have any entity type`);

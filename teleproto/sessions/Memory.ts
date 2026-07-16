@@ -4,7 +4,7 @@ import { Api } from "../tl";
 import bigInt from "big-integer";
 
 import { getDisplayName, getInputPeer, getPeerId } from "../Utils";
-import { isArrayLike, returnBigInt } from "../Helpers";
+import { isArrayLike, returnBigInt, unionId } from "../Helpers";
 import * as utils from "../Utils";
 import type { EntityLike } from "../define";
 
@@ -260,9 +260,9 @@ export class MemorySession extends Session {
             key.SUBCLASS_OF_ID
         ) {
             if (
-                key.SUBCLASS_OF_ID == 0xc91c90b6 ||
-                key.SUBCLASS_OF_ID == 0xe669bf46 ||
-                key.SUBCLASS_OF_ID == 0x40f202fd
+                key.SUBCLASS_OF_ID == unionId("InputPeer") ||
+                key.SUBCLASS_OF_ID == unionId("InputUser") ||
+                key.SUBCLASS_OF_ID == unionId("InputChannel")
             ) {
                 // @ts-ignore
                 return key;

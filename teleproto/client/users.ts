@@ -7,6 +7,7 @@ import {
     sleep,
     isArrayLike,
     returnBigInt,
+    unionId,
 } from "../Helpers";
 import * as errors from "../errors";
 import * as utils from "../Utils";
@@ -228,15 +229,15 @@ export async function invoke<R extends Api.AnyRequest>(
                 if (!dcId && !otherSender) {
                     const sub = (result as { SUBCLASS_OF_ID?: number })
                         ?.SUBCLASS_OF_ID;
-                    if (sub === 0x8af52aac /* Updates */) {
+                    if (sub === unionId("Updates")) {
                         client.updateManager.onUpdates(
                             result as Api.TypeUpdates,
                             true
                         );
                     } else if (
-                        sub === 0xced3c06e /* AffectedMessages */ ||
-                        sub === 0x2c49c116 /* AffectedHistory */ ||
-                        sub === 0xf817652e /* AffectedFoundMessages */
+                        sub === unionId("messages.AffectedMessages") ||
+                        sub === unionId("messages.AffectedHistory") ||
+                        sub === unionId("messages.AffectedFoundMessages")
                     ) {
                         const affected = result as {
                             pts: number;
@@ -500,11 +501,11 @@ export async function getInputEntity(
                 return res;
             }
         }
-        // 0x2d45687 == crc32(b'Peer')
+        // unionId("Peer") == crc32(b'Peer')
         if (
             typeof peer == "object" &&
             !bigInt.isInstance(peer) &&
-            peer.SUBCLASS_OF_ID === 0x2d45687
+            peer.SUBCLASS_OF_ID === unionId("Peer")
         ) {
             const res = client._entityCache.get(utils.getPeerId(peer));
             if (res) {
@@ -688,7 +689,7 @@ export async function getPeerId(
     ) {
         return utils.getPeerId(peer, addMark);
     }
-    if (peer.SUBCLASS_OF_ID == 0x2d45687 || peer.SUBCLASS_OF_ID == 0xc91c90b6) {
+    if (peer.SUBCLASS_OF_ID == unionId("Peer") || peer.SUBCLASS_OF_ID == unionId("InputPeer")) {
         peer = await client.getInputEntity(peer);
     }
     if (peer instanceof Api.InputPeerSelf) {
@@ -715,12 +716,12 @@ export async function _getPeer(client: TelegramClient, peer: EntityLike) {
 /** @hidden */
 export async function _getInputDialog(client: TelegramClient, dialog: any) {
     try {
-        if (dialog.SUBCLASS_OF_ID == 0xa21c9795) {
-            // crc32(b'InputDialogPeer')
+        if (dialog.SUBCLASS_OF_ID == unionId("InputDialogPeer")) {
+
             dialog.peer = await client.getInputEntity(dialog.peer);
             return dialog;
-        } else if (dialog.SUBCLASS_OF_ID == 0xc91c90b6) {
-            //crc32(b'InputPeer')
+        } else if (dialog.SUBCLASS_OF_ID == unionId("InputPeer")) {
+
             return new Api.InputDialogPeer({
                 peer: dialog,
             });
@@ -734,7 +735,7 @@ export async function _getInputDialog(client: TelegramClient, dialog: any) {
 /** @hidden */
 export async function _getInputNotify(client: TelegramClient, notify: any) {
     try {
-        if (notify.SUBCLASS_OF_ID == 0x58981615) {
+        if (notify.SUBCLASS_OF_ID == unionId("InputNotifyPeer")) {
             if (notify instanceof Api.InputNotifyPeer) {
                 notify.peer = await client.getInputEntity(notify.peer);
             }

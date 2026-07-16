@@ -3,7 +3,7 @@ import type { Entity, EntityLike } from "../define";
 import { ChatGetter } from "../tl/custom";
 import type { TelegramClient } from "../client/TelegramClient";
 
-import { isArrayLike, returnBigInt } from "../Helpers";
+import { isArrayLike, returnBigInt, unionId } from "../Helpers";
 import { getPeerId } from "../Utils";
 import { SenderGetter } from "../tl/custom/senderGetter";
 import bigInt from "big-integer";
@@ -56,7 +56,7 @@ export async function _intoIdSet(
             }
         } else if (
             typeof chat == "object" &&
-            chat.SUBCLASS_OF_ID == 0x2d45687
+            chat.SUBCLASS_OF_ID == unionId("Peer")
         ) {
             result.add(getPeerId(chat));
         } else {

@@ -3,7 +3,7 @@ import mime from "mime";
 import { CustomFile } from "./client/uploads";
 import type { Entity, EntityLike, MessageIDLike } from "./define";
 import { EntityCache } from "./entityCache";
-import { returnBigInt } from "./Helpers";
+import { returnBigInt, unionId } from "./Helpers";
 import { Api } from "./tl";
 
 export function getFileInfo(
@@ -20,10 +20,10 @@ export function getFileInfo(
     if (!fileLocation || !fileLocation.SUBCLASS_OF_ID) {
         _raiseCastFail(fileLocation, "InputFileLocation");
     }
-    if (fileLocation.SUBCLASS_OF_ID == 354669666) {
+    if (fileLocation.SUBCLASS_OF_ID == unionId("InputFileLocation")) {
         return {
             dcId: undefined,
-            location: fileLocation,
+            location: fileLocation as Api.TypeInputFileLocation,
             size: undefined,
         };
     }
@@ -139,8 +139,8 @@ export function getInputPeer(
             _raiseCastFail(entity, "InputPeer");
         }
     }
-    if (entity.SUBCLASS_OF_ID === 0xc91c90b6) {
-        // crc32(b'InputPeer')
+    if (entity.SUBCLASS_OF_ID === unionId("InputPeer")) {
+
         return entity;
     }
 
@@ -293,8 +293,8 @@ export function getInputChannel(entity: EntityLike) {
     if (entity.SUBCLASS_OF_ID === undefined) {
         _raiseCastFail(entity, "InputChannel");
     }
-    if (entity.SUBCLASS_OF_ID === 0x40f202fd) {
-        // crc32(b'InputChannel')
+    if (entity.SUBCLASS_OF_ID === unionId("InputChannel")) {
+
         return entity;
     }
     if (
@@ -342,9 +342,9 @@ export function getInputUser(entity: EntityLike): Api.TypeInputUser {
     if (entity.SUBCLASS_OF_ID === undefined) {
         _raiseCastFail(entity, "InputUser");
     }
-    if (entity.SUBCLASS_OF_ID === 0xe669bf46) {
-        // crc32(b'InputUser')
-        return entity;
+    if (entity.SUBCLASS_OF_ID === unionId("InputUser")) {
+
+        return entity as unknown as Api.TypeInputUser;
     }
 
     if (entity instanceof Api.User) {
@@ -394,10 +394,10 @@ export function getInputUser(entity: EntityLike): Api.TypeInputUser {
 /*CONTEST
 function getInputDialog(dialog) {
     try {
-        if (dialog.SUBCLASS_OF_ID === 0xa21c9795) { // crc32(b'InputDialogPeer')
+        if (dialog.SUBCLASS_OF_ID === unionId("InputDialogPeer")) {
             return dialog
         }
-        if (dialog.SUBCLASS_OF_ID === 0xc91c90b6) { // crc32(b'InputPeer')
+        if (dialog.SUBCLASS_OF_ID === unionId("InputPeer")) {
             return new Api.InputDialogPeer({ peer: dialog })
         }
     } catch (e) {
@@ -424,11 +424,11 @@ export function getInputMessage(message: any): Api.InputMessageID {
     if (message === undefined || message.SUBCLASS_OF_ID === undefined) {
         _raiseCastFail(message, "InputMessage");
     }
-    if (message.SUBCLASS_OF_ID === 0x54b6bcc5) {
-        // crc32(b'InputMessage')
+    if (message.SUBCLASS_OF_ID === unionId("InputMessage")) {
+
         return message;
-    } else if (message.SUBCLASS_OF_ID === 0x790009e3) {
-        // crc32(b'Message'):
+    } else if (message.SUBCLASS_OF_ID === unionId("Message")) {
+
         return new Api.InputMessageID({ id: message.id });
     }
     _raiseCastFail(message, "InputMessage");
@@ -442,11 +442,11 @@ export function getInputChatPhoto(photo: any): Api.TypeInputChatPhoto {
     if (photo === undefined || photo.SUBCLASS_OF_ID === undefined) {
         _raiseCastFail(photo, "InputChatPhoto");
     }
-    if (photo.SUBCLASS_OF_ID === 0xd4eb2d74) {
-        //crc32(b'InputChatPhoto')
+    if (photo.SUBCLASS_OF_ID === unionId("InputChatPhoto")) {
+
         return photo;
-    } else if (photo.SUBCLASS_OF_ID === 0xe7655f1f) {
-        // crc32(b'InputFile'):
+    } else if (photo.SUBCLASS_OF_ID === unionId("InputFile")) {
+
         return new Api.InputChatUploadedPhoto({
             file: photo,
         });
@@ -486,7 +486,7 @@ function getInputLocation(location) {
         if (!location.SUBCLASS_OF_ID) {
             throw new Error()
         }
-        if (location.SUBCLASS_OF_ID === 0x1523d462) {
+        if (location.SUBCLASS_OF_ID === unionId("InputFileLocation")) {
             return {
                 dcId: null,
                 inputLocation: location
@@ -541,7 +541,7 @@ export function getInputPhoto(photo: any): Api.TypeInputPhoto {
         _raiseCastFail(photo, "InputPhoto");
     }
 
-    if (photo.SUBCLASS_OF_ID === 2221106144) {
+    if (photo.SUBCLASS_OF_ID === unionId("InputPhoto")) {
         return photo;
     }
 
@@ -606,7 +606,7 @@ export function getInputDocument(
         _raiseCastFail(document, "InputDocument");
     }
 
-    if (document.SUBCLASS_OF_ID === 0xf33fdb68) {
+    if (document.SUBCLASS_OF_ID === unionId("InputDocument")) {
         return document;
     }
 
@@ -835,8 +835,8 @@ export function getInputGeo(geo: any): Api.TypeInputGeoPoint {
     if (geo === undefined || geo.SUBCLASS_OF_ID === undefined) {
         _raiseCastFail(geo, "InputGeoPoint");
     }
-    if (geo.SUBCLASS_OF_ID === 0x430d225) {
-        // crc32(b'InputGeoPoint'):
+    if (geo.SUBCLASS_OF_ID === unionId("InputGeoPoint")) {
+
         return geo;
     }
 
@@ -894,16 +894,16 @@ export function getInputMedia(
         _raiseCastFail(media, "InputMedia");
     }
 
-    if (media.SUBCLASS_OF_ID === 0xfaf846f4) {
-        // crc32(b'InputMedia')
+    if (media.SUBCLASS_OF_ID === unionId("InputMedia")) {
+
         return media;
     } else {
-        if (media.SUBCLASS_OF_ID === 2221106144) {
-            // crc32(b'InputPhoto')
+        if (media.SUBCLASS_OF_ID === unionId("InputPhoto")) {
+
             return new Api.InputMediaPhoto({ id: media });
         } else {
-            if (media.SUBCLASS_OF_ID === 4081048424) {
-                // crc32(b'InputDocument')
+            if (media.SUBCLASS_OF_ID === unionId("InputDocument")) {
+
                 return new Api.InputMediaDocument({ id: media });
             }
         }
@@ -1110,8 +1110,8 @@ export function getPeer(peer: EntityLike | any) {
         if (peer.SUBCLASS_OF_ID === undefined) {
             throw new Error();
         }
-        if (peer.SUBCLASS_OF_ID === 0x2d45687) {
-            // crc32('Peer')
+        if (peer.SUBCLASS_OF_ID === unionId("Peer")) {
+
             return peer;
         } else if (
             peer instanceof Api.contacts.ResolvedPeer ||
@@ -1125,8 +1125,8 @@ export function getPeer(peer: EntityLike | any) {
             return new Api.PeerChannel({ channelId: peer.id });
         }
         if (
-            peer.SUBCLASS_OF_ID === 0x7d7c6f86 ||
-            peer.SUBCLASS_OF_ID === 0xd9c7fc18
+            peer.SUBCLASS_OF_ID === unionId("ChatParticipant") ||
+            peer.SUBCLASS_OF_ID === unionId("ChannelParticipant")
         ) {
             // ChatParticipant, ChannelParticipant
             if ("userId" in peer) {
@@ -1262,9 +1262,9 @@ export function getMessageId(
         return undefined;
     } else if (typeof message === "number") {
         return message;
-    } else if (message.SUBCLASS_OF_ID === 0x790009e3 || "id" in message) {
-        // crc32(b'Message')
-        return message.id;
+    } else if (message.SUBCLASS_OF_ID === unionId("Message") || "id" in message) {
+
+        return (message as { id: number }).id;
     } else {
         throw new Error(`Invalid message type: ${message.constructor.name}`);
     }
@@ -1549,10 +1549,10 @@ export function getInputDialog(dialog: any): Api.TypeInputDialogPeer {
     if (dialog.SUBCLASS_OF_ID === undefined) {
         _raiseCastFail(dialog, "InputDialogPeer");
     }
-    if (dialog.SUBCLASS_OF_ID === 0xa21c9795) {
+    if (dialog.SUBCLASS_OF_ID === unionId("InputDialogPeer")) {
         return dialog;
     }
-    if (dialog.SUBCLASS_OF_ID === 0xc91c90b6) {
+    if (dialog.SUBCLASS_OF_ID === unionId("InputPeer")) {
         return new Api.InputDialogPeer({ peer: dialog });
     }
 

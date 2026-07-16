@@ -182,7 +182,7 @@ export class UpdateManager {
             update.ptsCount,
             { tag: "update", update: update as unknown as Api.TypeUpdate },
             () => {
-                if (this.state) this.state.pts = update.pts;
+                if (this.state) this.state.pts = this.globalPts.current();
             },
             () => {},
         );
@@ -318,7 +318,7 @@ export class UpdateManager {
             update.ptsCount,
             { tag: "update", update: update as unknown as Api.TypeUpdate },
             (u) => {
-                if (this.state) this.state.pts = update.pts;
+                if (this.state) this.state.pts = this.globalPts.current();
                 this.dispatch(u, { others: null });
             },
             () => {
@@ -357,7 +357,7 @@ export class UpdateManager {
                 u.ptsCount,
                 { tag: "update", update },
                 (applied) => {
-                    if (this.state) this.state.pts = u.pts;
+                    if (this.state) this.state.pts = this.globalPts.current();
                     this.dispatch(applied, payload);
                 },
                 () => {},

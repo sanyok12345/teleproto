@@ -93,7 +93,21 @@ const dcMigration: InvokeErrorPolicy = async (e, ctx) => {
     ) {
         return false;
     }
-    ctx.client._log.info(`Phone migrated to ${e.newDc}`);
+    if (
+        e instanceof errors.UserMigrateError &&
+        (ctx.dcId !== undefined || ctx.sender !== ctx.client._sender) &&
+        e.newDc === ctx.client.session.dcId
+    ) {
+        ctx.client._log.info(
+            `Request must run on the home DC ${e.newDc}; rerouting to the main sender`
+        );
+        ctx.lease?.release();
+        ctx.lease = undefined;
+        ctx.dcId = undefined;
+        ctx.sender = ctx.client._sender!;
+        return true;
+    }
+    ctx.client._log.info(`Migrating to data center ${e.newDc}`);
     const shouldRaise =
         e instanceof errors.PhoneMigrateError ||
         e instanceof errors.NetworkMigrateError;

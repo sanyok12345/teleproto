@@ -116,6 +116,12 @@ export class Network {
             if (wait > 0) await sleep(wait);
         }
         try {
+            const sessionKey = this._client.session.getAuthKey(dcId)?.getKey();
+            const ownKey = dcenter.authKey.getKey();
+            const isHome = dcId === this._client.session.dcId;
+            if (sessionKey && (!ownKey || (isHome && !sessionKey.equals(ownKey)))) {
+                await dcenter.authKey.setKey(sessionKey);
+            }
 
             const isMedia =
                 isDownloadDcId(shiftedDcId) || isUploadDcId(shiftedDcId);
@@ -149,7 +155,12 @@ export class Network {
                       }
                     : undefined
             );
-            return await this._client._connectSender(sender, dcId);
+            return await this._client._connectSender(
+                sender,
+                dcId,
+                undefined,
+                isMedia
+            );
         } finally {
             this._lastConnectAt.set(shiftedDcId, Date.now());
         }

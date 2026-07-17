@@ -1710,10 +1710,13 @@ export class TelegramClient extends TelegramBaseClient {
     /** @hidden */
     async _switchDC(newDc: number) {
         this._log.info(`Reconnecting to new data center ${newDc}`);
+        const sameDc = newDc === this.session.dcId;
         const DC = await this.getDC(newDc);
         this.session.setDC(newDc, DC.ipAddress, DC.port);
-        await this._sender!.authKey.setKey(undefined);
-        this.session.setAuthKey(undefined);
+        if (!sameDc) {
+            await this._sender!.authKey.setKey(undefined);
+            this.session.setAuthKey(undefined);
+        }
         this.session.save();
         this._isSwitchingDc = true;
         await this._media.purge();

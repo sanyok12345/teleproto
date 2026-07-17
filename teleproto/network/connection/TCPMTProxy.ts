@@ -231,6 +231,10 @@ class MTProxyIO {
         return this.decryptor!.encrypt(data);
     }
 
+    readExactly(n: number): Promise<Buffer> {
+        return this.read(n);
+    }
+
     write(data: Buffer): void {
         this.stream.write(this.encryptor!.encrypt(data));
     }

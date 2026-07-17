@@ -76,6 +76,10 @@ class ObfuscatedIO {
         return this._decrypt!.encrypt(data);
     }
 
+    readExactly(n: number) {
+        return this.read(n);
+    }
+
     write(data: Buffer) {
         this.connection.write(this._encrypt!.encrypt(data));
     }

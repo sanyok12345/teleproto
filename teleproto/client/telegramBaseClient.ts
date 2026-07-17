@@ -573,9 +573,10 @@ export abstract class TelegramBaseClient {
     async _connectSender(
         sender: MTProtoSender,
         dcId: number,
-        connection?: Connection
+        connection?: Connection,
+        mediaCluster: boolean = false
     ) {
-        const useMediaCluster = !!sender.authKey.getKey();
+        const useMediaCluster = mediaCluster && !!sender.authKey.getKey();
         if (!connection) {
             const dc = await this.getDC(dcId, useMediaCluster);
             connection = new this._connection({

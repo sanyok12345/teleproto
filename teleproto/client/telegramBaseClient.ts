@@ -267,7 +267,7 @@ const clientParamsDefault = {
     _securityChecks: true,
 };
 
-export abstract class TelegramBaseClient {
+export abstract class TelegramBaseClient<S extends Session = Session> {
     /** The current teleproto version. */
     __version__ = version;
     /** @hidden */
@@ -279,7 +279,7 @@ export abstract class TelegramBaseClient {
 
     /** @hidden */
     public _floodSleepThreshold: number;
-    public session: Session;
+    public session: S;
     public apiHash: string;
     public apiId: number;
 
@@ -381,7 +381,7 @@ export abstract class TelegramBaseClient {
     public updateManager!: UpdateManager;
 
     constructor(
-        session: string | Session,
+        session: string | S,
         apiId: number,
         apiHash: string,
         clientParams: TelegramClientParams
@@ -398,7 +398,7 @@ export abstract class TelegramBaseClient {
         }
         this._log.info("Running teleproto version " + version);
         if (session && typeof session == "string") {
-            session = new StoreSession(session);
+            session = new StoreSession(session) as unknown as S;
         }
         if (!(session instanceof Session)) {
             throw new Error(

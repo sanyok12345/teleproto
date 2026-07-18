@@ -52,7 +52,9 @@ import { DeletedMessage, DeletedMessageEvent } from "../events/DeletedMessage";
  *
  * You don't need to import any methods that are inside the TelegramClient class as they binding in it.
  */
-export class TelegramClient extends TelegramBaseClient {
+export class TelegramClient<
+    S extends Session = Session
+> extends TelegramBaseClient<S> {
     /**
      * @param session - a session to be used to save the connection and auth key to. This can be a custom session that inherits MemorySession.
      * @param apiId - The API ID you obtained from https://my.telegram.org.
@@ -60,7 +62,7 @@ export class TelegramClient extends TelegramBaseClient {
      * @param clientParams - see {@link TelegramClientParams}
      */
     constructor(
-        session: string | Session,
+        session: string | S,
         apiId: number,
         apiHash: string,
         clientParams: TelegramClientParams

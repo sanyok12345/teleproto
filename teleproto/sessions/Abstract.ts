@@ -145,7 +145,7 @@ export abstract class Session {
      * called whenever important properties change. It should
      * make persist the relevant session information to disk.
      */
-    abstract save(): void;
+    abstract save(): void | string;
 
     /**
      * Called upon client.logOut(). Should delete the stored

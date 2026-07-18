@@ -5,6 +5,7 @@ import {
     TEST_DC_IPV6,
     TelegramBaseClient,
     TelegramClientParams,
+    webSocketDcAddress,
 } from "./telegramBaseClient";
 
 import * as authMethods from "./auth";
@@ -1691,6 +1692,7 @@ export class TelegramClient extends TelegramBaseClient {
             proxy: this._proxy,
             socket: this.networkSocket,
             keepAliveInterval: this._keepAliveInterval,
+            testServers: this._testServers,
         });
         this._log.info(`Using LAYER ${LAYER} for initial connect`);
         await this._connectSender(this._sender, this.session.dcId, connection);
@@ -1739,6 +1741,13 @@ export class TelegramClient extends TelegramBaseClient {
         downloadDC = false
     ): Promise<{ id: number; ipAddress: string; port: number }> {
         this._log.debug(`Getting DC ${dcId}`);
+        if (this.networkSocket.isWebSocket) {
+            const address = webSocketDcAddress(dcId, downloadDC);
+            if (address) {
+                return { id: dcId, ipAddress: address, port: 443 };
+            }
+            throw new Error(`Cannot find the DC with the ID of ${dcId}`);
+        }
         if (!this._config) {
             try {
                 this._config = await this.api.help.getConfig();

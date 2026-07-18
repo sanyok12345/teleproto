@@ -1,7 +1,7 @@
 import { readBufferFromBigInt } from "../../Helpers";
 import { Connection, PacketCodec } from "./Connection";
 import { InvalidBufferError } from "../../errors";
-import type { PromisedNetSockets } from "../../extensions";
+import type { PacketReader } from "../../extensions/SocketInterface";
 
 import bigInt from "big-integer";
 
@@ -41,7 +41,7 @@ export class AbridgedPacketCodec extends PacketCodec {
     }
 
     async readPacket(
-        reader: PromisedNetSockets
+        reader: PacketReader
     ): Promise<Buffer> {
         const readData = await reader.readExactly(1);
         let length = readData[0];

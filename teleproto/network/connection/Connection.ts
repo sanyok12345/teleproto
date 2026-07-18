@@ -1,7 +1,11 @@
 import {
     Logger,
-    PromisedNetSockets,
 } from "../../extensions";
+import type {
+    PacketReader,
+    SocketFactory,
+    SocketInterface,
+} from "../../extensions/SocketInterface";
 import { AbridgedPacketCodec } from "./TCPAbridged";
 import { FullPacketCodec } from "./TCPFull";
 import { ProxyInterface } from "./TCPMTProxy";
@@ -12,8 +16,9 @@ interface ConnectionInterfaceParams {
     dcId: number;
     loggers: Logger;
     proxy?: ProxyInterface;
-    socket: typeof PromisedNetSockets;
+    socket: SocketFactory;
     keepAliveInterval?: number;
+    testServers?: boolean;
 }
 
 /**
@@ -33,10 +38,11 @@ class Connection {
     _log: Logger;
     _proxy?: ProxyInterface;
     _keepAliveInterval?: number;
+    _testServers?: boolean;
     _connected: boolean;
     protected _codec: any;
     protected _obfuscation: any;
-    socket: PromisedNetSockets;
+    socket: SocketInterface;
 
     constructor({
         ip,
@@ -46,6 +52,7 @@ class Connection {
         proxy,
         socket,
         keepAliveInterval,
+        testServers,
     }: ConnectionInterfaceParams) {
         this._ip = ip;
         this._port = port;
@@ -53,6 +60,7 @@ class Connection {
         this._log = loggers;
         this._proxy = proxy;
         this._keepAliveInterval = keepAliveInterval;
+        this._testServers = testServers;
         this._connected = false;
         this._codec = undefined;
         this._obfuscation = undefined; // TcpObfuscated and MTProxy
@@ -62,7 +70,7 @@ class Connection {
     async connect() {
         this._log.debug("Connecting");
         this._codec = new this.PacketCodecClass!(this);
-        await this.socket.connect(this._port, this._ip);
+        await this.socket.connect(this._port, this._ip, this._testServers);
         this._log.debug("Finished connecting");
         await this._initConn();
         this._connected = true;
@@ -153,7 +161,7 @@ class PacketCodec {
     }
 
     async readPacket(
-        reader: PromisedNetSockets
+        reader: PacketReader
     ): Promise<Buffer> {
         // override
         throw new Error("Not Implemented");

@@ -3,7 +3,11 @@ import { createHmac } from "node:crypto";
 import { ObfuscatedConnection } from "./Connection";
 import { AbridgedPacketCodec } from "./TCPAbridged";
 import { generateRandomBytes, sha256 } from "../../Helpers";
-import { Logger, PromisedNetSockets } from "../../extensions";
+import { Logger } from "../../extensions";
+import type {
+    SocketFactory,
+    SocketInterface,
+} from "../../extensions/SocketInterface";
 import { CTR } from "../../crypto/CTR";
 
 interface BasicProxyInterface {
@@ -91,7 +95,7 @@ interface TCPMTProxyInterfaceParams {
     dcId: number;
     loggers: Logger;
     proxy: ProxyInterface;
-    socket: typeof PromisedNetSockets;
+    socket: SocketFactory;
 }
 
 const SECRET_LEN = 16;
@@ -430,13 +434,13 @@ function buildClientHello(domain: string, sessionId: Buffer): Buffer {
  * @internal
  */
 class FakeTlsSocket implements ByteStream {
-    private readonly inner: PromisedNetSockets;
+    private readonly inner: SocketInterface;
     private readonly secret: Buffer;
     private readonly domain: string;
     private clientRandom: Buffer = Buffer.alloc(0);
     private readBuf: Buffer = Buffer.alloc(0);
 
-    constructor(inner: PromisedNetSockets, secret: Buffer, domain: string) {
+    constructor(inner: SocketInterface, secret: Buffer, domain: string) {
         if (secret.length !== SECRET_LEN) {
             throw new Error(
                 `FakeTLS: secret must be ${SECRET_LEN} bytes, got ${secret.length}`
@@ -599,7 +603,7 @@ export class TCPMTProxy extends ObfuscatedConnection {
                 this._fakeTlsDomain
             );
             await tls.handshake();
-            this.socket = tls as unknown as PromisedNetSockets;
+            this.socket = tls as unknown as SocketInterface;
         }
         await super._initConn();
     }

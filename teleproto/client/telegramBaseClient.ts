@@ -7,6 +7,7 @@ import {
 } from "../network/connection";
 import { Session, StoreSession } from "../sessions";
 import { Logger, PromisedNetSockets } from "../extensions";
+import type { SocketFactory } from "../extensions/SocketInterface";
 import { Api } from "../tl";
 
 import os from "os";
@@ -70,6 +71,23 @@ export const TEST_DC_IPV6: { readonly [id: number]: string } = {
     3: "2001:0b28:f23d:f003:0000:0000:0000:000e",
 };
 const DC_PORT = 443;
+
+export const WEBSOCKET_DC_HOSTS: { readonly [id: number]: string } = {
+    1: "pluto",
+    2: "venus",
+    3: "aurora",
+    4: "vesta",
+    5: "flora",
+};
+
+export function webSocketDcAddress(
+    dcId: number,
+    mediaCluster = false
+): string | undefined {
+    const host = WEBSOCKET_DC_HOSTS[dcId];
+    if (!host) return undefined;
+    return `${host}${mediaCluster ? "-1" : ""}.web.telegram.org`;
+}
 
 /**
  * Returns `true` if `address` is a known test-DC seed, `false` if it's a known
@@ -198,7 +216,7 @@ export interface TelegramClientParams {
     /**
      * What type of network connection to use.
      */
-    networkSocket?: typeof PromisedNetSockets;
+    networkSocket?: SocketFactory;
     /**
      * TCP keep-alive probe interval in milliseconds. Defaults to 30000.
      * Set to 0 to disable keep-alive probes.
@@ -355,7 +373,7 @@ export abstract class TelegramBaseClient {
     _maxConcurrentDownloads: number;
     /** @hidden */
     _securityChecks: boolean;
-    public networkSocket: typeof PromisedNetSockets;
+    public networkSocket: SocketFactory;
     /** @hidden */
     public _keepAliveInterval?: number;
     _connectedDeferred: Deferred<void>;
@@ -368,6 +386,7 @@ export abstract class TelegramBaseClient {
         apiHash: string,
         clientParams: TelegramClientParams
     ) {
+        const explicitConnection = clientParams.connection !== undefined;
         clientParams = { ...clientParamsDefault, ...clientParams };
         if (!apiId || !apiHash) {
             throw new Error("Your API ID or Hash cannot be empty or undefined");
@@ -408,6 +427,9 @@ export abstract class TelegramBaseClient {
             throw new Error("Connection should be a class not an instance");
         }
         this._connection = clientParams.connection;
+        if (!explicitConnection && this.networkSocket.isWebSocket) {
+            this._connection = ConnectionTCPObfuscated;
+        }
         let initProxy;
         if (this._proxy && "MTProxy" in this._proxy) {
             this._connection = ConnectionTCPMTProxyAbridged;
@@ -516,6 +538,23 @@ export abstract class TelegramBaseClient {
             this.session.testServers = this._testServers;
             this._useIPV6 = this.session.serverAddress.includes(":");
         }
+        if (this.networkSocket.isWebSocket) {
+            if (!this.session.serverAddress.endsWith(".web.telegram.org")) {
+                const address = webSocketDcAddress(this.session.dcId);
+                if (address) {
+                    this.session.setDC(this.session.dcId, address, DC_PORT);
+                }
+            }
+        } else if (this.session.serverAddress.endsWith(".web.telegram.org")) {
+            const ipv4Table = this._testServers ? TEST_DC_IPV4 : PROD_DC_IPV4;
+            const ipv6Table = this._testServers ? TEST_DC_IPV6 : PROD_DC_IPV6;
+            const ip = (this._useIPV6 ? ipv6Table : ipv4Table)[
+                this.session.dcId
+            ];
+            if (ip) {
+                this.session.setDC(this.session.dcId, ip, DC_PORT);
+            }
+        }
     }
 
     get connected() {
@@ -587,6 +626,7 @@ export abstract class TelegramBaseClient {
                 proxy: this._proxy,
                 socket: this.networkSocket,
                 keepAliveInterval: this._keepAliveInterval,
+                testServers: this._testServers,
             });
         }
         try {

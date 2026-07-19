@@ -1,5 +1,5 @@
-<!DOCTYPE html><html class="default" lang="en" data-base="../"><head><meta charset="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>TelegramClient | teleproto - v1.228.3</title><meta name="description" content="Documentation for teleproto"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="../assets/style.css"/><link rel="stylesheet" href="../assets/highlight.css"/><script defer src="../assets/main.js"></script><script async src="../assets/icons.js" id="tsd-icons-script"></script><script async src="../assets/search.js" id="tsd-search-script"></script><script async src="../assets/navigation.js" id="tsd-nav-script"></script><script async src="../assets/hierarchy.js" id="tsd-hierarchy-script"></script></head><body><script>document.documentElement.dataset.theme = localStorage.getItem("tsd-theme") || "os";document.body.style.display="none";setTimeout(() => window.app?app.showPage():document.body.style.removeProperty("display"),500)</script><header class="tsd-page-toolbar">
-<div class="tsd-toolbar-contents container"><a href="../index.html" class="title">teleproto - v1.228.3</a>
+<!DOCTYPE html><html class="default" lang="en" data-base="../"><head><meta charset="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>TelegramClient | teleproto - v1.228.4</title><meta name="description" content="Documentation for teleproto"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="../assets/style.css"/><link rel="stylesheet" href="../assets/highlight.css"/><script defer src="../assets/main.js"></script><script async src="../assets/icons.js" id="tsd-icons-script"></script><script async src="../assets/search.js" id="tsd-search-script"></script><script async src="../assets/navigation.js" id="tsd-nav-script"></script><script async src="../assets/hierarchy.js" id="tsd-hierarchy-script"></script></head><body><script>document.documentElement.dataset.theme = localStorage.getItem("tsd-theme") || "os";document.body.style.display="none";setTimeout(() => window.app?app.showPage():document.body.style.removeProperty("display"),500)</script><header class="tsd-page-toolbar">
+<div class="tsd-toolbar-contents container"><a href="../index.html" class="title">teleproto - v1.228.4</a>
 <div id="tsd-toolbar-links"></div><button id="tsd-search-trigger" class="tsd-widget" aria-label="Search"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-search"></use></svg></button><dialog id="tsd-search" aria-label="Search"><input role="combobox" id="tsd-search-input" aria-controls="tsd-search-results" aria-autocomplete="list" aria-expanded="true" autocapitalize="off" autocomplete="off" placeholder="Search the docs" maxLength="100"/>
 <ul role="listbox" id="tsd-search-results"></ul>
 <div id="tsd-search-status" aria-live="polite" aria-atomic="true">
@@ -9,7 +9,7 @@
 <div class="tsd-page-title">
 <ul class="tsd-breadcrumb" aria-label="Breadcrumb">
 <li><a href="" aria-current="page">TelegramClient</a></li></ul>
-<h1>Class TelegramClient</h1></div>
+<h1>Class TelegramClient&lt;S&gt;</h1></div>
 <section class="tsd-panel tsd-comment">
 <div class="tsd-comment tsd-typography"><p>The TelegramClient uses several methods in different files to provide all the common functionality in a nice interface.</br>
 <strong>In short, to create a client you must do:</strong></p>
@@ -18,14 +18,18 @@
 
 <p>You don't need to import any methods that are inside the TelegramClient class as they binding in it.</p>
 </div></section>
+<section class="tsd-panel">
+<h4>Type Parameters</h4>
+<ul class="tsd-type-parameter-list">
+<li><span id="s"><span class="tsd-kind-type-parameter">S</span> <span class="tsd-signature-keyword">extends</span> <a href="sessions.Session.html" class="tsd-signature-type tsd-kind-class">Session</a> = <a href="sessions.Session.html" class="tsd-signature-type tsd-kind-class">Session</a></span></li></ul></section>
 <section class="tsd-panel tsd-hierarchy" data-refl="118568">
 <h4>Hierarchy (<a href="../hierarchy.html#TelegramClient">View Summary</a>)</h4>
 <ul class="tsd-hierarchy">
-<li class="tsd-hierarchy-item"><a href="client.telegramBaseClient.TelegramBaseClient.html" class="tsd-signature-type tsd-kind-class">TelegramBaseClient</a>
+<li class="tsd-hierarchy-item"><a href="client.telegramBaseClient.TelegramBaseClient.html" class="tsd-signature-type tsd-kind-class">TelegramBaseClient</a><span class="tsd-signature-symbol">&lt;</span><a class="tsd-signature-type tsd-kind-type-parameter" href="#s">S</a><span class="tsd-signature-symbol">&gt;</span>
 <ul class="tsd-hierarchy">
 <li class="tsd-hierarchy-item"><span class="tsd-hierarchy-target">TelegramClient</span></li></ul></li></ul></section><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L54">teleproto/client/TelegramClient.ts:54</a></li></ul></aside>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L55">teleproto/client/TelegramClient.ts:55</a></li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-accordion" open><summary class="tsd-accordion-summary tsd-index-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
@@ -126,12 +130,16 @@
 <h3 class="tsd-anchor-link" id="constructor"><span>constructor</span><a href="#constructor" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
 <li class="">
-<div class="tsd-signature tsd-anchor-link" id="constructortelegramclient"><span class="tsd-signature-keyword">new</span> <span class="tsd-kind-constructor-signature">TelegramClient</span><span class="tsd-signature-symbol">(</span><br/>    <span class="tsd-kind-parameter">session</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span> <span class="tsd-signature-symbol">|</span> <a href="sessions.Session.html" class="tsd-signature-type tsd-kind-class">Session</a><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">apiId</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">apiHash</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">clientParams</span><span class="tsd-signature-symbol">:</span> <a href="../interfaces/client.telegramBaseClient.TelegramClientParams.html" class="tsd-signature-type tsd-kind-interface">TelegramClientParams</a><span class="tsd-signature-symbol">,</span><br/><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <a href="" class="tsd-signature-type tsd-kind-class">TelegramClient</a><a href="#constructortelegramclient" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-signature tsd-anchor-link" id="constructortelegramclient"><span class="tsd-signature-keyword">new</span> <span class="tsd-kind-constructor-signature">TelegramClient</span><span class="tsd-signature-symbol">&lt;</span><a class="tsd-signature-type tsd-kind-type-parameter" href="#constructortelegramclients">S</a> <span class="tsd-signature-keyword">extends</span> <a href="sessions.Session.html" class="tsd-signature-type tsd-kind-class">Session</a> <span class="tsd-signature-symbol">=</span> <a href="sessions.Session.html" class="tsd-signature-type tsd-kind-class">Session</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">(</span><br/>    <span class="tsd-kind-parameter">session</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span> <span class="tsd-signature-symbol">|</span> <a class="tsd-signature-type tsd-kind-type-parameter" href="#s">S</a><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">apiId</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">apiHash</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">clientParams</span><span class="tsd-signature-symbol">:</span> <a href="../interfaces/client.telegramBaseClient.TelegramClientParams.html" class="tsd-signature-type tsd-kind-interface">TelegramClientParams</a><span class="tsd-signature-symbol">,</span><br/><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <a href="" class="tsd-signature-type tsd-kind-class">TelegramClient</a><span class="tsd-signature-symbol">&lt;</span><a class="tsd-signature-type tsd-kind-type-parameter" href="#s">S</a><span class="tsd-signature-symbol">&gt;</span><a href="#constructortelegramclient" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
+<section class="tsd-panel">
+<h4>Type Parameters</h4>
+<ul class="tsd-type-parameter-list">
+<li><span id="constructortelegramclients"><span class="tsd-kind-type-parameter">S</span> <span class="tsd-signature-keyword">extends</span> <a href="sessions.Session.html" class="tsd-signature-type tsd-kind-class">Session</a> = <a href="sessions.Session.html" class="tsd-signature-type tsd-kind-class">Session</a></span></li></ul></section>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
-<li><span><span class="tsd-kind-parameter">session</span>: <span class="tsd-signature-type">string</span> <span class="tsd-signature-symbol">|</span> <a href="sessions.Session.html" class="tsd-signature-type tsd-kind-class">Session</a></span>
+<li><span><span class="tsd-kind-parameter">session</span>: <span class="tsd-signature-type">string</span> <span class="tsd-signature-symbol">|</span> <a class="tsd-signature-type tsd-kind-type-parameter" href="#s">S</a></span>
 <div class="tsd-comment tsd-typography"><p>a session to be used to save the connection and auth key to. This can be a custom session that inherits MemorySession.</p>
 </div></li>
 <li><span><span class="tsd-kind-parameter">apiId</span>: <span class="tsd-signature-type">number</span></span>
@@ -143,10 +151,10 @@
 <li><span><span class="tsd-kind-parameter">clientParams</span>: <a href="../interfaces/client.telegramBaseClient.TelegramClientParams.html" class="tsd-signature-type tsd-kind-interface">TelegramClientParams</a></span>
 <div class="tsd-comment tsd-typography"><p>see <a href="../interfaces/client.telegramBaseClient.TelegramClientParams.html" class="tsd-kind-interface">TelegramClientParams</a></p>
 </div></li></ul></div>
-<h4 class="tsd-returns-title">Returns <a href="" class="tsd-signature-type tsd-kind-class">TelegramClient</a></h4><aside class="tsd-sources">
+<h4 class="tsd-returns-title">Returns <a href="" class="tsd-signature-type tsd-kind-class">TelegramClient</a><span class="tsd-signature-symbol">&lt;</span><a class="tsd-signature-type tsd-kind-type-parameter" href="#s">S</a><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <p>Overrides <a href="client.telegramBaseClient.TelegramBaseClient.html">TelegramBaseClient</a>.<a href="client.telegramBaseClient.TelegramBaseClient.html#constructor">constructor</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L61">teleproto/client/TelegramClient.ts:61</a></li></ul></aside></div></li></ul></section></section></details>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L64">teleproto/client/TelegramClient.ts:64</a></li></ul></aside></div></li></ul></section></section></details>
 <details class="tsd-panel-group tsd-member-group tsd-accordion" open><summary class="tsd-accordion-summary" data-key="section-Properties"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
 <h2 class="tsd-anchor-link" id="properties-1">Properties<a href="#properties-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h2></summary>
 <section>
@@ -155,47 +163,47 @@
 <div class="tsd-signature"><span class="tsd-kind-property">__version__</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = version</span></div>
 <div class="tsd-comment tsd-typography"><p>The current teleproto version.</p>
 </div><aside class="tsd-sources">
-<p>Inherited from <a href="client.telegramBaseClient.TelegramBaseClient.html">TelegramBaseClient</a>.<a href="client.telegramBaseClient.TelegramBaseClient.html#__version__">__version__</a></p>
+<p>Inherited from <a href="">TelegramClient</a>.<a href="#__version__">__version__</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/telegramBaseClient.ts#L254">teleproto/client/telegramBaseClient.ts:254</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/telegramBaseClient.ts#L272">teleproto/client/telegramBaseClient.ts:272</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-is-inherited">
 <h3 class="tsd-anchor-link" id="_connecteddeferred"><span>_<wbr/>connected<wbr/>Deferred</span><a href="#_connecteddeferred" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">_connectedDeferred</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Deferred</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></div><aside class="tsd-sources">
-<p>Inherited from <a href="client.telegramBaseClient.TelegramBaseClient.html">TelegramBaseClient</a>.<a href="client.telegramBaseClient.TelegramBaseClient.html#_connecteddeferred">_connectedDeferred</a></p>
+<p>Inherited from <a href="">TelegramClient</a>.<a href="#_connecteddeferred">_connectedDeferred</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/telegramBaseClient.ts#L361">teleproto/client/telegramBaseClient.ts:361</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/telegramBaseClient.ts#L379">teleproto/client/telegramBaseClient.ts:379</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-is-inherited">
 <h3 class="tsd-anchor-link" id="apihash"><span>api<wbr/>Hash</span><a href="#apihash" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">apiHash</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div><aside class="tsd-sources">
-<p>Inherited from <a href="client.telegramBaseClient.TelegramBaseClient.html">TelegramBaseClient</a>.<a href="client.telegramBaseClient.TelegramBaseClient.html#apihash">apiHash</a></p>
+<p>Inherited from <a href="">TelegramClient</a>.<a href="#apihash">apiHash</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/telegramBaseClient.ts#L265">teleproto/client/telegramBaseClient.ts:265</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/telegramBaseClient.ts#L283">teleproto/client/telegramBaseClient.ts:283</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-is-inherited">
 <h3 class="tsd-anchor-link" id="apiid"><span>api<wbr/>Id</span><a href="#apiid" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">apiId</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div><aside class="tsd-sources">
 <p>Inherited from <a href="client.telegramBaseClient.TelegramBaseClient.html">TelegramBaseClient</a>.<a href="client.telegramBaseClient.TelegramBaseClient.html#apiid">apiId</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/telegramBaseClient.ts#L266">teleproto/client/telegramBaseClient.ts:266</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/telegramBaseClient.ts#L284">teleproto/client/telegramBaseClient.ts:284</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-is-inherited">
 <h3 class="tsd-anchor-link" id="networksocket"><span>network<wbr/>Socket</span><a href="#networksocket" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
-<div class="tsd-signature"><span class="tsd-kind-property">networkSocket</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-keyword">typeof</span> <a href="extensions.PromisedNetSockets.html" class="tsd-signature-type tsd-kind-class">PromisedNetSockets</a></div><aside class="tsd-sources">
+<div class="tsd-signature"><span class="tsd-kind-property">networkSocket</span><span class="tsd-signature-symbol">:</span> <a href="../interfaces/extensions.SocketFactory.html" class="tsd-signature-type tsd-kind-interface">SocketFactory</a></div><aside class="tsd-sources">
 <p>Inherited from <a href="client.telegramBaseClient.TelegramBaseClient.html">TelegramBaseClient</a>.<a href="client.telegramBaseClient.TelegramBaseClient.html#networksocket">networkSocket</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/telegramBaseClient.ts#L358">teleproto/client/telegramBaseClient.ts:358</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/telegramBaseClient.ts#L376">teleproto/client/telegramBaseClient.ts:376</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-is-inherited">
 <h3 class="tsd-anchor-link" id="session"><span>session</span><a href="#session" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
-<div class="tsd-signature"><span class="tsd-kind-property">session</span><span class="tsd-signature-symbol">:</span> <a href="sessions.Session.html" class="tsd-signature-type tsd-kind-class">Session</a></div><aside class="tsd-sources">
+<div class="tsd-signature"><span class="tsd-kind-property">session</span><span class="tsd-signature-symbol">:</span> <a class="tsd-signature-type tsd-kind-type-parameter" href="#s">S</a></div><aside class="tsd-sources">
 <p>Inherited from <a href="client.telegramBaseClient.TelegramBaseClient.html">TelegramBaseClient</a>.<a href="client.telegramBaseClient.TelegramBaseClient.html#session">session</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/telegramBaseClient.ts#L264">teleproto/client/telegramBaseClient.ts:264</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/telegramBaseClient.ts#L282">teleproto/client/telegramBaseClient.ts:282</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-is-inherited">
 <h3 class="tsd-anchor-link" id="updatemanager"><span>update<wbr/>Manager</span><a href="#updatemanager" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">updateManager</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">UpdateManager</span></div>
 <div class="tsd-comment tsd-typography"><p>Centralised pts/qts/seq tracker and gap recovery driver.</p>
 </div><aside class="tsd-sources">
-<p>Inherited from <a href="client.telegramBaseClient.TelegramBaseClient.html">TelegramBaseClient</a>.<a href="client.telegramBaseClient.TelegramBaseClient.html#updatemanager">updateManager</a></p>
+<p>Inherited from <a href="">TelegramClient</a>.<a href="#updatemanager">updateManager</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/telegramBaseClient.ts#L363">teleproto/client/telegramBaseClient.ts:363</a></li></ul></aside></section></section></details>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/telegramBaseClient.ts#L381">teleproto/client/telegramBaseClient.ts:381</a></li></ul></aside></section></section></details>
 <details class="tsd-panel-group tsd-member-group tsd-accordion" open><summary class="tsd-accordion-summary" data-key="section-Accessors"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
 <h2 class="tsd-anchor-link" id="accessors-1">Accessors<a href="#accessors-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h2></summary>
 <section>
@@ -219,7 +227,7 @@ the return type) generated straight from the schema.</p>
 
 </div></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L1468">teleproto/client/TelegramClient.ts:1468</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L1471">teleproto/client/TelegramClient.ts:1471</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member tsd-is-inherited">
 <h3 class="tsd-anchor-link" id="connected"><span>connected</span><a href="#connected" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-is-inherited">
@@ -227,9 +235,9 @@ the return type) generated straight from the schema.</p>
 <div class="tsd-signature" id="connectedconnected"><span class="tsd-signature-keyword">get</span> <span class="tsd-kind-get-signature">connected</span><span class="tsd-signature-symbol">()</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">undefined</span></div>
 <div class="tsd-description">
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">undefined</span></h4><aside class="tsd-sources">
-<p>Inherited from TelegramBaseClient.connected</p>
+<p>Inherited from <a href="client.telegramBaseClient.TelegramBaseClient.html">TelegramBaseClient</a>.<a href="client.telegramBaseClient.TelegramBaseClient.html#connected">connected</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/telegramBaseClient.ts#L521">teleproto/client/telegramBaseClient.ts:521</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/telegramBaseClient.ts#L560">teleproto/client/telegramBaseClient.ts:560</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member tsd-is-inherited">
 <h3 class="tsd-anchor-link" id="disconnected"><span>disconnected</span><a href="#disconnected" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-is-inherited">
@@ -237,9 +245,9 @@ the return type) generated straight from the schema.</p>
 <div class="tsd-signature" id="disconnecteddisconnected"><span class="tsd-signature-keyword">get</span> <span class="tsd-kind-get-signature">disconnected</span><span class="tsd-signature-symbol">()</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 <div class="tsd-description">
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4><aside class="tsd-sources">
-<p>Inherited from TelegramBaseClient.disconnected</p>
+<p>Inherited from <a href="client.telegramBaseClient.TelegramBaseClient.html">TelegramBaseClient</a>.<a href="client.telegramBaseClient.TelegramBaseClient.html#disconnected">disconnected</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/telegramBaseClient.ts#L546">teleproto/client/telegramBaseClient.ts:546</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/telegramBaseClient.ts#L585">teleproto/client/telegramBaseClient.ts:585</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member tsd-is-inherited">
 <h3 class="tsd-anchor-link" id="entitycache"><span>entity<wbr/>Cache</span><a href="#entitycache" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-is-inherited">
@@ -251,9 +259,9 @@ the return type) generated straight from the schema.</p>
 See <a href="../interfaces/client.telegramBaseClient.TelegramClientParams.html#entitycache" class="tsd-kind-property">TelegramClientParams.entityCache</a> for bounding it.</p>
 </div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">EntityCache</span></h4><aside class="tsd-sources">
-<p>Inherited from TelegramBaseClient.entityCache</p>
+<p>Inherited from <a href="client.telegramBaseClient.TelegramBaseClient.html">TelegramBaseClient</a>.<a href="client.telegramBaseClient.TelegramBaseClient.html#entitycache">entityCache</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/telegramBaseClient.ts#L471">teleproto/client/telegramBaseClient.ts:471</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/telegramBaseClient.ts#L493">teleproto/client/telegramBaseClient.ts:493</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member tsd-is-inherited">
 <h3 class="tsd-anchor-link" id="floodsleepthreshold"><span>flood<wbr/>Sleep<wbr/>Threshold</span><a href="#floodsleepthreshold" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-is-inherited">
@@ -263,7 +271,7 @@ See <a href="../interfaces/client.telegramBaseClient.TelegramClientParams.html#e
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4><aside class="tsd-sources">
 <p>Inherited from TelegramBaseClient.floodSleepThreshold</p>
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/telegramBaseClient.ts#L475">teleproto/client/telegramBaseClient.ts:475</a></li></ul></aside></div></li>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/telegramBaseClient.ts#L497">teleproto/client/telegramBaseClient.ts:497</a></li></ul></aside></div></li>
 <li>
 <div class="tsd-signature" id="floodsleepthresholdfloodsleepthreshold-1"><span class="tsd-signature-keyword">set</span> <span class="tsd-kind-set-signature">floodSleepThreshold</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">value</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">void</span></div>
 <div class="tsd-description">
@@ -274,7 +282,7 @@ See <a href="../interfaces/client.telegramBaseClient.TelegramClientParams.html#e
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4><aside class="tsd-sources">
 <p>Inherited from TelegramBaseClient.floodSleepThreshold</p>
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/telegramBaseClient.ts#L479">teleproto/client/telegramBaseClient.ts:479</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/telegramBaseClient.ts#L501">teleproto/client/telegramBaseClient.ts:501</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member tsd-is-inherited">
 <h3 class="tsd-anchor-link" id="logger"><span>logger</span><a href="#logger" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-is-inherited">
@@ -282,9 +290,9 @@ See <a href="../interfaces/client.telegramBaseClient.TelegramClientParams.html#e
 <div class="tsd-signature" id="loggerlogger"><span class="tsd-signature-keyword">get</span> <span class="tsd-kind-get-signature">logger</span><span class="tsd-signature-symbol">()</span><span class="tsd-signature-symbol">:</span> <a href="Logger.html" class="tsd-signature-type tsd-kind-class">Logger</a></div>
 <div class="tsd-description">
 <h4 class="tsd-returns-title">Returns <a href="Logger.html" class="tsd-signature-type tsd-kind-class">Logger</a></h4><aside class="tsd-sources">
-<p>Inherited from TelegramBaseClient.logger</p>
+<p>Inherited from <a href="client.telegramBaseClient.TelegramBaseClient.html">TelegramBaseClient</a>.<a href="client.telegramBaseClient.TelegramBaseClient.html#logger">logger</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/telegramBaseClient.ts#L700">teleproto/client/telegramBaseClient.ts:700</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/telegramBaseClient.ts#L740">teleproto/client/telegramBaseClient.ts:740</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member tsd-is-inherited">
 <h3 class="tsd-anchor-link" id="maxconcurrentdownloads"><span>max<wbr/>Concurrent<wbr/>Downloads</span><a href="#maxconcurrentdownloads" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-is-inherited">
@@ -298,7 +306,7 @@ See <a href="../interfaces/client.telegramBaseClient.TelegramClientParams.html#e
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4><aside class="tsd-sources">
 <p>Inherited from TelegramBaseClient.maxConcurrentDownloads</p>
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/telegramBaseClient.ts#L483">teleproto/client/telegramBaseClient.ts:483</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/telegramBaseClient.ts#L505">teleproto/client/telegramBaseClient.ts:505</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member tsd-is-inherited">
 <h3 class="tsd-anchor-link" id="onerror"><span>on<wbr/>Error</span><a href="#onerror" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-is-inherited">
@@ -320,7 +328,7 @@ See <a href="../interfaces/client.telegramBaseClient.TelegramClientParams.html#e
 </div></div><aside class="tsd-sources">
 <p>Inherited from TelegramBaseClient.onError</p>
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/telegramBaseClient.ts#L713">teleproto/client/telegramBaseClient.ts:713</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/telegramBaseClient.ts#L753">teleproto/client/telegramBaseClient.ts:753</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="parsemode"><span>parse<wbr/>Mode</span><a href="#parsemode" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -349,7 +357,7 @@ See <a href="../types/Api.TypeMessageEntity.html" class="tsd-kind-type-alias">Ap
 
 </div></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L650">teleproto/client/TelegramClient.ts:650</a></li></ul></aside></div></li></ul></section></section></details>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L653">teleproto/client/TelegramClient.ts:653</a></li></ul></aside></div></li></ul></section></section></details>
 <details class="tsd-panel-group tsd-member-group tsd-accordion" open><summary class="tsd-accordion-summary" data-key="section-Methods"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
 <h2 class="tsd-anchor-link" id="methods-1">Methods<a href="#methods-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h2></summary>
 <section>
@@ -369,7 +377,7 @@ See <a href="../types/Api.TypeMessageEntity.html" class="tsd-kind-type-alias">Ap
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">MTProtoSender</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <p>Inherited from <a href="client.telegramBaseClient.TelegramBaseClient.html">TelegramBaseClient</a>.<a href="client.telegramBaseClient.TelegramBaseClient.html#_connectsender">_connectSender</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/telegramBaseClient.ts#L573">teleproto/client/telegramBaseClient.ts:573</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/telegramBaseClient.ts#L612">teleproto/client/telegramBaseClient.ts:612</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member tsd-is-inherited">
 <h3 class="tsd-anchor-link" id="_disconnect"><span>_<wbr/>disconnect</span><a href="#_disconnect" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-is-inherited">
@@ -379,7 +387,7 @@ See <a href="../types/Api.TypeMessageEntity.html" class="tsd-kind-type-alias">Ap
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <p>Inherited from <a href="client.telegramBaseClient.TelegramBaseClient.html">TelegramBaseClient</a>.<a href="client.telegramBaseClient.TelegramBaseClient.html#_disconnect">_disconnect</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/telegramBaseClient.ts#L550">teleproto/client/telegramBaseClient.ts:550</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/telegramBaseClient.ts#L589">teleproto/client/telegramBaseClient.ts:589</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member tsd-is-inherited">
 <h3 class="tsd-anchor-link" id="_initsession"><span>_<wbr/>init<wbr/>Session</span><a href="#_initsession" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-is-inherited">
@@ -389,7 +397,7 @@ See <a href="../types/Api.TypeMessageEntity.html" class="tsd-kind-type-alias">Ap
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <p>Inherited from <a href="client.telegramBaseClient.TelegramBaseClient.html">TelegramBaseClient</a>.<a href="client.telegramBaseClient.TelegramBaseClient.html#_initsession">_initSession</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/telegramBaseClient.ts#L488">teleproto/client/telegramBaseClient.ts:488</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/telegramBaseClient.ts#L510">teleproto/client/telegramBaseClient.ts:510</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member tsd-is-inherited">
 <h3 class="tsd-anchor-link" id="_leasesender"><span>_<wbr/>lease<wbr/>Sender</span><a href="#_leasesender" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-is-inherited">
@@ -403,7 +411,7 @@ See <a href="../types/Api.TypeMessageEntity.html" class="tsd-kind-type-alias">Ap
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">SessionLease</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <p>Inherited from <a href="client.telegramBaseClient.TelegramBaseClient.html">TelegramBaseClient</a>.<a href="client.telegramBaseClient.TelegramBaseClient.html#_leasesender">_leaseSender</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/telegramBaseClient.ts#L678">teleproto/client/telegramBaseClient.ts:678</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/telegramBaseClient.ts#L718">teleproto/client/telegramBaseClient.ts:718</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="addeventhandler"><span>add<wbr/>Event<wbr/>Handler</span><a href="#addeventhandler" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -434,7 +442,7 @@ If left unspecified, Raw (the <a href="../types/Api.TypeUpdate.html" class="tsd-
 
 </div></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L1286">teleproto/client/TelegramClient.ts:1286</a></li></ul></aside></div></li>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L1289">teleproto/client/TelegramClient.ts:1289</a></li></ul></aside></div></li>
 <li class="">
 <div class="tsd-signature tsd-anchor-link" id="addeventhandler-2"><span class="tsd-kind-call-signature">addEventHandler</span><span class="tsd-signature-symbol">(</span><br/>    <span class="tsd-kind-parameter">callback</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">event</span><span class="tsd-signature-symbol">:</span> <a href="events.CallbackQueryEvent.html" class="tsd-signature-type tsd-kind-class">CallbackQueryEvent</a><span class="tsd-signature-symbol">)</span> <span class="tsd-signature-symbol">=&gt;</span> <span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">event</span><span class="tsd-signature-symbol">:</span> <a href="events.CallbackQuery.html" class="tsd-signature-type tsd-kind-class">CallbackQuery</a><span class="tsd-signature-symbol">,</span><br/><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">void</span><a href="#addeventhandler-2" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
@@ -462,7 +470,7 @@ If left unspecified, Raw (the <a href="../types/Api.TypeUpdate.html" class="tsd-
 
 </div></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L1290">teleproto/client/TelegramClient.ts:1290</a></li></ul></aside></div></li>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L1293">teleproto/client/TelegramClient.ts:1293</a></li></ul></aside></div></li>
 <li class="">
 <div class="tsd-signature tsd-anchor-link" id="addeventhandler-3"><span class="tsd-kind-call-signature">addEventHandler</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">callback</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">event</span><span class="tsd-signature-symbol">:</span> <a href="events.AlbumEvent.html" class="tsd-signature-type tsd-kind-class">AlbumEvent</a><span class="tsd-signature-symbol">)</span> <span class="tsd-signature-symbol">=&gt;</span> <span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">,</span> <span class="tsd-kind-parameter">event</span><span class="tsd-signature-symbol">:</span> <a href="events.Album.html" class="tsd-signature-type tsd-kind-class">Album</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">void</span><a href="#addeventhandler-3" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
@@ -490,7 +498,7 @@ If left unspecified, Raw (the <a href="../types/Api.TypeUpdate.html" class="tsd-
 
 </div></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L1294">teleproto/client/TelegramClient.ts:1294</a></li></ul></aside></div></li>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L1297">teleproto/client/TelegramClient.ts:1297</a></li></ul></aside></div></li>
 <li class="">
 <div class="tsd-signature tsd-anchor-link" id="addeventhandler-4"><span class="tsd-kind-call-signature">addEventHandler</span><span class="tsd-signature-symbol">(</span><br/>    <span class="tsd-kind-parameter">callback</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">event</span><span class="tsd-signature-symbol">:</span> <a href="events.EditedMessageEvent.html" class="tsd-signature-type tsd-kind-class">EditedMessageEvent</a><span class="tsd-signature-symbol">)</span> <span class="tsd-signature-symbol">=&gt;</span> <span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">event</span><span class="tsd-signature-symbol">:</span> <a href="events.EditedMessage.html" class="tsd-signature-type tsd-kind-class">EditedMessage</a><span class="tsd-signature-symbol">,</span><br/><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">void</span><a href="#addeventhandler-4" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
@@ -518,7 +526,7 @@ If left unspecified, Raw (the <a href="../types/Api.TypeUpdate.html" class="tsd-
 
 </div></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L1298">teleproto/client/TelegramClient.ts:1298</a></li></ul></aside></div></li>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L1301">teleproto/client/TelegramClient.ts:1301</a></li></ul></aside></div></li>
 <li class="">
 <div class="tsd-signature tsd-anchor-link" id="addeventhandler-5"><span class="tsd-kind-call-signature">addEventHandler</span><span class="tsd-signature-symbol">(</span><br/>    <span class="tsd-kind-parameter">callback</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">event</span><span class="tsd-signature-symbol">:</span> <a href="events.DeletedMessageEvent.html" class="tsd-signature-type tsd-kind-class">DeletedMessageEvent</a><span class="tsd-signature-symbol">)</span> <span class="tsd-signature-symbol">=&gt;</span> <span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">event</span><span class="tsd-signature-symbol">:</span> <a href="events.DeletedMessage.html" class="tsd-signature-type tsd-kind-class">DeletedMessage</a><span class="tsd-signature-symbol">,</span><br/><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">void</span><a href="#addeventhandler-5" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
@@ -546,7 +554,7 @@ If left unspecified, Raw (the <a href="../types/Api.TypeUpdate.html" class="tsd-
 
 </div></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L1302">teleproto/client/TelegramClient.ts:1302</a></li></ul></aside></div></li>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L1305">teleproto/client/TelegramClient.ts:1305</a></li></ul></aside></div></li>
 <li class="">
 <div class="tsd-signature tsd-anchor-link" id="addeventhandler-6"><span class="tsd-kind-call-signature">addEventHandler</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">callback</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">event</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span> <span class="tsd-signature-symbol">=&gt;</span> <span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">,</span> <span class="tsd-kind-parameter">event</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">EventBuilder</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">void</span><a href="#addeventhandler-6" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
@@ -574,7 +582,7 @@ If left unspecified, Raw (the <a href="../types/Api.TypeUpdate.html" class="tsd-
 
 </div></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L1306">teleproto/client/TelegramClient.ts:1306</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L1309">teleproto/client/TelegramClient.ts:1309</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="buildreplymarkup"><span>build<wbr/>Reply<wbr/>Markup</span><a href="#buildreplymarkup" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -602,7 +610,7 @@ this function is called internally when passing an array of buttons.</p>
 
 </div></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L508">teleproto/client/TelegramClient.ts:508</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L511">teleproto/client/TelegramClient.ts:511</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="catchup"><span>catch<wbr/>Up</span><a href="#catchup" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -620,7 +628,7 @@ Call this after reconnecting to ensure no updates are lost.</p>
 
 </div></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L1341">teleproto/client/TelegramClient.ts:1341</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L1344">teleproto/client/TelegramClient.ts:1344</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="checkauthorization"><span>check<wbr/>Authorization</span><a href="#checkauthorization" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -638,7 +646,7 @@ Call this after reconnecting to ensure no updates are lost.</p>
 
 </div></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L120">teleproto/client/TelegramClient.ts:120</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L123">teleproto/client/TelegramClient.ts:123</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="connect"><span>connect</span><a href="#connect" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -647,7 +655,7 @@ Call this after reconnecting to ensure no updates are lost.</p>
 <div class="tsd-description">
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L1654">teleproto/client/TelegramClient.ts:1654</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L1657">teleproto/client/TelegramClient.ts:1657</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="deletemessages"><span>delete<wbr/>Messages</span><a href="#deletemessages" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -685,7 +693,7 @@ since it will unconditionally delete the message for everyone.</p>
 
 </div></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L935">teleproto/client/TelegramClient.ts:935</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L938">teleproto/client/TelegramClient.ts:938</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member tsd-is-inherited">
 <h3 class="tsd-anchor-link" id="destroy"><span>destroy</span><a href="#destroy" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-is-inherited">
@@ -698,7 +706,7 @@ Disconnect is safer as it will not remove your event handlers</p>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <p>Inherited from <a href="client.telegramBaseClient.TelegramBaseClient.html">TelegramBaseClient</a>.<a href="client.telegramBaseClient.TelegramBaseClient.html#destroy">destroy</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/telegramBaseClient.ts#L559">teleproto/client/telegramBaseClient.ts:559</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/telegramBaseClient.ts#L598">teleproto/client/telegramBaseClient.ts:598</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member tsd-is-inherited">
 <h3 class="tsd-anchor-link" id="disconnect"><span>disconnect</span><a href="#disconnect" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-is-inherited">
@@ -708,7 +716,7 @@ Disconnect is safer as it will not remove your event handlers</p>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <p>Inherited from <a href="client.telegramBaseClient.TelegramBaseClient.html">TelegramBaseClient</a>.<a href="client.telegramBaseClient.TelegramBaseClient.html#disconnect">disconnect</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/telegramBaseClient.ts#L525">teleproto/client/telegramBaseClient.ts:525</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/telegramBaseClient.ts#L564">teleproto/client/telegramBaseClient.ts:564</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="downloadfile"><span>download<wbr/>File</span><a href="#downloadfile" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -736,7 +744,7 @@ downloadMedia should generally be used over this.</p>
 
 </div></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L547">teleproto/client/TelegramClient.ts:547</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L550">teleproto/client/TelegramClient.ts:550</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="downloadmedia"><span>download<wbr/>Media</span><a href="#downloadmedia" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -770,7 +778,7 @@ const buffer = await client.downloadMedia(message, {
 })
 ```<a href="#example-ts-const-buffer-await-clientdownloadmediamessage---to-save-it-to-a-file-later-on-using-fs-import--promises-as-fs--from-fs-await-fswritefilefilebuffer--to-use-a-progress-callback-you-can-pass-it-like-so-const-buffer--await-clientdownloadmediamessage------progresscallback--consolelog--" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4></div></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L609">teleproto/client/TelegramClient.ts:609</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L612">teleproto/client/TelegramClient.ts:612</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="downloadprofilephoto"><span>download<wbr/>Profile<wbr/>Photo</span><a href="#downloadprofilephoto" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -798,7 +806,7 @@ This method will return an empty buffer in case of no profile photo.</p>
 
 </div></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L572">teleproto/client/TelegramClient.ts:572</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L575">teleproto/client/TelegramClient.ts:575</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="editmessage"><span>edit<wbr/>Message</span><a href="#editmessage" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -837,7 +845,7 @@ For example, when trying to edit messages with a reply markup (or clear markup) 
 
 </div></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L906">teleproto/client/TelegramClient.ts:906</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L909">teleproto/client/TelegramClient.ts:909</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="forwardmessages"><span>forward<wbr/>Messages</span><a href="#forwardmessages" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -874,7 +882,7 @@ if some messages failed to be forwarded the returned list will have them as unde
 
 </div></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L870">teleproto/client/TelegramClient.ts:870</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L873">teleproto/client/TelegramClient.ts:873</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="getdc"><span>get<wbr/>DC</span><a href="#getdc" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -898,7 +906,7 @@ TODO, hardcode IPs.
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">{</span> <span class="tsd-kind-property">id</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">;</span> <span class="tsd-kind-property">ipAddress</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">;</span> <span class="tsd-kind-property">port</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span> <span class="tsd-signature-symbol">}</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <p>Overrides <a href="client.telegramBaseClient.TelegramBaseClient.html">TelegramBaseClient</a>.<a href="client.telegramBaseClient.TelegramBaseClient.html#getdc">getDC</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L1737">teleproto/client/TelegramClient.ts:1737</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L1741">teleproto/client/TelegramClient.ts:1741</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="getdialogs"><span>get<wbr/>Dialogs</span><a href="#getdialogs" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -921,7 +929,7 @@ TODO, hardcode IPs.
 
 </div></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L1160">teleproto/client/TelegramClient.ts:1160</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L1163">teleproto/client/TelegramClient.ts:1163</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="getentity"><span>get<wbr/>Entity</span><a href="#getentity" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -956,7 +964,7 @@ If the entity can't be found, ValueError will be raised.</p>
 
 </div></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L1553">teleproto/client/TelegramClient.ts:1553</a></li></ul></aside></div></li>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L1556">teleproto/client/TelegramClient.ts:1556</a></li></ul></aside></div></li>
 <li class="">
 <div class="tsd-signature tsd-anchor-link" id="getentity-2"><span class="tsd-kind-call-signature">getEntity</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">entity</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">EntityLike</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Entity</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span><a href="#getentity-2" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
@@ -988,7 +996,7 @@ If the entity can't be found, ValueError will be raised.</p>
 
 </div></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L1554">teleproto/client/TelegramClient.ts:1554</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L1557">teleproto/client/TelegramClient.ts:1557</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="getinputentity"><span>get<wbr/>Input<wbr/>Entity</span><a href="#getinputentity" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -1032,7 +1040,7 @@ and should be used only for quick tests.
 
 </div></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L1593">teleproto/client/TelegramClient.ts:1593</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L1596">teleproto/client/TelegramClient.ts:1596</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="getme"><span>get<wbr/>Me</span><a href="#getme" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -1057,7 +1065,7 @@ If the user has not logged in this will throw an error.</p>
 
 </div></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L1490">teleproto/client/TelegramClient.ts:1490</a></li></ul></aside></div></li>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L1493">teleproto/client/TelegramClient.ts:1493</a></li></ul></aside></div></li>
 <li class="">
 <div class="tsd-signature tsd-anchor-link" id="getme-2"><span class="tsd-kind-call-signature">getMe</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">inputPeer</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">false</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="Api.User.html" class="tsd-signature-type tsd-kind-class">User</a><span class="tsd-signature-symbol">&gt;</span><a href="#getme-2" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
@@ -1079,7 +1087,7 @@ If the user has not logged in this will throw an error.</p>
 
 </div></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L1491">teleproto/client/TelegramClient.ts:1491</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L1494">teleproto/client/TelegramClient.ts:1494</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="getmessages"><span>get<wbr/>Messages</span><a href="#getmessages" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -1107,7 +1115,7 @@ if the <code>limit</code> is not set, it will be 1 by default unless both <code>
 
 </div></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L781">teleproto/client/TelegramClient.ts:781</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L784">teleproto/client/TelegramClient.ts:784</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="getparticipants"><span>get<wbr/>Participants</span><a href="#getparticipants" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -1128,7 +1136,7 @@ This can be used if you want to retrieve a list instead of iterating over the us
 </div></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="helpers.TotalList.html" class="tsd-signature-type tsd-kind-class">TotalList</a><span class="tsd-signature-symbol">&lt;</span><a href="Api.User.html" class="tsd-signature-type tsd-kind-class">User</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L1211">teleproto/client/TelegramClient.ts:1211</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L1214">teleproto/client/TelegramClient.ts:1214</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="getpeerid"><span>get<wbr/>Peer<wbr/>Id</span><a href="#getpeerid" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -1156,7 +1164,7 @@ If addMark is false, then a positive ID will be returned instead. By default, bo
 
 </div></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L1610">teleproto/client/TelegramClient.ts:1610</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L1613">teleproto/client/TelegramClient.ts:1613</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="getreactionusers"><span>get<wbr/>Reaction<wbr/>Users</span><a href="#getreactionusers" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -1190,7 +1198,7 @@ If addMark is false, then a positive ID will be returned instead. By default, bo
 </div></li></ul></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="Api.messages.MessageReactionsList.html" class="tsd-signature-type tsd-kind-class">MessageReactionsList</a><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L1105">teleproto/client/TelegramClient.ts:1105</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L1108">teleproto/client/TelegramClient.ts:1108</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member tsd-is-inherited">
 <h3 class="tsd-anchor-link" id="getsender"><span>get<wbr/>Sender</span><a href="#getsender" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-is-inherited">
@@ -1204,7 +1212,7 @@ If addMark is false, then a positive ID will be returned instead. By default, bo
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">MTProtoSender</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <p>Inherited from <a href="client.telegramBaseClient.TelegramBaseClient.html">TelegramBaseClient</a>.<a href="client.telegramBaseClient.TelegramBaseClient.html#getsender">getSender</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/telegramBaseClient.ts#L672">teleproto/client/telegramBaseClient.ts:672</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/telegramBaseClient.ts#L712">teleproto/client/telegramBaseClient.ts:712</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="inlinequery"><span>inline<wbr/>Query</span><a href="#inlinequery" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -1244,7 +1252,7 @@ Otherwise, the “empty peer” will be used, which some bots may not handle cor
 
 </div></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L462">teleproto/client/TelegramClient.ts:462</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L465">teleproto/client/TelegramClient.ts:465</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="invoke"><span>invoke</span><a href="#invoke" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -1279,7 +1287,7 @@ All available requests and types are found under the <code>Api.</code> namespace
 </div></div><aside class="tsd-sources">
 <p>Overrides <a href="client.telegramBaseClient.TelegramBaseClient.html">TelegramBaseClient</a>.<a href="client.telegramBaseClient.TelegramBaseClient.html#invoke">invoke</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L1438">teleproto/client/TelegramClient.ts:1438</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L1441">teleproto/client/TelegramClient.ts:1441</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="invokewithsender"><span>invoke<wbr/>With<wbr/>Sender</span><a href="#invokewithsender" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -1297,7 +1305,7 @@ All available requests and types are found under the <code>Api.</code> namespace
 <li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">sender</span>: <span class="tsd-signature-type">MTProtoSender</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">SessionLease</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a class="tsd-signature-type tsd-kind-type-parameter" href="#invokewithsenderr">R</a><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">&quot;__response&quot;</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L1445">teleproto/client/TelegramClient.ts:1445</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L1448">teleproto/client/TelegramClient.ts:1448</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="isbot"><span>is<wbr/>Bot</span><a href="#isbot" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -1314,7 +1322,7 @@ All available requests and types are found under the <code>Api.</code> namespace
 
 </div></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L1507">teleproto/client/TelegramClient.ts:1507</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L1510">teleproto/client/TelegramClient.ts:1510</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="isuserauthorized"><span>is<wbr/>User<wbr/>Authorized</span><a href="#isuserauthorized" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -1331,7 +1339,7 @@ All available requests and types are found under the <code>Api.</code> namespace
 
 </div></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L1520">teleproto/client/TelegramClient.ts:1520</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L1523">teleproto/client/TelegramClient.ts:1523</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="iterdialogs"><span>iter<wbr/>Dialogs</span><a href="#iterdialogs" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -1358,12 +1366,12 @@ The order is the same as the one seen in official applications. (dialogs that ha
 
 </div></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L1134">teleproto/client/TelegramClient.ts:1134</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L1137">teleproto/client/TelegramClient.ts:1137</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="itermessages"><span>iter<wbr/>Messages</span><a href="#itermessages" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
 <li class="">
-<div class="tsd-signature tsd-anchor-link" id="itermessages-1"><span class="tsd-kind-call-signature">iterMessages</span><span class="tsd-signature-symbol">(</span><br/>    <span class="tsd-kind-parameter">entity</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">EntityLike</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">iterParams</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">Partial</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/client.message.IterMessagesParams.html" class="tsd-signature-type tsd-kind-interface">IterMessagesParams</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">,</span><br/><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <a href="client.message._MessagesIter.html" class="tsd-signature-type tsd-kind-class">_MessagesIter</a> <span class="tsd-signature-symbol">|</span> <a href="client.message._IDsIter.html" class="tsd-signature-type tsd-kind-class">_IDsIter</a><a href="#itermessages-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-signature tsd-anchor-link" id="itermessages-1"><span class="tsd-kind-call-signature">iterMessages</span><span class="tsd-signature-symbol">(</span><br/>    <span class="tsd-kind-parameter">entity</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">EntityLike</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">iterParams</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">Partial</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/client.message.IterMessagesParams.html" class="tsd-signature-type tsd-kind-interface">IterMessagesParams</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">,</span><br/><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <a href="client.message._IDsIter.html" class="tsd-signature-type tsd-kind-class">_IDsIter</a> <span class="tsd-signature-symbol">|</span> <a href="client.message._MessagesIter.html" class="tsd-signature-type tsd-kind-class">_MessagesIter</a><a href="#itermessages-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
 <div class="tsd-comment tsd-typography"><p>Iterates over the messages for a given chat.
 <br/>
@@ -1382,7 +1390,7 @@ It may be undefined to perform a global search, or to get messages by their ID f
 <li><span><span class="tsd-kind-parameter">iterParams</span>: <span class="tsd-signature-type">Partial</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/client.message.IterMessagesParams.html" class="tsd-signature-type tsd-kind-interface">IterMessagesParams</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> = {}</span></span>
 <div class="tsd-comment tsd-typography"><p>IterMessagesParams</p>
 </div></li></ul></div>
-<h4 class="tsd-returns-title">Returns <a href="client.message._MessagesIter.html" class="tsd-signature-type tsd-kind-class">_MessagesIter</a> <span class="tsd-signature-symbol">|</span> <a href="client.message._IDsIter.html" class="tsd-signature-type tsd-kind-class">_IDsIter</a></h4>
+<h4 class="tsd-returns-title">Returns <a href="client.message._IDsIter.html" class="tsd-signature-type tsd-kind-class">_IDsIter</a> <span class="tsd-signature-symbol">|</span> <a href="client.message._MessagesIter.html" class="tsd-signature-type tsd-kind-class">_MessagesIter</a></h4>
 <div class="tsd-comment tsd-typography">
 <div class="tsd-tag-remarks">
 <h4 class="tsd-anchor-link" id="remarks-3">Remarks<a href="#remarks-3" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><p>Telegram limits GetHistory requests every 10 requests (1 000 messages) therefore a sleep of 1 seconds will be the default for this limit.</p>
@@ -1396,7 +1404,7 @@ It may be undefined to perform a global search, or to get messages by their ID f
 
 </div></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L752">teleproto/client/TelegramClient.ts:752</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L755">teleproto/client/TelegramClient.ts:755</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="iterparticipants"><span>iter<wbr/>Participants</span><a href="#iterparticipants" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -1432,7 +1440,7 @@ which is the matched ChannelParticipant type for channels/supergroup or ChatPart
 
 </div></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L1197">teleproto/client/TelegramClient.ts:1197</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L1200">teleproto/client/TelegramClient.ts:1200</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="kickparticipant"><span>kick<wbr/>Participant</span><a href="#kickparticipant" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -1460,7 +1468,7 @@ ban + unban.</p>
 
 </div></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L1235">teleproto/client/TelegramClient.ts:1235</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L1238">teleproto/client/TelegramClient.ts:1238</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="listeventhandlers"><span>list<wbr/>Event<wbr/>Handlers</span><a href="#listeventhandlers" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -1472,7 +1480,7 @@ ban + unban.</p>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">EventBuilder</span><span class="tsd-signature-symbol">,</span> <span class="tsd-signature-type">CallableFunction</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">[]</span></h4><p>pair of [eventBuilder,CallableFunction]</p>
 <aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L1328">teleproto/client/TelegramClient.ts:1328</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L1331">teleproto/client/TelegramClient.ts:1331</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="logout"><span>log<wbr/>Out</span><a href="#logout" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -1495,7 +1503,7 @@ firing; reconnecting requires going through <code>start</code>/<code>signInUser<
 
 </div></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L139">teleproto/client/TelegramClient.ts:139</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L142">teleproto/client/TelegramClient.ts:142</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="markasread"><span>mark<wbr/>As<wbr/>Read</span><a href="#markasread" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -1532,7 +1540,7 @@ including such ID will be marked as read (for all messages whose ID ≤ max_id).
 
 </div></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L1056">teleproto/client/TelegramClient.ts:1056</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L1059">teleproto/client/TelegramClient.ts:1059</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="on"><span>on</span><a href="#on" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -1554,7 +1562,7 @@ Returns a function that accepts a callback and registers it for the given event.
 
 </div></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L1253">teleproto/client/TelegramClient.ts:1253</a></li></ul></aside></div></li>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L1256">teleproto/client/TelegramClient.ts:1256</a></li></ul></aside></div></li>
 <li class="">
 <div class="tsd-signature tsd-anchor-link" id="on-2"><span class="tsd-kind-call-signature">on</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">event</span><span class="tsd-signature-symbol">:</span> <a href="events.CallbackQuery.html" class="tsd-signature-type tsd-kind-class">CallbackQuery</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">f</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">event</span><span class="tsd-signature-symbol">:</span> <a href="events.CallbackQueryEvent.html" class="tsd-signature-type tsd-kind-class">CallbackQueryEvent</a><span class="tsd-signature-symbol">)</span> <span class="tsd-signature-symbol">=&gt;</span> <span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span> <span class="tsd-signature-symbol">=&gt;</span> <span class="tsd-signature-type">void</span><a href="#on-2" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
@@ -1573,7 +1581,7 @@ Returns a function that accepts a callback and registers it for the given event.
 
 </div></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L1254">teleproto/client/TelegramClient.ts:1254</a></li></ul></aside></div></li>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L1257">teleproto/client/TelegramClient.ts:1257</a></li></ul></aside></div></li>
 <li class="">
 <div class="tsd-signature tsd-anchor-link" id="on-3"><span class="tsd-kind-call-signature">on</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">event</span><span class="tsd-signature-symbol">:</span> <a href="events.Album.html" class="tsd-signature-type tsd-kind-class">Album</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">f</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">event</span><span class="tsd-signature-symbol">:</span> <a href="events.AlbumEvent.html" class="tsd-signature-type tsd-kind-class">AlbumEvent</a><span class="tsd-signature-symbol">)</span> <span class="tsd-signature-symbol">=&gt;</span> <span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span> <span class="tsd-signature-symbol">=&gt;</span> <span class="tsd-signature-type">void</span><a href="#on-3" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
@@ -1592,7 +1600,7 @@ Returns a function that accepts a callback and registers it for the given event.
 
 </div></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L1255">teleproto/client/TelegramClient.ts:1255</a></li></ul></aside></div></li>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L1258">teleproto/client/TelegramClient.ts:1258</a></li></ul></aside></div></li>
 <li class="">
 <div class="tsd-signature tsd-anchor-link" id="on-4"><span class="tsd-kind-call-signature">on</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">event</span><span class="tsd-signature-symbol">:</span> <a href="events.EditedMessage.html" class="tsd-signature-type tsd-kind-class">EditedMessage</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">f</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">event</span><span class="tsd-signature-symbol">:</span> <a href="events.EditedMessageEvent.html" class="tsd-signature-type tsd-kind-class">EditedMessageEvent</a><span class="tsd-signature-symbol">)</span> <span class="tsd-signature-symbol">=&gt;</span> <span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span> <span class="tsd-signature-symbol">=&gt;</span> <span class="tsd-signature-type">void</span><a href="#on-4" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
@@ -1611,7 +1619,7 @@ Returns a function that accepts a callback and registers it for the given event.
 
 </div></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L1256">teleproto/client/TelegramClient.ts:1256</a></li></ul></aside></div></li>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L1259">teleproto/client/TelegramClient.ts:1259</a></li></ul></aside></div></li>
 <li class="">
 <div class="tsd-signature tsd-anchor-link" id="on-5"><span class="tsd-kind-call-signature">on</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">event</span><span class="tsd-signature-symbol">:</span> <a href="events.DeletedMessage.html" class="tsd-signature-type tsd-kind-class">DeletedMessage</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">f</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">event</span><span class="tsd-signature-symbol">:</span> <a href="events.DeletedMessageEvent.html" class="tsd-signature-type tsd-kind-class">DeletedMessageEvent</a><span class="tsd-signature-symbol">)</span> <span class="tsd-signature-symbol">=&gt;</span> <span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span> <span class="tsd-signature-symbol">=&gt;</span> <span class="tsd-signature-type">void</span><a href="#on-5" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
@@ -1630,7 +1638,7 @@ Returns a function that accepts a callback and registers it for the given event.
 
 </div></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L1257">teleproto/client/TelegramClient.ts:1257</a></li></ul></aside></div></li>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L1260">teleproto/client/TelegramClient.ts:1260</a></li></ul></aside></div></li>
 <li class="">
 <div class="tsd-signature tsd-anchor-link" id="on-6"><span class="tsd-kind-call-signature">on</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">event</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">EventBuilder</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">f</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">event</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span> <span class="tsd-signature-symbol">=&gt;</span> <span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span> <span class="tsd-signature-symbol">=&gt;</span> <span class="tsd-signature-type">void</span><a href="#on-6" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
@@ -1649,7 +1657,7 @@ Returns a function that accepts a callback and registers it for the given event.
 
 </div></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L1258">teleproto/client/TelegramClient.ts:1258</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L1261">teleproto/client/TelegramClient.ts:1261</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="pinmessage"><span>pin<wbr/>Message</span><a href="#pinmessage" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -1683,7 +1691,7 @@ Returns a function that accepts a callback and registers it for the given event.
 
 </div></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L963">teleproto/client/TelegramClient.ts:963</a></li></ul></aside></div></li>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L966">teleproto/client/TelegramClient.ts:966</a></li></ul></aside></div></li>
 <li class="">
 <div class="tsd-signature tsd-anchor-link" id="pinmessage-2"><span class="tsd-kind-call-signature">pinMessage</span><span class="tsd-signature-symbol">(</span><br/>    <span class="tsd-kind-parameter">entity</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">EntityLike</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">message</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">MessageIDLike</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">pinMessageParams</span><span class="tsd-signature-symbol">?:</span> <a href="../interfaces/client.message.UpdatePinMessageParams.html" class="tsd-signature-type tsd-kind-interface">UpdatePinMessageParams</a><span class="tsd-signature-symbol">,</span><br/><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="Api.Message.html" class="tsd-signature-type tsd-kind-class">Message</a><span class="tsd-signature-symbol">&gt;</span><a href="#pinmessage-2" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
@@ -1714,7 +1722,7 @@ Returns a function that accepts a callback and registers it for the given event.
 
 </div></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L968">teleproto/client/TelegramClient.ts:968</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L971">teleproto/client/TelegramClient.ts:971</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="removeeventhandler"><span>remove<wbr/>Event<wbr/>Handler</span><a href="#removeeventhandler" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -1734,7 +1742,7 @@ Returns a function that accepts a callback and registers it for the given event.
 </div></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L1320">teleproto/client/TelegramClient.ts:1320</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L1323">teleproto/client/TelegramClient.ts:1323</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="resetloginemail"><span>reset<wbr/>Login<wbr/>Email</span><a href="#resetloginemail" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -1762,7 +1770,7 @@ This will cancel the current email verification and allow setting up a new one.<
 
 </div></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L339">teleproto/client/TelegramClient.ts:339</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L342">teleproto/client/TelegramClient.ts:342</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="sendcode"><span>send<wbr/>Code</span><a href="#sendcode" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -1795,7 +1803,7 @@ This will cancel the current email verification and allow setting up a new one.<
 
 </div></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L246">teleproto/client/TelegramClient.ts:246</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L249">teleproto/client/TelegramClient.ts:249</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="sendfile"><span>send<wbr/>File</span><a href="#sendfile" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -1822,7 +1830,7 @@ This uses <a href="#uploadfile" class="tsd-kind-method">uploadFile</a> internall
 
 </div></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L1410">teleproto/client/TelegramClient.ts:1410</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L1413">teleproto/client/TelegramClient.ts:1413</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="sendmessage"><span>send<wbr/>Message</span><a href="#sendmessage" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -1855,7 +1863,7 @@ See also Message.respond() and Message.reply().</p>
 
 </div></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L834">teleproto/client/TelegramClient.ts:834</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L837">teleproto/client/TelegramClient.ts:837</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="sendreaction"><span>send<wbr/>Reaction</span><a href="#sendreaction" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -1887,7 +1895,7 @@ See also Message.respond() and Message.reply().</p>
 
 </div></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L1081">teleproto/client/TelegramClient.ts:1081</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L1084">teleproto/client/TelegramClient.ts:1084</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="sendverifyemailcode"><span>send<wbr/>Verify<wbr/>Email<wbr/>Code</span><a href="#sendverifyemailcode" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -1918,7 +1926,7 @@ This is used when Telegram requires email verification during login.</p>
 
 </div></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L278">teleproto/client/TelegramClient.ts:278</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L281">teleproto/client/TelegramClient.ts:281</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member tsd-is-inherited">
 <h3 class="tsd-anchor-link" id="setloglevel"><span>set<wbr/>Log<wbr/>Level</span><a href="#setloglevel" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-is-inherited">
@@ -1932,7 +1940,7 @@ This is used when Telegram requires email verification during login.</p>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4><aside class="tsd-sources">
 <p>Inherited from <a href="client.telegramBaseClient.TelegramBaseClient.html">TelegramBaseClient</a>.<a href="client.telegramBaseClient.TelegramBaseClient.html#setloglevel">setLogLevel</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/telegramBaseClient.ts#L696">teleproto/client/telegramBaseClient.ts:696</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/telegramBaseClient.ts#L736">teleproto/client/telegramBaseClient.ts:736</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="setparsemode"><span>set<wbr/>Parse<wbr/>Mode</span><a href="#setparsemode" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -1957,7 +1965,7 @@ pass undefined for no parsing.</p>
 
 </div></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L666">teleproto/client/TelegramClient.ts:666</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L669">teleproto/client/TelegramClient.ts:669</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="signinbot"><span>sign<wbr/>In<wbr/>Bot</span><a href="#signinbot" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -1984,7 +1992,7 @@ pass undefined for no parsing.</p>
 
 </div></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L375">teleproto/client/TelegramClient.ts:375</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L378">teleproto/client/TelegramClient.ts:378</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="signinuser"><span>sign<wbr/>In<wbr/>User</span><a href="#signinuser" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -2012,7 +2020,7 @@ This will also sign up if needed.</p>
 
 </div></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L169">teleproto/client/TelegramClient.ts:169</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L172">teleproto/client/TelegramClient.ts:172</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="signinuserwithqrcode"><span>sign<wbr/>In<wbr/>User<wbr/>With<wbr/>Qr<wbr/>Code</span><a href="#signinuserwithqrcode" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -2042,7 +2050,7 @@ rejects with an <code>AbortError</code>.</p>
 
 </div></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L219">teleproto/client/TelegramClient.ts:219</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L222">teleproto/client/TelegramClient.ts:222</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="signinwithpassword"><span>sign<wbr/>In<wbr/>With<wbr/>Password</span><a href="#signinwithpassword" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -2064,7 +2072,7 @@ This function should be used after the user has signed in with the code they rec
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../types/Api.TypeUser.html" class="tsd-signature-type tsd-kind-type-alias">TypeUser</a><span class="tsd-signature-symbol">&gt;</span></h4><p>the logged in user.</p>
 <aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L350">teleproto/client/TelegramClient.ts:350</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L353">teleproto/client/TelegramClient.ts:353</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="start"><span>start</span><a href="#start" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -2092,7 +2100,7 @@ this method also calls <a href="#getme" class="tsd-kind-method">getMe</a> to tel
 
 </div></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L103">teleproto/client/TelegramClient.ts:103</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L106">teleproto/client/TelegramClient.ts:106</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="unpinmessage"><span>unpin<wbr/>Message</span><a href="#unpinmessage" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -2126,7 +2134,7 @@ this method also calls <a href="#getme" class="tsd-kind-method">getMe</a> to tel
 
 </div></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L1008">teleproto/client/TelegramClient.ts:1008</a></li></ul></aside></div></li>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L1011">teleproto/client/TelegramClient.ts:1011</a></li></ul></aside></div></li>
 <li class="">
 <div class="tsd-signature tsd-anchor-link" id="unpinmessage-2"><span class="tsd-kind-call-signature">unpinMessage</span><span class="tsd-signature-symbol">(</span><br/>    <span class="tsd-kind-parameter">entity</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">EntityLike</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">message</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">MessageIDLike</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">pinMessageParams</span><span class="tsd-signature-symbol">?:</span> <a href="../interfaces/client.message.UpdatePinMessageParams.html" class="tsd-signature-type tsd-kind-interface">UpdatePinMessageParams</a><span class="tsd-signature-symbol">,</span><br/><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol">&gt;</span><a href="#unpinmessage-2" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
@@ -2157,7 +2165,7 @@ this method also calls <a href="#getme" class="tsd-kind-method">getMe</a> to tel
 
 </div></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L1013">teleproto/client/TelegramClient.ts:1013</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L1016">teleproto/client/TelegramClient.ts:1016</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="updatetwofasettings"><span>update<wbr/>Two<wbr/>Fa<wbr/>Settings</span><a href="#updatetwofasettings" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -2186,7 +2194,7 @@ that everything is safe.</p>
 &quot;EMAIL_HASH_EXPIRED&quot; if the user took too long to verify their email</p>
 </div></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L419">teleproto/client/TelegramClient.ts:419</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L422">teleproto/client/TelegramClient.ts:422</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="uploadfile"><span>upload<wbr/>File</span><a href="#uploadfile" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -2217,7 +2225,7 @@ This also can be used to update profile pictures</p>
 
 </div></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L1368">teleproto/client/TelegramClient.ts:1368</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L1371">teleproto/client/TelegramClient.ts:1371</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="verifyemail"><span>verify<wbr/>Email</span><a href="#verifyemail" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -2247,7 +2255,7 @@ This also can be used to update profile pictures</p>
 
 </div></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L314">teleproto/client/TelegramClient.ts:314</a></li></ul></aside></div></li></ul></section></section></details></div>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/TelegramClient.ts#L317">teleproto/client/TelegramClient.ts:317</a></li></ul></aside></div></li></ul></section></section></details></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">
@@ -2270,7 +2278,7 @@ This also can be used to update profile pictures</p>
 <details open class="tsd-accordion tsd-page-navigation-section"><summary class="tsd-accordion-summary" data-key="section-Methods"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>Methods</summary>
 <div><a href="#_connectsender" class="tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>_<wbr/>connect<wbr/>Sender</span></a><a href="#_disconnect" class="tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>_<wbr/>disconnect</span></a><a href="#_initsession" class="tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>_<wbr/>init<wbr/>Session</span></a><a href="#_leasesender" class="tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>_<wbr/>lease<wbr/>Sender</span></a><a href="#addeventhandler"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>add<wbr/>Event<wbr/>Handler</span></a><a href="#buildreplymarkup"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>build<wbr/>Reply<wbr/>Markup</span></a><a href="#catchup"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>catch<wbr/>Up</span></a><a href="#checkauthorization"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>check<wbr/>Authorization</span></a><a href="#connect"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>connect</span></a><a href="#deletemessages"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>delete<wbr/>Messages</span></a><a href="#destroy" class="tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>destroy</span></a><a href="#disconnect" class="tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>disconnect</span></a><a href="#downloadfile"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>download<wbr/>File</span></a><a href="#downloadmedia"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>download<wbr/>Media</span></a><a href="#downloadprofilephoto"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>download<wbr/>Profile<wbr/>Photo</span></a><a href="#editmessage"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>edit<wbr/>Message</span></a><a href="#forwardmessages"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>forward<wbr/>Messages</span></a><a href="#getdc"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>DC</span></a><a href="#getdialogs"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>Dialogs</span></a><a href="#getentity"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>Entity</span></a><a href="#getinputentity"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>Input<wbr/>Entity</span></a><a href="#getme"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>Me</span></a><a href="#getmessages"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>Messages</span></a><a href="#getparticipants"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>Participants</span></a><a href="#getpeerid"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>Peer<wbr/>Id</span></a><a href="#getreactionusers"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>Reaction<wbr/>Users</span></a><a href="#getsender" class="tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>Sender</span></a><a href="#inlinequery"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>inline<wbr/>Query</span></a><a href="#invoke"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>invoke</span></a><a href="#invokewithsender"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>invoke<wbr/>With<wbr/>Sender</span></a><a href="#isbot"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>is<wbr/>Bot</span></a><a href="#isuserauthorized"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>is<wbr/>User<wbr/>Authorized</span></a><a href="#iterdialogs"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>iter<wbr/>Dialogs</span></a><a href="#itermessages"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>iter<wbr/>Messages</span></a><a href="#iterparticipants"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>iter<wbr/>Participants</span></a><a href="#kickparticipant"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>kick<wbr/>Participant</span></a><a href="#listeventhandlers"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>list<wbr/>Event<wbr/>Handlers</span></a><a href="#logout"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>log<wbr/>Out</span></a><a href="#markasread"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>mark<wbr/>As<wbr/>Read</span></a><a href="#on"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>on</span></a><a href="#pinmessage"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>pin<wbr/>Message</span></a><a href="#removeeventhandler"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>remove<wbr/>Event<wbr/>Handler</span></a><a href="#resetloginemail"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>reset<wbr/>Login<wbr/>Email</span></a><a href="#sendcode"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>send<wbr/>Code</span></a><a href="#sendfile"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>send<wbr/>File</span></a><a href="#sendmessage"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>send<wbr/>Message</span></a><a href="#sendreaction"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>send<wbr/>Reaction</span></a><a href="#sendverifyemailcode"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>send<wbr/>Verify<wbr/>Email<wbr/>Code</span></a><a href="#setloglevel" class="tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>set<wbr/>Log<wbr/>Level</span></a><a href="#setparsemode"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>set<wbr/>Parse<wbr/>Mode</span></a><a href="#signinbot"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>sign<wbr/>In<wbr/>Bot</span></a><a href="#signinuser"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>sign<wbr/>In<wbr/>User</span></a><a href="#signinuserwithqrcode"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>sign<wbr/>In<wbr/>User<wbr/>With<wbr/>Qr<wbr/>Code</span></a><a href="#signinwithpassword"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>sign<wbr/>In<wbr/>With<wbr/>Password</span></a><a href="#start"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>start</span></a><a href="#unpinmessage"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>unpin<wbr/>Message</span></a><a href="#updatetwofasettings"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>update<wbr/>Two<wbr/>Fa<wbr/>Settings</span></a><a href="#uploadfile"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>upload<wbr/>File</span></a><a href="#verifyemail"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>verify<wbr/>Email</span></a></div></details></div></details></div>
 <div class="site-menu">
-<nav class="tsd-navigation"><a href="../modules.html">teleproto - v1.228.3</a>
+<nav class="tsd-navigation"><a href="../modules.html">teleproto - v1.228.4</a>
 <ul class="tsd-small-nested-navigation" id="tsd-nav-container">
 <li>Loading...</li></ul></nav></div></div></div><footer></footer>
 <div class="overlay"></div></body></html>

@@ -97,10 +97,20 @@ function returnWriterValue(writer: any): Buffer | string | undefined {
     }
 }
 
-function resolvePartSize(client: TelegramClient, partSizeKb?: number): number {
-    let size = partSizeKb && partSizeKb > 0
-        ? Math.floor(partSizeKb * 1024)
-        : client._media.opts.partSize;
+function resolvePartSize(
+    client: TelegramClient,
+    totalBytes: number,
+    partSizeKb?: number
+): number {
+    let size: number;
+    if (partSizeKb && partSizeKb > 0) {
+        size = Math.floor(partSizeKb * 1024);
+    } else {
+        size = client._media.opts.partSize;
+        if (size === 512 * 1024 && totalBytes > 50 * ONE_MB) {
+            size = ONE_MB;
+        }
+    }
     if (size > ONE_MB) size = ONE_MB;
     if (size % MIN_CHUNK_SIZE !== 0) {
         throw new Error("partSizeKb must be a multiple of 4 (KB)");
@@ -178,7 +188,7 @@ export async function downloadFile(
     const location = (info.location ?? inputLocation) as Api.TypeInputFileLocation;
     const totalSize: bigInt.BigInteger | undefined = fileSize ?? info.size;
     const totalBytes = totalSize ? totalSize.toJSNumber() : 0;
-    const partSize = resolvePartSize(client, partSizeKb);
+    const partSize = resolvePartSize(client, totalBytes, partSizeKb);
 
     const writer = getWriter(outputFile);
     const abort = new AbortController();

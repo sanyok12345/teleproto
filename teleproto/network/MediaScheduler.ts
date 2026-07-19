@@ -65,7 +65,7 @@ class DcBalance {
     readonly shiftedById = new Map<number, ShiftedDcId>();
     readonly waiters: Array<() => void> = [];
     floodWaitUntil = 0;
-    private _nextSlot = 1;
+    private _nextSlot = 0;
 
     constructor(
         readonly dcId: number,
@@ -73,7 +73,9 @@ class DcBalance {
         opts: BalancePolicyOptions
     ) {
         this.policy = new BalancePolicy(opts);
-        this.shiftedById.set(0, this._shifted(0));
+        for (const id of this.policy.sessionIds) {
+            this.shiftedById.set(id, this._shifted(this._nextSlot++ % 16));
+        }
     }
 
     private _shifted(i: number): ShiftedDcId {
@@ -139,6 +141,17 @@ export class MediaScheduler {
             if (opts.maxSessions && opts.maxSessions > 0) {
                 merged.download.maxSessions = opts.maxSessions;
                 merged.upload.maxSessions = opts.maxSessions;
+            }
+            if (opts.sessions && opts.sessions > 0) {
+                const start = Math.min(
+                    opts.sessions,
+                    merged.download.maxSessions
+                );
+                merged.download.startSessions = start;
+                merged.upload.startSessions = Math.min(
+                    opts.sessions,
+                    merged.upload.maxSessions
+                );
             }
             if ((opts as any).download) {
                 Object.assign(merged.download, (opts as any).download);

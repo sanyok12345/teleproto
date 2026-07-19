@@ -6,6 +6,8 @@ export interface BalancePolicyOptions {
 
     maxWindow: number;
 
+    startSessions: number;
+
     maxSessions: number;
 
     slowRequestMs: number;
@@ -19,21 +21,23 @@ export const DOWNLOAD_BALANCE: BalancePolicyOptions = {
     partSize: 512 * 1024,
     startWindow: 2 * 1024 * 1024,
     maxWindow: 4 * 1024 * 1024,
+    startSessions: 2,
     maxSessions: 8,
     slowRequestMs: 8000,
     removeAfterTimeouts: 4,
-    addSessionGateMs: 8000,
+    addSessionGateMs: 2000,
 };
 
 export const UPLOAD_BALANCE: BalancePolicyOptions = {
     partSize: 512 * 1024,
 
-    startWindow: 1024 * 1024,
-    maxWindow: 1024 * 1024,
+    startWindow: 2 * 1024 * 1024,
+    maxWindow: 2 * 1024 * 1024,
+    startSessions: 4,
     maxSessions: 8,
     slowRequestMs: 8000,
     removeAfterTimeouts: 4,
-    addSessionGateMs: 4000,
+    addSessionGateMs: 2000,
 
 };
 
@@ -61,7 +65,10 @@ export class BalancePolicy {
         this._now = now;
 
         this._lastAddAt = now();
-        this._sessions.push(this._fresh());
+        const count = Math.max(1, opts.startSessions || 1);
+        for (let i = 0; i < count; i++) {
+            this._sessions.push(this._fresh());
+        }
     }
 
     private _fresh(): SessionBalance {
@@ -79,6 +86,10 @@ export class BalancePolicy {
 
     get sessionCount(): number {
         return this._sessions.length;
+    }
+
+    get sessionIds(): number[] {
+        return this._sessions.map((s) => s.id);
     }
 
     pick(bytes: number): number {

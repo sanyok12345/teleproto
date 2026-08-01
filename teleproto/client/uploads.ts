@@ -1,7 +1,7 @@
 import { Api } from "../tl";
 
 import { TelegramClient } from "./TelegramClient";
-import { generateRandomBytes, readBigIntFromBuffer } from "../Helpers";
+import { generateRandomBytes, readBigIntFromBuffer, unionId } from "../Helpers";
 import { getAppropriatedPartSize, getInputMedia, getMessageId } from "../Utils";
 import { EntityLike, FileLike, MarkupLike, MessageIDLike } from "../define";
 import path from "path";
@@ -256,8 +256,16 @@ export interface SendFileInterface {
     clearDraft?: boolean;
     /** progress callback that will be called each time a new chunk is downloaded. */
     progressCallback?: OnProgress;
-    /** Same as `replyTo` from {@link sendMessage}. */
-    replyTo?: MessageIDLike;
+    /** Same as `replyTo` from {@link sendMessage}. Also accepts a raw {@link Api.TypeInputReplyTo} for full control (stories, monoforums, todo items). */
+    replyTo?: MessageIDLike | Api.TypeInputReplyTo;
+    /** Quoted part of the message being replied to. Requires `replyTo`. */
+    quoteText?: string;
+    /** Formatting entities of the quote. Offsets are relative to `quoteText`. */
+    quoteEntities?: Api.TypeMessageEntity[];
+    /** Offset of the quote within the original message (UTF-16 code units). */
+    quoteOffset?: number;
+    /** Chat where the quoted message was sent, for quoting messages from other chats. */
+    replyToPeerId?: EntityLike;
     /** Optional attributes that override the inferred ones, like {@link Api.DocumentAttributeFilename} and so on.*/
     attributes?: Api.TypeDocumentAttribute[] | Api.TypeDocumentAttribute[][];
     /** Optional JPEG thumbnail (for documents). Telegram will ignore this parameter unless you pass a .jpg file!<br/>
@@ -308,6 +316,30 @@ export interface SendFileInterface {
     effect?: BigInteger;
     /** If true, media will be shown below the text instead of above. */
     invertMedia?: boolean;
+    /** Send this message as a background message. */
+    background?: boolean;
+    /** Whether the order of the user's sticker sets should be updated when a sticker is sent. */
+    updateStickersetsOrder?: boolean;
+    /** Bots only: if set, allows sending up to 1000 messages per second past the flood limits, at a Stars cost. */
+    allowPaidFloodskip?: boolean;
+    /** Stars to pay for sending a paid message, when the recipient charges for messages. */
+    allowPaidStars?: BigInteger;
+    /** Repeat period (in seconds) for recurring scheduled messages. Requires `scheduleDate`. */
+    scheduleRepeatPeriod?: number;
+    /** Add the message to a quick-reply shortcut instead of sending it. A shortcut name, shortcut ID, or a raw {@link Api.TypeInputQuickReplyShortcut}. */
+    quickReplyShortcut?: string | number | Api.TypeInputQuickReplyShortcut;
+    /** Suggested-post metadata for direct-messages channels. */
+    suggestedPost?: Api.TypeSuggestedPost;
+    /** Mark the media as spoiler (blurred until tapped). */
+    spoiler?: boolean;
+    /** Self-destruct timer for the media, in seconds. */
+    ttlSeconds?: number;
+    /** If true, the uploaded video has no sound (sent as a silent video). */
+    nosoundVideo?: boolean;
+    /** Custom cover photo for the video. */
+    videoCover?: Api.TypeInputPhoto;
+    /** Start playback timestamp of the video, in seconds. */
+    videoTimestamp?: number;
 }
 
 interface FileToMediaInterface {
@@ -323,6 +355,65 @@ interface FileToMediaInterface {
     mimeType?: string;
     asImage?: boolean;
     workers?: number;
+    spoiler?: boolean;
+    ttlSeconds?: number;
+    nosoundVideo?: boolean;
+    videoCover?: Api.TypeInputPhoto;
+    videoTimestamp?: number;
+}
+
+/** @hidden */
+export function _toQuickReplyShortcut(
+    shortcut: string | number | Api.TypeInputQuickReplyShortcut | undefined
+): Api.TypeInputQuickReplyShortcut | undefined {
+    if (shortcut == undefined) {
+        return undefined;
+    }
+    if (typeof shortcut === "string") {
+        return new Api.InputQuickReplyShortcut({ shortcut });
+    }
+    if (typeof shortcut === "number") {
+        return new Api.InputQuickReplyShortcutId({ shortcutId: shortcut });
+    }
+    return shortcut;
+}
+
+/** @hidden */
+export async function _toReplyObject(
+    client: TelegramClient,
+    replyTo: MessageIDLike | Api.TypeInputReplyTo | undefined,
+    topMsgId?: number | Api.Message,
+    quote?: {
+        quoteText?: string;
+        quoteEntities?: Api.TypeMessageEntity[];
+        quoteOffset?: number;
+        replyToPeerId?: EntityLike;
+    }
+): Promise<Api.TypeInputReplyTo | undefined> {
+    if (
+        replyTo != undefined &&
+        typeof replyTo === "object" &&
+        (replyTo as any).SUBCLASS_OF_ID === unionId("InputReplyTo")
+    ) {
+        return replyTo as Api.TypeInputReplyTo;
+    }
+    const replyToMsgId =
+        replyTo != undefined
+            ? getMessageId(replyTo as MessageIDLike)
+            : getMessageId(topMsgId);
+    if (replyToMsgId == undefined) {
+        return undefined;
+    }
+    return new Api.InputReplyToMessage({
+        replyToMsgId,
+        topMsgId: replyTo != undefined ? getMessageId(topMsgId) : undefined,
+        quoteText: quote?.quoteText,
+        quoteEntities: quote?.quoteEntities,
+        quoteOffset: quote?.quoteOffset,
+        replyToPeerId: quote?.replyToPeerId
+            ? await client.getInputEntity(quote.replyToPeerId)
+            : undefined,
+    });
 }
 
 /** @hidden */
@@ -341,6 +432,11 @@ export async function _fileToMedia(
         mimeType,
         asImage,
         workers,
+        spoiler,
+        ttlSeconds,
+        nosoundVideo,
+        videoCover,
+        videoTimestamp,
     }: FileToMediaInterface
 ): Promise<{
     fileHandle?: any;
@@ -373,6 +469,11 @@ export async function _fileToMedia(
                     voiceNote: voiceNote,
                     videoNote: videoNote,
                     supportsStreaming: supportsStreaming,
+                    spoiler: spoiler,
+                    ttlSeconds: ttlSeconds,
+                    nosoundVideo: nosoundVideo,
+                    videoCover: videoCover,
+                    videoTimestamp: videoTimestamp,
                 }),
                 image: asImage,
             };
@@ -395,9 +496,19 @@ export async function _fileToMedia(
         (file.startsWith("https://") || file.startsWith("http://"))
     ) {
         if (asImage) {
-            media = new Api.InputMediaPhotoExternal({ url: file });
+            media = new Api.InputMediaPhotoExternal({
+                url: file,
+                spoiler: spoiler,
+                ttlSeconds: ttlSeconds,
+            });
         } else {
-            media = new Api.InputMediaDocumentExternal({ url: file });
+            media = new Api.InputMediaDocumentExternal({
+                url: file,
+                spoiler: spoiler,
+                ttlSeconds: ttlSeconds,
+                videoCover: videoCover,
+                videoTimestamp: videoTimestamp,
+            });
         }
     } else if (!(typeof file == "string") || (await fs.lstat(file)).isFile()) {
         if (typeof file == "string") {
@@ -444,6 +555,8 @@ export async function _fileToMedia(
     } else if (asImage) {
         media = new Api.InputMediaUploadedPhoto({
             file: fileHandle,
+            spoiler: spoiler,
+            ttlSeconds: ttlSeconds,
         });
     } else {
         // @ts-ignore
@@ -502,6 +615,11 @@ export async function _fileToMedia(
             attributes: attributes,
             thumb: uploadedThumb,
             forceFile: forceDocument && !isImage,
+            spoiler: spoiler,
+            ttlSeconds: ttlSeconds,
+            nosoundVideo: nosoundVideo,
+            videoCover: videoCover,
+            videoTimestamp: videoTimestamp,
         });
     }
     return {
@@ -539,6 +657,20 @@ export async function _sendAlbum(
         sendAs,
         effect,
         invertMedia,
+        background,
+        updateStickersetsOrder,
+        allowPaidFloodskip,
+        allowPaidStars,
+        quickReplyShortcut,
+        quoteText,
+        quoteEntities,
+        quoteOffset,
+        replyToPeerId,
+        spoiler,
+        ttlSeconds,
+        nosoundVideo,
+        videoCover,
+        videoTimestamp,
     }: SendFileInterface
 ) {
     entity = await client.getInputEntity(entity);
@@ -566,8 +698,6 @@ export async function _sendAlbum(
         const discussionData = await client.getCommentData(entity, commentTo);
         entity = discussionData.entity;
         replyTo = discussionData.replyTo;
-    } else {
-        replyTo = utils.getMessageId(replyTo);
     }
     if (!attributes) {
         attributes = [];
@@ -588,6 +718,11 @@ export async function _sendAlbum(
             videoNote: videoNote,
             supportsStreaming: supportsStreaming,
             workers: workers,
+            spoiler: spoiler,
+            ttlSeconds: ttlSeconds,
+            nosoundVideo: nosoundVideo,
+            videoCover: videoCover,
+            videoTimestamp: videoTimestamp,
         });
         index++;
         if (
@@ -601,7 +736,10 @@ export async function _sendAlbum(
                 })
             );
             if (r instanceof Api.MessageMediaPhoto) {
-                media = getInputMedia(r.photo);
+                media = getInputMedia(r.photo, {
+                    spoiler: spoiler,
+                    ttlSeconds: ttlSeconds,
+                });
             }
         } else if (media instanceof Api.InputMediaUploadedDocument) {
             const r = await client.invoke(
@@ -611,7 +749,12 @@ export async function _sendAlbum(
                 })
             );
             if (r instanceof Api.MessageMediaDocument) {
-                media = getInputMedia(r.document);
+                media = getInputMedia(r.document, {
+                    spoiler: spoiler,
+                    ttlSeconds: ttlSeconds,
+                    videoCover: videoCover,
+                    videoTimestamp: videoTimestamp,
+                });
             }
         }
         let text = "";
@@ -627,17 +770,12 @@ export async function _sendAlbum(
             })
         );
     }
-    let replyObject: Api.InputReplyToMessage | undefined = undefined;
-    if (replyTo != undefined) {
-        replyObject = new Api.InputReplyToMessage({
-            replyToMsgId: getMessageId(replyTo)!,
-            topMsgId: getMessageId(topMsgId),
-        });
-    } else if (topMsgId != undefined) {
-        replyObject = new Api.InputReplyToMessage({
-            replyToMsgId: getMessageId(topMsgId)!,
-        });
-    }
+    const replyObject = await _toReplyObject(client, replyTo, topMsgId, {
+        quoteText,
+        quoteEntities,
+        quoteOffset,
+        replyToPeerId,
+    });
 
     const result = await client.invoke(
         new Api.messages.SendMultiMedia({
@@ -648,6 +786,11 @@ export async function _sendAlbum(
             scheduleDate: scheduleDate,
             clearDraft: clearDraft,
             noforwards: noforwards,
+            background: background,
+            updateStickersetsOrder: updateStickersetsOrder,
+            allowPaidFloodskip: allowPaidFloodskip,
+            allowPaidStars: allowPaidStars,
+            quickReplyShortcut: _toQuickReplyShortcut(quickReplyShortcut),
             sendAs: sendAs
                 ? await client.getInputEntity(sendAs)
                 : undefined,
@@ -688,6 +831,22 @@ export async function sendFile(
         sendAs,
         effect,
         invertMedia,
+        background,
+        updateStickersetsOrder,
+        allowPaidFloodskip,
+        allowPaidStars,
+        scheduleRepeatPeriod,
+        quickReplyShortcut,
+        suggestedPost,
+        quoteText,
+        quoteEntities,
+        quoteOffset,
+        replyToPeerId,
+        spoiler,
+        ttlSeconds,
+        nosoundVideo,
+        videoCover,
+        videoTimestamp,
     }: SendFileInterface
 ) {
     if (!file) {
@@ -701,8 +860,6 @@ export async function sendFile(
         const discussionData = await client.getCommentData(entity, commentTo);
         entity = discussionData.entity;
         replyTo = discussionData.replyTo;
-    } else {
-        replyTo = utils.getMessageId(replyTo);
     }
     if (Array.isArray(file)) {
         return await _sendAlbum(client, entity, {
@@ -719,6 +876,29 @@ export async function sendFile(
             forceDocument: forceDocument,
             noforwards: noforwards,
             topMsgId: topMsgId,
+            fileSize: fileSize,
+            progressCallback: progressCallback,
+            workers: workers,
+            thumb: thumb,
+            voiceNote: voiceNote,
+            videoNote: videoNote,
+            sendAs: sendAs,
+            effect: effect,
+            invertMedia: invertMedia,
+            background: background,
+            updateStickersetsOrder: updateStickersetsOrder,
+            allowPaidFloodskip: allowPaidFloodskip,
+            allowPaidStars: allowPaidStars,
+            quickReplyShortcut: quickReplyShortcut,
+            quoteText: quoteText,
+            quoteEntities: quoteEntities,
+            quoteOffset: quoteOffset,
+            replyToPeerId: replyToPeerId,
+            spoiler: spoiler,
+            ttlSeconds: ttlSeconds,
+            nosoundVideo: nosoundVideo,
+            videoCover: videoCover,
+            videoTimestamp: videoTimestamp,
         });
     }
     if (Array.isArray(caption)) {
@@ -747,22 +927,22 @@ export async function sendFile(
         videoNote: videoNote,
         supportsStreaming: supportsStreaming,
         workers: workers,
+        spoiler: spoiler,
+        ttlSeconds: ttlSeconds,
+        nosoundVideo: nosoundVideo,
+        videoCover: videoCover,
+        videoTimestamp: videoTimestamp,
     });
     if (media == undefined) {
         throw new Error(`Cannot use ${file} as file.`);
     }
     const markup = client.buildReplyMarkup(buttons);
-    let replyObject: Api.InputReplyToMessage | undefined = undefined;
-    if (replyTo != undefined) {
-        replyObject = new Api.InputReplyToMessage({
-            replyToMsgId: getMessageId(replyTo)!,
-            topMsgId: getMessageId(topMsgId),
-        });
-    } else if (topMsgId != undefined) {
-        replyObject = new Api.InputReplyToMessage({
-            replyToMsgId: getMessageId(topMsgId)!,
-        });
-    }
+    const replyObject = await _toReplyObject(client, replyTo, topMsgId, {
+        quoteText,
+        quoteEntities,
+        quoteOffset,
+        replyToPeerId,
+    });
 
     const request = new Api.messages.SendMedia({
         peer: entity,
@@ -773,8 +953,15 @@ export async function sendFile(
         replyMarkup: markup,
         silent: silent,
         scheduleDate: scheduleDate,
+        scheduleRepeatPeriod: scheduleRepeatPeriod,
         clearDraft: clearDraft,
         noforwards: noforwards,
+        background: background,
+        updateStickersetsOrder: updateStickersetsOrder,
+        allowPaidFloodskip: allowPaidFloodskip,
+        allowPaidStars: allowPaidStars,
+        quickReplyShortcut: _toQuickReplyShortcut(quickReplyShortcut),
+        suggestedPost: suggestedPost,
         sendAs: sendAs
             ? await client.getInputEntity(sendAs)
             : undefined,

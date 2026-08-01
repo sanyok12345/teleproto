@@ -22,7 +22,7 @@ import * as utils from "../Utils";
 import { _parseMessageText } from "./messageParse";
 import { _getPeer } from "./users";
 import bigInt, { BigInteger } from "big-integer";
-import { _fileToMedia } from "./uploads";
+import { _fileToMedia, _toQuickReplyShortcut, _toReplyObject } from "./uploads";
 
 const _MAX_CHUNK_SIZE = 100;
 
@@ -37,6 +37,8 @@ interface MessageIterParams {
     filter: any;
     search: string;
     replyTo: MessageIDLike;
+    topMsgId?: number;
+    savedPeerId?: EntityLike;
 }
 
 /**
@@ -70,6 +72,8 @@ export class _MessagesIter extends RequestIter {
         filter,
         search,
         replyTo,
+        topMsgId,
+        savedPeerId,
     }: MessageIterParams) {
         if (entity) {
             this.entity = await this.client.getInputEntity(entity);
@@ -140,7 +144,9 @@ export class _MessagesIter extends RequestIter {
         } else if (
             search !== undefined ||
             !(filter instanceof Api.InputMessagesFilterEmpty) ||
-            fromUser !== undefined
+            fromUser !== undefined ||
+            topMsgId !== undefined ||
+            savedPeerId !== undefined
         ) {
             this.request = new Api.messages.Search({
                 peer: this.entity,
@@ -155,6 +161,10 @@ export class _MessagesIter extends RequestIter {
                 minId: 0,
                 hash: generateRandomBigInt(),
                 fromId: fromUser,
+                topMsgId: topMsgId,
+                savedPeerId: savedPeerId
+                    ? await this.client.getInputEntity(savedPeerId)
+                    : undefined,
             });
             if (
                 !(filter instanceof Api.InputMessagesFilterEmpty) &&
@@ -452,6 +462,10 @@ export interface IterMessagesParams {
      *  All other parameters will be ignored for this, except `entity`.
      */
     scheduled: boolean;
+    /** Restrict results to a forum topic by its top message ID. Only takes effect when combined with `search`, `filter` or `fromUser` (server-side search). */
+    topMsgId?: number;
+    /** When searching your Saved Messages, restrict results to messages originally sent by this peer. */
+    savedPeerId?: EntityLike;
 }
 
 const IterMessagesDefaults: IterMessagesParams = {
@@ -469,6 +483,8 @@ const IterMessagesDefaults: IterMessagesParams = {
     reverse: false,
     replyTo: undefined,
     scheduled: false,
+    topMsgId: undefined,
+    savedPeerId: undefined,
 };
 
 /**
@@ -479,8 +495,17 @@ export interface SendMessageParams {
      * The maximum length for a message is 35,000 bytes or 4,096 characters.<br/>
      * Longer messages will not be sliced automatically, and you should slice them manually if the text to send is longer than said length. */
     message?: MessageLike;
-    /** Whether to reply to a message or not. If an integer is provided, it should be the ID of the message that it should reply to. */
-    replyTo?: number | Api.Message;
+    /** Whether to reply to a message or not. If an integer is provided, it should be the ID of the message that it should reply to.<br/>
+     * Also accepts a raw {@link Api.TypeInputReplyTo} for full control (stories, monoforums, todo items). */
+    replyTo?: number | Api.Message | Api.TypeInputReplyTo;
+    /** Quoted part of the message being replied to. Requires `replyTo`. */
+    quoteText?: string;
+    /** Formatting entities of the quote. Offsets are relative to `quoteText`. */
+    quoteEntities?: Api.TypeMessageEntity[];
+    /** Offset of the quote within the original message (UTF-16 code units). */
+    quoteOffset?: number;
+    /** Chat where the quoted message was sent, for quoting messages from other chats. */
+    replyToPeerId?: EntityLike;
     /** Optional attributes that override the inferred ones, like DocumentAttributeFilename and so on. */
     attributes?: Api.TypeDocumentAttribute[];
     /** See the {@link parseMode} property for allowed values. Markdown parsing will be used by default. */
@@ -498,9 +523,9 @@ export interface SendMessageParams {
      */
     thumb?: FileLike;
     /** Whether to send the given file as a document or not. */
-    forceDocument?: false;
+    forceDocument?: boolean;
     /** Whether the existing draft should be cleared or not. */
-    clearDraft?: false;
+    clearDraft?: boolean;
     /** The matrix (list of lists), row list or button to be shown after sending the message.<br/>
      *  This parameter will only work if you have signed in as a bot. You can also pass your own ReplyMarkup here.<br/>
      *  <br/>
@@ -536,6 +561,22 @@ export interface SendMessageParams {
     effect?: BigInteger;
     /** If true, media will be shown below the text instead of above. */
     invertMedia?: boolean;
+    /** Send this message as a background message. */
+    background?: boolean;
+    /** Whether the order of the user's sticker sets should be updated when a sticker is sent. */
+    updateStickersetsOrder?: boolean;
+    /** Bots only: if set, allows sending up to 1000 messages per second past the flood limits, at a Stars cost. */
+    allowPaidFloodskip?: boolean;
+    /** Stars to pay for sending a paid message, when the recipient charges for messages. */
+    allowPaidStars?: BigInteger;
+    /** Repeat period (in seconds) for recurring scheduled messages. Requires `schedule`. */
+    scheduleRepeatPeriod?: number;
+    /** Add the message to a quick-reply shortcut instead of sending it. A shortcut name, shortcut ID, or a raw {@link Api.TypeInputQuickReplyShortcut}. */
+    quickReplyShortcut?: string | number | Api.TypeInputQuickReplyShortcut;
+    /** Suggested-post metadata for direct-messages channels. */
+    suggestedPost?: Api.TypeSuggestedPost;
+    /** Rich message content (Layer 228 page-block tree). Only for plain text messages. */
+    richMessage?: Api.TypeInputRichMessage;
 }
 
 /** interface used for forwarding messages */
@@ -561,6 +602,22 @@ export interface ForwardMessagesParams {
     dropMediaCaptions?: boolean;
     /** If true, forward the game score along with the message. */
     withMyScore?: boolean;
+    /** Send the forward as a background message. */
+    background?: boolean;
+    /** Bots only: if set, allows sending up to 1000 messages per second past the flood limits, at a Stars cost. */
+    allowPaidFloodskip?: boolean;
+    /** Stars to pay for sending a paid message, when the recipient charges for messages. */
+    allowPaidStars?: BigInteger;
+    /** Start playback timestamp (in seconds) for the forwarded video. */
+    videoTimestamp?: number;
+    /** Repeat period (in seconds) for recurring scheduled messages. Requires `schedule`. */
+    scheduleRepeatPeriod?: number;
+    /** Add the forward to a quick-reply shortcut instead of sending it. A shortcut name, shortcut ID, or a raw {@link Api.TypeInputQuickReplyShortcut}. */
+    quickReplyShortcut?: string | number | Api.TypeInputQuickReplyShortcut;
+    /** Suggested-post metadata for direct-messages channels. */
+    suggestedPost?: Api.TypeSuggestedPost;
+    /** Send the forwarded messages as a reply to this message. Accepts a message ID, a Message, or a raw {@link Api.TypeInputReplyTo}. */
+    replyTo?: number | Api.Message | Api.TypeInputReplyTo;
 }
 
 /** Interface for editing messages */
@@ -578,7 +635,7 @@ export interface EditMessageParams {
     /** The file object that should replace the existing media in the message. Does nothing if entity was a Message */
     file?: FileLike;
     /** Whether to send the given file as a document or not. */
-    forceDocument?: false;
+    forceDocument?: boolean;
     /** The matrix (list of lists), row list or button to be shown after sending the message.<br/>
      *  This parameter will only work if you have signed in as a bot. You can also pass your own ReplyMarkup here.<br/>
      *  <br/>
@@ -593,6 +650,12 @@ export interface EditMessageParams {
     schedule?: DateLike;
     /** If true, media will be shown below the text instead of above. */
     invertMedia?: boolean;
+    /** Repeat period (in seconds) for recurring scheduled messages. Requires `schedule`. */
+    scheduleRepeatPeriod?: number;
+    /** If editing a message inside a quick-reply shortcut, the ID of that shortcut. */
+    quickReplyShortcutId?: number;
+    /** New rich message content (Layer 228 page-block tree). */
+    richMessage?: Api.TypeInputRichMessage;
 }
 
 /** Interface for editing messages */
@@ -605,6 +668,10 @@ export interface UpdatePinMessageParams {
      *  By default it has the opposite behavior of official clients, and it will pin the message for both sides, in private chats.
      */
     pmOneSide?: boolean;
+    /** When unpinning all messages: only unpin within this forum topic (its top message ID). */
+    topMsgId?: number;
+    /** When unpinning all messages in your Saved Messages: only unpin messages saved from this peer. */
+    savedPeerId?: EntityLike;
 }
 
 /** Interface for mark message as read */
@@ -619,6 +686,8 @@ export interface MarkAsReadParams {
      * If no message is provided, this will be the only action taken.
      */
     clearMentions?: boolean;
+    /** When clearing mentions: only clear within this forum topic (its top message ID). */
+    topMsgId?: number;
 }
 
 /** @hidden */
@@ -641,6 +710,8 @@ export function iterMessages(
         ids,
         reverse,
         replyTo,
+        topMsgId,
+        savedPeerId,
     } = { ...IterMessagesDefaults, ...options };
     if (ids) {
         let idsArray;
@@ -680,6 +751,8 @@ export function iterMessages(
             filter: filter,
             search: search,
             replyTo: replyTo,
+            topMsgId: topMsgId,
+            savedPeerId: savedPeerId,
         }
     );
 }
@@ -739,6 +812,18 @@ export async function sendMessage(
         sendAs,
         effect,
         invertMedia,
+        background,
+        updateStickersetsOrder,
+        allowPaidFloodskip,
+        allowPaidStars,
+        scheduleRepeatPeriod,
+        quickReplyShortcut,
+        suggestedPost,
+        richMessage,
+        quoteText,
+        quoteEntities,
+        quoteOffset,
+        replyToPeerId,
     }: SendMessageParams = {}
 ) {
     if (file) {
@@ -763,6 +848,20 @@ export async function sendMessage(
             noforwards: noforwards,
             commentTo: commentTo,
             topMsgId: topMsgId,
+            sendAs: sendAs,
+            effect: effect,
+            invertMedia: invertMedia,
+            background: background,
+            updateStickersetsOrder: updateStickersetsOrder,
+            allowPaidFloodskip: allowPaidFloodskip,
+            allowPaidStars: allowPaidStars,
+            scheduleRepeatPeriod: scheduleRepeatPeriod,
+            quickReplyShortcut: quickReplyShortcut,
+            suggestedPost: suggestedPost,
+            quoteText: quoteText,
+            quoteEntities: quoteEntities,
+            quoteOffset: quoteOffset,
+            replyToPeerId: replyToPeerId,
         });
     }
     entity = await client.getInputEntity(entity);
@@ -772,17 +871,12 @@ export async function sendMessage(
         replyTo = discussionData.replyTo;
     }
     let markup, request;
-    let replyObject: Api.InputReplyToMessage | undefined = undefined;
-    if (replyTo != undefined) {
-        replyObject = new Api.InputReplyToMessage({
-            replyToMsgId: getMessageId(replyTo)!,
-            topMsgId: getMessageId(topMsgId),
-        });
-    } else if (topMsgId != undefined) {
-        replyObject = new Api.InputReplyToMessage({
-            replyToMsgId: getMessageId(topMsgId)!,
-        });
-    }
+    const replyObject = await _toReplyObject(client, replyTo, topMsgId, {
+        quoteText,
+        quoteEntities,
+        quoteOffset,
+        replyToPeerId,
+    });
 
     if (message && message instanceof Api.Message) {
         if (buttons == undefined) {
@@ -806,6 +900,18 @@ export async function sendMessage(
                 buttons: markup,
                 formattingEntities: message.entities,
                 scheduleDate: schedule,
+                clearDraft: clearDraft,
+                noforwards: noforwards,
+                topMsgId: topMsgId,
+                sendAs: sendAs,
+                effect: effect,
+                invertMedia: invertMedia,
+                background: background,
+                allowPaidStars: allowPaidStars,
+                quoteText: quoteText,
+                quoteEntities: quoteEntities,
+                quoteOffset: quoteOffset,
+                replyToPeerId: replyToPeerId,
             });
         }
         request = new Api.messages.SendMessage({
@@ -818,7 +924,15 @@ export async function sendMessage(
             clearDraft: clearDraft,
             noWebpage: !(message.media instanceof Api.MessageMediaWebPage),
             scheduleDate: schedule,
+            scheduleRepeatPeriod: scheduleRepeatPeriod,
             noforwards: noforwards,
+            background: background,
+            updateStickersetsOrder: updateStickersetsOrder,
+            allowPaidFloodskip: allowPaidFloodskip,
+            allowPaidStars: allowPaidStars,
+            quickReplyShortcut: _toQuickReplyShortcut(quickReplyShortcut),
+            suggestedPost: suggestedPost,
+            richMessage: richMessage,
             sendAs: sendAs
                 ? await client.getInputEntity(sendAs)
                 : undefined,
@@ -834,7 +948,7 @@ export async function sendMessage(
                 parseMode
             );
         }
-        if (!message) {
+        if (!message && !richMessage) {
             throw new Error(
                 "The message cannot be empty unless a file is provided"
             );
@@ -842,7 +956,7 @@ export async function sendMessage(
 
         request = new Api.messages.SendMessage({
             peer: entity,
-            message: message.toString(),
+            message: message ? message.toString() : "",
             entities: formattingEntities,
             noWebpage: !linkPreview,
             replyTo: replyObject,
@@ -850,7 +964,15 @@ export async function sendMessage(
             silent: silent,
             replyMarkup: client.buildReplyMarkup(buttons),
             scheduleDate: schedule,
+            scheduleRepeatPeriod: scheduleRepeatPeriod,
             noforwards: noforwards,
+            background: background,
+            updateStickersetsOrder: updateStickersetsOrder,
+            allowPaidFloodskip: allowPaidFloodskip,
+            allowPaidStars: allowPaidStars,
+            quickReplyShortcut: _toQuickReplyShortcut(quickReplyShortcut),
+            suggestedPost: suggestedPost,
+            richMessage: richMessage,
             sendAs: sendAs
                 ? await client.getInputEntity(sendAs)
                 : undefined,
@@ -893,6 +1015,14 @@ export async function forwardMessages(
         effect,
         dropMediaCaptions,
         withMyScore,
+        background,
+        allowPaidFloodskip,
+        allowPaidStars,
+        videoTimestamp,
+        scheduleRepeatPeriod,
+        quickReplyShortcut,
+        suggestedPost,
+        replyTo,
     }: ForwardMessagesParams & { topMsgId?: number | Api.Message }
 ) {
     if (!isArrayLike(messages)) {
@@ -942,15 +1072,23 @@ export async function forwardMessages(
             toPeer: entity,
             silent: silent,
             scheduleDate: schedule,
+            scheduleRepeatPeriod: scheduleRepeatPeriod,
             noforwards: noforwards,
             dropAuthor: dropAuthor,
             topMsgId: topMsgId ? getMessageId(topMsgId) : undefined,
+            replyTo: await _toReplyObject(client, replyTo, undefined),
             sendAs: sendAs
                 ? await client.getInputEntity(sendAs)
                 : undefined,
             effect: effect,
             dropMediaCaptions: dropMediaCaptions,
             withMyScore: withMyScore,
+            background: background,
+            allowPaidFloodskip: allowPaidFloodskip,
+            allowPaidStars: allowPaidStars,
+            videoTimestamp: videoTimestamp,
+            quickReplyShortcut: _toQuickReplyShortcut(quickReplyShortcut),
+            suggestedPost: suggestedPost,
         });
 
         const result = await client.invoke(request);
@@ -977,13 +1115,17 @@ export async function editMessage(
         buttons,
         schedule,
         invertMedia,
+        scheduleRepeatPeriod,
+        quickReplyShortcutId,
+        richMessage,
     }: EditMessageParams
 ) {
     if (
         typeof message === "number" &&
         typeof text === "undefined" &&
         !file &&
-        !schedule
+        !schedule &&
+        !richMessage
     ) {
         throw Error(
             "You have to provide either file or text or schedule property."
@@ -1040,6 +1182,9 @@ export async function editMessage(
         media: inputMedia,
         replyMarkup: markup,
         scheduleDate: schedule,
+        scheduleRepeatPeriod: scheduleRepeatPeriod,
+        quickReplyShortcutId: quickReplyShortcutId,
+        richMessage: richMessage,
         invertMedia: invertMedia,
     });
     const result = await client.invoke(request);
@@ -1051,7 +1196,7 @@ export async function deleteMessages(
     client: TelegramClient,
     entity: EntityLike | undefined,
     messageIds: MessageIDLike[],
-    { revoke = false }
+    { revoke = true }
 ) {
     let ty = _EntityType.USER;
     if (entity) {
@@ -1109,7 +1254,8 @@ export async function pinMessage(
         message,
         false,
         pinMessageParams?.notify,
-        pinMessageParams?.pmOneSide
+        pinMessageParams?.pmOneSide,
+        pinMessageParams
     );
 }
 
@@ -1126,7 +1272,8 @@ export async function unpinMessage(
         message,
         true,
         unpinMessageParams?.notify,
-        unpinMessageParams?.pmOneSide
+        unpinMessageParams?.pmOneSide,
+        unpinMessageParams
     );
 }
 
@@ -1137,13 +1284,18 @@ export async function _pin(
     message: MessageIDLike | undefined,
     unpin: boolean,
     notify: boolean = false,
-    pmOneSide: boolean = false
+    pmOneSide: boolean = false,
+    params?: UpdatePinMessageParams
 ) {
     message = utils.getMessageId(message) || 0;
 
     if (message === 0) {
         return await client.api.messages.unpinAllMessages({
             peer: entity,
+            topMsgId: params?.topMsgId,
+            savedPeerId: params?.savedPeerId
+                ? await client.getInputEntity(params.savedPeerId)
+                : undefined,
         });
     }
 
@@ -1198,8 +1350,13 @@ export async function markAsRead(
     }
 
     entity = await client.getInputEntity(entity);
-    if (markAsReadParams && !markAsReadParams.clearMentions) {
-        await client.invoke(new Api.messages.ReadMentions({ peer: entity }));
+    if (markAsReadParams && markAsReadParams.clearMentions) {
+        await client.invoke(
+            new Api.messages.ReadMentions({
+                peer: entity,
+                topMsgId: markAsReadParams.topMsgId,
+            })
+        );
         if (maxIdIsUndefined && message === undefined) {
             return true;
         }
@@ -1257,7 +1414,8 @@ export async function sendReaction(
     entity: EntityLike,
     messageId: number,
     reaction?: Api.TypeReaction[],
-    big?: boolean
+    big?: boolean,
+    addToRecent?: boolean
 ) {
     return client.invoke(
         new Api.messages.SendReaction({
@@ -1265,6 +1423,7 @@ export async function sendReaction(
             msgId: messageId,
             reaction: reaction || [],
             big: big,
+            addToRecent: addToRecent,
         })
     );
 }
@@ -1274,7 +1433,11 @@ export async function getReactionUsers(
     client: TelegramClient,
     entity: EntityLike,
     messageId: number,
-    params?: { reaction?: string; limit?: number; offset?: string }
+    params?: {
+        reaction?: string | Api.TypeReaction;
+        limit?: number;
+        offset?: string;
+    }
 ) {
     const { reaction, limit = 100, offset = "" } = params || {};
     return client.invoke(
@@ -1283,9 +1446,10 @@ export async function getReactionUsers(
             id: messageId,
             limit: limit,
             offset: offset,
-            reaction: reaction
-                ? new Api.ReactionEmoji({ emoticon: reaction })
-                : undefined,
+            reaction:
+                typeof reaction === "string"
+                    ? new Api.ReactionEmoji({ emoticon: reaction })
+                    : reaction,
         })
     );
 }

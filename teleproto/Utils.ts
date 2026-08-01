@@ -862,6 +862,11 @@ export interface GetInputMediaInterface {
     voiceNote?: boolean;
     videoNote?: boolean;
     supportsStreaming?: boolean;
+    spoiler?: boolean;
+    ttlSeconds?: number;
+    videoCover?: Api.TypeInputPhoto;
+    videoTimestamp?: number;
+    nosoundVideo?: boolean;
 }
 
 /**
@@ -888,6 +893,11 @@ export function getInputMedia(
         voiceNote = false,
         videoNote = false,
         supportsStreaming = false,
+        spoiler = undefined,
+        ttlSeconds = undefined,
+        videoCover = undefined,
+        videoTimestamp = undefined,
+        nosoundVideo = undefined,
     }: GetInputMediaInterface = {}
 ): Api.TypeInputMedia {
     if (media.SUBCLASS_OF_ID === undefined) {
@@ -900,11 +910,21 @@ export function getInputMedia(
     } else {
         if (media.SUBCLASS_OF_ID === unionId("InputPhoto")) {
 
-            return new Api.InputMediaPhoto({ id: media });
+            return new Api.InputMediaPhoto({
+                id: media,
+                spoiler: spoiler,
+                ttlSeconds: ttlSeconds,
+            });
         } else {
             if (media.SUBCLASS_OF_ID === unionId("InputDocument")) {
 
-                return new Api.InputMediaDocument({ id: media });
+                return new Api.InputMediaDocument({
+                    id: media,
+                    spoiler: spoiler,
+                    ttlSeconds: ttlSeconds,
+                    videoCover: videoCover,
+                    videoTimestamp: videoTimestamp,
+                });
             }
         }
     }
@@ -912,7 +932,8 @@ export function getInputMedia(
     if (media instanceof Api.MessageMediaPhoto) {
         return new Api.InputMediaPhoto({
             id: getInputPhoto(media.photo),
-            ttlSeconds: media.ttlSeconds,
+            spoiler: spoiler,
+            ttlSeconds: ttlSeconds ?? media.ttlSeconds,
         });
     }
     if (
@@ -920,20 +941,37 @@ export function getInputMedia(
         media instanceof Api.photos.Photo ||
         media instanceof Api.PhotoEmpty
     ) {
-        return new Api.InputMediaPhoto({ id: getInputPhoto(media) });
+        return new Api.InputMediaPhoto({
+            id: getInputPhoto(media),
+            spoiler: spoiler,
+            ttlSeconds: ttlSeconds,
+        });
     }
     if (media instanceof Api.MessageMediaDocument) {
         return new Api.InputMediaDocument({
             id: getInputDocument(media.document),
-            ttlSeconds: media.ttlSeconds,
+            spoiler: spoiler,
+            ttlSeconds: ttlSeconds ?? media.ttlSeconds,
+            videoCover: videoCover,
+            videoTimestamp: videoTimestamp,
         });
     }
     if (media instanceof Api.Document || media instanceof Api.DocumentEmpty) {
-        return new Api.InputMediaDocument({ id: getInputDocument(media) });
+        return new Api.InputMediaDocument({
+            id: getInputDocument(media),
+            spoiler: spoiler,
+            ttlSeconds: ttlSeconds,
+            videoCover: videoCover,
+            videoTimestamp: videoTimestamp,
+        });
     }
     if (media instanceof Api.InputFile || media instanceof Api.InputFileBig) {
         if (isPhoto) {
-            return new Api.InputMediaUploadedPhoto({ file: media });
+            return new Api.InputMediaUploadedPhoto({
+                file: media,
+                spoiler: spoiler,
+                ttlSeconds: ttlSeconds,
+            });
         } else {
             const { attrs, mimeType } = getAttributes(media, {
                 attributes: attributes,
@@ -947,6 +985,11 @@ export function getInputMedia(
                 mimeType: mimeType,
                 attributes: attrs,
                 forceFile: forceDocument,
+                spoiler: spoiler,
+                ttlSeconds: ttlSeconds,
+                videoCover: videoCover,
+                videoTimestamp: videoTimestamp,
+                nosoundVideo: nosoundVideo,
             });
         }
     }

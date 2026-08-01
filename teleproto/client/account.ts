@@ -163,3 +163,133 @@ export async function getUserPhotos(
             : result.photos.length;
     return photos;
 }
+
+// region sessions, privacy & settings
+
+/** @hidden */
+export async function getAuthorizations(
+    client: TelegramClient
+): Promise<Api.account.Authorizations> {
+    return client.api.account.getAuthorizations({});
+}
+
+/**
+ * Terminates a session from {@link getAuthorizations}. Pass no hash (or zero)
+ * to terminate ALL other sessions.
+ * @hidden
+ */
+export async function resetAuthorization(
+    client: TelegramClient,
+    hash?: BigInteger
+): Promise<boolean> {
+    if (hash == undefined || hash.isZero()) {
+        return client.api.auth.resetAuthorizations({});
+    }
+    return client.api.account.resetAuthorization({ hash: hash });
+}
+
+/** @hidden */
+export async function getPrivacy(
+    client: TelegramClient,
+    key: Api.TypeInputPrivacyKey
+): Promise<Api.account.PrivacyRules> {
+    return client.invoke(new Api.account.GetPrivacy({ key: key }));
+}
+
+/** @hidden */
+export async function setPrivacy(
+    client: TelegramClient,
+    key: Api.TypeInputPrivacyKey,
+    rules: Api.TypeInputPrivacyRule[]
+): Promise<Api.account.PrivacyRules> {
+    return client.invoke(new Api.account.SetPrivacy({ key: key, rules: rules }));
+}
+
+/** @hidden */
+export async function getNotifySettings(
+    client: TelegramClient,
+    entity: EntityLike | Api.TypeInputNotifyPeer
+): Promise<Api.TypePeerNotifySettings> {
+    return client.invoke(
+        new Api.account.GetNotifySettings({
+            peer: await client._getInputNotify(entity),
+        })
+    );
+}
+
+/** New notification settings for {@link updateNotifySettings}. Only the fields you set are changed. */
+export interface UpdateNotifySettingsParams {
+    /** Whether to show message previews in notifications. */
+    showPreviews?: boolean;
+    /** Whether to deliver notifications without sound. */
+    silent?: boolean;
+    /** Mute the peer until this Unix time. Use a far-future value (e.g. `2147483647`) to mute forever, `0` to unmute. */
+    muteUntil?: number;
+    /** Notification sound. */
+    sound?: Api.TypeNotificationSound;
+    /** Mute stories from this peer. */
+    storiesMuted?: boolean;
+    /** Hide the sender name on story notifications. */
+    storiesHideSender?: boolean;
+    /** Notification sound for stories. */
+    storiesSound?: Api.TypeNotificationSound;
+}
+
+/** @hidden */
+export async function updateNotifySettings(
+    client: TelegramClient,
+    entity: EntityLike | Api.TypeInputNotifyPeer,
+    params: UpdateNotifySettingsParams
+): Promise<boolean> {
+    return client.invoke(
+        new Api.account.UpdateNotifySettings({
+            peer: await client._getInputNotify(entity),
+            settings: new Api.InputPeerNotifySettings({
+                showPreviews: params.showPreviews,
+                silent: params.silent,
+                muteUntil: params.muteUntil,
+                sound: params.sound,
+                storiesMuted: params.storiesMuted,
+                storiesHideSender: params.storiesHideSender,
+                storiesSound: params.storiesSound,
+            }),
+        })
+    );
+}
+
+/** @hidden */
+export async function getAccountTTL(client: TelegramClient): Promise<number> {
+    const result = await client.api.account.getAccountTTL({});
+    return result.days;
+}
+
+/** @hidden */
+export async function setAccountTTL(
+    client: TelegramClient,
+    days: number
+): Promise<boolean> {
+    return client.invoke(
+        new Api.account.SetAccountTTL({
+            ttl: new Api.AccountDaysTTL({ days: days }),
+        })
+    );
+}
+
+/** @hidden */
+export async function getGlobalPrivacySettings(
+    client: TelegramClient
+): Promise<Api.TypeGlobalPrivacySettings> {
+    return client.api.account.getGlobalPrivacySettings({});
+}
+
+/** @hidden */
+export async function setGlobalPrivacySettings(
+    client: TelegramClient,
+    settings: Api.TypeGlobalPrivacySettings
+): Promise<Api.TypeGlobalPrivacySettings> {
+    return client.invoke(
+        new Api.account.SetGlobalPrivacySettings({ settings: settings })
+    );
+}
+
+// endregion

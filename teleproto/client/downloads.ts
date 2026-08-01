@@ -727,3 +727,85 @@ export async function downloadProfilePhoto(
         requestTimeout: fileParams.requestTimeout,
     });
 }
+
+/** Parameters for {@link iterDownload}. */
+export interface IterDownloadParams extends DownloadCancelParams {
+    /** Byte offset to start downloading from. Must be divisible by 4096 unless `precise` handles it (it does by default). */
+    offset?: bigInt.BigInteger | number;
+    /** Stop after this many bytes (approximate — rounded up to whole chunks). */
+    limit?: number;
+    /** Size of each downloaded chunk in bytes. Must be divisible by 4096; server caps at 1 MB. Defaults to 512 KB. */
+    requestSize?: number;
+    /** The DC to download from. Auto-corrected on FILE_MIGRATE. */
+    dcId?: number;
+}
+
+/**
+ * Iterates over a file's contents chunk by chunk — streaming download
+ * without buffering the whole file in memory.
+ * @hidden
+ */
+export async function* iterDownload(
+    client: TelegramClient,
+    file:
+        | Api.Message
+        | Api.MessageMediaDocument
+        | Api.MessageMediaPhoto
+        | Api.TypeInputFileLocation,
+    params: IterDownloadParams = {}
+): AsyncGenerator<Buffer, void, unknown> {
+    const info = utils.getFileInfo(file);
+    const requestSize = params.requestSize ?? 512 * 1024;
+    if (requestSize % 4096 !== 0) {
+        throw new Error("requestSize must be divisible by 4096");
+    }
+    let dcId = params.dcId ?? info.dcId;
+    let offset =
+        typeof params.offset === "number"
+            ? bigInt(params.offset)
+            : params.offset ?? bigInt.zero;
+    let downloaded = 0;
+    for (;;) {
+        if (params.signal?.aborted) {
+            throw new MediaAbortError();
+        }
+        let result;
+        try {
+            result = await client.invoke(
+                new Api.upload.GetFile({
+                    location: info.location,
+                    offset: offset,
+                    limit: requestSize,
+                    precise: true,
+                }),
+                dcId
+            );
+        } catch (e: any) {
+            if (
+                typeof e?.errorMessage === "string" &&
+                e.errorMessage.startsWith("FILE_MIGRATE") &&
+                typeof e.newDc === "number"
+            ) {
+                dcId = e.newDc;
+                continue;
+            }
+            throw e;
+        }
+        if (result instanceof Api.upload.FileCdnRedirect) {
+            throw new Error(
+                "CDN redirects are not supported by iterDownload; use downloadFile instead"
+            );
+        }
+        if (result.bytes.length) {
+            yield result.bytes;
+            downloaded += result.bytes.length;
+            offset = offset.add(result.bytes.length);
+        }
+        if (result.bytes.length < requestSize) {
+            return;
+        }
+        if (params.limit != undefined && downloaded >= params.limit) {
+            return;
+        }
+    }
+}

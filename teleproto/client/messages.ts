@@ -1966,6 +1966,103 @@ export async function getMessageByLink(
     return (await getMessages(client, peer, { ids: parsed.msgId }))[0];
 }
 
+/** Parameters for {@link translateText}: either messages of a chat, or raw text. */
+export interface TranslateTextParams {
+    /** Target language: a two-letter ISO 639-1 code (e.g. `"en"`, `"ru"`). */
+    toLang: string;
+    /** AI translation tone (Premium). */
+    tone?: string;
+    /** The chat with the messages to translate. Requires `ids`. */
+    entity?: EntityLike;
+    /** ID(s) of the messages to translate. Requires `entity`. */
+    ids?: number | number[];
+    /** Raw text(s) to translate instead of messages. */
+    text?: string | string[];
+}
+
+/** @hidden */
+export async function translateText(
+    client: TelegramClient,
+    params: TranslateTextParams
+): Promise<Api.messages.TypeTranslatedText> {
+    const { toLang, tone, entity, ids, text } = params;
+    if ((entity == undefined) !== (ids == undefined)) {
+        throw new Error("translateText: entity and ids must be used together");
+    }
+    if ((entity == undefined) === (text == undefined)) {
+        throw new Error(
+            "translateText: provide either entity+ids or text, not both"
+        );
+    }
+    return client.invoke(
+        new Api.messages.TranslateText({
+            toLang: toLang,
+            tone: tone,
+            peer: entity ? await client.getInputEntity(entity) : undefined,
+            id: ids == undefined ? undefined : Array.isArray(ids) ? ids : [ids],
+            text:
+                text == undefined
+                    ? undefined
+                    : (Array.isArray(text) ? text : [text]).map(
+                          (t) =>
+                              new Api.TextWithEntities({
+                                  text: t,
+                                  entities: [],
+                              })
+                      ),
+        })
+    );
+}
+
+/** @hidden */
+export async function getMessagesViews(
+    client: TelegramClient,
+    entity: EntityLike,
+    ids: number | number[],
+    increment: boolean = false
+): Promise<Api.messages.MessageViews> {
+    const peer = await client.getInputEntity(entity);
+    return client.api.messages.getMessagesViews({
+        peer: peer,
+        id: Array.isArray(ids) ? ids : [ids],
+        increment: increment,
+    });
+}
+
+/** @hidden */
+export async function getOutboxReadDate(
+    client: TelegramClient,
+    entity: EntityLike,
+    message: MessageIDLike
+): Promise<Api.TypeOutboxReadDate> {
+    const peer = await client.getInputEntity(entity);
+    const msgId = utils.getMessageId(message);
+    if (msgId == undefined) {
+        throw new Error(`Cannot convert ${message} to a message ID`);
+    }
+    return client.api.messages.getOutboxReadDate({
+        peer: peer,
+        msgId: msgId,
+    });
+}
+
+/** @hidden */
+export async function getMessageReadParticipants(
+    client: TelegramClient,
+    entity: EntityLike,
+    message: MessageIDLike
+): Promise<Api.TypeReadParticipantDate[]> {
+    const peer = await client.getInputEntity(entity);
+    const msgId = utils.getMessageId(message);
+    if (msgId == undefined) {
+        throw new Error(`Cannot convert ${message} to a message ID`);
+    }
+    return client.api.messages.getMessageReadParticipants({
+        peer: peer,
+        msgId: msgId,
+    });
+}
+
 /** @hidden */
 export async function getDiscussionMessage(
     client: TelegramClient,

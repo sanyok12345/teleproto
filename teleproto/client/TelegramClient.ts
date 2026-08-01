@@ -23,6 +23,11 @@ import * as accountMethods from "./account";
 import * as contactMethods from "./contacts";
 import * as dialogMethods from "./dialogs";
 import * as twoFA from "./2fa";
+import * as forumMethods from "./forums";
+import * as storyMethods from "./stories";
+import * as folderMethods from "./folders";
+import * as stickerMethods from "./stickers";
+import type { BigInteger } from "big-integer";
 import type {
     ButtonLike,
     Entity,
@@ -2037,6 +2042,500 @@ export class TelegramClient<
      */
     getBlocked(params?: contactMethods.GetBlockedParams) {
         return contactMethods.getBlocked(this, params);
+    }
+
+    /**
+     * Terminates other authorized sessions. Pass a session hash from
+     * {@link getAuthorizations} to terminate one, or nothing to terminate
+     * ALL other sessions (`account.resetAuthorization` / `auth.resetAuthorizations`).
+     */
+    resetAuthorization(hash?: BigInteger) {
+        return accountMethods.resetAuthorization(this, hash);
+    }
+
+    /** Gets the list of your authorized sessions (`account.getAuthorizations`). */
+    getAuthorizations() {
+        return accountMethods.getAuthorizations(this);
+    }
+
+    /**
+     * Gets the privacy rules of a privacy key (`account.getPrivacy`).
+     *
+     * @param key - e.g. `new Api.InputPrivacyKeyStatusTimestamp()`.
+     */
+    getPrivacy(key: Api.TypeInputPrivacyKey) {
+        return accountMethods.getPrivacy(this, key);
+    }
+
+    /**
+     * Changes the privacy rules of a privacy key (`account.setPrivacy`).
+     *
+     * @param key - e.g. `new Api.InputPrivacyKeyStatusTimestamp()`.
+     * @param rules - e.g. `[new Api.InputPrivacyValueAllowContacts()]`.
+     */
+    setPrivacy(
+        key: Api.TypeInputPrivacyKey,
+        rules: Api.TypeInputPrivacyRule[]
+    ) {
+        return accountMethods.setPrivacy(this, key, rules);
+    }
+
+    /** Gets the notification settings of a peer (`account.getNotifySettings`). */
+    getNotifySettings(entity: EntityLike | Api.TypeInputNotifyPeer) {
+        return accountMethods.getNotifySettings(this, entity);
+    }
+
+    /**
+     * Changes the notification settings of a peer — mute/unmute, sounds,
+     * previews (`account.updateNotifySettings`).
+     *
+     * @example
+     * ```ts
+     * await client.updateNotifySettings(chat, { muteUntil: 2147483647 }); // mute forever
+     * ```
+     */
+    updateNotifySettings(
+        entity: EntityLike | Api.TypeInputNotifyPeer,
+        params: accountMethods.UpdateNotifySettingsParams
+    ) {
+        return accountMethods.updateNotifySettings(this, entity, params);
+    }
+
+    /** Gets the account self-destruction period, in days (`account.getAccountTTL`). */
+    getAccountTTL() {
+        return accountMethods.getAccountTTL(this);
+    }
+
+    /** Sets the account self-destruction period, in days (`account.setAccountTTL`). */
+    setAccountTTL(days: number) {
+        return accountMethods.setAccountTTL(this, days);
+    }
+
+    /** Gets global privacy settings (`account.getGlobalPrivacySettings`). */
+    getGlobalPrivacySettings() {
+        return accountMethods.getGlobalPrivacySettings(this);
+    }
+
+    /** Sets global privacy settings (`account.setGlobalPrivacySettings`). */
+    setGlobalPrivacySettings(settings: Api.TypeGlobalPrivacySettings) {
+        return accountMethods.setGlobalPrivacySettings(this, settings);
+    }
+
+    //endregion
+    //region forums
+
+    /**
+     * Creates a topic in a forum (`messages.createForumTopic`).
+     *
+     * @param entity - The forum.
+     * @param params - see {@link CreateForumTopicParams}.
+     */
+    createForumTopic(
+        entity: EntityLike,
+        params: forumMethods.CreateForumTopicParams
+    ) {
+        return forumMethods.createForumTopic(this, entity, params);
+    }
+
+    /**
+     * Edits a forum topic: title, icon, closed/hidden state
+     * (`messages.editForumTopic`).
+     *
+     * @param entity - The forum.
+     * @param topicId - The topic ID (its top message ID).
+     * @param params - see {@link EditForumTopicParams}.
+     * @example
+     * ```ts
+     * await client.editForumTopic(forum, 123, { closed: true });
+     * ```
+     */
+    editForumTopic(
+        entity: EntityLike,
+        topicId: number,
+        params: forumMethods.EditForumTopicParams
+    ) {
+        return forumMethods.editForumTopic(this, entity, topicId, params);
+    }
+
+    /** Pins or unpins a forum topic (`messages.updatePinnedForumTopic`). */
+    updatePinnedForumTopic(
+        entity: EntityLike,
+        topicId: number,
+        pinned: boolean
+    ) {
+        return forumMethods.updatePinnedForumTopic(
+            this,
+            entity,
+            topicId,
+            pinned
+        );
+    }
+
+    /** Reorders the pinned forum topics (`messages.reorderPinnedForumTopics`). */
+    reorderPinnedForumTopics(
+        entity: EntityLike,
+        order: number[],
+        params?: { force?: boolean }
+    ) {
+        return forumMethods.reorderPinnedForumTopics(
+            this,
+            entity,
+            order,
+            params
+        );
+    }
+
+    /**
+     * Gets the topics of a forum, with their last messages
+     * (`messages.getForumTopics`).
+     *
+     * @param entity - The forum.
+     * @param params - see {@link GetForumTopicsParams}.
+     */
+    getForumTopics(
+        entity: EntityLike,
+        params?: forumMethods.GetForumTopicsParams
+    ) {
+        return forumMethods.getForumTopics(this, entity, params);
+    }
+
+    /** Gets specific forum topics by their IDs (`messages.getForumTopicsByID`). */
+    getForumTopicsByID(entity: EntityLike, topicIds: number | number[]) {
+        return forumMethods.getForumTopicsByID(this, entity, topicIds);
+    }
+
+    /** Enables or disables forum topics in a supergroup (`channels.toggleForum`). */
+    toggleForum(entity: EntityLike, enabled: boolean, tabs?: boolean) {
+        return forumMethods.toggleForum(this, entity, enabled, tabs);
+    }
+
+    /** Toggles viewing a forum as a regular chat (`channels.toggleViewForumAsMessages`). */
+    toggleViewForumAsMessages(entity: EntityLike, enabled: boolean) {
+        return forumMethods.toggleViewForumAsMessages(this, entity, enabled);
+    }
+
+    //endregion
+    //region stories
+
+    /**
+     * Posts a story (`stories.sendStory`).
+     *
+     * @param entity - Where to post: `"me"` or a channel you manage.
+     * @param params - see {@link SendStoryParams}.
+     * @example
+     * ```ts
+     * await client.sendStory("me", { media: "photo.jpg", caption: "hello" });
+     * ```
+     */
+    sendStory(entity: EntityLike, params: storyMethods.SendStoryParams) {
+        return storyMethods.sendStory(this, entity, params);
+    }
+
+    /** Edits a posted story (`stories.editStory`). */
+    editStory(
+        entity: EntityLike,
+        storyId: number,
+        params: storyMethods.EditStoryParams
+    ) {
+        return storyMethods.editStory(this, entity, storyId, params);
+    }
+
+    /** Deletes stories (`stories.deleteStories`). Returns the IDs that were actually deleted. */
+    deleteStories(entity: EntityLike, ids: number | number[]) {
+        return storyMethods.deleteStories(this, entity, ids);
+    }
+
+    /** Pins stories to the profile after expiration, or unpins them (`stories.togglePinned`). */
+    toggleStoriesPinned(
+        entity: EntityLike,
+        ids: number | number[],
+        pinned?: boolean
+    ) {
+        return storyMethods.toggleStoriesPinned(this, entity, ids, pinned);
+    }
+
+    /** Checks whether you can post a story and how many slots remain (`stories.canSendStory`). */
+    canSendStory(entity: EntityLike) {
+        return storyMethods.canSendStory(this, entity);
+    }
+
+    /** Gets the active stories of all your peers (`stories.getAllStories`). */
+    getAllStories(params?: storyMethods.GetAllStoriesParams) {
+        return storyMethods.getAllStories(this, params);
+    }
+
+    /** Gets the active stories of a specific peer (`stories.getPeerStories`). */
+    getPeerStories(entity: EntityLike) {
+        return storyMethods.getPeerStories(this, entity);
+    }
+
+    /** Gets stories by their IDs (`stories.getStoriesByID`). */
+    getStoriesByID(entity: EntityLike, ids: number | number[]) {
+        return storyMethods.getStoriesByID(this, entity, ids);
+    }
+
+    /** Gets the stories pinned on a peer's profile (`stories.getPinnedStories`). */
+    getPinnedStories(
+        entity: EntityLike,
+        params?: storyMethods.GetStoriesPageParams
+    ) {
+        return storyMethods.getPinnedStories(this, entity, params);
+    }
+
+    /** Gets your story archive (`stories.getStoriesArchive`). */
+    getStoriesArchive(
+        entity: EntityLike,
+        params?: storyMethods.GetStoriesPageParams
+    ) {
+        return storyMethods.getStoriesArchive(this, entity, params);
+    }
+
+    /** Marks a peer's stories as read up to `maxId` (`stories.readStories`). */
+    readStories(entity: EntityLike, maxId?: number) {
+        return storyMethods.readStories(this, entity, maxId);
+    }
+
+    /** Increments the view counter of stories (`stories.incrementStoryViews`). */
+    incrementStoryViews(entity: EntityLike, ids: number | number[]) {
+        return storyMethods.incrementStoryViews(this, entity, ids);
+    }
+
+    /** Gets the viewers of one of your stories (`stories.getStoryViewsList`). */
+    getStoryViewsList(
+        entity: EntityLike,
+        storyId: number,
+        params?: storyMethods.GetStoryViewsListParams
+    ) {
+        return storyMethods.getStoryViewsList(this, entity, storyId, params);
+    }
+
+    /** Exports a t.me link to a story (`stories.exportStoryLink`). */
+    exportStoryLink(entity: EntityLike, storyId: number) {
+        return storyMethods.exportStoryLink(this, entity, storyId);
+    }
+
+    /**
+     * Reacts to a story (`stories.sendReaction`).
+     *
+     * @param reaction - An emoji string, a custom emoji document ID, or a raw {@link Api.TypeReaction}. Omit to remove the reaction.
+     */
+    sendStoryReaction(
+        entity: EntityLike,
+        storyId: number,
+        reaction?: string | BigInteger | Api.TypeReaction,
+        params?: { addToRecent?: boolean }
+    ) {
+        return storyMethods.sendStoryReaction(
+            this,
+            entity,
+            storyId,
+            reaction,
+            params
+        );
+    }
+
+    //endregion
+    //region folders & stickers
+
+    /** Gets your chat folders (`messages.getDialogFilters`). */
+    getDialogFilters() {
+        return folderMethods.getDialogFilters(this);
+    }
+
+    /**
+     * Creates, updates or deletes a chat folder
+     * (`messages.updateDialogFilter`).
+     *
+     * @param id - The folder ID (2-255).
+     * @param filter - The new folder definition, or omit to delete the folder.
+     */
+    updateDialogFilter(id: number, filter?: Api.TypeDialogFilter) {
+        return folderMethods.updateDialogFilter(this, id, filter);
+    }
+
+    /** Reorders your chat folders (`messages.updateDialogFiltersOrder`). */
+    updateDialogFiltersOrder(order: number[]) {
+        return folderMethods.updateDialogFiltersOrder(this, order);
+    }
+
+    /**
+     * Gets a sticker set with all its stickers (`messages.getStickerSet`).
+     *
+     * @param set - The set's short name (from its t.me/addstickers link) or a raw {@link Api.TypeInputStickerSet}.
+     */
+    getStickerSet(set: stickerMethods.InputStickerSetLike) {
+        return stickerMethods.getStickerSet(this, set);
+    }
+
+    /** Gets all your installed sticker sets (`messages.getAllStickers`). */
+    getAllStickers() {
+        return stickerMethods.getAllStickers(this);
+    }
+
+    /** Installs a sticker set (`messages.installStickerSet`). */
+    installStickerSet(
+        set: stickerMethods.InputStickerSetLike,
+        params?: { archived?: boolean }
+    ) {
+        return stickerMethods.installStickerSet(this, set, params);
+    }
+
+    /** Uninstalls a sticker set (`messages.uninstallStickerSet`). */
+    uninstallStickerSet(set: stickerMethods.InputStickerSetLike) {
+        return stickerMethods.uninstallStickerSet(this, set);
+    }
+
+    /** Gets your recently used stickers (`messages.getRecentStickers`). */
+    getRecentStickers(params?: { attached?: boolean }) {
+        return stickerMethods.getRecentStickers(this, params);
+    }
+
+    /** Adds or removes a sticker from your recent stickers (`messages.saveRecentSticker`). */
+    saveRecentSticker(
+        document: Api.TypeInputDocument | Api.Document,
+        params?: { unsave?: boolean; attached?: boolean }
+    ) {
+        return stickerMethods.saveRecentSticker(this, document, params);
+    }
+
+    /** Clears your recent stickers (`messages.clearRecentStickers`). */
+    clearRecentStickers(params?: { attached?: boolean }) {
+        return stickerMethods.clearRecentStickers(this, params);
+    }
+
+    /** Gets your favorite stickers (`messages.getFavedStickers`). */
+    getFavedStickers() {
+        return stickerMethods.getFavedStickers(this);
+    }
+
+    /** Adds or removes a sticker from your favorites (`messages.faveSticker`). */
+    faveSticker(
+        document: Api.TypeInputDocument | Api.Document,
+        params?: { unfave?: boolean }
+    ) {
+        return stickerMethods.faveSticker(this, document, params);
+    }
+
+    /** Gets custom emoji documents by their IDs (`messages.getCustomEmojiDocuments`). */
+    getCustomEmojiDocuments(documentIds: BigInteger[]) {
+        return stickerMethods.getCustomEmojiDocuments(this, documentIds);
+    }
+
+    //endregion
+    //region bot configuration
+
+    /**
+     * Bots only: sets the bot's command list (`bots.setBotCommands`).
+     *
+     * @param commands - see {@link BotCommandEntry}.
+     * @param params - Scope and language, see {@link BotCommandScopeParams}.
+     * @example
+     * ```ts
+     * await client.setBotCommands([{ command: "start", description: "Start the bot" }]);
+     * ```
+     */
+    setBotCommands(
+        commands: botMethods.BotCommandEntry[],
+        params?: botMethods.BotCommandScopeParams
+    ) {
+        return botMethods.setBotCommands(this, commands, params);
+    }
+
+    /** Bots only: gets the bot's command list (`bots.getBotCommands`). */
+    getBotCommands(params?: botMethods.BotCommandScopeParams) {
+        return botMethods.getBotCommands(this, params);
+    }
+
+    /** Bots only: clears the bot's command list (`bots.resetBotCommands`). */
+    resetBotCommands(params?: botMethods.BotCommandScopeParams) {
+        return botMethods.resetBotCommands(this, params);
+    }
+
+    /** Sets the name/about/description of a bot you own (`bots.setBotInfo`). */
+    setBotInfo(params: botMethods.SetBotInfoParams) {
+        return botMethods.setBotInfo(this, params);
+    }
+
+    /** Gets the name/about/description of a bot (`bots.getBotInfo`). */
+    getBotInfo(params?: { bot?: EntityLike; langCode?: string }) {
+        return botMethods.getBotInfo(this, params);
+    }
+
+    /** Bots only: sets the menu button of a user's chat with the bot (`bots.setBotMenuButton`). */
+    setBotMenuButton(user: EntityLike, button: Api.TypeBotMenuButton) {
+        return botMethods.setBotMenuButton(this, user, button);
+    }
+
+    /** Bots only: gets the menu button of a user's chat with the bot (`bots.getBotMenuButton`). */
+    getBotMenuButton(user: EntityLike) {
+        return botMethods.getBotMenuButton(this, user);
+    }
+
+    //endregion
+    //region message insights
+
+    /**
+     * Translates messages or raw text (`messages.translateText`).
+     *
+     * @param params - see {@link TranslateTextParams}.
+     * @example
+     * ```ts
+     * const t = await client.translateText({ entity: chat, ids: 123, toLang: "en" });
+     * const t2 = await client.translateText({ text: "привет", toLang: "en" });
+     * ```
+     */
+    translateText(params: messageMethods.TranslateTextParams) {
+        return messageMethods.translateText(this, params);
+    }
+
+    /**
+     * Gets (and optionally increments) the view/forward counters of channel
+     * posts (`messages.getMessagesViews`).
+     */
+    getMessagesViews(
+        entity: EntityLike,
+        ids: number | number[],
+        increment?: boolean
+    ) {
+        return messageMethods.getMessagesViews(this, entity, ids, increment);
+    }
+
+    /** Gets when your message was read in a private chat (`messages.getOutboxReadDate`). */
+    getOutboxReadDate(entity: EntityLike, message: MessageIDLike) {
+        return messageMethods.getOutboxReadDate(this, entity, message);
+    }
+
+    /** Gets who read your message in a small group, with dates (`messages.getMessageReadParticipants`). */
+    getMessageReadParticipants(entity: EntityLike, message: MessageIDLike) {
+        return messageMethods.getMessageReadParticipants(
+            this,
+            entity,
+            message
+        );
+    }
+
+    /**
+     * Iterates over a file's contents chunk by chunk — streaming download
+     * without buffering the whole file in memory (`upload.getFile`).
+     *
+     * @param file - A message with media, the media itself, or a raw {@link Api.TypeInputFileLocation}.
+     * @param params - see {@link IterDownloadParams}.
+     * @example
+     * ```ts
+     * for await (const chunk of client.iterDownload(message)) {
+     *     stream.write(chunk);
+     * }
+     * ```
+     */
+    iterDownload(
+        file:
+            | Api.Message
+            | Api.MessageMediaDocument
+            | Api.MessageMediaPhoto
+            | Api.TypeInputFileLocation,
+        params?: downloadMethods.IterDownloadParams
+    ) {
+        return downloadMethods.iterDownload(this, file, params);
     }
 
     //endregion

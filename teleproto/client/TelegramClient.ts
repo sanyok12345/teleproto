@@ -1125,6 +1125,169 @@ export class TelegramClient<
         );
     }
 
+    /**
+     * Sends a poll or quiz to the given chat.
+     *
+     * @param entity - The chat where the poll should be sent.
+     * @param poll - The poll definition, see {@link SendPollParams}.
+     * @param params - Common send options (silent, schedule, replyTo, etc).
+     * @example
+     * ```ts
+     * await client.sendPoll(chat, {
+     *     question: "Best transport?",
+     *     answers: ["TCP full", "Abridged", "Obfuscated"],
+     * });
+     * await client.sendPoll(chat, {
+     *     question: "2 + 2 = ?",
+     *     answers: ["3", "4"],
+     *     quiz: true,
+     *     correctAnswers: 1,
+     *     solution: "Basic arithmetic!",
+     * });
+     * ```
+     */
+    sendPoll(
+        entity: EntityLike,
+        poll: messageMethods.SendPollParams,
+        params?: Omit<uploadMethods.SendFileInterface, "file" | "caption">
+    ) {
+        return messageMethods.sendPoll(this, entity, poll, params);
+    }
+
+    /**
+     * Votes in a poll.
+     *
+     * @param entity - The chat where the poll message is.
+     * @param message - The poll message or its ID.
+     * @param options - Answer index(es) (0-based), or raw option bytes.
+     * @example
+     * ```ts
+     * await client.vote(chat, 123, 0);
+     * await client.vote(chat, 123, [0, 2]); // multiple-choice poll
+     * ```
+     */
+    vote(
+        entity: EntityLike,
+        message: MessageIDLike,
+        options: number | number[] | Buffer | Buffer[]
+    ) {
+        return messageMethods.vote(this, entity, message, options);
+    }
+
+    /**
+     * Closes a poll you sent, preventing further votes.
+     *
+     * @param entity - The chat where the poll message is.
+     * @param message - The poll message or its ID.
+     */
+    closePoll(entity: EntityLike, message: MessageIDLike) {
+        return messageMethods.closePoll(this, entity, message);
+    }
+
+    /**
+     * Gets scheduled messages of a chat.
+     *
+     * @param entity - The chat whose scheduled messages should be fetched.
+     * @param ids - Specific scheduled message ID(s). Omit to fetch all.
+     */
+    getScheduledMessages(entity: EntityLike, ids?: number | number[]) {
+        return messageMethods.getScheduledMessages(this, entity, ids);
+    }
+
+    /**
+     * Sends scheduled messages immediately, without waiting for their date.
+     *
+     * @param entity - The chat where the scheduled messages are.
+     * @param ids - The scheduled message ID(s) to send now.
+     * @returns The sent messages.
+     */
+    sendScheduledMessages(entity: EntityLike, ids: number | number[]) {
+        return messageMethods.sendScheduledMessages(this, entity, ids);
+    }
+
+    /**
+     * Deletes scheduled messages before they are sent.
+     *
+     * @param entity - The chat where the scheduled messages are.
+     * @param ids - The scheduled message ID(s) to delete.
+     */
+    deleteScheduledMessages(entity: EntityLike, ids: number | number[]) {
+        return messageMethods.deleteScheduledMessages(this, entity, ids);
+    }
+
+    /**
+     * Copies messages to another chat without the "forwarded from" header.
+     * Same as {@link forwardMessages} with `dropAuthor` always set.
+     *
+     * @param entity - The chat the messages should be copied to.
+     * @param copyMessagesParams - see {@link ForwardMessagesParams}.
+     */
+    copyMessages(
+        entity: EntityLike,
+        copyMessagesParams: Omit<
+            messageMethods.ForwardMessagesParams,
+            "dropAuthor"
+        >
+    ) {
+        return messageMethods.copyMessages(this, entity, copyMessagesParams);
+    }
+
+    /**
+     * Saves a message draft in the given chat.
+     *
+     * @param entity - The chat where the draft should be saved.
+     * @param params - see {@link SaveDraftParams}. Empty params clear the draft.
+     * @example
+     * ```ts
+     * await client.saveDraft(chat, { message: "answer this tomorrow", replyTo: 123 });
+     * ```
+     */
+    saveDraft(entity: EntityLike, params?: messageMethods.SaveDraftParams) {
+        return messageMethods.saveDraft(this, entity, params);
+    }
+
+    /**
+     * Clears the message draft in the given chat.
+     *
+     * @param entity - The chat whose draft should be cleared.
+     */
+    clearDraft(entity: EntityLike) {
+        return messageMethods.clearDraft(this, entity);
+    }
+
+    /** Clears all message drafts in all chats. */
+    clearAllDrafts() {
+        return messageMethods.clearAllDrafts(this);
+    }
+
+    /**
+     * Fetches a message by its t.me link.
+     *
+     * Supports public (`t.me/username/123`), private (`t.me/c/123456/123`),
+     * forum-topic and `?comment=` discussion links, plus `tg://` deep links.
+     *
+     * @param link - The message link.
+     * @returns The message, or `undefined` if it does not exist.
+     * @example
+     * ```ts
+     * const message = await client.getMessageByLink("https://t.me/durov/123");
+     * ```
+     */
+    getMessageByLink(link: string) {
+        return messageMethods.getMessageByLink(this, link);
+    }
+
+    /**
+     * Gets the discussion-group counterpart of a channel post — the message
+     * you reply to when leaving a comment under the post.
+     *
+     * @param entity - The broadcast channel where the post is.
+     * @param message - The channel post or its ID.
+     */
+    getDiscussionMessage(entity: EntityLike, message: MessageIDLike) {
+        return messageMethods.getDiscussionMessage(this, entity, message);
+    }
+
     //endregion
     //region dialogs
 

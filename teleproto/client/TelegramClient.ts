@@ -18,6 +18,7 @@ import * as updateMethods from "./updates";
 import * as uploadMethods from "./uploads";
 import * as userMethods from "./users";
 import * as chatMethods from "./chats";
+import * as inviteLinkMethods from "./inviteLinks";
 import * as dialogMethods from "./dialogs";
 import * as twoFA from "./2fa";
 import type {
@@ -1644,6 +1645,206 @@ export class TelegramClient<
      */
     getAdminLog(entity: EntityLike, params?: chatMethods.AdminLogParams) {
         return chatMethods.getAdminLog(this, entity, params);
+    }
+
+    //endregion
+    //region invite links
+
+    /**
+     * Creates a new invite link for a chat (`messages.exportChatInvite`).
+     *
+     * @param entity - The chat.
+     * @param params - see {@link ExportChatInviteParams}.
+     * @example
+     * ```ts
+     * const invite = await client.exportChatInvite(chat, { usageLimit: 10, requestNeeded: true });
+     * if (invite instanceof Api.ChatInviteExported) console.log(invite.link);
+     * ```
+     */
+    exportChatInvite(
+        entity: EntityLike,
+        params?: inviteLinkMethods.ExportChatInviteParams
+    ) {
+        return inviteLinkMethods.exportChatInvite(this, entity, params);
+    }
+
+    /**
+     * Edits or revokes an invite link (`messages.editExportedChatInvite`).
+     *
+     * @param entity - The chat the link belongs to.
+     * @param link - The invite link to edit.
+     * @param params - see {@link EditExportedChatInviteParams}. Pass `{ revoked: true }` to revoke.
+     */
+    editExportedChatInvite(
+        entity: EntityLike,
+        link: string,
+        params: inviteLinkMethods.EditExportedChatInviteParams
+    ) {
+        return inviteLinkMethods.editExportedChatInvite(
+            this,
+            entity,
+            link,
+            params
+        );
+    }
+
+    /**
+     * Gets info about a specific invite link, including its usage counters
+     * (`messages.getExportedChatInvite`).
+     *
+     * @param entity - The chat the link belongs to.
+     * @param link - The invite link.
+     */
+    getExportedChatInvite(entity: EntityLike, link: string) {
+        return inviteLinkMethods.getExportedChatInvite(this, entity, link);
+    }
+
+    /**
+     * Deletes a previously revoked invite link
+     * (`messages.deleteExportedChatInvite`).
+     *
+     * @param entity - The chat the link belongs to.
+     * @param link - The revoked invite link to delete.
+     */
+    deleteExportedChatInvite(entity: EntityLike, link: string) {
+        return inviteLinkMethods.deleteExportedChatInvite(this, entity, link);
+    }
+
+    /**
+     * Deletes all revoked invite links of an admin
+     * (`messages.deleteRevokedExportedChatInvites`).
+     *
+     * @param entity - The chat.
+     * @param admin - The admin whose revoked links should be deleted. Defaults to yourself.
+     */
+    deleteRevokedExportedChatInvites(entity: EntityLike, admin?: EntityLike) {
+        return inviteLinkMethods.deleteRevokedExportedChatInvites(
+            this,
+            entity,
+            admin
+        );
+    }
+
+    /**
+     * Gets the list of admins that have created invite links for a chat,
+     * with their link counts (`messages.getAdminsWithInvites`).
+     *
+     * @param entity - The chat.
+     */
+    getAdminsWithInvites(entity: EntityLike) {
+        return inviteLinkMethods.getAdminsWithInvites(this, entity);
+    }
+
+    /**
+     * Iterates over the invite links of a chat
+     * (`messages.getExportedChatInvites`).
+     *
+     * @param entity - The chat.
+     * @param params - see {@link ExportedChatInvitesParams}.
+     * @yield instances of {@link Api.TypeExportedChatInvite}.
+     */
+    iterExportedChatInvites(
+        entity: EntityLike,
+        params?: inviteLinkMethods.ExportedChatInvitesParams
+    ) {
+        return inviteLinkMethods.iterExportedChatInvites(this, entity, params);
+    }
+
+    /**
+     * Gets the invite links of a chat. Same as {@link iterExportedChatInvites},
+     * but returns a collected array.
+     *
+     * @param entity - The chat.
+     * @param params - see {@link ExportedChatInvitesParams}.
+     */
+    getExportedChatInvites(
+        entity: EntityLike,
+        params?: inviteLinkMethods.ExportedChatInvitesParams
+    ) {
+        return inviteLinkMethods.getExportedChatInvites(this, entity, params);
+    }
+
+    /**
+     * Iterates over the users that joined a chat via invite links, or over
+     * pending join requests with `requested: true`
+     * (`messages.getChatInviteImporters`).
+     *
+     * @param entity - The chat.
+     * @param params - see {@link ChatInviteImportersParams}.
+     * @yield instances of {@link Api.ChatInviteImporter}.
+     * @example
+     * ```ts
+     * for await (const request of client.iterChatInviteImporters(chat, { requested: true })) {
+     *     await client.hideChatJoinRequest(chat, request.userId, { approved: true });
+     * }
+     * ```
+     */
+    iterChatInviteImporters(
+        entity: EntityLike,
+        params?: inviteLinkMethods.ChatInviteImportersParams
+    ) {
+        return inviteLinkMethods.iterChatInviteImporters(this, entity, params);
+    }
+
+    /**
+     * Gets the users that joined a chat via invite links, or pending join
+     * requests with `requested: true`. Same as {@link iterChatInviteImporters},
+     * but returns a collected array.
+     *
+     * @param entity - The chat.
+     * @param params - see {@link ChatInviteImportersParams}.
+     */
+    getChatInviteImporters(
+        entity: EntityLike,
+        params?: inviteLinkMethods.ChatInviteImportersParams
+    ) {
+        return inviteLinkMethods.getChatInviteImporters(this, entity, params);
+    }
+
+    /**
+     * Approves or declines a pending join request
+     * (`messages.hideChatJoinRequest`).
+     *
+     * @param entity - The chat.
+     * @param user - The user whose join request should be handled.
+     * @param params - `{ approved: true }` approves; omitted or false declines.
+     */
+    hideChatJoinRequest(
+        entity: EntityLike,
+        user: EntityLike,
+        params?: { approved?: boolean }
+    ) {
+        return inviteLinkMethods.hideChatJoinRequest(
+            this,
+            entity,
+            user,
+            params
+        );
+    }
+
+    /**
+     * Approves or declines ALL pending join requests of a chat
+     * (`messages.hideAllChatJoinRequests`).
+     *
+     * @param entity - The chat.
+     * @param params - `approved: true` approves all; `link` restricts to requests from one invite link.
+     */
+    hideAllChatJoinRequests(
+        entity: EntityLike,
+        params?: { approved?: boolean; link?: string }
+    ) {
+        return inviteLinkMethods.hideAllChatJoinRequests(this, entity, params);
+    }
+
+    /**
+     * Gets info about a chat by its invite link WITHOUT joining — title,
+     * photo, participant count, and whether you are already a member
+     * (`messages.checkChatInvite`).
+     *
+     * @param link - The invite link (`https://t.me/+hash`) or the bare hash.
+     */
+    checkChatInvite(link: string) {
+        return inviteLinkMethods.checkChatInvite(this, link);
     }
 
     //endregion

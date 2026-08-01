@@ -7,6 +7,7 @@ import type {
     ValueOf,
 } from "../define";
 import { _fileToMedia } from "./uploads";
+import { _parseInviteHash } from "./inviteLinks";
 import {
     sleep,
     getMinBigInt,
@@ -944,14 +945,9 @@ export async function joinChannel(
 
 /** @hidden */
 export async function importChatInvite(client: TelegramClient, link: string) {
-    let hash = link.trim();
-    const match = hash.match(
-        /(?:t\.me\/|telegram\.me\/|telegram\.dog\/)?(?:joinchat\/|\+)([a-zA-Z0-9_-]+)\/?$/
-    );
-    if (match) {
-        hash = match[1];
-    }
-    return client.api.messages.importChatInvite({ hash: hash });
+    return client.api.messages.importChatInvite({
+        hash: _parseInviteHash(link),
+    });
 }
 
 /** @hidden */

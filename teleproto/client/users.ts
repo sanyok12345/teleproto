@@ -8,6 +8,7 @@ import {
     isArrayLike,
     returnBigInt,
     unionId,
+    TotalList,
 } from "../Helpers";
 import * as errors from "../errors";
 import * as utils from "../Utils";
@@ -764,4 +765,35 @@ export async function _getInputNotify(client: TelegramClient, notify: any) {
 /** @hidden */
 export function _selfId(client: TelegramClient) {
     return client._selfInputPeer ? client._selfInputPeer.userId : undefined;
+}
+
+/** Parameters for {@link getCommonChats}. */
+export interface GetCommonChatsParams {
+    /** Maximum chat ID to return (for pagination). */
+    maxId?: bigInt.BigInteger;
+    /** Maximum number of chats to return. */
+    limit?: number;
+}
+
+/** @hidden */
+export async function getCommonChats(
+    client: TelegramClient,
+    entity: EntityLike,
+    params: GetCommonChatsParams = {}
+): Promise<TotalList<Api.TypeChat>> {
+    const user = await client.getInputEntity(entity);
+    const result = await client.invoke(
+        new Api.messages.GetCommonChats({
+            userId: user as unknown as Api.TypeInputUser,
+            maxId: params.maxId ?? bigInt.zero,
+            limit: params.limit ?? 100,
+        })
+    );
+    const chats = new TotalList<Api.TypeChat>();
+    chats.push(...result.chats);
+    chats.total =
+        result instanceof Api.messages.ChatsSlice
+            ? result.count
+            : result.chats.length;
+    return chats;
 }

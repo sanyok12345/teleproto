@@ -19,6 +19,8 @@ import * as uploadMethods from "./uploads";
 import * as userMethods from "./users";
 import * as chatMethods from "./chats";
 import * as inviteLinkMethods from "./inviteLinks";
+import * as accountMethods from "./account";
+import * as contactMethods from "./contacts";
 import * as dialogMethods from "./dialogs";
 import * as twoFA from "./2fa";
 import type {
@@ -1647,6 +1649,43 @@ export class TelegramClient<
         return chatMethods.getAdminLog(this, entity, params);
     }
 
+    /**
+     * Sends a chat action — "typing…", "recording video…" etc.
+     * (`messages.setTyping`). The action disappears automatically after a few
+     * seconds or when a message is sent; repeat the call for long operations.
+     *
+     * @param entity - The chat where the action should be shown.
+     * @param action - The action name or a raw {@link Api.TypeSendMessageAction}. Defaults to `"typing"`. Use `"cancel"` to stop.
+     * @param params.topMsgId - The forum topic where the action should be shown.
+     * @example
+     * ```ts
+     * await client.setTyping(chat);                  // typing…
+     * await client.setTyping(chat, "record-video");  // recording video…
+     * await client.setTyping(chat, "cancel");        // stop
+     * ```
+     */
+    setTyping(
+        entity: EntityLike,
+        action?: chatMethods.ChatActionType | Api.TypeSendMessageAction,
+        params?: { topMsgId?: number }
+    ) {
+        return chatMethods.setTyping(this, entity, action, params);
+    }
+
+    /**
+     * Gets the chats you have in common with a user
+     * (`messages.getCommonChats`).
+     *
+     * @param entity - The user.
+     * @param params - see {@link GetCommonChatsParams}.
+     */
+    getCommonChats(
+        entity: EntityLike,
+        params?: userMethods.GetCommonChatsParams
+    ) {
+        return userMethods.getCommonChats(this, entity, params);
+    }
+
     //endregion
     //region invite links
 
@@ -1845,6 +1884,159 @@ export class TelegramClient<
      */
     checkChatInvite(link: string) {
         return inviteLinkMethods.checkChatInvite(this, link);
+    }
+
+    //endregion
+    //region account & contacts
+
+    /**
+     * Updates your profile name and/or bio (`account.updateProfile`).
+     * Only the fields you set are changed.
+     *
+     * @param params - see {@link UpdateProfileParams}.
+     * @example
+     * ```ts
+     * await client.updateProfile({ about: "using teleproto" });
+     * ```
+     */
+    updateProfile(params: accountMethods.UpdateProfileParams) {
+        return accountMethods.updateProfile(this, params);
+    }
+
+    /**
+     * Changes your username (`account.updateUsername`).
+     *
+     * @param username - The new username. Pass an empty string to remove it.
+     */
+    updateUsername(username: string) {
+        return accountMethods.updateUsername(this, username);
+    }
+
+    /**
+     * Updates your online status (`account.updateStatus`).
+     *
+     * @param online - `true` (the default) to appear online, `false` to go offline immediately.
+     */
+    updateStatus(online?: boolean) {
+        return accountMethods.updateStatus(this, online);
+    }
+
+    /**
+     * Uploads and sets a new profile photo or video
+     * (`photos.uploadProfilePhoto`).
+     *
+     * @param params - see {@link UploadProfilePhotoParams}.
+     * @example
+     * ```ts
+     * await client.uploadProfilePhoto({ file: "me.jpg" });
+     * ```
+     */
+    uploadProfilePhoto(params: accountMethods.UploadProfilePhotoParams) {
+        return accountMethods.uploadProfilePhoto(this, params);
+    }
+
+    /**
+     * Sets an existing photo as the current profile photo
+     * (`photos.updateProfilePhoto`).
+     *
+     * @param photo - The photo to reuse.
+     * @param params.fallback - Set the fallback photo instead of the main one.
+     * @param params.bot - Bot owners: change the photo of an owned bot.
+     */
+    updateProfilePhoto(
+        photo: Api.TypeInputPhoto | Api.TypePhoto,
+        params?: { fallback?: boolean; bot?: EntityLike }
+    ) {
+        return accountMethods.updateProfilePhoto(this, photo, params);
+    }
+
+    /**
+     * Deletes profile photos (`photos.deletePhotos`).
+     *
+     * @param photos - The photos to delete, e.g. from {@link getUserPhotos}.
+     */
+    deleteProfilePhotos(photos: (Api.TypeInputPhoto | Api.TypePhoto)[]) {
+        return accountMethods.deleteProfilePhotos(this, photos);
+    }
+
+    /**
+     * Gets the profile photos of a user (`photos.getUserPhotos`).
+     *
+     * @param entity - The user.
+     * @param params - see {@link GetUserPhotosParams}.
+     */
+    getUserPhotos(
+        entity: EntityLike,
+        params?: accountMethods.GetUserPhotosParams
+    ) {
+        return accountMethods.getUserPhotos(this, entity, params);
+    }
+
+    /**
+     * Gets your contact list (`contacts.getContacts`).
+     *
+     * @returns The contacts as {@link Api.User} objects.
+     */
+    getContacts() {
+        return contactMethods.getContacts(this);
+    }
+
+    /**
+     * Adds a user to your contact list (`contacts.addContact`).
+     *
+     * @param entity - The user to add.
+     * @param params - see {@link AddContactParams}.
+     */
+    addContact(entity: EntityLike, params: contactMethods.AddContactParams) {
+        return contactMethods.addContact(this, entity, params);
+    }
+
+    /**
+     * Removes users from your contact list (`contacts.deleteContacts`).
+     *
+     * @param users - The contact(s) to remove.
+     */
+    deleteContacts(users: EntityLike | EntityLike[]) {
+        return contactMethods.deleteContacts(this, users);
+    }
+
+    /**
+     * Imports phone-book contacts (`contacts.importContacts`).
+     *
+     * @param contacts - The entries to import, see {@link ImportContactEntry}.
+     * @returns Which entries were imported and which users were already on Telegram.
+     */
+    importContacts(contacts: contactMethods.ImportContactEntry[]) {
+        return contactMethods.importContacts(this, contacts);
+    }
+
+    /**
+     * Blocks a peer (`contacts.block`).
+     *
+     * @param entity - The peer to block.
+     * @param params.myStoriesFrom - Only hide your stories from the peer instead of fully blocking.
+     */
+    block(entity: EntityLike, params?: { myStoriesFrom?: boolean }) {
+        return contactMethods.block(this, entity, params);
+    }
+
+    /**
+     * Unblocks a peer (`contacts.unblock`).
+     *
+     * @param entity - The peer to unblock.
+     * @param params.myStoriesFrom - Only unhide your stories instead of the full blocklist.
+     */
+    unblock(entity: EntityLike, params?: { myStoriesFrom?: boolean }) {
+        return contactMethods.unblock(this, entity, params);
+    }
+
+    /**
+     * Gets your blocklist (`contacts.getBlocked`).
+     *
+     * @param params - see {@link GetBlockedParams}.
+     */
+    getBlocked(params?: contactMethods.GetBlockedParams) {
+        return contactMethods.getBlocked(this, params);
     }
 
     //endregion

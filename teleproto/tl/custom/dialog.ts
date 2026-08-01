@@ -5,6 +5,8 @@ import { getDisplayName, getInputPeer, getPeerId } from "../../Utils";
 import { Draft } from "./draft";
 import { returnBigInt } from "../../Helpers";
 import bigInt from "big-integer";
+import type { SendMessageParams } from "../../client/messages";
+import type { DeleteHistoryParams } from "../../client/chats";
 
 export class Dialog {
     _client: TelegramClient;
@@ -63,5 +65,59 @@ export class Dialog {
         this.isChannel = this.entity instanceof Api.Channel;
     }
 
-    // TODO implement rest
+    /** Sends a message to this dialog. A bare string is used as the message text. */
+    async send(params: string | SendMessageParams) {
+        return this._client.sendMessage(
+            this.inputEntity,
+            typeof params === "string" ? { message: params } : params
+        );
+    }
+
+    /** Marks all messages in this dialog as read (clearing mentions too when asked). */
+    async markAsRead(params?: { clearMentions?: boolean }) {
+        return this._client.markAsRead(this.inputEntity, undefined, params);
+    }
+
+    /** Moves this dialog to the archive folder. */
+    async archive() {
+        this.archived = true;
+        this.folderId = 1;
+        return this._client.editPeerFolders(this.inputEntity, 1);
+    }
+
+    /** Moves this dialog back to the main chat list. */
+    async unarchive() {
+        this.archived = false;
+        this.folderId = 0;
+        return this._client.editPeerFolders(this.inputEntity, 0);
+    }
+
+    /** Pins or unpins this dialog in the chat list (`messages.toggleDialogPin`). */
+    async pin(pinned: boolean = true) {
+        this.pinned = pinned;
+        return this._client.invoke(
+            new Api.messages.ToggleDialogPin({
+                peer: new Api.InputDialogPeer({
+                    peer: this.inputEntity,
+                }) as unknown as Api.TypeEntityLike,
+                pinned: pinned || undefined,
+            })
+        );
+    }
+
+    /** Unpins this dialog in the chat list. */
+    async unpin() {
+        return this.pin(false);
+    }
+
+    /**
+     * Deletes this dialog: leaves channels/supergroups, or deletes the
+     * message history of private chats and small groups (see {@link DeleteHistoryParams}).
+     */
+    async delete(params?: DeleteHistoryParams) {
+        if (this.isChannel) {
+            return this._client.leaveChannel(this.inputEntity);
+        }
+        return this._client.deleteHistory(this.inputEntity, params);
+    }
 }

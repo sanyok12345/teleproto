@@ -1017,6 +1017,35 @@ export async function editPeerFolders(
 
 // endregion
 
+/** Chat action names accepted by {@link setTyping}. */
+export type ChatActionType = keyof typeof _ChatAction._str_mapping;
+
+/** @hidden */
+export async function setTyping(
+    client: TelegramClient,
+    entity: EntityLike,
+    action: ChatActionType | Api.TypeSendMessageAction = "typing",
+    params: { topMsgId?: number } = {}
+): Promise<boolean> {
+    const peer = await client.getInputEntity(entity);
+    let resolved: Api.TypeSendMessageAction;
+    if (typeof action === "string") {
+        resolved = _ChatAction._str_mapping[action];
+        if (!resolved) {
+            throw new Error(`Unknown chat action: ${action}`);
+        }
+    } else {
+        resolved = action;
+    }
+    return client.invoke(
+        new Api.messages.SetTyping({
+            peer: peer,
+            action: resolved,
+            topMsgId: params.topMsgId,
+        })
+    );
+}
+
 /** @hidden */
 export function iterAdminLog(
     client: TelegramClient,

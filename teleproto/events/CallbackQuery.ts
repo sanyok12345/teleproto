@@ -267,7 +267,7 @@ export class CallbackQueryEvent extends EventCommonSender {
         }
     }
 
-    async delete({ revoke } = { revoke: false }) {
+    async delete({ revoke = true }: { revoke?: boolean } = {}) {
         if (this._client) {
             return this._client.deleteMessages(
                 await this.getInputChat(),

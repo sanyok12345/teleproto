@@ -373,7 +373,7 @@ export class UpdateManager {
                 return;
             }
             const tracker = this.getOrCreateChannel(channelId);
-            if (this.fetchingDifference || tracker.pts.requesting()) return;
+            if (tracker.pts.requesting()) return;
             if (!tracker.pts.inited()) {
                 tracker.pts.init(u.pts);
                 this.dispatch(update, payload);

@@ -1,4 +1,5 @@
 export { Api } from "./tl";
+export * as Rich from "./richMessage";
 import * as tl from "./tl";
 export { TelegramClient } from "./client/TelegramClient";
 export { Connection } from "./network";

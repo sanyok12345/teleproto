@@ -1302,6 +1302,19 @@ export class TelegramClient<
         return messageMethods.getDiscussionMessage(this, entity, message);
     }
 
+    /**
+     * Fetches the full content of a rich message whose delivery was
+     * truncated — `message.richMessage.part` set (`messages.getRichMessage`).
+     * Usually you want {@link Api.Message.fetchRichMessage} instead, which
+     * updates the message in place.
+     *
+     * @param entity - The chat where the message is.
+     * @param message - The message or its ID.
+     */
+    getRichMessage(entity: EntityLike, message: MessageIDLike) {
+        return messageMethods.getRichMessage(this, entity, message);
+    }
+
     //endregion
     //region dialogs
 

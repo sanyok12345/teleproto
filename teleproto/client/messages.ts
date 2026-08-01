@@ -580,7 +580,8 @@ export interface SendMessageParams {
     quickReplyShortcut?: string | number | Api.TypeInputQuickReplyShortcut;
     /** Suggested-post metadata for direct-messages channels. */
     suggestedPost?: Api.TypeSuggestedPost;
-    /** Rich message content (Layer 228 page-block tree). Only for plain text messages. */
+    /** Rich message content (Layer 228): tables, headings, lists, inline media.<br/>
+     * Build it with the `Rich` helpers — `Rich.markdown("# hi")`, `Rich.html("<h1>hi</h1>")` (server-side parsing), or `Rich.blocks([...])`. Only for plain text messages. */
     richMessage?: Api.TypeInputRichMessage;
 }
 
@@ -1799,7 +1800,7 @@ export interface SaveDraftParams {
     effect?: BigInteger;
     /** Suggested-post metadata for direct-messages channels. */
     suggestedPost?: Api.TypeSuggestedPost;
-    /** Rich message content (Layer 228 page-block tree). */
+    /** Rich message content (Layer 228). Build it with the `Rich` helpers (`Rich.markdown`, `Rich.html`, `Rich.blocks`). */
     richMessage?: Api.TypeInputRichMessage;
 }
 
@@ -2061,6 +2062,37 @@ export async function getMessageReadParticipants(
         peer: peer,
         msgId: msgId,
     });
+}
+
+/**
+ * Fetches the full content of a rich message whose delivery was truncated
+ * (`richMessage.part` set).
+ * @hidden
+ */
+export async function getRichMessage(
+    client: TelegramClient,
+    entity: EntityLike,
+    message: MessageIDLike
+): Promise<Api.Message | undefined> {
+    const peer = await client.getInputEntity(entity);
+    const msgId = utils.getMessageId(message);
+    if (msgId == undefined) {
+        throw new Error(`Cannot convert ${message} to a message ID`);
+    }
+    const result = await client.api.messages.getRichMessage({
+        peer: peer,
+        id: msgId,
+    });
+    if (!("messages" in result)) {
+        return undefined;
+    }
+    const collected = _collectMessages(
+        client,
+        result.messages,
+        result.users,
+        result.chats
+    );
+    return collected.find((m) => m.id === msgId) ?? collected[0];
 }
 
 /** @hidden */

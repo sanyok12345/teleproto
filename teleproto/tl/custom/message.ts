@@ -14,6 +14,7 @@ import {
     UpdatePinMessageParams,
 } from "../../client/messages";
 import { DownloadMediaInterface } from "../../client/downloads";
+import * as rich from "../../richMessage";
 import { returnBigInt } from "../../Helpers";
 import { BigInteger } from "big-integer";
 import { MessageButton } from "./messageButton";
@@ -322,6 +323,12 @@ export class CustomMessage extends SenderGetter {
     ttlPeriod?: number;
     reactions?: Api.MessageReactions;
     noforwards?: boolean;
+    /**
+     * Rich message content: a PageBlock tree with tables,
+     * headings, lists and inline media. When its `part` flag is set, the
+     * delivery was truncated — use {@link fetchRichMessage} to load the rest.
+     */
+    richMessage?: Api.TypeRichMessage;
     /** @hidden */
     _actionEntities?: any;
     /** @hidden */
@@ -837,6 +844,54 @@ export class CustomMessage extends SenderGetter {
             });
         }
         return this.peerId;
+    }
+
+    /** Plain-text rendering of {@link richMessage}, or `undefined` if the message is not rich. */
+    get richText(): string | undefined {
+        return this.richMessage && this.richMessage instanceof Api.RichMessage
+            ? rich.toPlainText(this.richMessage)
+            : undefined;
+    }
+
+    /** Markdown rendering of {@link richMessage}, or `undefined` if the message is not rich. */
+    get richMarkdown(): string | undefined {
+        return this.richMessage && this.richMessage instanceof Api.RichMessage
+            ? rich.toMarkdown(this.richMessage)
+            : undefined;
+    }
+
+    /** HTML rendering of {@link richMessage}, or `undefined` if the message is not rich. */
+    get richHtml(): string | undefined {
+        return this.richMessage && this.richMessage instanceof Api.RichMessage
+            ? rich.toHtml(this.richMessage)
+            : undefined;
+    }
+
+    /**
+     * Ensures the full rich message content is available. When the server
+     * truncated the delivery (`richMessage.part`), fetches the rest via
+     * `messages.getRichMessage` and updates this message in place.
+     *
+     * @returns This message with complete `richMessage` content.
+     */
+    async fetchRichMessage(): Promise<Api.Message> {
+        const current = this.richMessage;
+        if (
+            !this._client ||
+            !current ||
+            !(current instanceof Api.RichMessage) ||
+            !current.part
+        ) {
+            return this as unknown as Api.Message;
+        }
+        const full = await this._client.getRichMessage(
+            (await this.getInputChat())!,
+            this.id
+        );
+        if (full && full.richMessage) {
+            this.richMessage = full.richMessage;
+        }
+        return this as unknown as Api.Message;
     }
 
     getEntitiesText(cls?: Function) {

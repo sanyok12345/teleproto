@@ -20,7 +20,13 @@ import * as userMethods from "./users";
 import * as chatMethods from "./chats";
 import * as dialogMethods from "./dialogs";
 import * as twoFA from "./2fa";
-import type { ButtonLike, Entity, EntityLike, MessageIDLike } from "../define";
+import type {
+    ButtonLike,
+    Entity,
+    EntityLike,
+    FileLike,
+    MessageIDLike,
+} from "../define";
 import { Api } from "../tl";
 import { createApiProxy } from "../tl/runtime/apiProxy";
 import { HTMLParser } from "../extensions/html";
@@ -1407,6 +1413,237 @@ export class TelegramClient<
      */
     kickParticipant(entity: EntityLike, participant: EntityLike) {
         return chatMethods.kickParticipant(this, entity, participant);
+    }
+
+    /**
+     * Gets a single participant of a channel or supergroup.
+     *
+     * @param entity - The channel/supergroup.
+     * @param participant - The participant to fetch.
+     * @example
+     * ```ts
+     * const result = await client.getParticipant(channel, "username");
+     * console.log(result.participant); // ChannelParticipant | ChannelParticipantAdmin | …
+     * ```
+     */
+    getParticipant(entity: EntityLike, participant: EntityLike) {
+        return chatMethods.getParticipant(this, entity, participant);
+    }
+
+    /**
+     * Bans or restricts a participant of a channel/supergroup
+     * (`channels.editBanned`).
+     *
+     * Without params the participant is fully banned (`viewMessages`).
+     * Pass an empty object to lift all restrictions (unban).
+     *
+     * @param entity - The channel/supergroup.
+     * @param participant - The participant to ban or restrict.
+     * @param params - The restrictions to apply, see {@link EditBannedParams}. A raw {@link Api.ChatBannedRights} is also accepted.
+     * @example
+     * ```ts
+     * await client.editBanned(chat, user);                       // full ban
+     * await client.editBanned(chat, user, { sendMedia: true });  // mute media
+     * await client.editBanned(chat, user, {});                   // unban
+     * ```
+     */
+    editBanned(
+        entity: EntityLike,
+        participant: EntityLike,
+        params?: chatMethods.EditBannedParams | Api.ChatBannedRights
+    ) {
+        return chatMethods.editBanned(this, entity, participant, params);
+    }
+
+    /**
+     * Promotes, edits or demotes an admin (`channels.editAdmin`).
+     *
+     * Every unset right is revoked — pass an empty object to demote.
+     *
+     * @param entity - The chat where the rights should apply.
+     * @param participant - The user to promote/demote.
+     * @param params - The rights to grant, see {@link EditAdminParams}. A raw {@link Api.ChatAdminRights} is also accepted.
+     * @example
+     * ```ts
+     * await client.editAdmin(chat, user, { deleteMessages: true, banUsers: true, rank: "mod" });
+     * await client.editAdmin(chat, user, {}); // demote
+     * ```
+     */
+    editAdmin(
+        entity: EntityLike,
+        participant: EntityLike,
+        params: chatMethods.EditAdminParams | Api.ChatAdminRights
+    ) {
+        return chatMethods.editAdmin(this, entity, participant, params);
+    }
+
+    /**
+     * Edits the default rights of ALL members of a chat
+     * (`messages.editChatDefaultBannedRights`).
+     *
+     * @param entity - The chat.
+     * @param params - The restrictions applying to every member, see {@link EditBannedParams}.
+     */
+    editChatDefaultBannedRights(
+        entity: EntityLike,
+        params: chatMethods.EditBannedParams | Api.ChatBannedRights
+    ) {
+        return chatMethods.editChatDefaultBannedRights(this, entity, params);
+    }
+
+    /**
+     * Edits the title of a chat, channel or supergroup.
+     *
+     * @param entity - The chat to rename.
+     * @param title - The new title.
+     */
+    editTitle(entity: EntityLike, title: string) {
+        return chatMethods.editTitle(this, entity, title);
+    }
+
+    /**
+     * Edits the photo of a chat, channel or supergroup.
+     *
+     * @param entity - The chat.
+     * @param photo - The new photo (path, Buffer, uploaded file…), a raw {@link Api.TypeInputChatPhoto}, or omit to delete the current photo.
+     */
+    editPhoto(entity: EntityLike, photo?: FileLike | Api.TypeInputChatPhoto) {
+        return chatMethods.editPhoto(this, entity, photo);
+    }
+
+    /**
+     * Edits the description of a chat, channel or supergroup
+     * (`messages.editChatAbout`).
+     *
+     * @param entity - The chat.
+     * @param about - The new description.
+     */
+    editChatAbout(entity: EntityLike, about: string) {
+        return chatMethods.editChatAbout(this, entity, about);
+    }
+
+    /**
+     * Enables or changes the slow mode of a supergroup
+     * (`channels.toggleSlowMode`).
+     *
+     * @param entity - The supergroup.
+     * @param seconds - Seconds users must wait between messages. `0` (the default) disables slow mode. Allowed values: 0, 10, 30, 60, 300, 900, 3600.
+     */
+    toggleSlowMode(entity: EntityLike, seconds?: number) {
+        return chatMethods.toggleSlowMode(this, entity, seconds);
+    }
+
+    /**
+     * Creates a new broadcast channel or supergroup
+     * (`channels.createChannel`).
+     *
+     * @param params - see {@link CreateChannelParams}.
+     * @returns The created {@link Api.Channel}.
+     * @example
+     * ```ts
+     * const channel = await client.createChannel({ title: "My channel", about: "news" });
+     * const group = await client.createChannel({ title: "My group", megagroup: true });
+     * ```
+     */
+    createChannel(params: chatMethods.CreateChannelParams) {
+        return chatMethods.createChannel(this, params);
+    }
+
+    /**
+     * Creates a new small group chat (`messages.createChat`).
+     *
+     * @param params - see {@link CreateChatParams}.
+     * @returns The created chat and the users that could not be invited.
+     */
+    createChat(params: chatMethods.CreateChatParams) {
+        return chatMethods.createChat(this, params);
+    }
+
+    /**
+     * Joins a channel or supergroup (`channels.joinChannel`).
+     * To join via an invite link use {@link importChatInvite}.
+     *
+     * @param entity - The channel to join.
+     */
+    joinChannel(entity: EntityLike) {
+        return chatMethods.joinChannel(this, entity);
+    }
+
+    /**
+     * Joins a chat via an invite link (`messages.importChatInvite`).
+     *
+     * @param link - The invite link (`https://t.me/+hash`) or the bare hash.
+     */
+    importChatInvite(link: string) {
+        return chatMethods.importChatInvite(this, link);
+    }
+
+    /**
+     * Leaves a channel or supergroup (`channels.leaveChannel`).
+     *
+     * @param entity - The channel to leave.
+     */
+    leaveChannel(entity: EntityLike) {
+        return chatMethods.leaveChannel(this, entity);
+    }
+
+    /**
+     * Deletes the message history of a chat, optionally for the other side too
+     * (`messages.deleteHistory` / `channels.deleteHistory`).
+     *
+     * @param entity - The chat whose history should be deleted.
+     * @param params - see {@link DeleteHistoryParams}.
+     */
+    deleteHistory(
+        entity: EntityLike,
+        params?: chatMethods.DeleteHistoryParams
+    ) {
+        return chatMethods.deleteHistory(this, entity, params);
+    }
+
+    /**
+     * Moves chats to a peer folder — `1` is the archive, `0` the main list
+     * (`folders.editPeerFolders`).
+     *
+     * @param entity - The chat(s) to move.
+     * @param folderId - The destination folder: `1` = archive, `0` = unarchive.
+     * @example
+     * ```ts
+     * await client.editPeerFolders(chat, 1); // archive
+     * await client.editPeerFolders([chatA, chatB], 0); // unarchive
+     * ```
+     */
+    editPeerFolders(entity: EntityLike | EntityLike[], folderId: number) {
+        return chatMethods.editPeerFolders(this, entity, folderId);
+    }
+
+    /**
+     * Iterates over the admin log (recent actions) of a channel/supergroup.
+     * Requires admin rights.
+     *
+     * @param entity - The channel/supergroup.
+     * @param params - see {@link AdminLogParams}. Set filter fields to only receive those event types.
+     * @yield instances of {@link Api.ChannelAdminLogEvent}.
+     * @example
+     * ```ts
+     * for await (const event of client.iterAdminLog(channel, { ban: true, unban: true })) {
+     *     console.log(event.action.className, event.userId.toString());
+     * }
+     * ```
+     */
+    iterAdminLog(entity: EntityLike, params?: chatMethods.AdminLogParams) {
+        return chatMethods.iterAdminLog(this, entity, params);
+    }
+
+    /**
+     * Gets the admin log (recent actions) of a channel/supergroup.
+     * Same as {@link iterAdminLog}, but returns a collected array.
+     *
+     * @param entity - The channel/supergroup.
+     * @param params - see {@link AdminLogParams}.
+     */
+    getAdminLog(entity: EntityLike, params?: chatMethods.AdminLogParams) {
+        return chatMethods.getAdminLog(this, entity, params);
     }
 
     //endregion

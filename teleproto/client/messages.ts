@@ -1463,41 +1463,41 @@ export async function getReactionUsers(
 
 /** Poll definition for {@link sendPoll}. */
 export interface SendPollParams {
-    /** The poll question. Parsed with the client parse mode (custom emoji only). */
+    /** The poll question. Parsed with the client parse mode — only custom emoji entities are allowed here (Premium users only). */
     question: string;
-    /** The answer options (2-10). Parsed with the client parse mode (custom emoji only). */
+    /** The possible answers (2 to the `poll_answers_max` server limit). Parsed with the client parse mode — only custom emoji entities are allowed. Voting happens via {@link vote}. */
     answers: string[];
-    /** Whether multiple answers can be selected. */
+    /** Whether multiple options can be chosen as answer. */
     multipleChoice?: boolean;
-    /** Send as a quiz — exactly one correct answer, requires `correctAnswers`. */
+    /** Send as a quiz (with wrong and correct answers) — requires `correctAnswers`. */
     quiz?: boolean;
-    /** Index(es) of the correct answer(s), for quizzes. */
+    /** 0-based index(es) of the correct answer(s) in `answers`, for quizzes. */
     correctAnswers?: number | number[];
-    /** Make the poll non-anonymous (voters are visible). */
+    /** Whether cast votes are publicly visible to all users (non-anonymous poll). */
     publicVoters?: boolean;
-    /** Auto-close the poll after this many seconds (5-600). Mutually exclusive with `closeDate`. */
+    /** Amount of time in seconds the poll will be active after creation, up to the `poll_close_period_max` server limit (currently 600). Mutually exclusive with `closeDate`. */
     closePeriod?: number;
-    /** Auto-close the poll at this date. Mutually exclusive with `closePeriod`. */
+    /** Point in time when the poll will be automatically closed. Mutually exclusive with `closePeriod`. */
     closeDate?: DateLike;
-    /** Explanation shown when a quiz answer is wrong. Parsed with the client parse mode. */
+    /** Text shown when a user chooses an incorrect quiz answer or taps the lamp icon; 0-200 characters with at most 2 line feeds. Parsed with the client parse mode. */
     solution?: string;
     /** Formatting entities for `solution`. When provided, parsing is skipped. */
     solutionEntities?: Api.TypeMessageEntity[];
-    /** Media shown with the quiz explanation. */
+    /** Optional media attachment shown alongside the quiz solution explanation. */
     solutionMedia?: Api.TypeInputMedia;
-    /** Media attached to the poll itself. */
+    /** Optional media attachment displayed alongside the poll. */
     attachedMedia?: Api.TypeInputMedia;
-    /** Allow voters to add their own free-form answers. */
+    /** Whether users can add new answer options after the poll is created. */
     openAnswers?: boolean;
-    /** Show the answers in random order to each voter. */
+    /** Whether answer options are displayed in a randomized order to each user. */
     shuffleAnswers?: boolean;
-    /** Hide results until the poll is closed. */
+    /** Whether vote results are hidden from all participants until the poll is closed. */
     hideResultsUntilClose?: boolean;
-    /** Disallow changing the vote after it is cast. */
+    /** If set, users cannot change their vote after casting it. */
     revotingDisabled?: boolean;
-    /** Restrict voting to channel subscribers. */
+    /** Whether only subscribers can vote: a user may vote only while currently a member of the channel/supergroup. */
     subscribersOnly?: boolean;
-    /** Restrict voting to users from these ISO2 country codes. */
+    /** If set, only users from the specified ISO 3166-1 alpha-2 country codes may vote. */
     countriesIso2?: string[];
     /** Parse mode override for question/answers/solution. */
     parseMode?: any;

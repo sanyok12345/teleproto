@@ -27,14 +27,14 @@ export function getFileInfo(
             size: undefined,
         };
     }
-    let location;
-    if (fileLocation instanceof Api.Message) {
-        location = fileLocation.media;
+    let location: unknown = fileLocation;
+    if (location instanceof Api.Message) {
+        location = location.media;
     }
-    if (fileLocation instanceof Api.MessageMediaDocument) {
-        location = fileLocation.document;
-    } else if (fileLocation instanceof Api.MessageMediaPhoto) {
-        location = fileLocation.photo;
+    if (location instanceof Api.MessageMediaDocument) {
+        location = location.document;
+    } else if (location instanceof Api.MessageMediaPhoto) {
+        location = location.photo;
     }
 
     if (location instanceof Api.Document) {

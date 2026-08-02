@@ -3097,7 +3097,7 @@ export class TelegramClient<
     async _handleReconnect() {
         this._log.info("Handling reconnect!");
         try {
-            const res = await this.getMe();
+            await this.getMe();
         } catch (e) {
             if (this._sender?.userDisconnected) {
                 this._log.debug(
@@ -3107,9 +3107,17 @@ export class TelegramClient<
                 );
                 return;
             }
-            this._log.error(`Error while trying to reconnect`, e);
-            if (this._errorHandler) {
-                await this._errorHandler(e as Error);
+            if ((e as { code?: number })?.code === 401) {
+                this._log.debug(
+                    `Reconnect probe skipped: not authorized yet (${
+                        (e as { errorMessage?: string }).errorMessage
+                    })`
+                );
+            } else {
+                this._log.error(`Error while trying to reconnect`, e);
+                if (this._errorHandler) {
+                    await this._errorHandler(e as Error);
+                }
             }
         }
         // Restart update loop if it was stopped during reconnect
@@ -3125,9 +3133,21 @@ export class TelegramClient<
     async connect() {
         await this._initSession();
         if (this._sender === undefined) {
-            this._sender = new MTProtoSender(this.session.getAuthKey(), {
+            const dcId = this.session.dcId || 4;
+            const sessionKey = this.session.getAuthKey(dcId);
+            const dcenter = this._dcenters.get(
+                dcId,
+                sessionKey
+            );
+            if (sessionKey && sessionKey !== dcenter.authKey) {
+                await dcenter.authKey.setKey(sessionKey.getKey());
+            }
+            // Dcenter is canonical per-DC state shared by main and pooled
+            // senders, so persist this very object rather than a copy.
+            this.session.setAuthKey(dcenter.authKey, dcId);
+            this._sender = new MTProtoSender(dcenter.authKey, {
                 logger: this._log,
-                dcId: this.session.dcId || 4,
+                dcId,
                 retries: this._connectionRetries,
                 delay: this._retryDelay,
                 autoReconnect: this._autoReconnect,
@@ -3139,10 +3159,7 @@ export class TelegramClient<
                 securityChecks: this._securityChecks,
                 autoReconnectCallback: this._handleReconnect.bind(this),
                 reconnectRetries: this._reconnectRetries,
-                dcenter: this._dcenters.get(
-                    this.session.dcId || 4,
-                    this.session.getAuthKey()
-                ),
+                dcenter,
             });
         }
 
@@ -3182,13 +3199,11 @@ export class TelegramClient<
     /** @hidden */
     async _switchDC(newDc: number) {
         this._log.info(`Reconnecting to new data center ${newDc}`);
-        const sameDc = newDc === this.session.dcId;
         const DC = await this.getDC(newDc);
         this.session.setDC(newDc, DC.ipAddress, DC.port);
-        if (!sameDc) {
-            await this._sender!.authKey.setKey(undefined);
-            this.session.setAuthKey(undefined);
-        }
+        // setDC archives the source key and promotes the target key. Auth
+        // keys are DC-scoped transport state; account authorization is
+        // transferred separately only via export/importAuthorization.
         this.session.save();
         this._isSwitchingDc = true;
         await this._media.purge();

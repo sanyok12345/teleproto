@@ -88,23 +88,17 @@ export class StoreSession extends MemorySession {
     setAuthKey(authKey?: AuthKey, dcId?: number) {
         super.setAuthKey(authKey, dcId);
         if (dcId !== undefined && dcId !== this._dcId) {
-            // Persist non-main DC keys as a plain {dcId: Buffer} map so a
-            // later process can reuse them and avoid hitting Telegram's
-            // per-account auth-key cap.
-            const snapshot: Record<string, Buffer | undefined> = {};
-            for (const [id, k] of this._dcAuthKeys) {
-                const raw = k.getKey();
-                if (raw) snapshot[String(id)] = raw;
-            }
-            this.store.set(this.sessionName + "dcAuthKeys", snapshot);
+            this._saveDcAuthKeys();
         }
     }
 
     setDC(dcId: number, serverAddress: string, port: number) {
+        super.setDC(dcId, serverAddress, port);
         this.store.set(this.sessionName + "dcId", dcId);
         this.store.set(this.sessionName + "port", port);
         this.store.set(this.sessionName + "serverAddress", serverAddress);
-        super.setDC(dcId, serverAddress, port);
+        this.store.set(this.sessionName + "authKey", this._authKey?.getKey());
+        this._saveDcAuthKeys();
     }
 
     set testServers(value: boolean) {
@@ -123,6 +117,15 @@ export class StoreSession extends MemorySession {
 
     get authKey() {
         return this._authKey;
+    }
+
+    private _saveDcAuthKeys() {
+        const snapshot: Record<string, Buffer | undefined> = {};
+        for (const [id, k] of this._dcAuthKeys) {
+            const raw = k.getKey();
+            if (raw) snapshot[String(id)] = raw;
+        }
+        this.store.set(this.sessionName + "dcAuthKeys", snapshot);
     }
 
     delete() {

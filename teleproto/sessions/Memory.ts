@@ -45,7 +45,15 @@ export class MemorySession extends Session {
     }
 
     setDC(dcId: number, serverAddress: string, port: number) {
-        this._dcId = dcId | 0;
+        dcId |= 0;
+        if (dcId !== this._dcId) {
+            if (this._dcId && this._authKey) {
+                this._dcAuthKeys.set(this._dcId, this._authKey);
+            }
+            this._authKey = this._dcAuthKeys.get(dcId);
+            this._dcAuthKeys.delete(dcId);
+        }
+        this._dcId = dcId;
         this._serverAddress = serverAddress;
         this._port = port;
     }

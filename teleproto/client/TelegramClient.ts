@@ -397,6 +397,37 @@ export class TelegramClient<
     }
 
     /**
+     * Signs in with a `tgWebAuthToken` obtained from a "Log in with Telegram"
+     * web flow (`auth.importWebTokenAuthorization`).
+     *
+     * The token is **single-use and short-lived** — it is consumed by whoever
+     * opens the login URL first. A token copied out of an already-loaded
+     * web.telegram.org address bar is therefore normally already spent, and
+     * the server answers `WEBAUTH_TOKEN_EXPIRED`. Use a freshly issued token
+     * that no browser has opened yet.
+     *
+     * @param apiCredentials - Your `{ apiId, apiHash }`.
+     * @param webAuthToken - The `tgWebAuthToken` value.
+     * @returns The signed-in user.
+     * @example
+     * ```ts
+     * await client.connect();
+     * const me = await client.signInWithWebToken({ apiId, apiHash }, token);
+     * console.log(client.session.save());
+     * ```
+     */
+    signInWithWebToken(
+        apiCredentials: authMethods.ApiCredentials,
+        webAuthToken: string
+    ) {
+        return authMethods.signInWithWebToken(
+            this,
+            apiCredentials,
+            webAuthToken
+        );
+    }
+
+    /**
      * Changes the 2FA settings of the logged in user.
      Note that this method may be *incredibly* slow depending on the
      prime numbers that must be used during the process to make sure

@@ -771,6 +771,46 @@ export async function signInBot(
     return user;
 }
 
+/**
+ * Signs in with a `tgWebAuthToken` obtained from a "Log in with Telegram"
+ * web flow (`auth.importWebTokenAuthorization`).
+ *
+ * The token is single-use and short-lived: it is consumed by whoever opens the
+ * login URL first, so a token copied out of an already-loaded web.telegram.org
+ * address bar is normally spent and the server answers
+ * `WEBAUTH_TOKEN_EXPIRED`. Pass a freshly issued, unopened token.
+ * @hidden
+ */
+export async function signInWithWebToken(
+    client: TelegramClient,
+    apiCredentials: ApiCredentials,
+    webAuthToken: string
+): Promise<Api.User> {
+    const { apiId, apiHash } = apiCredentials;
+    const result = await client.invoke(
+        new Api.auth.ImportWebTokenAuthorization({
+            apiId,
+            apiHash,
+            webAuthToken,
+        })
+    );
+    if (result instanceof Api.auth.AuthorizationSignUpRequired) {
+        throw new Error(
+            "The account bound to this web token does not exist yet; sign up is required"
+        );
+    }
+    const user = result.user as Api.User;
+    client._bot = user.bot;
+    client._selfInputPeer = utils.getInputPeer(
+        user,
+        false
+    ) as Api.InputPeerUser;
+    client._log.info(
+        "Signed in successfully as " + utils.getDisplayName(user)
+    );
+    return user;
+}
+
 /** @hidden */
 export async function _authFlow(
     client: TelegramClient,

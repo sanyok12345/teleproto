@@ -728,7 +728,7 @@ export async function downloadProfilePhoto(
     });
 }
 
-/** Parameters for {@link iterDownload}. */
+/** Parameters for {@link TelegramClient.iterDownload}. */
 export interface IterDownloadParams extends DownloadCancelParams {
     /** Byte offset to start downloading from. Must be divisible by 4096 unless `precise` handles it (it does by default). */
     offset?: bigInt.BigInteger | number;

@@ -1,13 +1,96 @@
 {
+  "name": "teleproto",
   "entryPoints": ["teleproto/index.ts"],
   "out": "docs",
+  "readme": "README.md",
+  "tsconfig": "tsconfig.json",
+  "includeVersion": true,
+  "hideGenerator": true,
+  "theme": "default",
+
   "excludeExternals": true,
   "excludePrivate": true,
   "excludeProtected": true,
-  "readme": "README.md",
-  "includeVersion": true,
+  "excludeInternal": true,
+
+  "searchInComments": true,
+  "searchInDocuments": true,
+  "searchGroupBoosts": {
+    "Classes": 2,
+    "Methods": 2,
+    "Interfaces": 1.5,
+    "Functions": 1.5
+  },
+
+  "navigation": {
+    "includeCategories": true,
+    "includeGroups": true,
+    "includeFolders": true,
+    "compactFolders": true,
+    "excludeReferences": true
+  },
+  "categorizeByGroup": false,
+  "categoryOrder": [
+    "Authorization",
+    "Messages",
+    "Files",
+    "Chats",
+    "Invite Links",
+    "Forums",
+    "Stories",
+    "Account",
+    "Contacts",
+    "Dialogs",
+    "Folders",
+    "Stickers",
+    "Bots",
+    "Updates",
+    "Connection",
+    "Other",
+    "*"
+  ],
+  "groupOrder": [
+    "Classes",
+    "Interfaces",
+    "Type Aliases",
+    "Functions",
+    "Variables",
+    "Namespaces",
+    "*"
+  ],
+  "sort": ["static-first", "alphabetical"],
+  "visibilityFilters": {
+    "protected": false,
+    "inherited": true,
+    "external": false
+  },
+
+  "navigationLinks": {
+    "GitHub": "https://github.com/sanyok12345/teleproto",
+    "npm": "https://www.npmjs.com/package/teleproto",
+    "Issues": "https://github.com/sanyok12345/teleproto/issues"
+  },
+  "titleLink": "https://docs.teleproto.dev",
+
   "gitRevision": "main",
-  "hideGenerator": true,
-  "theme": "default",
-  "tsconfig": "tsconfig.json",
+  "sourceLinkTemplate": "https://github.com/sanyok12345/teleproto/blob/{gitRevision}/{path}#L{line}",
+
+  "highlightLanguages": ["typescript", "javascript", "json", "bash", "html"],
+  "blockTags": [
+    "@param",
+    "@returns",
+    "@example",
+    "@remarks",
+    "@see",
+    "@throws",
+    "@defaultValue",
+    "@deprecated",
+    "@yield",
+    "@category"
+  ],
+  "validation": {
+    "notExported": false,
+    "invalidLink": true,
+    "notDocumented": false
+  }
 }

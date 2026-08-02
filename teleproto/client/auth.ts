@@ -772,13 +772,14 @@ export async function signInBot(
 }
 
 /**
- * Signs in with a `tgWebAuthToken` obtained from a "Log in with Telegram"
- * web flow (`auth.importWebTokenAuthorization`).
+ * Signs in with a web authorization token
+ * (`auth.importWebTokenAuthorization`).
  *
- * The token is single-use and short-lived: it is consumed by whoever opens the
- * login URL first, so a token copied out of an already-loaded web.telegram.org
- * address bar is normally spent and the server answers
- * `WEBAUTH_TOKEN_EXPIRED`. Pass a freshly issued, unopened token.
+ * Users only — bots cannot invoke this. It may be used over an
+ * unauthenticated connection, so a plain {@link TelegramClient.connect} is
+ * enough beforehand. The token is short-lived: once expired — or already
+ * redeemed elsewhere, e.g. by the browser that opened the login URL — the
+ * server answers `WEBAUTH_TOKEN_EXPIRED`.
  * @hidden
  */
 export async function signInWithWebToken(

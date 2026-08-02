@@ -414,7 +414,7 @@ export class _IDsIter extends RequestIter {
 }
 
 /**
- * Interface for iterating over messages. used in both {@link iterMessages} and {@link getMessages}.
+ * Interface for iterating over messages. used in both {@link TelegramClient.iterMessages} and {@link TelegramClient.getMessages}.
  */
 export interface IterMessagesParams {
     /** Number of messages to be retrieved.<br/>
@@ -1462,11 +1462,11 @@ export async function getReactionUsers(
 
 // region polls
 
-/** Poll definition for {@link sendPoll}. */
+/** Poll definition for {@link TelegramClient.sendPoll}. */
 export interface SendPollParams {
     /** The poll question. Parsed with the client parse mode — only custom emoji entities are allowed here (Premium users only). */
     question: string;
-    /** The possible answers (2 to the `poll_answers_max` server limit). Parsed with the client parse mode — only custom emoji entities are allowed. Voting happens via {@link vote}. */
+    /** The possible answers (2 to the `poll_answers_max` server limit). Parsed with the client parse mode — only custom emoji entities are allowed. Voting happens via {@link TelegramClient.vote}. */
     answers: string[];
     /** Whether multiple options can be chosen as answer. */
     multipleChoice?: boolean;
@@ -1770,7 +1770,7 @@ export async function copyMessages(
     return forwardMessages(client, entity, { ...params, dropAuthor: true });
 }
 
-/** Interface for saving a draft with {@link saveDraft}. */
+/** Interface for saving a draft with {@link TelegramClient.saveDraft}. */
 export interface SaveDraftParams {
     /** The draft text. An empty string (the default) clears the draft. */
     message?: string;
@@ -1967,7 +1967,7 @@ export async function getMessageByLink(
     return (await getMessages(client, peer, { ids: parsed.msgId }))[0];
 }
 
-/** Parameters for {@link translateText}: either messages of a chat, or raw text. */
+/** Parameters for {@link TelegramClient.translateText}: either messages of a chat, or raw text. */
 export interface TranslateTextParams {
     /** Target language: a two-letter ISO 639-1 code (e.g. `"en"`, `"ru"`). */
     toLang: string;

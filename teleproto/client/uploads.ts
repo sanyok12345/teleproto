@@ -241,7 +241,7 @@ export interface SendFileInterface {
      *   - can be a Buffer with a ".name" attribute to use as the file name.
      *   - can be an external direct URL. Telegram will download the file and send it.
      *   - can be an existing media from another message.
-     *   - can be a handle to a file that was received by using {@link uploadFile}
+     *   - can be a handle to a file that was received by using {@link TelegramClient.uploadFile}
      *   - can be a list when using an album
      *   - can be {@link Api.TypeInputMedia} instance. For example if you want to send a dice you would use {@link Api.InputMediaDice}
      */
@@ -256,7 +256,7 @@ export interface SendFileInterface {
     clearDraft?: boolean;
     /** progress callback that will be called each time a new chunk is downloaded. */
     progressCallback?: OnProgress;
-    /** Same as `replyTo` from {@link sendMessage}. Also accepts a raw {@link Api.TypeInputReplyTo} for full control (stories, monoforums, todo items). */
+    /** Same as `replyTo` from {@link TelegramClient.sendMessage}. Also accepts a raw {@link Api.TypeInputReplyTo} for full control (stories, monoforums, todo items). */
     replyTo?: MessageIDLike | Api.TypeInputReplyTo;
     /** Quoted part of the message being replied to. Requires `replyTo`. */
     quoteText?: string;

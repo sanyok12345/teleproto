@@ -767,7 +767,7 @@ export function _selfId(client: TelegramClient) {
     return client._selfInputPeer ? client._selfInputPeer.userId : undefined;
 }
 
-/** Parameters for {@link getCommonChats}. */
+/** Parameters for {@link TelegramClient.getCommonChats}. */
 export interface GetCommonChatsParams {
     /** Maximum chat ID to return (for pagination). */
     maxId?: bigInt.BigInteger;

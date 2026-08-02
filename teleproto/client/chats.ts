@@ -314,7 +314,7 @@ export class _ParticipantsIter extends RequestIter {
     }
 }
 
-/** Event filter for {@link iterAdminLog}/{@link getAdminLog}. Set only the event types you want. */
+/** Event filter for {@link TelegramClient.iterAdminLog}/{@link TelegramClient.getAdminLog}. Set only the event types you want. */
 export interface AdminLogFilterParams {
     /** Join events, including joins via invite links. */
     join?: boolean;
@@ -358,7 +358,7 @@ export interface AdminLogFilterParams {
     editRank?: boolean;
 }
 
-/** Parameters for {@link iterAdminLog}/{@link getAdminLog}. */
+/** Parameters for {@link TelegramClient.iterAdminLog}/{@link TelegramClient.getAdminLog}. */
 export interface AdminLogParams extends AdminLogFilterParams {
     /** How many events to retrieve. Defaults to all. */
     limit?: number;
@@ -553,7 +553,7 @@ export async function kickParticipant(
 
 // region admin rights
 
-/** Restrictions to apply with {@link editBanned}. Every unset right stays allowed. */
+/** Restrictions to apply with {@link TelegramClient.editBanned}. Every unset right stays allowed. */
 export interface EditBannedParams {
     /** Until when the restrictions apply. Defaults to forever. */
     untilDate?: number | Date;
@@ -639,7 +639,7 @@ export async function editBanned(
     );
 }
 
-/** Admin rights to grant with {@link editAdmin}. Every unset right stays revoked. */
+/** Admin rights to grant with {@link TelegramClient.editAdmin}. Every unset right stays revoked. */
 export interface EditAdminParams {
     /** Allow changing the chat info. */
     changeInfo?: boolean;
@@ -846,7 +846,7 @@ export async function toggleSlowMode(
 
 // region chat lifecycle
 
-/** Parameters for {@link createChannel}. */
+/** Parameters for {@link TelegramClient.createChannel}. */
 export interface CreateChannelParams {
     /** The channel title. */
     title: string;
@@ -894,7 +894,7 @@ export async function createChannel(
     throw new Error("Could not find the created channel in the response");
 }
 
-/** Parameters for {@link createChat} (small group chats). */
+/** Parameters for {@link TelegramClient.createChat} (small group chats). */
 export interface CreateChatParams {
     /** The chat title. */
     title: string;
@@ -956,7 +956,7 @@ export async function leaveChannel(client: TelegramClient, entity: EntityLike) {
     return client.api.channels.leaveChannel({ channel: channel });
 }
 
-/** Parameters for {@link deleteHistory}. */
+/** Parameters for {@link TelegramClient.deleteHistory}. */
 export interface DeleteHistoryParams {
     /** Delete only messages with IDs up to and including this one. Defaults to all. */
     maxId?: number;
@@ -1017,7 +1017,7 @@ export async function editPeerFolders(
 
 // endregion
 
-/** Chat action names accepted by {@link setTyping}. */
+/** Chat action names accepted by {@link TelegramClient.setTyping}. */
 export type ChatActionType = keyof typeof _ChatAction._str_mapping;
 
 /** @hidden */

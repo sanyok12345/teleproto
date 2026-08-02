@@ -116,6 +116,7 @@ export class TelegramClient<
      * Logged in as user...
      *
      * You can now use the client instance to call other api requests.
+     * @category Authorization
      */
     start(authParams?: authMethods.UserAuthParams | authMethods.BotAuthParams) {
         return authMethods.start(this, authParams);
@@ -133,6 +134,7 @@ export class TelegramClient<
      * }
      * ```
      * @return boolean (true of authorized else false)
+     * @category Authorization
      */
     checkAuthorization() {
         return authMethods.checkAuthorization(this);
@@ -152,6 +154,7 @@ export class TelegramClient<
      * ```ts
      * await client.logOut();
      * ```
+     * @category Authorization
      */
     logOut() {
         return authMethods.logOut(this);
@@ -182,6 +185,7 @@ export class TelegramClient<
      * ```
      * @param apiCredentials - credentials to be used.
      * @param authParams - user auth params.
+     * @category Authorization
      */
     signInUser(
         apiCredentials: authMethods.ApiCredentials,
@@ -232,6 +236,7 @@ export class TelegramClient<
      * '''
      * @param apiCredentials - credentials to be used.
      * @param authParams - user auth params. Pass `abortSignal` to cancel the flow.
+     * @category Authorization
      */
     signInUserWithQrCode(
         apiCredentials: authMethods.ApiCredentials,
@@ -259,6 +264,7 @@ export class TelegramClient<
      * @param forceSMS - whether to send it as an SMS or a normal in app message
      * @param reCaptchaCallback - callback to handle reCAPTCHA verification
      * @return the phone code hash and whether it was sent via app
+     * @category Authorization
      */
     sendCode(
         apiCredentials: authMethods.ApiCredentials,
@@ -291,6 +297,7 @@ export class TelegramClient<
      * );
      * console.log(`Code sent to ${result.emailPattern}, length: ${result.length}`);
      * ```
+     * @category Authorization
      */
     sendVerifyEmailCode(
         phoneNumber: string,
@@ -327,6 +334,7 @@ export class TelegramClient<
      *     { type: "google", token: "google-id-token" }
      * );
      * ```
+     * @category Authorization
      */
     verifyEmail(
         phoneNumber: string,
@@ -352,6 +360,7 @@ export class TelegramClient<
      * // User can't access their email, reset it
      * const newSentCode = await client.resetLoginEmail("+1234567890", "abc123hash");
      * ```
+     * @category Authorization
      */
     resetLoginEmail(phoneNumber: string, phoneCodeHash: string) {
         return authMethods.resetLoginEmail(this, phoneNumber, phoneCodeHash);
@@ -363,6 +372,7 @@ export class TelegramClient<
      * @param apiCredentials - credentials to be used.
      * @param authParams - user auth params.
      * @returns the logged in user.
+     * @category Authorization
      */
     signInWithPassword(
         apiCredentials: authMethods.ApiCredentials,
@@ -388,6 +398,7 @@ export class TelegramClient<
      * @param apiCredentials - credentials to be used.
      * @param authParams - user auth params.
      * @return instance User of the logged in bot.
+     * @category Authorization
      */
     signInBot(
         apiCredentials: authMethods.ApiCredentials,
@@ -397,24 +408,27 @@ export class TelegramClient<
     }
 
     /**
-     * Signs in with a `tgWebAuthToken` obtained from a "Log in with Telegram"
-     * web flow (`auth.importWebTokenAuthorization`).
+     * Signs in with a web authorization token
+     * (`auth.importWebTokenAuthorization`).
      *
-     * The token is **single-use and short-lived** — it is consumed by whoever
-     * opens the login URL first. A token copied out of an already-loaded
-     * web.telegram.org address bar is therefore normally already spent, and
-     * the server answers `WEBAUTH_TOKEN_EXPIRED`. Use a freshly issued token
-     * that no browser has opened yet.
+     * Users only — bots cannot invoke this. It may be used over an
+     * unauthenticated connection, so a plain {@link TelegramClient.connect} is
+     * enough beforehand. The token is **short-lived**: once expired — or
+     * already redeemed elsewhere, e.g. by the browser that opened the login
+     * URL — the server answers `WEBAUTH_TOKEN_EXPIRED`.
      *
      * @param apiCredentials - Your `{ apiId, apiHash }`.
-     * @param webAuthToken - The `tgWebAuthToken` value.
+     * @param webAuthToken - The authorization token.
      * @returns The signed-in user.
+     * @throws `API_ID_INVALID` when the API credentials are wrong.
+     * @throws `WEBAUTH_TOKEN_EXPIRED` when the token is no longer valid.
      * @example
      * ```ts
      * await client.connect();
      * const me = await client.signInWithWebToken({ apiId, apiHash }, token);
      * console.log(client.session.save());
      * ```
+     * @category Authorization
      */
     signInWithWebToken(
         apiCredentials: authMethods.ApiCredentials,
@@ -463,6 +477,7 @@ export class TelegramClient<
      "PASSWORD_HASH_INVALID" if you entered a wrong password (or set it to undefined).
      "EMAIL_INVALID" if the entered email is wrong
      "EMAIL_HASH_EXPIRED" if the user took too long to verify their email
+     * @category Authorization
      */
     async updateTwoFaSettings({
         isCheckPassword,
@@ -506,6 +521,7 @@ export class TelegramClient<
      * // clicks on the first result
      * await results[0].click();
      * ```
+     * @category Bots
      */
     inlineQuery(
         bot: EntityLike,
@@ -552,6 +568,7 @@ export class TelegramClient<
      *     buttons: [Button.inline("Hello!")],
      * }
      * ```
+     * @category Messages
      */
     buildReplyMarkup(
         buttons:
@@ -591,6 +608,7 @@ export class TelegramClient<
      *      }
      * );
      * ```
+     * @category Files
      */
     downloadFile(
         inputLocation: Api.TypeInputFileLocation,
@@ -616,6 +634,7 @@ export class TelegramClient<
      * import { promises as fs } from 'fs';
      * await fs.writeFile("picture.jpg",buffer);
      * ```
+     * @category Files
      */
     downloadProfilePhoto(
         entity: EntityLike,
@@ -653,6 +672,7 @@ export class TelegramClient<
      *     progressCallback : console.log
      * })
      * ```
+     * @category Files
      */
     downloadMedia(
         messageOrMedia: Api.Message | Api.TypeMessageMedia,
@@ -694,6 +714,7 @@ export class TelegramClient<
      * // gets the current parse mode.
      * console.log("parse mode is :",  client.parseMode)
      * ```
+     * @category Messages
      */
     get parseMode() {
         return this._parseMode;
@@ -710,6 +731,7 @@ export class TelegramClient<
      * // disable formatting
      * client.setParseMode(undefined);
      * await client.sendMessage("me",{message:"<u> this will be sent as it is</u> ** with no formatting **});
+     * @category Messages
      */
     setParseMode(
         mode:
@@ -796,6 +818,7 @@ export class TelegramClient<
      *    console.log(message.chat.title,, message.text)
      * }
      * ```
+     * @category Messages
      */
     iterMessages(
         entity: EntityLike | undefined,
@@ -807,7 +830,7 @@ export class TelegramClient<
     /**
      * Same as iterMessages() but returns a TotalList instead.<br/>
      * if the `limit` is not set, it will be 1 by default unless both `minId` **and** `maxId` are set. in which case the entire  range will be returned.<br/>
-     * @param entity - The entity from whom to retrieve the message history. see {@link iterMessages}.<br/>
+     * @param entity - The entity from whom to retrieve the message history. see {@link TelegramClient.iterMessages}.<br/>
      * @param getMessagesParams - see {@link IterMessagesParams}.
      * @return {@link TotalList} of messages.
      * @example
@@ -825,6 +848,7 @@ export class TelegramClient<
      * const messages = await client.getMessages(chat, {ids:1337})
      * const message_1337 = messages[0];
      * ```
+     * @category Messages
      */
     getMessages(
         entity: EntityLike | undefined,
@@ -878,6 +902,7 @@ export class TelegramClient<
      * await client.sendMessage(chat, {message:'Hi, future!', schedule:(60 * 5) + (Date.now() / 1000)})
      *
      * ```
+     * @category Messages
      */
     sendMessage(
         entity: EntityLike,
@@ -914,6 +939,7 @@ export class TelegramClient<
      * // Forwarding as a copy
      * await client.sendMessage(chat, {message:message});
      * ```
+     * @category Messages
      */
     forwardMessages(
         entity: EntityLike,
@@ -950,6 +976,7 @@ export class TelegramClient<
      *  // or
      *  await client.editMessage(chat,{message:message.id,text:"Hello!"}
      *  ```
+     * @category Messages
      */
     editMessage(
         entity: EntityLike,
@@ -979,6 +1006,7 @@ export class TelegramClient<
      *
      *  await client.deleteMessages(chat, messages, {revoke:false});
      *  ```
+     * @category Messages
      */
     deleteMessages(
         entity: EntityLike | undefined,
@@ -1007,6 +1035,7 @@ export class TelegramClient<
      *
      *  await client.pinMessage(chat, message);
      *  ```
+     * @category Messages
      */
     pinMessage(
         entity: EntityLike,
@@ -1052,6 +1081,7 @@ export class TelegramClient<
      *  // unpin all messages
      *  await client.unpinMessage(chat);
      *  ```
+     * @category Messages
      */
     unpinMessage(
         entity: EntityLike,
@@ -1100,6 +1130,7 @@ export class TelegramClient<
      *  // ...or passing a list of messages to mark as read
      *  await client.markAsRead(chat, messages)
      *  ```
+     * @category Messages
      */
     markAsRead(
         entity: EntityLike,
@@ -1126,6 +1157,7 @@ export class TelegramClient<
      * ```ts
      * await client.sendReaction(chat, 123, [new Api.ReactionEmoji({ emoticon: "👍" })]);
      * ```
+     * @category Messages
      */
     sendReaction(
         entity: EntityLike,
@@ -1152,6 +1184,7 @@ export class TelegramClient<
      * @param params.reaction - Filter by specific emoji string or a raw Api.TypeReaction (e.g. custom emoji).
      * @param params.limit - Maximum number of users to return.
      * @param params.offset - Pagination offset.
+     * @category Messages
      */
     getReactionUsers(
         entity: EntityLike,
@@ -1190,6 +1223,7 @@ export class TelegramClient<
      *     solution: "Basic arithmetic!",
      * });
      * ```
+     * @category Messages
      */
     sendPoll(
         entity: EntityLike,
@@ -1210,6 +1244,7 @@ export class TelegramClient<
      * await client.vote(chat, 123, 0);
      * await client.vote(chat, 123, [0, 2]); // multiple-choice poll
      * ```
+     * @category Messages
      */
     vote(
         entity: EntityLike,
@@ -1224,6 +1259,7 @@ export class TelegramClient<
      *
      * @param entity - The chat where the poll message is.
      * @param message - The poll message or its ID.
+     * @category Messages
      */
     closePoll(entity: EntityLike, message: MessageIDLike) {
         return messageMethods.closePoll(this, entity, message);
@@ -1234,6 +1270,7 @@ export class TelegramClient<
      *
      * @param entity - The chat whose scheduled messages should be fetched.
      * @param ids - Specific scheduled message ID(s). Omit to fetch all.
+     * @category Messages
      */
     getScheduledMessages(entity: EntityLike, ids?: number | number[]) {
         return messageMethods.getScheduledMessages(this, entity, ids);
@@ -1245,6 +1282,7 @@ export class TelegramClient<
      * @param entity - The chat where the scheduled messages are.
      * @param ids - The scheduled message ID(s) to send now.
      * @returns The sent messages.
+     * @category Messages
      */
     sendScheduledMessages(entity: EntityLike, ids: number | number[]) {
         return messageMethods.sendScheduledMessages(this, entity, ids);
@@ -1255,6 +1293,7 @@ export class TelegramClient<
      *
      * @param entity - The chat where the scheduled messages are.
      * @param ids - The scheduled message ID(s) to delete.
+     * @category Messages
      */
     deleteScheduledMessages(entity: EntityLike, ids: number | number[]) {
         return messageMethods.deleteScheduledMessages(this, entity, ids);
@@ -1266,6 +1305,7 @@ export class TelegramClient<
      *
      * @param entity - The chat the messages should be copied to.
      * @param copyMessagesParams - see {@link ForwardMessagesParams}.
+     * @category Messages
      */
     copyMessages(
         entity: EntityLike,
@@ -1286,6 +1326,7 @@ export class TelegramClient<
      * ```ts
      * await client.saveDraft(chat, { message: "answer this tomorrow", replyTo: 123 });
      * ```
+     * @category Messages
      */
     saveDraft(entity: EntityLike, params?: messageMethods.SaveDraftParams) {
         return messageMethods.saveDraft(this, entity, params);
@@ -1295,6 +1336,7 @@ export class TelegramClient<
      * Clears the message draft in the given chat.
      *
      * @param entity - The chat whose draft should be cleared.
+     * @category Messages
      */
     clearDraft(entity: EntityLike) {
         return messageMethods.clearDraft(this, entity);
@@ -1317,6 +1359,7 @@ export class TelegramClient<
      * ```ts
      * const message = await client.getMessageByLink("https://t.me/durov/123");
      * ```
+     * @category Messages
      */
     getMessageByLink(link: string) {
         return messageMethods.getMessageByLink(this, link);
@@ -1328,6 +1371,7 @@ export class TelegramClient<
      *
      * @param entity - The broadcast channel where the post is.
      * @param message - The channel post or its ID.
+     * @category Messages
      */
     getDiscussionMessage(entity: EntityLike, message: MessageIDLike) {
         return messageMethods.getDiscussionMessage(this, entity, message);
@@ -1341,6 +1385,7 @@ export class TelegramClient<
      *
      * @param entity - The chat where the message is.
      * @param message - The message or its ID.
+     * @category Messages
      */
     getRichMessage(entity: EntityLike, message: MessageIDLike) {
         return messageMethods.getRichMessage(this, entity, message);
@@ -1361,6 +1406,7 @@ export class TelegramClient<
      *     console.log(`${dialog.id}: ${dialog.title}`);
      * }
      * ```
+     * @category Dialogs
      */
     iterDialogs(iterDialogsParams: dialogMethods.IterDialogsParams = {}) {
         return dialogMethods.iterDialogs(this, iterDialogsParams);
@@ -1387,6 +1433,7 @@ export class TelegramClient<
      * archived = await client.get_dialogs({folder:1})
      * archived = await client.get_dialogs({archived:true})
      * ```
+     * @category Dialogs
      */
     getDialogs(params: dialogMethods.IterDialogsParams = {}) {
         return dialogMethods.getDialogs(this, params);
@@ -1424,6 +1471,7 @@ export class TelegramClient<
      *     console.log("admin first name is ",user.firstName);
      * }
      * ```
+     * @category Chats
      */
     iterParticipants(
         entity: EntityLike,
@@ -1438,6 +1486,7 @@ export class TelegramClient<
      * @param entity - entity to get users from.
      * @param params - {@link IterParticipantsParams}.
      * @return
+     * @category Chats
      */
     getParticipants(
         entity: EntityLike,
@@ -1462,6 +1511,7 @@ export class TelegramClient<
      *
      * // Leaving chat
      * await client.kickParticipant(chat, 'me');
+     * @category Chats
      */
     kickParticipant(entity: EntityLike, participant: EntityLike) {
         return chatMethods.kickParticipant(this, entity, participant);
@@ -1477,6 +1527,7 @@ export class TelegramClient<
      * const result = await client.getParticipant(channel, "username");
      * console.log(result.participant); // ChannelParticipant | ChannelParticipantAdmin | …
      * ```
+     * @category Chats
      */
     getParticipant(entity: EntityLike, participant: EntityLike) {
         return chatMethods.getParticipant(this, entity, participant);
@@ -1498,6 +1549,7 @@ export class TelegramClient<
      * await client.editBanned(chat, user, { sendMedia: true });  // mute media
      * await client.editBanned(chat, user, {});                   // unban
      * ```
+     * @category Chats
      */
     editBanned(
         entity: EntityLike,
@@ -1520,6 +1572,7 @@ export class TelegramClient<
      * await client.editAdmin(chat, user, { deleteMessages: true, banUsers: true, rank: "mod" });
      * await client.editAdmin(chat, user, {}); // demote
      * ```
+     * @category Chats
      */
     editAdmin(
         entity: EntityLike,
@@ -1535,6 +1588,7 @@ export class TelegramClient<
      *
      * @param entity - The chat.
      * @param params - The restrictions applying to every member, see {@link EditBannedParams}.
+     * @category Chats
      */
     editChatDefaultBannedRights(
         entity: EntityLike,
@@ -1548,6 +1602,7 @@ export class TelegramClient<
      *
      * @param entity - The chat to rename.
      * @param title - The new title.
+     * @category Chats
      */
     editTitle(entity: EntityLike, title: string) {
         return chatMethods.editTitle(this, entity, title);
@@ -1558,6 +1613,7 @@ export class TelegramClient<
      *
      * @param entity - The chat.
      * @param photo - The new photo (path, Buffer, uploaded file…), a raw {@link Api.TypeInputChatPhoto}, or omit to delete the current photo.
+     * @category Chats
      */
     editPhoto(entity: EntityLike, photo?: FileLike | Api.TypeInputChatPhoto) {
         return chatMethods.editPhoto(this, entity, photo);
@@ -1569,6 +1625,7 @@ export class TelegramClient<
      *
      * @param entity - The chat.
      * @param about - The new description.
+     * @category Chats
      */
     editChatAbout(entity: EntityLike, about: string) {
         return chatMethods.editChatAbout(this, entity, about);
@@ -1580,6 +1637,7 @@ export class TelegramClient<
      *
      * @param entity - The supergroup.
      * @param seconds - Seconds users must wait between messages. `0` (the default) disables slow mode. Allowed values: 0, 10, 30, 60, 300, 900, 3600.
+     * @category Chats
      */
     toggleSlowMode(entity: EntityLike, seconds?: number) {
         return chatMethods.toggleSlowMode(this, entity, seconds);
@@ -1596,6 +1654,7 @@ export class TelegramClient<
      * const channel = await client.createChannel({ title: "My channel", about: "news" });
      * const group = await client.createChannel({ title: "My group", megagroup: true });
      * ```
+     * @category Chats
      */
     createChannel(params: chatMethods.CreateChannelParams) {
         return chatMethods.createChannel(this, params);
@@ -1606,6 +1665,7 @@ export class TelegramClient<
      *
      * @param params - see {@link CreateChatParams}.
      * @returns The created chat and the users that could not be invited.
+     * @category Chats
      */
     createChat(params: chatMethods.CreateChatParams) {
         return chatMethods.createChat(this, params);
@@ -1616,6 +1676,7 @@ export class TelegramClient<
      * To join via an invite link use {@link importChatInvite}.
      *
      * @param entity - The channel to join.
+     * @category Chats
      */
     joinChannel(entity: EntityLike) {
         return chatMethods.joinChannel(this, entity);
@@ -1625,6 +1686,7 @@ export class TelegramClient<
      * Joins a chat via an invite link (`messages.importChatInvite`).
      *
      * @param link - The invite link (`https://t.me/+hash`) or the bare hash.
+     * @category Chats
      */
     importChatInvite(link: string) {
         return chatMethods.importChatInvite(this, link);
@@ -1634,6 +1696,7 @@ export class TelegramClient<
      * Leaves a channel or supergroup (`channels.leaveChannel`).
      *
      * @param entity - The channel to leave.
+     * @category Chats
      */
     leaveChannel(entity: EntityLike) {
         return chatMethods.leaveChannel(this, entity);
@@ -1645,6 +1708,7 @@ export class TelegramClient<
      *
      * @param entity - The chat whose history should be deleted.
      * @param params - see {@link DeleteHistoryParams}.
+     * @category Chats
      */
     deleteHistory(
         entity: EntityLike,
@@ -1664,6 +1728,7 @@ export class TelegramClient<
      * await client.editPeerFolders(chat, 1); // archive
      * await client.editPeerFolders([chatA, chatB], 0); // unarchive
      * ```
+     * @category Chats
      */
     editPeerFolders(entity: EntityLike | EntityLike[], folderId: number) {
         return chatMethods.editPeerFolders(this, entity, folderId);
@@ -1682,6 +1747,7 @@ export class TelegramClient<
      *     console.log(event.action.className, event.userId.toString());
      * }
      * ```
+     * @category Chats
      */
     iterAdminLog(entity: EntityLike, params?: chatMethods.AdminLogParams) {
         return chatMethods.iterAdminLog(this, entity, params);
@@ -1689,10 +1755,11 @@ export class TelegramClient<
 
     /**
      * Gets the admin log (recent actions) of a channel/supergroup.
-     * Same as {@link iterAdminLog}, but returns a collected array.
+     * Same as {@link TelegramClient.iterAdminLog}, but returns a collected array.
      *
      * @param entity - The channel/supergroup.
      * @param params - see {@link AdminLogParams}.
+     * @category Chats
      */
     getAdminLog(entity: EntityLike, params?: chatMethods.AdminLogParams) {
         return chatMethods.getAdminLog(this, entity, params);
@@ -1712,6 +1779,7 @@ export class TelegramClient<
      * await client.setTyping(chat, "record-video");  // recording video…
      * await client.setTyping(chat, "cancel");        // stop
      * ```
+     * @category Chats
      */
     setTyping(
         entity: EntityLike,
@@ -1727,6 +1795,7 @@ export class TelegramClient<
      *
      * @param entity - The user.
      * @param params - see {@link GetCommonChatsParams}.
+     * @category Chats
      */
     getCommonChats(
         entity: EntityLike,
@@ -1748,6 +1817,7 @@ export class TelegramClient<
      * const invite = await client.exportChatInvite(chat, { usageLimit: 10, requestNeeded: true });
      * if (invite instanceof Api.ChatInviteExported) console.log(invite.link);
      * ```
+     * @category Invite Links
      */
     exportChatInvite(
         entity: EntityLike,
@@ -1762,6 +1832,7 @@ export class TelegramClient<
      * @param entity - The chat the link belongs to.
      * @param link - The invite link to edit.
      * @param params - see {@link EditExportedChatInviteParams}. Pass `{ revoked: true }` to revoke.
+     * @category Invite Links
      */
     editExportedChatInvite(
         entity: EntityLike,
@@ -1782,6 +1853,7 @@ export class TelegramClient<
      *
      * @param entity - The chat the link belongs to.
      * @param link - The invite link.
+     * @category Invite Links
      */
     getExportedChatInvite(entity: EntityLike, link: string) {
         return inviteLinkMethods.getExportedChatInvite(this, entity, link);
@@ -1793,6 +1865,7 @@ export class TelegramClient<
      *
      * @param entity - The chat the link belongs to.
      * @param link - The revoked invite link to delete.
+     * @category Invite Links
      */
     deleteExportedChatInvite(entity: EntityLike, link: string) {
         return inviteLinkMethods.deleteExportedChatInvite(this, entity, link);
@@ -1804,6 +1877,7 @@ export class TelegramClient<
      *
      * @param entity - The chat.
      * @param admin - The admin whose revoked links should be deleted. Defaults to yourself.
+     * @category Invite Links
      */
     deleteRevokedExportedChatInvites(entity: EntityLike, admin?: EntityLike) {
         return inviteLinkMethods.deleteRevokedExportedChatInvites(
@@ -1818,6 +1892,7 @@ export class TelegramClient<
      * with their link counts (`messages.getAdminsWithInvites`).
      *
      * @param entity - The chat.
+     * @category Invite Links
      */
     getAdminsWithInvites(entity: EntityLike) {
         return inviteLinkMethods.getAdminsWithInvites(this, entity);
@@ -1830,6 +1905,7 @@ export class TelegramClient<
      * @param entity - The chat.
      * @param params - see {@link ExportedChatInvitesParams}.
      * @yield instances of {@link Api.TypeExportedChatInvite}.
+     * @category Invite Links
      */
     iterExportedChatInvites(
         entity: EntityLike,
@@ -1844,6 +1920,7 @@ export class TelegramClient<
      *
      * @param entity - The chat.
      * @param params - see {@link ExportedChatInvitesParams}.
+     * @category Invite Links
      */
     getExportedChatInvites(
         entity: EntityLike,
@@ -1866,6 +1943,7 @@ export class TelegramClient<
      *     await client.hideChatJoinRequest(chat, request.userId, { approved: true });
      * }
      * ```
+     * @category Invite Links
      */
     iterChatInviteImporters(
         entity: EntityLike,
@@ -1881,6 +1959,7 @@ export class TelegramClient<
      *
      * @param entity - The chat.
      * @param params - see {@link ChatInviteImportersParams}.
+     * @category Invite Links
      */
     getChatInviteImporters(
         entity: EntityLike,
@@ -1896,6 +1975,7 @@ export class TelegramClient<
      * @param entity - The chat.
      * @param user - The user whose join request should be handled.
      * @param params - `{ approved: true }` approves; omitted or false declines.
+     * @category Invite Links
      */
     hideChatJoinRequest(
         entity: EntityLike,
@@ -1916,6 +1996,7 @@ export class TelegramClient<
      *
      * @param entity - The chat.
      * @param params - `approved: true` approves all; `link` restricts to requests from one invite link.
+     * @category Invite Links
      */
     hideAllChatJoinRequests(
         entity: EntityLike,
@@ -1930,6 +2011,7 @@ export class TelegramClient<
      * (`messages.checkChatInvite`).
      *
      * @param link - The invite link (`https://t.me/+hash`) or the bare hash.
+     * @category Invite Links
      */
     checkChatInvite(link: string) {
         return inviteLinkMethods.checkChatInvite(this, link);
@@ -1947,6 +2029,7 @@ export class TelegramClient<
      * ```ts
      * await client.updateProfile({ about: "using teleproto" });
      * ```
+     * @category Account
      */
     updateProfile(params: accountMethods.UpdateProfileParams) {
         return accountMethods.updateProfile(this, params);
@@ -1956,6 +2039,7 @@ export class TelegramClient<
      * Changes your username (`account.updateUsername`).
      *
      * @param username - The new username. Pass an empty string to remove it.
+     * @category Account
      */
     updateUsername(username: string) {
         return accountMethods.updateUsername(this, username);
@@ -1965,6 +2049,7 @@ export class TelegramClient<
      * Updates your online status (`account.updateStatus`).
      *
      * @param online - `true` (the default) to appear online, `false` to go offline immediately.
+     * @category Account
      */
     updateStatus(online?: boolean) {
         return accountMethods.updateStatus(this, online);
@@ -1979,6 +2064,7 @@ export class TelegramClient<
      * ```ts
      * await client.uploadProfilePhoto({ file: "me.jpg" });
      * ```
+     * @category Account
      */
     uploadProfilePhoto(params: accountMethods.UploadProfilePhotoParams) {
         return accountMethods.uploadProfilePhoto(this, params);
@@ -1991,6 +2077,7 @@ export class TelegramClient<
      * @param photo - The photo to reuse.
      * @param params.fallback - Set the fallback photo instead of the main one.
      * @param params.bot - Bot owners: change the photo of an owned bot.
+     * @category Account
      */
     updateProfilePhoto(
         photo: Api.TypeInputPhoto | Api.TypePhoto,
@@ -2003,6 +2090,7 @@ export class TelegramClient<
      * Deletes profile photos (`photos.deletePhotos`).
      *
      * @param photos - The photos to delete, e.g. from {@link getUserPhotos}.
+     * @category Account
      */
     deleteProfilePhotos(photos: (Api.TypeInputPhoto | Api.TypePhoto)[]) {
         return accountMethods.deleteProfilePhotos(this, photos);
@@ -2013,6 +2101,7 @@ export class TelegramClient<
      *
      * @param entity - The user.
      * @param params - see {@link GetUserPhotosParams}.
+     * @category Account
      */
     getUserPhotos(
         entity: EntityLike,
@@ -2025,6 +2114,7 @@ export class TelegramClient<
      * Gets your contact list (`contacts.getContacts`).
      *
      * @returns The contacts as {@link Api.User} objects.
+     * @category Account
      */
     getContacts() {
         return contactMethods.getContacts(this);
@@ -2035,6 +2125,7 @@ export class TelegramClient<
      *
      * @param entity - The user to add.
      * @param params - see {@link AddContactParams}.
+     * @category Account
      */
     addContact(entity: EntityLike, params: contactMethods.AddContactParams) {
         return contactMethods.addContact(this, entity, params);
@@ -2044,6 +2135,7 @@ export class TelegramClient<
      * Removes users from your contact list (`contacts.deleteContacts`).
      *
      * @param users - The contact(s) to remove.
+     * @category Account
      */
     deleteContacts(users: EntityLike | EntityLike[]) {
         return contactMethods.deleteContacts(this, users);
@@ -2054,6 +2146,7 @@ export class TelegramClient<
      *
      * @param contacts - The entries to import, see {@link ImportContactEntry}.
      * @returns Which entries were imported and which users were already on Telegram.
+     * @category Account
      */
     importContacts(contacts: contactMethods.ImportContactEntry[]) {
         return contactMethods.importContacts(this, contacts);
@@ -2064,6 +2157,7 @@ export class TelegramClient<
      *
      * @param entity - The peer to block.
      * @param params.myStoriesFrom - Only hide your stories from the peer instead of fully blocking.
+     * @category Account
      */
     block(entity: EntityLike, params?: { myStoriesFrom?: boolean }) {
         return contactMethods.block(this, entity, params);
@@ -2074,6 +2168,7 @@ export class TelegramClient<
      *
      * @param entity - The peer to unblock.
      * @param params.myStoriesFrom - Only unhide your stories instead of the full blocklist.
+     * @category Account
      */
     unblock(entity: EntityLike, params?: { myStoriesFrom?: boolean }) {
         return contactMethods.unblock(this, entity, params);
@@ -2083,6 +2178,7 @@ export class TelegramClient<
      * Gets your blocklist (`contacts.getBlocked`).
      *
      * @param params - see {@link GetBlockedParams}.
+     * @category Account
      */
     getBlocked(params?: contactMethods.GetBlockedParams) {
         return contactMethods.getBlocked(this, params);
@@ -2092,6 +2188,7 @@ export class TelegramClient<
      * Terminates other authorized sessions. Pass a session hash from
      * {@link getAuthorizations} to terminate one, or nothing to terminate
      * ALL other sessions (`account.resetAuthorization` / `auth.resetAuthorizations`).
+     * @category Account
      */
     resetAuthorization(hash?: BigInteger) {
         return accountMethods.resetAuthorization(this, hash);
@@ -2106,6 +2203,7 @@ export class TelegramClient<
      * Gets the privacy rules of a privacy key (`account.getPrivacy`).
      *
      * @param key - e.g. `new Api.InputPrivacyKeyStatusTimestamp()`.
+     * @category Account
      */
     getPrivacy(key: Api.TypeInputPrivacyKey) {
         return accountMethods.getPrivacy(this, key);
@@ -2116,6 +2214,7 @@ export class TelegramClient<
      *
      * @param key - e.g. `new Api.InputPrivacyKeyStatusTimestamp()`.
      * @param rules - e.g. `[new Api.InputPrivacyValueAllowContacts()]`.
+     * @category Account
      */
     setPrivacy(
         key: Api.TypeInputPrivacyKey,
@@ -2137,6 +2236,7 @@ export class TelegramClient<
      * ```ts
      * await client.updateNotifySettings(chat, { muteUntil: 2147483647 }); // mute forever
      * ```
+     * @category Account
      */
     updateNotifySettings(
         entity: EntityLike | Api.TypeInputNotifyPeer,
@@ -2173,6 +2273,7 @@ export class TelegramClient<
      *
      * @param entity - The forum.
      * @param params - see {@link CreateForumTopicParams}.
+     * @category Forums
      */
     createForumTopic(
         entity: EntityLike,
@@ -2192,6 +2293,7 @@ export class TelegramClient<
      * ```ts
      * await client.editForumTopic(forum, 123, { closed: true });
      * ```
+     * @category Forums
      */
     editForumTopic(
         entity: EntityLike,
@@ -2235,6 +2337,7 @@ export class TelegramClient<
      *
      * @param entity - The forum.
      * @param params - see {@link GetForumTopicsParams}.
+     * @category Forums
      */
     getForumTopics(
         entity: EntityLike,
@@ -2270,6 +2373,7 @@ export class TelegramClient<
      * ```ts
      * await client.sendStory("me", { media: "photo.jpg", caption: "hello" });
      * ```
+     * @category Stories
      */
     sendStory(entity: EntityLike, params: storyMethods.SendStoryParams) {
         return storyMethods.sendStory(this, entity, params);
@@ -2362,6 +2466,7 @@ export class TelegramClient<
      * Reacts to a story (`stories.sendReaction`).
      *
      * @param reaction - An emoji string, a custom emoji document ID, or a raw {@link Api.TypeReaction}. Omit to remove the reaction.
+     * @category Stories
      */
     sendStoryReaction(
         entity: EntityLike,
@@ -2392,6 +2497,7 @@ export class TelegramClient<
      *
      * @param id - The folder ID (2-255).
      * @param filter - The new folder definition, or omit to delete the folder.
+     * @category Folders & Stickers
      */
     updateDialogFilter(id: number, filter?: Api.TypeDialogFilter) {
         return folderMethods.updateDialogFilter(this, id, filter);
@@ -2406,6 +2512,7 @@ export class TelegramClient<
      * Gets a sticker set with all its stickers (`messages.getStickerSet`).
      *
      * @param set - The set's short name (from its t.me/addstickers link) or a raw {@link Api.TypeInputStickerSet}.
+     * @category Folders & Stickers
      */
     getStickerSet(set: stickerMethods.InputStickerSetLike) {
         return stickerMethods.getStickerSet(this, set);
@@ -2477,6 +2584,7 @@ export class TelegramClient<
      * ```ts
      * await client.setBotCommands([{ command: "start", description: "Start the bot" }]);
      * ```
+     * @category Bots
      */
     setBotCommands(
         commands: botMethods.BotCommandEntry[],
@@ -2527,6 +2635,7 @@ export class TelegramClient<
      * const t = await client.translateText({ entity: chat, ids: 123, toLang: "en" });
      * const t2 = await client.translateText({ text: "привет", toLang: "en" });
      * ```
+     * @category Messages
      */
     translateText(params: messageMethods.TranslateTextParams) {
         return messageMethods.translateText(this, params);
@@ -2535,6 +2644,7 @@ export class TelegramClient<
     /**
      * Gets (and optionally increments) the view/forward counters of channel
      * posts (`messages.getMessagesViews`).
+     * @category Messages
      */
     getMessagesViews(
         entity: EntityLike,
@@ -2570,6 +2680,7 @@ export class TelegramClient<
      *     stream.write(chunk);
      * }
      * ```
+     * @category Messages
      */
     iterDownload(
         file:
@@ -2595,6 +2706,7 @@ export class TelegramClient<
      *     console.log(event.message.text);
      * });
      * ```
+     * @category Updates
      */
     on(event: NewMessage): (f: (event: NewMessageEvent) => void) => void;
     on(event: CallbackQuery): (f: (event: CallbackQueryEvent) => void) => void;
@@ -2628,6 +2740,7 @@ export class TelegramClient<
      * }
      * client.addEventHandler(handler, new NewMessage({}));
      ```
+     * @category Updates
      */
     addEventHandler(
         callback: { (event: NewMessageEvent): void },
@@ -2662,6 +2775,7 @@ export class TelegramClient<
      *
      * @param callback - the callback function to be removed.
      * @param event - the type of the event.
+     * @category Updates
      */
     removeEventHandler(callback: CallableFunction, event: EventBuilder) {
         return updateMethods.removeEventHandler(this, callback, event);
@@ -2670,6 +2784,7 @@ export class TelegramClient<
     /**
      * Lists all registered event handlers.
      * @return pair of [eventBuilder,CallableFunction]
+     * @category Updates
      */
     listEventHandlers() {
         return updateMethods.listEventHandlers(this);
@@ -2683,6 +2798,7 @@ export class TelegramClient<
      * await client.connect();
      * await client.catchUp(); // Fetch missed updates
      * ```
+     * @category Updates
      */
     async catchUp() {
         return catchUp(this);
@@ -2691,7 +2807,7 @@ export class TelegramClient<
     // region uploads
     /**
      * Uploads a file to Telegram's servers, without sending it.
-     * @remarks generally it's better to use {@link sendFile} instead.
+     * @remarks generally it's better to use {@link TelegramClient.sendFile} instead.
      * This method returns a handle (an instance of InputFile or InputFileBig, as required) which can be later used before it expires (they are usable during less than a day).<br/>
      * Uploading a file will simply return a "handle" to the file stored remotely in the Telegram servers,
      * which can be later used on. This will not upload the file to your own chat or any chat at all.
@@ -2710,6 +2826,7 @@ export class TelegramClient<
      *      file: file,
      *  }));
      * ```
+     * @category Files
      */
     uploadFile(fileParams: uploadMethods.UploadFileParams) {
         return uploadMethods.uploadFile(this, fileParams);
@@ -2717,7 +2834,7 @@ export class TelegramClient<
 
     /**
      * Sends message with the given file to the specified entity.
-     * This uses {@link uploadFile} internally so if you want more control over uploads you can use that.
+     * This uses {@link TelegramClient.uploadFile} internally so if you want more control over uploads you can use that.
      * @param entity - who will receive the file.
      * @param sendFileParams - see {@link SendFileInterface}
      * @example
@@ -2752,6 +2869,7 @@ export class TelegramClient<
      *  vcard:''
      *  }))
      * ```
+     * @category Files
      */
     sendFile(
         entity: EntityLike,
@@ -2780,6 +2898,7 @@ export class TelegramClient<
      * console.log("does this username exist?",result);
      *
      * ```
+     * @category Users
      */
     invoke<R extends Api.AnyRequest>(
         request: R,
@@ -2810,6 +2929,7 @@ export class TelegramClient<
      * const dialogs = await client.api.messages.getDialogs({ limit: 10 });
      * const full = await client.api.users.getFullUser({ id: "me" });
      * ```
+     * @category Users
      */
     get api(): Api.ApiFacade {
         if (!this._apiProxy) {
@@ -2832,6 +2952,7 @@ export class TelegramClient<
      * const me = await client.getMe();
      * console.log("My username is",me.username);
      * ```
+     * @category Users
      */
     getMe(inputPeer: true): Promise<Api.InputPeerUser>;
     getMe(inputPeer?: false): Promise<Api.User>;
@@ -2849,6 +2970,7 @@ export class TelegramClient<
      *     console.log("I am a human. Pies are delicious);
      * }
      * ```
+     * @category Users
      */
     isBot() {
         return userMethods.isBot(this);
@@ -2862,6 +2984,7 @@ export class TelegramClient<
      * }else{
      *     console.log("I am not logged in. I need to sign in first before being able to call methods");
      * }
+     * @category Users
      */
     isUserAuthorized() {
         return userMethods.isUserAuthorized(this);
@@ -2935,6 +3058,7 @@ export class TelegramClient<
      * // The same applies to IDs, chats or channels.
      * chat = await client.getInputEntity(-123456789)
      * ```
+     * @category Users
      */
     getInputEntity(entity: EntityLike) {
         return userMethods.getInputEntity(this, entity);
@@ -2952,6 +3076,7 @@ export class TelegramClient<
      * ```ts
      * console.log(await client.getPeerId("me"));
      * ```
+     * @category Users
      */
     getPeerId(peer: EntityLike, addMark = true) {
         return userMethods.getPeerId(this, peer, addMark);
@@ -3080,6 +3205,7 @@ export class TelegramClient<
      * @param downloadDC whether to use -1 DCs or not
      * TODO, hardcode IPs.
      * (These only support downloading/uploading and not creating a new AUTH key)
+     * @category Connection
      */
     async getDC(
         dcId: number,

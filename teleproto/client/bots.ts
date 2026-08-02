@@ -31,7 +31,7 @@ export async function inlineQuery(
     return new InlineResults(client, result, entity ? peer : undefined);
 }
 
-/** One bot command for {@link setBotCommands}. */
+/** One bot command for {@link TelegramClient.setBotCommands}. */
 export interface BotCommandEntry {
     /** The command itself, without the leading `/` (1-32 chars: a-z, 0-9, _). */
     command: string;
@@ -97,7 +97,7 @@ export async function resetBotCommands(
     );
 }
 
-/** Parameters for {@link setBotInfo}. Only the fields you set are changed. */
+/** Parameters for {@link TelegramClient.setBotInfo}. Only the fields you set are changed. */
 export interface SetBotInfoParams {
     /** Bot owners: the owned bot to edit. Bots editing themselves can omit this. */
     bot?: EntityLike;

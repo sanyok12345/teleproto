@@ -236,13 +236,18 @@ export async function getExportedChatInvites(
     ).collect()) as TotalList<Api.TypeExportedChatInvite>;
 }
 
-/** Parameters for {@link iterChatInviteImporters}/{@link getChatInviteImporters}. */
+/**
+ * Parameters for {@link TelegramClient.iterChatInviteImporters}/{@link TelegramClient.getChatInviteImporters}.
+ *
+ * The server requires either `link` or `requested: true`; asking for a whole
+ * chat without narrowing it down fails with `INVITE_HASH_EXPIRED`.
+ */
 export interface ChatInviteImportersParams {
     /** How many importers to retrieve. Defaults to all. */
     limit?: number;
-    /** Only fetch users that joined via this specific link. */
+    /** Only fetch users that joined via this specific link. Required unless `requested` is set. */
     link?: string;
-    /** Only fetch pending join requests instead of joined users. */
+    /** Fetch pending join requests instead of joined users. Required unless `link` is set. */
     requested?: boolean;
     /** Only fetch users whose channel subscription has expired. */
     subscriptionExpired?: boolean;

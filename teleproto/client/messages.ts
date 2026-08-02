@@ -1552,7 +1552,7 @@ export async function sendPoll(
                                 answer,
                                 poll.parseMode
                             ),
-                            option: Buffer.from([i]),
+                            option: Buffer.from([48 + i]),
                         })
                 )
             ),
@@ -1638,7 +1638,7 @@ export async function closePoll(
     client: TelegramClient,
     entity: EntityLike,
     message: MessageIDLike
-) {
+): Promise<Api.Poll> {
     const peer = await client.getInputEntity(entity);
     const msgId = utils.getMessageId(message);
     if (msgId == undefined) {
@@ -1662,7 +1662,14 @@ export async function closePoll(
         }),
     });
     const result = await client.invoke(request);
-    return client._getResponseMessage(request, result, peer) as Api.Message;
+    if ("updates" in result) {
+        for (const update of result.updates) {
+            if (update instanceof Api.UpdateMessagePoll && update.poll) {
+                return update.poll;
+            }
+        }
+    }
+    return _getMessagePoll(client, peer, msgId);
 }
 
 // endregion

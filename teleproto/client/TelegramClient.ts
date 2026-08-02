@@ -1259,6 +1259,9 @@ export class TelegramClient<
      *
      * @param entity - The chat where the poll message is.
      * @param message - The poll message or its ID.
+     * @returns The closed {@link Api.Poll} with its final results. Closing a
+     * poll emits an `updateMessagePoll`, not a message update, so there is no
+     * message to hand back here — read it with {@link TelegramClient.getMessages} if you need one.
      * @category Messages
      */
     closePoll(entity: EntityLike, message: MessageIDLike) {

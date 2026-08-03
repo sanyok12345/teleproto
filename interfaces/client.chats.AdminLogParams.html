@@ -1,0 +1,278 @@
+<!DOCTYPE html><html class="default" lang="en" data-base="../"><head><meta charset="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>AdminLogParams | teleproto - v1.228.5</title><meta name="description" content="Documentation for teleproto"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="../assets/style.css"/><link rel="stylesheet" href="../assets/highlight.css"/><script defer src="../assets/main.js"></script><script async src="../assets/icons.js" id="tsd-icons-script"></script><script async src="../assets/search.js" id="tsd-search-script"></script><script async src="../assets/navigation.js" id="tsd-nav-script"></script><script async src="../assets/hierarchy.js" id="tsd-hierarchy-script"></script></head><body><script>document.documentElement.dataset.theme = localStorage.getItem("tsd-theme") || "os";document.body.style.display="none";setTimeout(() => window.app?app.showPage():document.body.style.removeProperty("display"),500)</script><header class="tsd-page-toolbar">
+<div class="tsd-toolbar-contents container"><a href="https://docs.teleproto.dev" class="title">teleproto - v1.228.5</a>
+<div id="tsd-toolbar-links"><a href="https://github.com/sanyok12345/teleproto">GitHub</a><a href="https://www.npmjs.com/package/teleproto">npm</a><a href="https://github.com/sanyok12345/teleproto/issues">Issues</a></div><button id="tsd-search-trigger" class="tsd-widget" aria-label="Search"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-search"></use></svg></button><dialog id="tsd-search" aria-label="Search"><input role="combobox" id="tsd-search-input" aria-controls="tsd-search-results" aria-autocomplete="list" aria-expanded="true" autocapitalize="off" autocomplete="off" placeholder="Search the docs" maxLength="100"/>
+<ul role="listbox" id="tsd-search-results"></ul>
+<div id="tsd-search-status" aria-live="polite" aria-atomic="true">
+<div>Preparing search index...</div></div></dialog><a href="#" class="tsd-widget menu" id="tsd-toolbar-menu-trigger" data-toggle="menu" aria-label="Menu"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-menu"></use></svg></a></div></header>
+<div class="container container-main">
+<div class="col-content">
+<div class="tsd-page-title">
+<ul class="tsd-breadcrumb" aria-label="Breadcrumb">
+<li><a href="../modules/client.html">client</a></li>
+<li><a href="../modules/client.chats.html">chats</a></li>
+<li><a href="" aria-current="page">AdminLogParams</a></li></ul>
+<h1>Interface AdminLogParams</h1></div>
+<section class="tsd-panel tsd-comment">
+<div class="tsd-comment tsd-typography"><p>Parameters for <a href="../classes/TelegramClient.html#iteradminlog" class="tsd-kind-method">TelegramClient.iterAdminLog</a>/<a href="../classes/TelegramClient.html#getadminlog" class="tsd-kind-method">TelegramClient.getAdminLog</a>.</p>
+</div></section>
+<div class="tsd-signature"><span class="tsd-signature-keyword">interface</span> <span class="tsd-kind-interface">AdminLogParams</span> <span class="tsd-signature-symbol">{</span><br/>    <a class="tsd-kind-property" href="#admins">admins</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">EntitiesLike</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#ban">ban</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#delete">delete</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#demote">demote</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#edit">edit</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#editrank">editRank</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#forums">forums</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#groupcall">groupCall</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#info">info</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#invite">invite</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#invites">invites</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#join">join</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#kick">kick</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#leave">leave</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#limit">limit</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#maxid">maxId</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">BigInteger</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#minid">minId</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">BigInteger</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#pinned">pinned</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#promote">promote</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#search">search</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#send">send</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#settings">settings</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#subextend">subExtend</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#unban">unban</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#unkick">unkick</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">;</span><br/><span class="tsd-signature-symbol">}</span></div>
+<section class="tsd-panel tsd-hierarchy" data-refl="127537">
+<h4>Hierarchy (<a href="../hierarchy.html#client.chats.AdminLogParams">View Summary</a>)</h4>
+<ul class="tsd-hierarchy">
+<li class="tsd-hierarchy-item"><a href="client.chats.AdminLogFilterParams.html" class="tsd-signature-type tsd-kind-interface">AdminLogFilterParams</a>
+<ul class="tsd-hierarchy">
+<li class="tsd-hierarchy-item"><span class="tsd-hierarchy-target">AdminLogParams</span></li></ul></li></ul></section><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/chats.ts#L362">teleproto/client/chats.ts:362</a></li></ul></aside>
+<section class="tsd-panel-group tsd-index-group">
+<section class="tsd-panel tsd-index-panel">
+<details class="tsd-index-content tsd-accordion" open><summary class="tsd-accordion-summary tsd-index-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
+<h5 class="tsd-index-heading uppercase">Index</h5></summary>
+<div class="tsd-accordion-details">
+<section class="tsd-index-section">
+<h3 class="tsd-index-heading tsd-anchor-link" id="properties">Properties<a href="#properties" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<div class="tsd-index-list"><a href="#admins" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>admins?</span></a>
+<a href="#ban" class="tsd-index-link tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>ban?</span></a>
+<a href="#delete" class="tsd-index-link tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>delete?</span></a>
+<a href="#demote" class="tsd-index-link tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>demote?</span></a>
+<a href="#edit" class="tsd-index-link tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>edit?</span></a>
+<a href="#editrank" class="tsd-index-link tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>edit<wbr/>Rank?</span></a>
+<a href="#forums" class="tsd-index-link tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>forums?</span></a>
+<a href="#groupcall" class="tsd-index-link tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>group<wbr/>Call?</span></a>
+<a href="#info" class="tsd-index-link tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>info?</span></a>
+<a href="#invite" class="tsd-index-link tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>invite?</span></a>
+<a href="#invites" class="tsd-index-link tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>invites?</span></a>
+<a href="#join" class="tsd-index-link tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>join?</span></a>
+<a href="#kick" class="tsd-index-link tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>kick?</span></a>
+<a href="#leave" class="tsd-index-link tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>leave?</span></a>
+<a href="#limit" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>limit?</span></a>
+<a href="#maxid" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>max<wbr/>Id?</span></a>
+<a href="#minid" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>min<wbr/>Id?</span></a>
+<a href="#pinned" class="tsd-index-link tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>pinned?</span></a>
+<a href="#promote" class="tsd-index-link tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>promote?</span></a>
+<a href="#search" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>search?</span></a>
+<a href="#send" class="tsd-index-link tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>send?</span></a>
+<a href="#settings" class="tsd-index-link tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>settings?</span></a>
+<a href="#subextend" class="tsd-index-link tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>sub<wbr/>Extend?</span></a>
+<a href="#unban" class="tsd-index-link tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>unban?</span></a>
+<a href="#unkick" class="tsd-index-link tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>unkick?</span></a>
+</div></section></div></details></section></section>
+<details class="tsd-panel-group tsd-member-group tsd-accordion" open><summary class="tsd-accordion-summary" data-key="section-Properties"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
+<h2 class="tsd-anchor-link" id="properties-1">Properties<a href="#properties-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h2></summary>
+<section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="admins"><code class="tsd-tag">Optional</code><span>admins</span><a href="#admins" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">admins</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">EntitiesLike</span></div>
+<div class="tsd-comment tsd-typography"><p>Only show events from these admins.</p>
+</div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/chats.ts#L368">teleproto/client/chats.ts:368</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member tsd-is-inherited">
+<h3 class="tsd-anchor-link" id="ban"><code class="tsd-tag">Optional</code><span>ban</span><a href="#ban" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">ban</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span></div>
+<div class="tsd-comment tsd-typography"><p>Ban events.</p>
+</div><aside class="tsd-sources">
+<p>Inherited from <a href="client.chats.AdminLogFilterParams.html">AdminLogFilterParams</a>.<a href="client.chats.AdminLogFilterParams.html#ban">ban</a></p>
+<ul>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/chats.ts#L326">teleproto/client/chats.ts:326</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member tsd-is-inherited">
+<h3 class="tsd-anchor-link" id="delete"><code class="tsd-tag">Optional</code><span>delete</span><a href="#delete" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">delete</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span></div>
+<div class="tsd-comment tsd-typography"><p>Message delete events.</p>
+</div><aside class="tsd-sources">
+<p>Inherited from <a href="client.chats.AdminLogFilterParams.html">AdminLogFilterParams</a>.<a href="client.chats.AdminLogFilterParams.html#delete">delete</a></p>
+<ul>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/chats.ts#L346">teleproto/client/chats.ts:346</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member tsd-is-inherited">
+<h3 class="tsd-anchor-link" id="demote"><code class="tsd-tag">Optional</code><span>demote</span><a href="#demote" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">demote</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span></div>
+<div class="tsd-comment tsd-typography"><p>Admin demotion events.</p>
+</div><aside class="tsd-sources">
+<p>Inherited from <a href="client.chats.AdminLogFilterParams.html">AdminLogFilterParams</a>.<a href="client.chats.AdminLogFilterParams.html#demote">demote</a></p>
+<ul>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/chats.ts#L336">teleproto/client/chats.ts:336</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member tsd-is-inherited">
+<h3 class="tsd-anchor-link" id="edit"><code class="tsd-tag">Optional</code><span>edit</span><a href="#edit" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">edit</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span></div>
+<div class="tsd-comment tsd-typography"><p>Message edit events.</p>
+</div><aside class="tsd-sources">
+<p>Inherited from <a href="client.chats.AdminLogFilterParams.html">AdminLogFilterParams</a>.<a href="client.chats.AdminLogFilterParams.html#edit">edit</a></p>
+<ul>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/chats.ts#L344">teleproto/client/chats.ts:344</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member tsd-is-inherited">
+<h3 class="tsd-anchor-link" id="editrank"><code class="tsd-tag">Optional</code><span>edit<wbr/>Rank</span><a href="#editrank" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">editRank</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span></div>
+<div class="tsd-comment tsd-typography"><p>Admin custom-rank change events.</p>
+</div><aside class="tsd-sources">
+<p>Inherited from <a href="client.chats.AdminLogFilterParams.html">AdminLogFilterParams</a>.<a href="client.chats.AdminLogFilterParams.html#editrank">editRank</a></p>
+<ul>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/chats.ts#L358">teleproto/client/chats.ts:358</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member tsd-is-inherited">
+<h3 class="tsd-anchor-link" id="forums"><code class="tsd-tag">Optional</code><span>forums</span><a href="#forums" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">forums</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span></div>
+<div class="tsd-comment tsd-typography"><p>Forum topic events.</p>
+</div><aside class="tsd-sources">
+<p>Inherited from <a href="client.chats.AdminLogFilterParams.html">AdminLogFilterParams</a>.<a href="client.chats.AdminLogFilterParams.html#forums">forums</a></p>
+<ul>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/chats.ts#L354">teleproto/client/chats.ts:354</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member tsd-is-inherited">
+<h3 class="tsd-anchor-link" id="groupcall"><code class="tsd-tag">Optional</code><span>group<wbr/>Call</span><a href="#groupcall" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">groupCall</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span></div>
+<div class="tsd-comment tsd-typography"><p>Group call events.</p>
+</div><aside class="tsd-sources">
+<p>Inherited from <a href="client.chats.AdminLogFilterParams.html">AdminLogFilterParams</a>.<a href="client.chats.AdminLogFilterParams.html#groupcall">groupCall</a></p>
+<ul>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/chats.ts#L348">teleproto/client/chats.ts:348</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member tsd-is-inherited">
+<h3 class="tsd-anchor-link" id="info"><code class="tsd-tag">Optional</code><span>info</span><a href="#info" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">info</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span></div>
+<div class="tsd-comment tsd-typography"><p>Info changes (title, about, photo…).</p>
+</div><aside class="tsd-sources">
+<p>Inherited from <a href="client.chats.AdminLogFilterParams.html">AdminLogFilterParams</a>.<a href="client.chats.AdminLogFilterParams.html#info">info</a></p>
+<ul>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/chats.ts#L338">teleproto/client/chats.ts:338</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member tsd-is-inherited">
+<h3 class="tsd-anchor-link" id="invite"><code class="tsd-tag">Optional</code><span>invite</span><a href="#invite" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">invite</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span></div>
+<div class="tsd-comment tsd-typography"><p>Invite events.</p>
+</div><aside class="tsd-sources">
+<p>Inherited from <a href="client.chats.AdminLogFilterParams.html">AdminLogFilterParams</a>.<a href="client.chats.AdminLogFilterParams.html#invite">invite</a></p>
+<ul>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/chats.ts#L324">teleproto/client/chats.ts:324</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member tsd-is-inherited">
+<h3 class="tsd-anchor-link" id="invites"><code class="tsd-tag">Optional</code><span>invites</span><a href="#invites" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">invites</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span></div>
+<div class="tsd-comment tsd-typography"><p>Invite link create/edit/revoke/delete events.</p>
+</div><aside class="tsd-sources">
+<p>Inherited from <a href="client.chats.AdminLogFilterParams.html">AdminLogFilterParams</a>.<a href="client.chats.AdminLogFilterParams.html#invites">invites</a></p>
+<ul>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/chats.ts#L350">teleproto/client/chats.ts:350</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member tsd-is-inherited">
+<h3 class="tsd-anchor-link" id="join"><code class="tsd-tag">Optional</code><span>join</span><a href="#join" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">join</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span></div>
+<div class="tsd-comment tsd-typography"><p>Join events, including joins via invite links.</p>
+</div><aside class="tsd-sources">
+<p>Inherited from <a href="client.chats.AdminLogFilterParams.html">AdminLogFilterParams</a>.<a href="client.chats.AdminLogFilterParams.html#join">join</a></p>
+<ul>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/chats.ts#L320">teleproto/client/chats.ts:320</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member tsd-is-inherited">
+<h3 class="tsd-anchor-link" id="kick"><code class="tsd-tag">Optional</code><span>kick</span><a href="#kick" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">kick</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span></div>
+<div class="tsd-comment tsd-typography"><p>Kick events.</p>
+</div><aside class="tsd-sources">
+<p>Inherited from <a href="client.chats.AdminLogFilterParams.html">AdminLogFilterParams</a>.<a href="client.chats.AdminLogFilterParams.html#kick">kick</a></p>
+<ul>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/chats.ts#L330">teleproto/client/chats.ts:330</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member tsd-is-inherited">
+<h3 class="tsd-anchor-link" id="leave"><code class="tsd-tag">Optional</code><span>leave</span><a href="#leave" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">leave</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span></div>
+<div class="tsd-comment tsd-typography"><p>Leave events.</p>
+</div><aside class="tsd-sources">
+<p>Inherited from <a href="client.chats.AdminLogFilterParams.html">AdminLogFilterParams</a>.<a href="client.chats.AdminLogFilterParams.html#leave">leave</a></p>
+<ul>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/chats.ts#L322">teleproto/client/chats.ts:322</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="limit"><code class="tsd-tag">Optional</code><span>limit</span><a href="#limit" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">limit</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span></div>
+<div class="tsd-comment tsd-typography"><p>How many events to retrieve. Defaults to all.</p>
+</div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/chats.ts#L364">teleproto/client/chats.ts:364</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="maxid"><code class="tsd-tag">Optional</code><span>max<wbr/>Id</span><a href="#maxid" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">maxId</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">BigInteger</span></div>
+<div class="tsd-comment tsd-typography"><p>Maximum event ID.</p>
+</div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/chats.ts#L372">teleproto/client/chats.ts:372</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="minid"><code class="tsd-tag">Optional</code><span>min<wbr/>Id</span><a href="#minid" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">minId</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">BigInteger</span></div>
+<div class="tsd-comment tsd-typography"><p>Minimum event ID.</p>
+</div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/chats.ts#L370">teleproto/client/chats.ts:370</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member tsd-is-inherited">
+<h3 class="tsd-anchor-link" id="pinned"><code class="tsd-tag">Optional</code><span>pinned</span><a href="#pinned" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">pinned</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span></div>
+<div class="tsd-comment tsd-typography"><p>Message pin events.</p>
+</div><aside class="tsd-sources">
+<p>Inherited from <a href="client.chats.AdminLogFilterParams.html">AdminLogFilterParams</a>.<a href="client.chats.AdminLogFilterParams.html#pinned">pinned</a></p>
+<ul>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/chats.ts#L342">teleproto/client/chats.ts:342</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member tsd-is-inherited">
+<h3 class="tsd-anchor-link" id="promote"><code class="tsd-tag">Optional</code><span>promote</span><a href="#promote" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">promote</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span></div>
+<div class="tsd-comment tsd-typography"><p>Admin promotion events.</p>
+</div><aside class="tsd-sources">
+<p>Inherited from <a href="client.chats.AdminLogFilterParams.html">AdminLogFilterParams</a>.<a href="client.chats.AdminLogFilterParams.html#promote">promote</a></p>
+<ul>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/chats.ts#L334">teleproto/client/chats.ts:334</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="search"><code class="tsd-tag">Optional</code><span>search</span><a href="#search" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">search</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">string</span></div>
+<div class="tsd-comment tsd-typography"><p>Search query to filter events.</p>
+</div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/chats.ts#L366">teleproto/client/chats.ts:366</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member tsd-is-inherited">
+<h3 class="tsd-anchor-link" id="send"><code class="tsd-tag">Optional</code><span>send</span><a href="#send" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">send</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span></div>
+<div class="tsd-comment tsd-typography"><p>Message send events.</p>
+</div><aside class="tsd-sources">
+<p>Inherited from <a href="client.chats.AdminLogFilterParams.html">AdminLogFilterParams</a>.<a href="client.chats.AdminLogFilterParams.html#send">send</a></p>
+<ul>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/chats.ts#L352">teleproto/client/chats.ts:352</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member tsd-is-inherited">
+<h3 class="tsd-anchor-link" id="settings"><code class="tsd-tag">Optional</code><span>settings</span><a href="#settings" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">settings</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span></div>
+<div class="tsd-comment tsd-typography"><p>Settings changes.</p>
+</div><aside class="tsd-sources">
+<p>Inherited from <a href="client.chats.AdminLogFilterParams.html">AdminLogFilterParams</a>.<a href="client.chats.AdminLogFilterParams.html#settings">settings</a></p>
+<ul>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/chats.ts#L340">teleproto/client/chats.ts:340</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member tsd-is-inherited">
+<h3 class="tsd-anchor-link" id="subextend"><code class="tsd-tag">Optional</code><span>sub<wbr/>Extend</span><a href="#subextend" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">subExtend</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span></div>
+<div class="tsd-comment tsd-typography"><p>Channel subscription extension events.</p>
+</div><aside class="tsd-sources">
+<p>Inherited from <a href="client.chats.AdminLogFilterParams.html">AdminLogFilterParams</a>.<a href="client.chats.AdminLogFilterParams.html#subextend">subExtend</a></p>
+<ul>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/chats.ts#L356">teleproto/client/chats.ts:356</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member tsd-is-inherited">
+<h3 class="tsd-anchor-link" id="unban"><code class="tsd-tag">Optional</code><span>unban</span><a href="#unban" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">unban</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span></div>
+<div class="tsd-comment tsd-typography"><p>Unban events.</p>
+</div><aside class="tsd-sources">
+<p>Inherited from <a href="client.chats.AdminLogFilterParams.html">AdminLogFilterParams</a>.<a href="client.chats.AdminLogFilterParams.html#unban">unban</a></p>
+<ul>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/chats.ts#L328">teleproto/client/chats.ts:328</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member tsd-is-inherited">
+<h3 class="tsd-anchor-link" id="unkick"><code class="tsd-tag">Optional</code><span>unkick</span><a href="#unkick" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">unkick</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span></div>
+<div class="tsd-comment tsd-typography"><p>Unkick events.</p>
+</div><aside class="tsd-sources">
+<p>Inherited from <a href="client.chats.AdminLogFilterParams.html">AdminLogFilterParams</a>.<a href="client.chats.AdminLogFilterParams.html#unkick">unkick</a></p>
+<ul>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/client/chats.ts#L332">teleproto/client/chats.ts:332</a></li></ul></aside></section></section></details></div>
+<div class="col-sidebar">
+<div class="page-menu">
+<div class="tsd-navigation settings">
+<details class="tsd-accordion"><summary class="tsd-accordion-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
+<h3>Settings</h3></summary>
+<div class="tsd-accordion-details">
+<div class="tsd-filter-visibility"><span class="settings-label">Member Visibility</span>
+<ul id="tsd-filter-options">
+<li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-inherited" name="inherited" checked/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Inherited</span></label></li></ul></div>
+<div class="tsd-theme-toggle"><label class="settings-label" for="tsd-theme">Theme</label><select id="tsd-theme"><option value="os">OS</option><option value="light">Light</option><option value="dark">Dark</option></select></div></div></details></div>
+<details open class="tsd-accordion tsd-page-navigation"><summary class="tsd-accordion-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
+<h3>On This Page</h3></summary>
+<div class="tsd-accordion-details">
+<details open class="tsd-accordion tsd-page-navigation-section"><summary class="tsd-accordion-summary" data-key="section-Properties"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>Properties</summary>
+<div><a href="#admins"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>admins</span></a><a href="#ban" class="tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>ban</span></a><a href="#delete" class="tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>delete</span></a><a href="#demote" class="tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>demote</span></a><a href="#edit" class="tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>edit</span></a><a href="#editrank" class="tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>edit<wbr/>Rank</span></a><a href="#forums" class="tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>forums</span></a><a href="#groupcall" class="tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>group<wbr/>Call</span></a><a href="#info" class="tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>info</span></a><a href="#invite" class="tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>invite</span></a><a href="#invites" class="tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>invites</span></a><a href="#join" class="tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>join</span></a><a href="#kick" class="tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>kick</span></a><a href="#leave" class="tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>leave</span></a><a href="#limit"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>limit</span></a><a href="#maxid"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>max<wbr/>Id</span></a><a href="#minid"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>min<wbr/>Id</span></a><a href="#pinned" class="tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>pinned</span></a><a href="#promote" class="tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>promote</span></a><a href="#search"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>search</span></a><a href="#send" class="tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>send</span></a><a href="#settings" class="tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>settings</span></a><a href="#subextend" class="tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>sub<wbr/>Extend</span></a><a href="#unban" class="tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>unban</span></a><a href="#unkick" class="tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>unkick</span></a></div></details></div></details></div>
+<div class="site-menu">
+<nav id="tsd-sidebar-links" class="tsd-navigation"><a href="https://github.com/sanyok12345/teleproto" class="tsd-nav-link">GitHub</a><a href="https://www.npmjs.com/package/teleproto" class="tsd-nav-link">npm</a><a href="https://github.com/sanyok12345/teleproto/issues" class="tsd-nav-link">Issues</a></nav>
+<nav class="tsd-navigation"><a href="../modules.html">teleproto - v1.228.5</a>
+<ul class="tsd-small-nested-navigation" id="tsd-nav-container">
+<li>Loading...</li></ul></nav></div></div></div><footer></footer>
+<div class="overlay"></div></body></html>

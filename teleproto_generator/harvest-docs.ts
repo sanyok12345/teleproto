@@ -110,7 +110,7 @@ async function run(): Promise<void> {
 
     const flush = () => {
         fs.mkdirSync(path.dirname(OUT), { recursive: true });
-        fs.writeFileSync(OUT, JSON.stringify(cache));
+        fs.writeFileSync(OUT, JSON.stringify(cache, null, 4));
     };
 
     async function worker(): Promise<void> {

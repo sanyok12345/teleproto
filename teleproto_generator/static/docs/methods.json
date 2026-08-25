@@ -5680,5 +5680,97 @@
             "id": "The user",
             "errors": "Errors"
         }
+    },
+    "auth.firebasePnvSignUp": {
+        "summary": "",
+        "params": {}
+    },
+    "communities.getParticipantJoinedChats": {
+        "summary": "",
+        "params": {}
+    },
+    "auth.initFirebasePnvLogin": {
+        "summary": "",
+        "params": {}
+    },
+    "communities.create": {
+        "summary": "",
+        "params": {}
+    },
+    "communities.toggleAllPeerLinkRequestApproval": {
+        "summary": "",
+        "params": {}
+    },
+    "auth.finishFirebasePnvLogin": {
+        "summary": "",
+        "params": {}
+    },
+    "communities.getPeerLinkRequests": {
+        "summary": "",
+        "params": {}
+    },
+    "communities.getJoinedCommunities": {
+        "summary": "",
+        "params": {}
+    },
+    "communities.toggleCommunityCollapsedInDialogs": {
+        "summary": "",
+        "params": {}
+    },
+    "communities.toggleParticipantBanned": {
+        "summary": "",
+        "params": {}
+    },
+    "communities.togglePeerLink": {
+        "summary": "",
+        "params": {}
+    },
+    "ephemeral.getCallbackAnswer": {
+        "summary": "",
+        "params": {}
+    },
+    "ephemeral.getWelcomeMessages": {
+        "summary": "",
+        "params": {}
+    },
+    "ephemeral.reportMessage": {
+        "summary": "",
+        "params": {}
+    },
+    "messages.composeRichMessageWithAI": {
+        "summary": "",
+        "params": {}
+    },
+    "ephemeral.sendMessage": {
+        "summary": "",
+        "params": {}
+    },
+    "messages.requestChatJoinWebView": {
+        "summary": "",
+        "params": {}
+    },
+    "messages.translateRichMessage": {
+        "summary": "",
+        "params": {}
+    },
+    "ephemeral.deleteMessage": {
+        "summary": "",
+        "params": {}
+    },
+    "ephemeral.deleteWelcomeMessage": {
+        "summary": "",
+        "params": {}
+    },
+    "ephemeral.deleteAllWelcomeMessages": {
+        "summary": "",
+        "params": {}
+    },
+    "communities.togglePeerLinkRequestApproval": {
+        "summary": "",
+        "params": {}
+    },
+    "ephemeral.editMessage": {
+        "summary": "",
+        "params": {}
     }
 }

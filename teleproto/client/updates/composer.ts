@@ -1,3 +1,4 @@
+import bigInt from "big-integer";
 import { Api } from "../../tl";
 import type { EntityLike } from "../../define";
 import type { TelegramClient } from "../TelegramClient";
@@ -6,7 +7,7 @@ import { _intoIdSet } from "../../events/common";
 import { getPeerId } from "../../Utils";
 import { isArrayLike } from "../../Helpers";
 import type { UpdateState } from "./manager";
-import type { UpdateConnectionState } from "../../network";
+import { UpdateConnectionState } from "../../network";
 
 export type NextFn = () => Promise<void>;
 
@@ -34,6 +35,18 @@ export type UpdateOf<Name extends UpdateName> = Name extends keyof UpdateByName
     ? UpdateByName[Name]
     : UpdateConnectionState;
 
+interface WatchEntry {
+    chats: EntityLike[];
+    channels: Set<string>;
+    stopped: boolean;
+    arming?: Promise<void>;
+}
+
+export interface WatchOptions {
+    events?: UpdateName | UpdateName[] | EventBuilder;
+    func?: (update: any) => unknown | Promise<unknown>;
+}
+
 export interface OnOptions {
     chats?: EntityLike | EntityLike[];
     blacklistChats?: boolean;
@@ -51,6 +64,44 @@ function nameOf(update: any): UpdateName | undefined {
         ? className.slice("Update".length)
         : className;
     return (bare.charAt(0).toLowerCase() + bare.slice(1)) as UpdateName;
+}
+
+function expandShortMessage(
+    update: any,
+    selfId?: bigInt.BigInteger,
+): Api.UpdateNewMessage | undefined {
+    const short =
+        update instanceof Api.UpdateShortMessage ||
+        update instanceof Api.UpdateShortChatMessage;
+    if (!short) return undefined;
+    const peerId =
+        update instanceof Api.UpdateShortMessage
+            ? new Api.PeerUser({ userId: update.userId })
+            : new Api.PeerChat({ chatId: update.chatId });
+    const fromUser =
+        update instanceof Api.UpdateShortMessage ? update.userId : update.fromId;
+    return new Api.UpdateNewMessage({
+        message: new Api.Message({
+            out: update.out,
+            mentioned: update.mentioned,
+            mediaUnread: update.mediaUnread,
+            silent: update.silent,
+            id: update.id,
+            peerId,
+            fromId: new Api.PeerUser({
+                userId: update.out && selfId ? selfId : fromUser,
+            }),
+            message: update.message,
+            date: update.date,
+            fwdFrom: update.fwdFrom,
+            viaBotId: update.viaBotId,
+            replyTo: update.replyTo,
+            entities: update.entities,
+            ttlPeriod: update.ttlPeriod,
+        }),
+        pts: update.pts,
+        ptsCount: update.ptsCount,
+    });
 }
 
 function peerOf(update: any): string | undefined {
@@ -77,6 +128,7 @@ function peerOf(update: any): string | undefined {
 export class ClientUpdates {
     private readonly client: TelegramClient;
     private readonly chain: UpdateMiddleware[] = [];
+    private readonly watches = new Set<WatchEntry>();
     private onError?: (error: Error, update: any) => unknown;
 
     constructor(client: TelegramClient) {
@@ -126,6 +178,94 @@ export class ClientUpdates {
         });
     }
 
+    watch(
+        chats: EntityLike | EntityLike[],
+        handler?: UpdateMiddleware | UpdateMiddleware[],
+        options: WatchOptions = {},
+    ): Unsubscribe {
+        const wanted = isArrayLike(chats)
+            ? (chats as EntityLike[])
+            : [chats as EntityLike];
+        let offHandler: Unsubscribe | undefined;
+        if (handler) {
+            const events = options.events ?? ["newMessage", "newChannelMessage"];
+            offHandler =
+                typeof events === "string" || Array.isArray(events)
+                    ? this.on(events as UpdateName[], handler as any, {
+                          chats: wanted,
+                          func: options.func,
+                      })
+                    : this.on(events, handler as any);
+        }
+
+        const entry: WatchEntry = {
+            chats: wanted,
+            channels: new Set(),
+            stopped: false,
+        };
+        this.watches.add(entry);
+        void this.arm(entry);
+
+        return () => {
+            if (entry.stopped) return;
+            entry.stopped = true;
+            this.watches.delete(entry);
+            offHandler?.();
+            for (const channelId of entry.channels) {
+                this.client.updateManager.releaseChannel(channelId);
+            }
+            entry.channels.clear();
+        };
+    }
+
+    private async arm(entry: WatchEntry): Promise<void> {
+        if (entry.stopped || entry.arming) return;
+        entry.arming = (async () => {
+            await this.client._connectedDeferred.promise;
+            for (const chat of entry.chats) {
+                if (entry.stopped) return;
+                const input = await this.client.getInputEntity(chat);
+                if (!(input instanceof Api.InputPeerChannel)) continue;
+                const channelId = input.channelId.toString();
+                if (entry.channels.has(channelId)) continue;
+                await this.client.updateManager.watchChannel(
+                    channelId,
+                    new Api.InputChannel({
+                        channelId: input.channelId,
+                        accessHash: input.accessHash,
+                    }),
+                );
+                if (entry.stopped) {
+                    this.client.updateManager.releaseChannel(channelId);
+                    return;
+                }
+                entry.channels.add(channelId);
+            }
+        })();
+        try {
+            await entry.arming;
+        } catch (e) {
+            await this.reportError(e as Error, undefined);
+        } finally {
+            entry.arming = undefined;
+        }
+    }
+
+    private rearmWatches(): void {
+        const alive = new Set(this.client.updateManager.watchedChannelIds());
+        for (const entry of this.watches) {
+            if (entry.stopped) continue;
+            for (const channelId of [...entry.channels]) {
+                if (!alive.has(channelId)) entry.channels.delete(channelId);
+            }
+            if (entry.channels.size < entry.chats.length) void this.arm(entry);
+        }
+    }
+
+    get watched(): string[] {
+        return this.client.updateManager.watchedChannelIds();
+    }
+
     off(middleware: UpdateMiddleware): void {
         this.remove(middleware);
     }
@@ -149,7 +289,21 @@ export class ClientUpdates {
     }
 
     async _dispatch(update: any): Promise<void> {
+        if (
+            update instanceof UpdateConnectionState &&
+            update.state === UpdateConnectionState.connected
+        ) {
+            this.rearmWatches();
+        }
         if (!this.chain.length) return;
+        const expanded = expandShortMessage(
+            update,
+            this.client._selfInputPeer?.userId,
+        );
+        if (expanded) {
+            (expanded as any)._entities = update._entities;
+            update = expanded;
+        }
         if (update && typeof update === "object" && !("state" in update)) {
             Object.defineProperty(update, "state", {
                 value: {},

@@ -319,7 +319,6 @@ export abstract class TelegramBaseClient<S extends Session = Session> {
     public _eventBuilders: [EventBuilder, CallableFunction][];
     /** @hidden */
     public _entityCache: EntityCache;
-    /** @hidden */
     public _lastRequest?: number;
     /**
      * Epoch ms of the last message decrypted on ANY session. Distinguishes a

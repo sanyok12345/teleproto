@@ -72,6 +72,17 @@ export class TelegramClient<
 > extends TelegramBaseClient<S> {
     private _updates?: ClientUpdates;
 
+    /**
+     * The update pipeline: middleware, typed subscriptions and live
+     * subscriptions to chats. See {@link ClientUpdates}.
+     *
+     * @example
+     * ```ts
+     * client.updates.on("newChannelMessage", (update) => console.log(update.message.id));
+     * client.updates.watch("obitoscasino", (update) => console.log(update.message.id));
+     * ```
+     * @category Updates
+     */
     get updates(): ClientUpdates {
         if (!this._updates) this._updates = new ClientUpdates(this);
         return this._updates;

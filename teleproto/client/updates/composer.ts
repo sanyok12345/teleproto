@@ -9,19 +9,28 @@ import { isArrayLike } from "../../Helpers";
 import type { UpdateState } from "./manager";
 import { UpdateConnectionState } from "../../network";
 
+/** Passes the update on. A handler that never calls it consumes the update. */
 export type NextFn = () => Promise<void>;
 
+/**
+ * One link of the chain: receives the update and `next`.
+ *
+ * `next()` runs the handlers behind it and waits for them, so work can happen
+ * before and after; returning without it ends the chain for that update.
+ */
 export type UpdateMiddleware<T = any> = (
     update: T,
     next: NextFn,
 ) => unknown | Promise<unknown>;
 
+/** Removes whatever {@link ClientUpdates.use}, {@link ClientUpdates.on} or {@link ClientUpdates.watch} registered. */
 export type Unsubscribe = () => void;
 
 type BareUpdateName<K extends string> = K extends `Update${infer Rest}`
     ? Uncapitalize<Rest>
     : never;
 
+/** Raw updates of the current layer keyed by schema name, derived from the generated API. */
 export type UpdateByName = {
     [K in Api.TypeUpdate["className"]as BareUpdateName<K>]: Extract<
         Api.TypeUpdate,
@@ -29,8 +38,13 @@ export type UpdateByName = {
     >;
 };
 
+/**
+ * Schema constructor without the `update` prefix: `updateNewChannelMessage` is
+ * `"newChannelMessage"`. Plus `"connectionState"` for connection updates.
+ */
 export type UpdateName = (keyof UpdateByName & string) | "connectionState";
 
+/** Anything the chain can carry: a raw update or a connection update. */
 export type AnyUpdate = Api.TypeUpdate | UpdateConnectionState;
 
 type UpdateFields = {
@@ -46,6 +60,7 @@ type UpdateFields = {
 
 const fieldsOf = (update: unknown): UpdateFields => (update ?? {}) as UpdateFields;
 
+/** The update a handler subscribed to `Name` receives. */
 export type UpdateOf<Name extends UpdateName> = Name extends keyof UpdateByName
     ? UpdateByName[Name]
     : UpdateConnectionState;
@@ -57,14 +72,28 @@ interface WatchEntry {
     arming?: Promise<void>;
 }
 
+/** Options of {@link ClientUpdates.watch}. */
 export interface WatchOptions {
+    /**
+     * Which updates to hand the handler - raw names or an event builder.
+     * Defaults to new messages, i.e. `["newMessage", "newChannelMessage"]`.
+     */
     events?: UpdateName | UpdateName[] | EventBuilder;
+    /** Extra predicate; the handler runs only when it returns a truthy value. */
     func?: (update: AnyUpdate) => unknown | Promise<unknown>;
 }
 
+/** Filters accepted by {@link ClientUpdates.on}, mirroring the event builders. */
 export interface OnOptions {
+    /**
+     * Only handle updates coming from these chats - a username, an id or an
+     * entity. Updates that carry no peer at all (`updateDcOptions`,
+     * `updatePrivacy` and the like) never match this filter.
+     */
     chats?: EntityLike | EntityLike[];
+    /** Treat `chats` as a blacklist instead of a whitelist. */
     blacklistChats?: boolean;
+    /** Extra predicate; the handler runs only when it returns a truthy value. */
     func?: (update: AnyUpdate) => unknown | Promise<unknown>;
 }
 
@@ -141,6 +170,45 @@ function peerOf(update: unknown): string | undefined {
     return undefined;
 }
 
+/**
+ * The update pipeline of a client, reachable as `client.updates`.
+ *
+ * Handlers form one chain: `next()` passes the update on, returning without it
+ * consumes the update. {@link on} matches first, by raw schema name or by an
+ * event builder; {@link watch} also keeps Telegram sending updates for the
+ * chats it is given.
+ *
+ * A raw name gives the untouched `Api.TypeUpdate`, a builder gives its event
+ * object. Direct and small-group messages arrive as the `updateShortMessage`
+ * containers, which are not part of the `Update` union; the chain expands them,
+ * so `"newMessage"` sees them too.
+ *
+ * Each update carries a `state` object for middleware to leave things in.
+ * Throws go to {@link catch}, or to the client's error handler.
+ *
+ * `client.addEventHandler` keeps working and runs before this chain; a
+ * `StopPropagation` there ends that loop only.
+ *
+ * @example
+ * ```ts
+ * client.updates.use(async (update, next) => {
+ *     const started = Date.now();
+ *     await next();
+ *     console.log(`${update.className} handled in ${Date.now() - started}ms`);
+ * });
+ *
+ * client.updates.on("newChannelMessage", (update) => {
+ *     console.log(update.message.id);
+ * }, { chats: ["durov"] });
+ *
+ * client.updates.on(new NewMessage({ pattern: /^\/start/ }), (event) =>
+ *     event.message.reply({ message: "hi" }));
+ *
+ * const stop = client.updates.watch("obitoscasino", (update) =>
+ *     console.log(update.message.id));
+ * ```
+ * @category Updates
+ */
 export class ClientUpdates {
     private readonly client: TelegramClient;
     private readonly chain: UpdateMiddleware[] = [];
@@ -151,6 +219,20 @@ export class ClientUpdates {
         this.client = client;
     }
 
+    /**
+     * Adds a middleware to the end of the chain. It sees every update, so this
+     * is the place for logging, timing or authentication.
+     *
+     * @param middleware - see {@link UpdateMiddleware}.
+     * @returns A function that removes it.
+     * @example
+     * ```ts
+     * client.updates.use(async (update, next) => {
+     *     update.state.user = await db.findUser(update);
+     *     await next();
+     * });
+     * ```
+     */
     use<T = any>(middleware: UpdateMiddleware<T>): Unsubscribe {
         if (typeof middleware !== "function") {
             throw new TypeError("Update middleware must be a function");
@@ -159,6 +241,27 @@ export class ClientUpdates {
         return () => this.remove(middleware as UpdateMiddleware);
     }
 
+    /**
+     * Handles updates of the given raw names, or the events of a builder.
+     *
+     * A raw name gives the untouched update typed as its schema class; a
+     * builder gives that builder's event object, as `addEventHandler` does. An
+     * array of handlers runs in order, each deciding with `next()` whether the
+     * rest of them run.
+     *
+     * @param names - Raw update names, or an event builder.
+     * @param handler - One handler or an ordered array of them.
+     * @param options - Chat and predicate filters, see {@link OnOptions}.
+     * @returns A function that removes the handler.
+     * @example
+     * ```ts
+     * client.updates.on("newChannelMessage", (update) => console.log(update.message.id));
+     * client.updates.on(["newMessage", "newChannelMessage"], handler);
+     * client.updates.on("botCallbackQuery", [checkAuth, handleClick]);
+     * client.updates.on("newChannelMessage", handler, { chats: ["durov"] });
+     * client.updates.on(new NewMessage({}), (event) => event.message.reply({ message: "hi" }));
+     * ```
+     */
     on<Name extends UpdateName>(
         names: Name | Name[],
         handler:
@@ -194,6 +297,33 @@ export class ClientUpdates {
         });
     }
 
+    /**
+     * Handles updates from the given chats only, and keeps them coming.
+     *
+     * Telegram streams channel updates to a session only while it keeps the
+     * channel open, so for channels the account is not a member of this is the
+     * difference between receiving their messages and receiving nothing. Chats
+     * that need no such subscription are simply filtered.
+     *
+     * Synchronous like {@link on}: resolving the chats and subscribing happen in
+     * the background, waiting for the client to connect, so it can be called
+     * before `start()`. A reconnect re-subscribes on its own. The poll runs at
+     * the interval Telegram names in the difference, falling back to the
+     * client's `channelPollInterval`.
+     *
+     * @param chats - Chats to listen to: usernames, ids or entities.
+     * @param handler - Optional handler; without it only the subscription is kept.
+     * @param options - Which updates to handle, see {@link WatchOptions}.
+     * @returns A function that stops watching and removes the handler.
+     * @example
+     * ```ts
+     * const stop = client.updates.watch(
+     *     ["obitoscasino", "toporlive"],
+     *     (update) => console.log(update.message.id),
+     * );
+     * stop();
+     * ```
+     */
     watch(
         chats: EntityLike | EntityLike[],
         handler?: UpdateMiddleware | UpdateMiddleware[],
@@ -278,28 +408,34 @@ export class ClientUpdates {
         }
     }
 
+    /** Ids of the channels currently kept alive by {@link watch}. */
     get watched(): string[] {
         return this.client.updateManager.watchedChannelIds();
     }
 
+    /** Removes a middleware or handler from the chain. */
     off(middleware: UpdateMiddleware): void {
         this.remove(middleware);
     }
 
+    /** Installs the handler for anything thrown inside the chain. */
     catch(handler: (error: Error, update?: AnyUpdate) => unknown): this {
         this.onError = handler;
         return this;
     }
 
+    /** Everything currently registered, in call order. */
     get handlers(): readonly UpdateMiddleware[] {
         return [...this.chain];
     }
 
+    /** A copy of the local update state: `pts`, `qts`, `date` and `seq`. */
     get state(): UpdateState | undefined {
         const state = this.client.updateManager.state;
         return state ? { ...state } : undefined;
     }
 
+    /** Fetches everything missed since the last known state. */
     async catchUp(): Promise<void> {
         await this.client.updateManager.catchUp();
     }

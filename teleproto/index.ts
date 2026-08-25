@@ -2,6 +2,12 @@ export { Api } from "./tl";
 export * as Rich from "./richMessage";
 import * as tl from "./tl";
 export { TelegramClient } from "./client/TelegramClient";
+export { Button } from "./tl/custom/button";
+export {
+    InlineKeyboard,
+    ReplyKeyboard,
+    Keyboard,
+} from "./tl/custom/keyboard";
 export { Connection } from "./network";
 export { version } from "./Version";
 export { Logger } from "./extensions/Logger";

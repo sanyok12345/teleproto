@@ -54,14 +54,78 @@ The session string is your saved login. Drop it back into `new StringSession(sav
 Send a message, listen for incoming ones:
 
 ```ts
-import { NewMessage } from "teleproto/events";
-
 await client.sendMessage("me", { message: "hello from teleproto" });
 
-client.addEventHandler(
-  (event) => console.log(event.message.message),
-  new NewMessage({}),
-);
+client.updates.on("newMessage", (update) => console.log(update.message.message));
+```
+
+Handlers form a chain: `next()` passes the update to the handlers behind it, returning without it consumes the update. Names are the schema's own — `updateNewChannelMessage` is `"newChannelMessage"` — so every update type is subscribable, autocompleted and typed as its exact class:
+
+```ts
+client.updates.use(async (update, next) => {
+  update.state.startedAt = Date.now();   // for the handlers behind this one
+  await next();
+});
+
+client.updates.on(["newMessage", "newChannelMessage"], handler, { chats: ["durov"] });
+client.updates.on("botCallbackQuery", [checkAuth, handleClick]);
+client.updates.catch((error, update) => console.error(update?.className, error));
+```
+
+Telegram streams channel updates only to a session that keeps the channel open, so listening to a channel you are not a member of takes a subscription. `watch` keeps it alive and stops on the returned function:
+
+```ts
+const stop = client.updates.watch("durov", (update) => console.log(update.message.id));
+```
+
+Event builders still work, and give the event objects with their shortcuts:
+
+```ts
+import { NewMessage } from "teleproto/events";
+
+client.updates.on(new NewMessage({ pattern: /^\/start/ }), (event) =>
+  event.message.reply({ message: "hi" }));
+```
+
+The older `client.addEventHandler(handler, new NewMessage({}))` is untouched and runs before the chain.
+
+# Keyboards
+
+Build them from a grid, by chaining, or both — the class is the builder:
+
+```ts
+import { InlineKeyboard, ReplyKeyboard, Keyboard } from "teleproto";
+
+const keyboard = new InlineKeyboard()
+  .callback("Yes", "yes", { style: { color: "success" } })
+  .callback("No", "no", { style: { color: "danger" } })
+  .row()
+  .url("Open", "https://t.me/durov");
+
+await client.sendMessage(chat, { message: "Well?", buttons: keyboard });
+```
+
+Reply keyboards carry their own options, and `Keyboard` holds the markups without buttons:
+
+```ts
+const menu = new ReplyKeyboard([], { resize: true, placeholder: "Pick one" })
+  .text("Hi")
+  .requestPhone("Share phone")
+  .requestPeer("Pick a chat", { buttonId: 1, peerType, max: 3 });
+
+Keyboard.hide({ selective: true });
+Keyboard.forceReply({ placeholder: "Answer here" });
+```
+
+Only bots can attach keyboards; the server drops them from messages sent by a user account.
+
+Layer 229 replaced the separate `keyboardButtonUrl`, `keyboardButtonCallback` and their fifteen siblings with `keyboardButton` and `keyboardInlineButton`, each carrying a `type`. Code that matched the old classes needs the new shape:
+
+```ts
+if (button instanceof Api.KeyboardInlineButton) {
+  if (button.type instanceof Api.InlineButtonTypeCallback) handle(button.type.data);
+  if (button.type instanceof Api.InlineButtonTypeUrl) open(button.type.url);
+}
 ```
 
 # Raw MTProto API

@@ -74,6 +74,8 @@ type ButtonLike =
 
 type MarkupLike =
     | Api.TypeReplyMarkup
+    | InlineKeyboard
+    | ReplyKeyboard
     | ButtonLike
     | ButtonLike[]
     | ButtonLike[][];

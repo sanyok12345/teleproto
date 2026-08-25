@@ -1,9 +1,9 @@
-import type { EventBuilder } from "../events/common";
-import { Api } from "../tl";
-import type { TelegramClient } from "./TelegramClient";
-import { UpdateConnectionState } from "../network";
-import type { Raw } from "../events";
-import { getRandomInt, returnBigInt, sleep } from "../Helpers";
+import type { EventBuilder } from "../../events/common";
+import { Api } from "../../tl";
+import type { TelegramClient } from "../TelegramClient";
+import { UpdateConnectionState } from "../../network";
+import type { Raw } from "../../events";
+import { getRandomInt, returnBigInt, sleep } from "../../Helpers";
 import Timeout = NodeJS.Timeout;
 
 const PING_INTERVAL = 9000; // 9 sec
@@ -15,11 +15,7 @@ const PING_INTERVAL_TO_WAKE_UP = 5000;
 const PING_WAKE_UP_TIMEOUT = 3000;
 const PING_WAKE_UP_WARNING_TIMEOUT = 1000;
 
-/**
- * If raised inside a registered handler, stops further dispatching for that
- * update — analogue of StopIteration but for events.
- */
-export class StopPropagation extends Error {}
+export class StopPropagation extends Error { }
 
 export function on(client: TelegramClient, event?: EventBuilder) {
     return (f: (event: any) => void) => {
@@ -34,7 +30,7 @@ export function addEventHandler(
     event?: EventBuilder,
 ) {
     if (event == undefined) {
-        const raw = require("../events/Raw").Raw;
+        const raw = require("../../events/Raw").Raw;
         event = new raw({}) as Raw;
     }
     event.client = client;
@@ -59,7 +55,6 @@ export async function catchUp(client: TelegramClient): Promise<void> {
     await client.updateManager.catchUp();
 }
 
-/** @hidden */
 export function _handleUpdate(
     client: TelegramClient,
     update:
@@ -91,7 +86,6 @@ export function _handleUpdate(
     }
 }
 
-/** @hidden */
 export async function _dispatchUpdate(
     client: TelegramClient,
     args: { update: UpdateConnectionState | any },
@@ -114,7 +108,6 @@ export async function _dispatchUpdate(
                 try {
                     await client.getMe(true);
                 } catch {
-                    // ignore — user may not be authorized yet
                 }
             }
             try {
@@ -156,9 +149,9 @@ export async function _dispatchUpdate(
             }
         }
     }
+    await client.updates._dispatch(args.update);
 }
 
-/** @hidden */
 export async function _updateLoop(client: TelegramClient) {
     client.updateManager.start();
     await client.updateManager.ensureState();
@@ -234,13 +227,10 @@ export async function _updateLoop(client: TelegramClient) {
 
         await client.updateManager.recoverIfStale();
 
-        // Per Telegram docs, we need a content-related request at least hourly
-        // for Telegram to keep delivering updates. Catch up every 30 minutes.
         if (Date.now() - (client._lastRequest || 0) > 30 * 60 * 1000) {
             try {
                 await client.updateManager.catchUp();
             } catch {
-                // ignore — user may not be authorized yet
             }
             lastPongAt = undefined;
         }

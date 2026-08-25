@@ -32,7 +32,7 @@ import {
 } from "../network/connection/TCPMTProxy";
 import { LogLevel } from "../extensions/Logger";
 import Deferred from "../extensions/Deferred";
-import { UpdateManager } from "./UpdateManager";
+import { UpdateManager } from "./updates/manager";
 
 // An idle media session is torn down and rebuilt lazily on next use (the
 // main session never idles — it pings). With per-connection PFS keys a
@@ -234,6 +234,7 @@ export interface TelegramClientParams {
         idleTimeoutMs?: number;
         sessionStartupDelayMs?: number;
     };
+    channelPollInterval?: number;
     /**
      * Bounds the in-memory entity cache (the hot working set of resolved
      * peers; the session remains the storage tier).
@@ -264,6 +265,7 @@ const clientParamsDefault = {
     appVersion: "",
     langCode: "en",
     systemLangCode: "en",
+    channelPollInterval: 5000,
     _securityChecks: true,
 };
 
@@ -319,6 +321,8 @@ export abstract class TelegramBaseClient<S extends Session = Session> {
     public _eventBuilders: [EventBuilder, CallableFunction][];
     /** @hidden */
     public _entityCache: EntityCache;
+    /** @hidden */
+    public _channelPollInterval: number;
     public _lastRequest?: number;
     /**
      * Epoch ms of the last message decrypted on ANY session. Distinguishes a
@@ -415,6 +419,7 @@ export abstract class TelegramBaseClient<S extends Session = Session> {
         this._connectionRetries = clientParams.connectionRetries!;
         this._reconnectRetries = clientParams.reconnectRetries!;
         this._retryDelay = clientParams.retryDelay || 0;
+        this._channelPollInterval = clientParams.channelPollInterval!;
         this._timeout = clientParams.timeout!;
         this._autoReconnect = clientParams.autoReconnect!;
         this._proxy = clientParams.proxy;

@@ -1,4 +1,4 @@
-import type { Api } from "../tl";
+import type { Api } from "../../tl";
 
 export const WAIT_FOR_SKIPPED_TIMEOUT_MS = 1000;
 
@@ -29,7 +29,7 @@ export class PtsWaiter {
 
     private readonly queue: SkippedEntry[] = [];
 
-    constructor(private readonly host: PtsWaiterHost) {}
+    constructor(private readonly host: PtsWaiterHost) { }
 
     inited(): boolean {
         return this.good > 0;

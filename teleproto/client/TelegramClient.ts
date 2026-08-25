@@ -14,7 +14,7 @@ import * as buttonsMethods from "./buttons";
 import * as downloadMethods from "./downloads";
 import * as parseMethods from "./messageParse";
 import * as messageMethods from "./messages";
-import * as updateMethods from "./updates";
+import * as updateMethods from "./updates/dispatch";
 import * as uploadMethods from "./uploads";
 import * as userMethods from "./users";
 import * as chatMethods from "./chats";
@@ -47,7 +47,8 @@ import type { SessionLease } from "../network/Network";
 import { LAYER } from "../tl/runtime/registry";
 import { DownloadMediaInterface } from "./downloads";
 import { NewMessage, NewMessageEvent } from "../events";
-import { _handleUpdate, _updateLoop, catchUp } from "./updates";
+import { _handleUpdate, _updateLoop, catchUp } from "./updates/dispatch";
+import { ClientUpdates } from "./updates/composer";
 import { Session } from "../sessions";
 import { Album, AlbumEvent } from "../events/Album";
 import { CallbackQuery, CallbackQueryEvent } from "../events/CallbackQuery";
@@ -69,6 +70,13 @@ import { DeletedMessage, DeletedMessageEvent } from "../events/DeletedMessage";
 export class TelegramClient<
     S extends Session = Session
 > extends TelegramBaseClient<S> {
+    private _updates?: ClientUpdates;
+
+    get updates(): ClientUpdates {
+        if (!this._updates) this._updates = new ClientUpdates(this);
+        return this._updates;
+    }
+
     /**
      * @param session - a session to be used to save the connection and auth key to. This can be a custom session that inherits MemorySession.
      * @param apiId - The API ID you obtained from https://my.telegram.org.

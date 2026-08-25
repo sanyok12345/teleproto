@@ -6,6 +6,7 @@ import { _intoIdSet } from "../../events/common";
 import { getPeerId } from "../../Utils";
 import { isArrayLike } from "../../Helpers";
 import type { UpdateState } from "./manager";
+import type { UpdateConnectionState } from "../../network";
 
 export type NextFn = () => Promise<void>;
 
@@ -16,12 +17,22 @@ export type UpdateMiddleware<T = any> = (
 
 export type Unsubscribe = () => void;
 
-/**
- * Name of a raw update, i.e. its schema constructor without the `update`
- * prefix — `updateNewChannelMessage` is `"newChannelMessage"`. The special
- * `"connectionState"` name carries the library's own connection updates.
- */
-export type UpdateName = string;
+type BareUpdateName<K extends string> = K extends `Update${infer Rest}`
+    ? Uncapitalize<Rest>
+    : never;
+
+export type UpdateByName = {
+    [K in Api.TypeUpdate["className"] as BareUpdateName<K>]: Extract<
+        Api.TypeUpdate,
+        { className: K }
+    >;
+};
+
+export type UpdateName = (keyof UpdateByName & string) | "connectionState";
+
+export type UpdateOf<Name extends UpdateName> = Name extends keyof UpdateByName
+    ? UpdateByName[Name]
+    : UpdateConnectionState;
 
 export interface OnOptions {
     chats?: EntityLike | EntityLike[];
@@ -39,7 +50,7 @@ function nameOf(update: any): UpdateName | undefined {
     const bare = className.startsWith("Update")
         ? className.slice("Update".length)
         : className;
-    return bare.charAt(0).toLowerCase() + bare.slice(1);
+    return (bare.charAt(0).toLowerCase() + bare.slice(1)) as UpdateName;
 }
 
 function peerOf(update: any): string | undefined {
@@ -80,15 +91,11 @@ export class ClientUpdates {
         return () => this.remove(middleware as UpdateMiddleware);
     }
 
-    /**
-     * Handles updates of the given raw names, or the events of a builder.
-     *
-     * A raw name hands the handler the untouched `Api.TypeUpdate`; a builder
-     * hands it that builder's event object, exactly like `addEventHandler`.
-     */
-    on<T = any>(
-        names: UpdateName | UpdateName[],
-        handler: UpdateMiddleware<T> | UpdateMiddleware<T>[],
+    on<Name extends UpdateName>(
+        names: Name | Name[],
+        handler:
+            | UpdateMiddleware<UpdateOf<Name>>
+            | UpdateMiddleware<UpdateOf<Name>>[],
         options?: OnOptions,
     ): Unsubscribe;
     on<T = any>(

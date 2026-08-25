@@ -46,7 +46,7 @@ export function buildReplyMarkup(
     const singleUse = false;
     const selective = false;
 
-    const rows = [];
+    const rows: ButtonLike[][] = [];
     // @ts-ignore
     for (const row of buttons) {
         const current = [];
@@ -65,37 +65,39 @@ export function buildReplyMarkup(
             } else if (button instanceof MessageButton) {
                 button = button.button;
             }
-            const inline = Button._isInline(button);
-            if (!isInline && inline) {
+            if (Button._isInline(button)) {
                 isInline = true;
-            }
-            if (!isNormal && inline) {
-                isNormal = false;
-            }
-            if (button.SUBCLASS_OF_ID == unionId("KeyboardButton")) {
-
+                current.push(button);
+            } else if (button instanceof Api.KeyboardButton) {
+                isNormal = true;
                 current.push(button);
             }
         }
-        if (current) {
-            rows.push(
-                new Api.KeyboardButtonRow({
-                    buttons: current,
-                })
-            );
+        if (current.length) {
+            rows.push(current);
         }
     }
     if (inlineOnly && isNormal) {
         throw new Error("You cannot use non-inline buttons here");
-    } else if (isInline === isNormal && isNormal) {
+    } else if (isInline && isNormal) {
         throw new Error("You cannot mix inline with normal buttons");
     } else if (isInline) {
         return new Api.ReplyInlineMarkup({
-            rows: rows,
+            rows: rows.map(
+                (buttons) =>
+                    new Api.KeyboardInlineButtonRow({
+                        buttons: buttons as Api.TypeKeyboardInlineButton[],
+                    })
+            ),
         });
     }
     return new Api.ReplyKeyboardMarkup({
-        rows: rows,
+        rows: rows.map(
+            (buttons) =>
+                new Api.KeyboardButtonRow({
+                    buttons: buttons as Api.TypeKeyboardButton[],
+                })
+        ),
         resize: resize,
         singleUse: singleUse,
         selective: selective,

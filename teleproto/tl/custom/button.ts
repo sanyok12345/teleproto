@@ -21,21 +21,8 @@ export class Button {
         this.selective = selective;
     }
 
-    static _isInline(button: ButtonLike) {
-        return (
-            button instanceof Api.KeyboardButtonCallback ||
-            button instanceof Api.KeyboardButtonSwitchInline ||
-            button instanceof Api.KeyboardButtonUrl ||
-            button instanceof Api.KeyboardButtonUrlAuth ||
-            button instanceof Api.InputKeyboardButtonUrlAuth ||
-            button instanceof Api.KeyboardButtonWebView ||
-            button instanceof Api.KeyboardButtonSimpleWebView ||
-            button instanceof Api.KeyboardButtonCopy ||
-            button instanceof Api.KeyboardButtonGame ||
-            button instanceof Api.KeyboardButtonBuy ||
-            button instanceof Api.InputKeyboardButtonUserProfile ||
-            button instanceof Api.InputKeyboardButtonRequestPeer
-        );
+    static _isInline(button: ButtonLike): button is Api.KeyboardInlineButton {
+        return button instanceof Api.KeyboardInlineButton;
     }
 
     static inline(text: string, data?: Buffer, style?: Api.KeyboardButtonStyle) {
@@ -45,26 +32,32 @@ export class Button {
         if (data.length > 64) {
             throw new Error("Too many bytes for the data");
         }
-        return new Api.KeyboardButtonCallback({
+        return new Api.KeyboardInlineButton({
             text: text,
-            data: data,
+            type: new Api.InlineButtonTypeCallback({
+                data: data,
+            }),
             style: style,
         });
     }
 
     static switchInline(text: string, query = "", samePeer = false, style?: Api.KeyboardButtonStyle) {
-        return new Api.KeyboardButtonSwitchInline({
+        return new Api.KeyboardInlineButton({
             text,
-            query,
-            samePeer,
+            type: new Api.InlineButtonTypeSwitchInline({
+                query,
+                samePeer,
+            }),
             style,
         });
     }
 
     static url(text: string, url?: string, style?: Api.KeyboardButtonStyle) {
-        return new Api.KeyboardButtonUrl({
+        return new Api.KeyboardInlineButton({
             text: text,
-            url: url || text,
+            type: new Api.InlineButtonTypeUrl({
+                url: url || text,
+            }),
             style,
         });
     }
@@ -77,12 +70,14 @@ export class Button {
         fwdText?: string,
         style?: Api.KeyboardButtonStyle
     ) {
-        return new Api.InputKeyboardButtonUrlAuth({
+        return new Api.KeyboardInlineButton({
             text,
-            url: url || text,
-            bot: getInputUser(bot || new Api.InputUserSelf()),
-            requestWriteAccess: writeAccess,
-            fwdText: fwdText,
+            type: new Api.InputInlineButtonTypeUrlAuth({
+                url: url || text,
+                bot: getInputUser(bot || new Api.InputUserSelf()),
+                requestWriteAccess: writeAccess,
+                fwdText: fwdText,
+            }),
             style,
         });
     }
@@ -94,7 +89,10 @@ export class Button {
         selective?: boolean
     ) {
         return new this(
-            new Api.KeyboardButton({ text }),
+            new Api.KeyboardButton({
+                text,
+                type: new Api.ButtonTypeDefault(),
+            }),
             resize,
             singleUse,
             selective
@@ -108,7 +106,10 @@ export class Button {
         selective?: boolean
     ) {
         return new this(
-            new Api.KeyboardButtonRequestGeoLocation({ text }),
+            new Api.KeyboardButton({
+                text,
+                type: new Api.ButtonTypeRequestGeoLocation(),
+            }),
             resize,
             singleUse,
             selective
@@ -122,7 +123,10 @@ export class Button {
         selective?: boolean
     ) {
         return new this(
-            new Api.KeyboardButtonRequestPhone({ text }),
+            new Api.KeyboardButton({
+                text,
+                type: new Api.ButtonTypeRequestPhone(),
+            }),
             resize,
             singleUse,
             selective
@@ -136,7 +140,10 @@ export class Button {
         selective?: boolean
     ) {
         return new this(
-            new Api.KeyboardButtonRequestPoll({ text }),
+            new Api.KeyboardButton({
+                text,
+                type: new Api.ButtonTypeRequestPoll({}),
+            }),
             resize,
             singleUse,
             selective
@@ -144,47 +151,65 @@ export class Button {
     }
 
     static webView(text: string, url: string, style?: Api.KeyboardButtonStyle) {
-        return new Api.KeyboardButtonWebView({
+        return new Api.KeyboardInlineButton({
             text,
-            url,
+            type: new Api.InlineButtonTypeWebView({
+                url,
+            }),
             style,
         });
     }
 
     static simpleWebView(text: string, url: string, style?: Api.KeyboardButtonStyle) {
-        return new Api.KeyboardButtonSimpleWebView({
+        return new Api.KeyboardButton({
             text,
-            url,
+            type: new Api.ButtonTypeSimpleWebView({
+                url,
+            }),
             style,
         });
     }
 
     static copy(text: string, copyText: string, style?: Api.KeyboardButtonStyle) {
-        return new Api.KeyboardButtonCopy({
+        return new Api.KeyboardInlineButton({
             text,
-            copyText,
+            type: new Api.InlineButtonTypeCopy({
+                copyText,
+            }),
             style,
         });
     }
 
     static game(text: string, style?: Api.KeyboardButtonStyle) {
-        return new Api.KeyboardButtonGame({
+        return new Api.KeyboardInlineButton({
             text,
+            type: new Api.InlineButtonTypeGame(),
             style,
         });
     }
 
     static buy(text: string, style?: Api.KeyboardButtonStyle) {
-        return new Api.KeyboardButtonBuy({
+        return new Api.KeyboardInlineButton({
             text,
+            type: new Api.InlineButtonTypeBuy(),
+            style,
+        });
+    }
+
+    static disabled(text: string, style?: Api.KeyboardButtonStyle) {
+        return new Api.KeyboardInlineButton({
+            text,
+            type: new Api.InlineButtonTypeDisabled(),
             style,
         });
     }
 
     static userProfile(text: string, user: EntityLike, style?: Api.KeyboardButtonStyle) {
-        return new Api.InputKeyboardButtonUserProfile({
+        return new Api.KeyboardInlineButton({
             text,
-            userId: getInputUser(user),
+            type: new Api.InputInlineButtonTypeUserProfile({
+                userId: getInputUser(user),
+            }),
             style,
         });
     }
@@ -196,11 +221,13 @@ export class Button {
         maxCount?: number,
         style?: Api.KeyboardButtonStyle
     ) {
-        return new Api.InputKeyboardButtonRequestPeer({
+        return new Api.KeyboardButton({
             text,
-            buttonId,
-            peerType,
-            maxQuantity: maxCount || 1,
+            type: new Api.InputButtonTypeRequestPeer({
+                buttonId,
+                peerType,
+                maxQuantity: maxCount || 1,
+            }),
             style,
         });
     }

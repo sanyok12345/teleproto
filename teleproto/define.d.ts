@@ -67,7 +67,10 @@ type ProgressCallback = (
     downloaded: bigInt.BigInteger,
     total: bigInt.BigInteger
 ) => void;
-type ButtonLike = Api.TypeKeyboardButton | Button;
+type ButtonLike =
+    | Api.TypeKeyboardButton
+    | Api.TypeKeyboardInlineButton
+    | Button;
 
 type MarkupLike =
     | Api.TypeReplyMarkup

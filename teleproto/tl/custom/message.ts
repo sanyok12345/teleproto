@@ -129,7 +129,7 @@ export interface ButtonClickParam {
      */
     data?: Buffer;
     /** When clicking on a keyboard button requesting a phone number
-     (`KeyboardButtonRequestPhone`), this argument must be
+     (`ButtonTypeRequestPhone`), this argument must be
      explicitly set to avoid accidentally sharing the number.
 
      It can be `true` to automatically share the current user's
@@ -140,7 +140,7 @@ export interface ButtonClickParam {
      */
     sharePhone?: boolean | string | Api.InputMediaContact;
     /** When clicking on a keyboard button requesting a geo location
-     (`KeyboardButtonRequestGeoLocation`), this argument must
+     (`ButtonTypeRequestGeoLocation`), this argument must
      be explicitly set to avoid accidentally sharing the location.
 
      It must be a `list` of `float` as ``(longitude, latitude)``,
@@ -1143,9 +1143,11 @@ export class CustomMessage extends SenderGetter {
                 return;
             }
 
-            const button = new Api.KeyboardButtonCallback({
+            const button = new Api.KeyboardInlineButton({
                 text: "",
-                data: data,
+                type: new Api.InlineButtonTypeCallback({
+                    data: data,
+                }),
             });
             return await new MessageButton(
                 this.client,
@@ -1298,7 +1300,7 @@ export class CustomMessage extends SenderGetter {
     /**
      *Returns the input peer of the bot that's needed for the reply markup.
 
-     This is necessary for `KeyboardButtonSwitchInline` since we need
+     This is necessary for `InlineButtonTypeSwitchInline` since we need
      to know what bot we want to start. Raises ``Error`` if the bot
      cannot be found but is needed. Returns `None` if it's not needed.
      */
@@ -1316,8 +1318,11 @@ export class CustomMessage extends SenderGetter {
         }
         for (const row of this.replyMarkup.rows) {
             for (const button of row.buttons) {
-                if (button instanceof Api.KeyboardButtonSwitchInline) {
-                    if (button.samePeer || !this.viaBotId) {
+                if (
+                    button instanceof Api.KeyboardInlineButton &&
+                    button.type instanceof Api.InlineButtonTypeSwitchInline
+                ) {
+                    if (button.type.samePeer || !this.viaBotId) {
                         const bot = this._inputSender;
                         if (!bot) throw new Error("No input sender");
                         return bot;

@@ -6,7 +6,12 @@ import {
     SocksProxyType,
 } from "../network/connection/TCPMTProxy";
 
-const closeError = new Error("NetSocket was closed");
+class NetSocketClosedError extends Error {
+    constructor() {
+        super("NetSocket was closed");
+        this.name = "NetSocketClosedError";
+    }
+}
 
 const DEFAULT_KEEP_ALIVE_INTERVAL = 30_000;
 
@@ -62,11 +67,11 @@ export class PromisedNetSockets {
 
     async read(number: number) {
         if (this.closed) {
-            throw closeError;
+            throw new NetSocketClosedError();
         }
         await this.canRead;
         if (this.closed) {
-            throw closeError;
+            throw new NetSocketClosedError();
         }
         const toReturn = this._consume(Math.min(number, this.available));
         if (this.available === 0) {
@@ -80,7 +85,7 @@ export class PromisedNetSockets {
 
     async readAll() {
         if (this.closed || !(await this.canRead)) {
-            throw closeError;
+            throw new NetSocketClosedError();
         }
         const toReturn = this._consume(this.available);
         this.canRead = new Promise((resolve) => {
@@ -202,7 +207,7 @@ export class PromisedNetSockets {
 
     write(data: Buffer) {
         if (this.closed) {
-            throw closeError;
+            throw new NetSocketClosedError();
         }
         if (this.client) {
             this.client.write(data);

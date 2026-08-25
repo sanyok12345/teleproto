@@ -86,6 +86,10 @@ interface DEFAULT_OPTIONS {
 }
 
 const STABLE_CONNECTION_MS = 30_000;
+
+const QUICK_CONNECT_ATTEMPTS = 3;
+const QUICK_CONNECT_DELAY_MS = 1;
+const CONNECT_DELAY_CAP_MS = 64_000;
 const FLAPPING_CONNECTIONS = 5;
 
 export class MTProtoSender {
@@ -247,6 +251,7 @@ export class MTProtoSender {
             await this.authKey.setKey(undefined);
         }
         let lastError: unknown;
+        let retryDelay = QUICK_CONNECT_DELAY_MS;
         for (let attempt = 0; attempt < this._retries; attempt++) {
             try {
                 await this._connect();
@@ -272,14 +277,25 @@ export class MTProtoSender {
                         )
                     );
                 }
-                this._log.error(
-                    `Connection failed attempt: ${attempt + 1}`,
-                    err
-                );
+                const message = `Connection to dc ${this._dcId} failed (attempt ${
+                    attempt + 1
+                }), next try in ${retryDelay}ms`;
+                if (attempt < QUICK_CONNECT_ATTEMPTS) {
+                    this._log.error(message, err);
+                } else {
+                    this._log.warn(`${message}: ${err}`);
+                }
                 if (this._client._errorHandler) {
                     await this._client._errorHandler(err as Error);
                 }
-                await sleep(this._delay);
+                await sleep(retryDelay);
+                retryDelay =
+                    attempt + 1 < QUICK_CONNECT_ATTEMPTS
+                        ? retryDelay + 1
+                        : Math.min(
+                              Math.max(this._delay, retryDelay * 2),
+                              CONNECT_DELAY_CAP_MS
+                          );
             }
         }
         await this._disconnect().catch(() => { });

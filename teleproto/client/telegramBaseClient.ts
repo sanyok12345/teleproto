@@ -1,5 +1,5 @@
 import { Connection } from "../network";
-import { TelegramClient } from "./TelegramClient";
+import type { TelegramClient } from "./TelegramClient";
 import { version } from "../Version";
 import {
     ConnectionTCPFull,
@@ -33,6 +33,7 @@ import {
 import { LogLevel } from "../extensions/Logger";
 import Deferred from "../extensions/Deferred";
 import { UpdateManager } from "./updates/manager";
+import { installMessageBehaviour } from "../tl/custom/message";
 
 const SESSION_IDLE_TIMEOUT_MS = 60_000;
 const SESSION_STARTUP_DELAY_MS = 800;
@@ -406,6 +407,7 @@ export abstract class TelegramBaseClient<S extends Session = Session> {
         this.session = session;
         this.apiId = apiId;
         this.apiHash = apiHash;
+        installMessageBehaviour();
         this._useIPV6 = clientParams.useIPV6!;
         this._testServers = clientParams.testServers!;
         this._requestRetries = clientParams.requestRetries!;

@@ -1,10 +1,10 @@
 import bigInt from "big-integer";
 import mime from "mime";
-import { CustomFile } from "./client/uploads";
+import type { CustomFile } from "./client/uploads";
 import type { Entity, EntityLike, MessageIDLike } from "./define";
-import { EntityCache } from "./entityCache";
+import type { EntityCache } from "./entityCache";
 import { returnBigInt, unionId } from "./Helpers";
-import { Api } from "./tl";
+import { Api } from "./tl/api";
 
 export function getFileInfo(
     fileLocation:

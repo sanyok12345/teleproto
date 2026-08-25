@@ -1,5 +1,4 @@
 import { Api } from "../../api";
-import { CustomMessage } from "../../custom/message";
 import { tlobjects } from "../registry";
 
 function getGetter(obj: any, prop: string) {
@@ -50,25 +49,25 @@ function getInstanceMethods(obj: any) {
     return keys;
 }
 
-function patchClass(clazz: Function) {
-    const { getters, setters, methods } = getInstanceMethods(CustomMessage.prototype);
+function patchClass(clazz: Function, source: Function) {
+    const { getters, setters, methods } = getInstanceMethods(source.prototype);
     for (const getter of getters) {
         Object.defineProperty(clazz.prototype, getter, {
-            get: getGetter(CustomMessage.prototype, getter),
+            get: getGetter(source.prototype, getter),
         });
     }
     for (const setter of setters) {
         Object.defineProperty(clazz.prototype, setter, {
-            set: getSetter(CustomMessage.prototype, setter),
+            set: getSetter(source.prototype, setter),
         });
     }
     for (const method of methods) {
-        (clazz.prototype as any)[method] = (CustomMessage.prototype as any)[method];
+        (clazz.prototype as any)[method] = (source.prototype as any)[method];
     }
 }
 
-export function patchAll() {
-    patchClass((Api as any).Message);
-    patchClass((Api as any).MessageService);
-    patchClass((Api as any).MessageEmpty);
+export function patchAll(source: Function) {
+    patchClass((Api as any).Message, source);
+    patchClass((Api as any).MessageService, source);
+    patchClass((Api as any).MessageEmpty, source);
 }

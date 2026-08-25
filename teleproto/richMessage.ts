@@ -16,7 +16,7 @@
  * if (message.richMessage) console.log(Rich.toMarkdown(message.richMessage));
  * ```
  */
-import { Api } from "./tl";
+import { Api } from "./tl/api";
 import { unionId } from "./Helpers";
 
 /**

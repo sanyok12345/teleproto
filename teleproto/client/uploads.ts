@@ -1,6 +1,6 @@
 import { Api } from "../tl";
 
-import { TelegramClient } from "./TelegramClient";
+import type { TelegramClient } from "./TelegramClient";
 import { generateRandomBytes, readBigIntFromBuffer, unionId } from "../Helpers";
 import { getAppropriatedPartSize, getInputMedia, getMessageId } from "../Utils";
 import { EntityLike, FileLike, MarkupLike, MessageIDLike } from "../define";

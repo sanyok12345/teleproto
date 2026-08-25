@@ -1,14 +1,10 @@
-import {
-    Logger,
-} from "../../extensions";
+import type { Logger } from "../../extensions/Logger";
 import type {
     PacketReader,
     SocketFactory,
     SocketInterface,
 } from "../../extensions/SocketInterface";
-import { AbridgedPacketCodec } from "./TCPAbridged";
-import { FullPacketCodec } from "./TCPFull";
-import { ProxyInterface } from "./TCPMTProxy";
+import type { ProxyInterface } from "./TCPMTProxy";
 
 interface ConnectionInterfaceParams {
     ip: string;
@@ -31,7 +27,7 @@ interface ConnectionInterfaceParams {
  * errors from these two methods.
  */
 class Connection {
-    PacketCodecClass?: typeof AbridgedPacketCodec | typeof FullPacketCodec;
+    PacketCodecClass?: typeof PacketCodec;
     readonly _ip: string;
     readonly _port: number;
     _dcId: number;

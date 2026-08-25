@@ -16,6 +16,7 @@ import {
 import { DownloadMediaInterface } from "../../client/downloads";
 import * as rich from "../../richMessage";
 import { returnBigInt } from "../../Helpers";
+import { patchAll } from "../runtime/patches/messages";
 import { BigInteger } from "big-integer";
 import { MessageButton } from "./messageButton";
 
@@ -1356,4 +1357,12 @@ export class CustomMessage extends SenderGetter {
             }
         }
     }
+}
+
+let installed = false;
+
+export function installMessageBehaviour(): void {
+    if (installed) return;
+    installed = true;
+    patchAll(CustomMessage);
 }

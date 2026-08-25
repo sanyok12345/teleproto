@@ -3,7 +3,7 @@ import { createHmac } from "node:crypto";
 import { ObfuscatedConnection } from "./Connection";
 import { AbridgedPacketCodec } from "./TCPAbridged";
 import { generateRandomBytes, sha256 } from "../../Helpers";
-import { Logger } from "../../extensions";
+import type { Logger } from "../../extensions/Logger";
 import type {
     SocketFactory,
     SocketInterface,

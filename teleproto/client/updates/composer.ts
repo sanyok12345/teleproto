@@ -23,13 +23,28 @@ type BareUpdateName<K extends string> = K extends `Update${infer Rest}`
     : never;
 
 export type UpdateByName = {
-    [K in Api.TypeUpdate["className"] as BareUpdateName<K>]: Extract<
+    [K in Api.TypeUpdate["className"]as BareUpdateName<K>]: Extract<
         Api.TypeUpdate,
         { className: K }
     >;
 };
 
 export type UpdateName = (keyof UpdateByName & string) | "connectionState";
+
+export type AnyUpdate = Api.TypeUpdate | UpdateConnectionState;
+
+type UpdateFields = {
+    className?: string;
+    channelId?: bigInt.BigInteger;
+    chatId?: bigInt.BigInteger;
+    userId?: bigInt.BigInteger;
+    peer?: Api.TypePeer;
+    message?: { peerId?: Api.TypePeer };
+    _entities?: Map<string, Api.TypeUser | Api.TypeChat>;
+    state?: Record<string, unknown>;
+};
+
+const fieldsOf = (update: unknown): UpdateFields => (update ?? {}) as UpdateFields;
 
 export type UpdateOf<Name extends UpdateName> = Name extends keyof UpdateByName
     ? UpdateByName[Name]
@@ -44,19 +59,19 @@ interface WatchEntry {
 
 export interface WatchOptions {
     events?: UpdateName | UpdateName[] | EventBuilder;
-    func?: (update: any) => unknown | Promise<unknown>;
+    func?: (update: AnyUpdate) => unknown | Promise<unknown>;
 }
 
 export interface OnOptions {
     chats?: EntityLike | EntityLike[];
     blacklistChats?: boolean;
-    func?: (update: any) => unknown | Promise<unknown>;
+    func?: (update: AnyUpdate) => unknown | Promise<unknown>;
 }
 
-function nameOf(update: any): UpdateName | undefined {
-    const className: string | undefined = update?.className;
+function nameOf(update: unknown): UpdateName | undefined {
+    const className = fieldsOf(update).className;
     if (!className) {
-        return update?.constructor?.name === "UpdateConnectionState"
+        return update instanceof UpdateConnectionState
             ? "connectionState"
             : undefined;
     }
@@ -67,7 +82,7 @@ function nameOf(update: any): UpdateName | undefined {
 }
 
 function expandShortMessage(
-    update: any,
+    update: unknown,
     selfId?: bigInt.BigInteger,
 ): Api.UpdateNewMessage | undefined {
     const short =
@@ -104,23 +119,24 @@ function expandShortMessage(
     });
 }
 
-function peerOf(update: any): string | undefined {
+function peerOf(update: unknown): string | undefined {
+    const fields = fieldsOf(update);
     const peer =
-        update?.message?.peerId ??
-        (update?.peer instanceof Api.PeerUser ||
-            update?.peer instanceof Api.PeerChat ||
-            update?.peer instanceof Api.PeerChannel
-            ? update.peer
+        fields.message?.peerId ??
+        (fields.peer instanceof Api.PeerUser ||
+            fields.peer instanceof Api.PeerChat ||
+            fields.peer instanceof Api.PeerChannel
+            ? fields.peer
             : undefined);
     if (peer) return getPeerId(peer);
-    if (update?.channelId) {
-        return getPeerId(new Api.PeerChannel({ channelId: update.channelId }));
+    if (fields.channelId) {
+        return getPeerId(new Api.PeerChannel({ channelId: fields.channelId }));
     }
-    if (update?.chatId) {
-        return getPeerId(new Api.PeerChat({ chatId: update.chatId }));
+    if (fields.chatId) {
+        return getPeerId(new Api.PeerChat({ chatId: fields.chatId }));
     }
-    if (update?.userId) {
-        return getPeerId(new Api.PeerUser({ userId: update.userId }));
+    if (fields.userId) {
+        return getPeerId(new Api.PeerUser({ userId: fields.userId }));
     }
     return undefined;
 }
@@ -129,7 +145,7 @@ export class ClientUpdates {
     private readonly client: TelegramClient;
     private readonly chain: UpdateMiddleware[] = [];
     private readonly watches = new Set<WatchEntry>();
-    private onError?: (error: Error, update: any) => unknown;
+    private onError?: (error: Error, update?: AnyUpdate) => unknown;
 
     constructor(client: TelegramClient) {
         this.client = client;
@@ -191,11 +207,11 @@ export class ClientUpdates {
             const events = options.events ?? ["newMessage", "newChannelMessage"];
             offHandler =
                 typeof events === "string" || Array.isArray(events)
-                    ? this.on(events as UpdateName[], handler as any, {
-                          chats: wanted,
-                          func: options.func,
-                      })
-                    : this.on(events, handler as any);
+                    ? this.on(events as UpdateName[], handler as UpdateMiddleware, {
+                        chats: wanted,
+                        func: options.func,
+                    })
+                    : this.on(events, handler as UpdateMiddleware);
         }
 
         const entry: WatchEntry = {
@@ -270,7 +286,7 @@ export class ClientUpdates {
         this.remove(middleware);
     }
 
-    catch(handler: (error: Error, update: any) => unknown): this {
+    catch(handler: (error: Error, update?: AnyUpdate) => unknown): this {
         this.onError = handler;
         return this;
     }
@@ -288,7 +304,7 @@ export class ClientUpdates {
         await this.client.updateManager.catchUp();
     }
 
-    async _dispatch(update: any): Promise<void> {
+    async _dispatch(update: AnyUpdate): Promise<void> {
         if (
             update instanceof UpdateConnectionState &&
             update.state === UpdateConnectionState.connected
@@ -301,7 +317,7 @@ export class ClientUpdates {
             this.client._selfInputPeer?.userId,
         );
         if (expanded) {
-            (expanded as any)._entities = update._entities;
+            fieldsOf(expanded)._entities = fieldsOf(update)._entities;
             update = expanded;
         }
         if (update && typeof update === "object" && !("state" in update)) {
@@ -328,7 +344,7 @@ export class ClientUpdates {
         if (index >= 0) this.chain.splice(index, 1);
     }
 
-    private async reportError(error: Error, update: any): Promise<void> {
+    private async reportError(error: Error, update?: AnyUpdate): Promise<void> {
         if (this.onError) {
             try {
                 await this.onError(error, update);
@@ -346,13 +362,13 @@ export class ClientUpdates {
 
     private chatMatcher(
         options: OnOptions,
-    ): (update: any) => Promise<boolean> {
+    ): (update: AnyUpdate) => Promise<boolean> {
         if (options.chats === undefined) return async () => true;
         let ids: Set<string> | undefined;
         const wanted = isArrayLike(options.chats)
             ? (options.chats as EntityLike[])
             : [options.chats as EntityLike];
-        return async (update: any) => {
+        return async (update: AnyUpdate) => {
             if (!ids) {
                 ids = new Set((await _intoIdSet(this.client, wanted)) ?? []);
             }

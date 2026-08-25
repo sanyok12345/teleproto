@@ -301,7 +301,7 @@ function ctorInName(c: TlDefinition): string {
 }
 
 function typeInName(type: string): string {
-    return `${type.split(".").map(upperFirst).join("")}In`;
+    return `Type${type.split(".").map(upperFirst).join("")}In`;
 }
 
 function renderInputArg(

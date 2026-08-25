@@ -183,11 +183,14 @@ export async function downloadFile(
     const writer = getWriter(outputFile);
     const abort = new AbortController();
     let timeoutTimer: ReturnType<typeof setTimeout> | undefined;
+    let unforward: (() => void) | undefined;
     if (signal) {
         if (signal.aborted) abort.abort();
-        else signal.addEventListener("abort", () => abort.abort(), {
-            once: true,
-        });
+        else {
+            const forward = () => abort.abort();
+            signal.addEventListener("abort", forward, { once: true });
+            unforward = () => signal.removeEventListener("abort", forward);
+        }
     }
     if (requestTimeout && requestTimeout > 0) {
         timeoutTimer = setTimeout(() => abort.abort(), requestTimeout);
@@ -242,6 +245,7 @@ export async function downloadFile(
         throw err;
     } finally {
         if (timeoutTimer) clearTimeout(timeoutTimer);
+        unforward?.();
     }
 }
 

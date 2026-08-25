@@ -179,6 +179,7 @@ export async function downloadFile(
     const totalSize: bigInt.BigInteger | undefined = fileSize ?? info.size;
     const totalBytes = totalSize ? totalSize.toJSNumber() : 0;
     const partSize = resolvePartSize(client, partSizeKb);
+    const route = { dcId: targetDc };
 
     const writer = getWriter(outputFile);
     const abort = new AbortController();
@@ -218,7 +219,7 @@ export async function downloadFile(
             await streamSequential(
                 client,
                 location,
-                targetDc,
+                route,
                 partSize,
                 writer,
                 abort.signal,
@@ -229,13 +230,14 @@ export async function downloadFile(
             await streamParallel(
                 client,
                 location,
-                targetDc,
+                route,
                 partSize,
                 totalBytes,
                 writer,
                 abort.signal,
                 reportProgress,
                 hashChecker,
+                dcId === undefined && info.dcId === undefined,
             );
         }
         await closeWriter(writer);
@@ -252,7 +254,7 @@ export async function downloadFile(
 async function streamSequential(
     client: TelegramClient,
     location: Api.TypeInputFileLocation,
-    dcId: number,
+    route: { dcId: number },
     partSize: number,
     writer: any,
     signal: AbortSignal,
@@ -264,11 +266,12 @@ async function streamSequential(
         if (signal.aborted) return;
         const offset = bigInt(idx).multiply(partSize);
         const data = await client._media.getFile(
-            dcId,
+            route.dcId,
             location,
             offset,
             partSize,
             signal,
+            (dc) => (route.dcId = dc),
         );
         if (data.length > 0) {
             if (hashChecker) {
@@ -285,15 +288,27 @@ async function streamSequential(
 async function streamParallel(
     client: TelegramClient,
     location: Api.TypeInputFileLocation,
-    dcId: number,
+    route: { dcId: number },
     partSize: number,
     totalBytes: number,
     writer: any,
     signal: AbortSignal,
     onBytes: (n: number) => Promise<void>,
     hashChecker?: FileHashChecker,
+    probeRoute = false,
 ): Promise<void> {
     const totalParts = Math.max(1, Math.ceil(totalBytes / partSize));
+    let firstPart: Buffer | undefined;
+    if (probeRoute && totalParts > 1) {
+        firstPart = await client._media.getFile(
+            route.dcId,
+            location,
+            bigInt.zero,
+            partSize,
+            signal,
+            (dc) => (route.dcId = dc),
+        );
+    }
     const ordered = new OrderedWriter(writer);
     // High-water mark only: the real rate gate is the MediaScheduler's
     // per-session windows. We let enough parts race into the scheduler to keep
@@ -322,13 +337,17 @@ async function streamParallel(
         const offset = bigInt(idx).multiply(partSize);
         tasks.push((async () => {
             try {
-                const data = await client._media.getFile(
-                    dcId,
-                    location,
-                    offset,
-                    partSize,
-                    signal,
-                );
+                const data =
+                    idx === 0 && firstPart !== undefined
+                        ? firstPart
+                        : await client._media.getFile(
+                              route.dcId,
+                              location,
+                              offset,
+                              partSize,
+                              signal,
+                              (dc) => (route.dcId = dc),
+                          );
                 if (!firstError) {
                     if (hashChecker) {
                         await hashChecker.verify(idx * partSize, data);
@@ -497,6 +516,7 @@ export async function _downloadDocument(
             outputFile: outputFile,
             fileSize: size && "size" in size ? bigInt(size.size) : doc.size,
             progressCallback: progressCallback,
+            dcId: doc.dcId,
             msgData: msgData,
             signal: extra?.signal,
             requestTimeout: extra?.requestTimeout,

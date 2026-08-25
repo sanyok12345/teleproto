@@ -187,7 +187,8 @@ export class MediaScheduler {
         location: Api.TypeInputFileLocation,
         offset: bigInt.BigInteger,
         limit: number,
-        signal?: AbortSignal
+        signal?: AbortSignal,
+        onMigrate?: (newDc: number) => void
     ): Promise<Buffer> {
         const request = new Api.upload.GetFile({
             location,
@@ -220,6 +221,7 @@ export class MediaScheduler {
                 if (err instanceof SlotRemovedError) continue;
                 if (err instanceof FileMigrateError) {
                     currentDc = err.newDc;
+                    onMigrate?.(currentDc);
                     continue;
                 }
                 if (isFlood(err)) continue;

@@ -34,12 +34,6 @@ import { LogLevel } from "../extensions/Logger";
 import Deferred from "../extensions/Deferred";
 import { UpdateManager } from "./updates/manager";
 
-// An idle media session is torn down and rebuilt lazily on next use (the
-// main session never idles — it pings). With per-connection PFS keys a
-// rebuild costs a full DH handshake (network + server time, ~0.5-1s), so
-// the reclaim window follows mtcute's 60s rather than tdesktop's 15s —
-// bursty traffic (one photo per minute) stays warm instead of paying the
-// handshake on every burst.
 const SESSION_IDLE_TIMEOUT_MS = 60_000;
 const SESSION_STARTUP_DELAY_MS = 800;
 

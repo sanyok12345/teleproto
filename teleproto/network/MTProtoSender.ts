@@ -85,6 +85,9 @@ interface DEFAULT_OPTIONS {
     };
 }
 
+const STABLE_CONNECTION_MS = 30_000;
+const FLAPPING_CONNECTIONS = 5;
+
 export class MTProtoSender {
     static DEFAULT_OPTIONS = {
         reconnectRetries: Infinity,
@@ -112,6 +115,8 @@ export class MTProtoSender {
     private readonly _autoReconnectCallback?: DEFAULT_OPTIONS["autoReconnectCallback"];
     private readonly _isMainSender: boolean;
     private _lifecycle: SenderLifecycle = "disconnected";
+    private _connectedAt = 0;
+    private _shortLived = 0;
     readonly authKey: AuthKey;
     private readonly _state: MTProtoState;
     private _queued: RequestState[] = [];
@@ -277,7 +282,7 @@ export class MTProtoSender {
                 await sleep(this._delay);
             }
         }
-        await this._disconnect().catch(() => {});
+        await this._disconnect().catch(() => { });
         throw lastError instanceof Error
             ? lastError
             : new Error(`Failed to connect to dc ${this._dcId}`);
@@ -346,12 +351,12 @@ export class MTProtoSender {
     private async _connectWithTimeout(connection: Connection) {
         const seconds =
             typeof this._connectTimeout === "number" &&
-            this._connectTimeout > 0
+                this._connectTimeout > 0
                 ? this._connectTimeout
                 : 10;
         let timer: ReturnType<typeof setTimeout> | undefined;
         const dial = connection.connect();
-        dial.catch(() => {});
+        dial.catch(() => { });
         try {
             await Promise.race([
                 dial,
@@ -370,7 +375,7 @@ export class MTProtoSender {
         } catch (err) {
             // Kill the half-open dial so it cannot complete into a ghost
             // connection nobody owns.
-            connection.socket.close().catch(() => {});
+            connection.socket.close().catch(() => { });
             throw err;
         } finally {
             if (timer) clearTimeout(timer);
@@ -540,9 +545,9 @@ export class MTProtoSender {
                 this._log,
                 this._tempBinding
                     ? {
-                          expiresIn: this._tempBinding.expiresIn,
-                          dc: this._tempBinding.dcParam,
-                      }
+                        expiresIn: this._tempBinding.expiresIn,
+                        dc: this._tempBinding.dcParam,
+                    }
                     : undefined
             );
             this._log.debug("Generated new auth_key successfully");
@@ -562,6 +567,7 @@ export class MTProtoSender {
             this._state.salt = this._dcenter.salt;
         }
         this._lifecycle = "connected";
+        this._connectedAt = Date.now();
 
         this._startIo(connection);
 
@@ -768,9 +774,24 @@ export class MTProtoSender {
                 }
 
                 if (this._lifecycle !== "dead") {
+                    const aliveFor = Date.now() - this._connectedAt;
+                    if (aliveFor < STABLE_CONNECTION_MS) {
+                        this._shortLived++;
+                    } else {
+                        this._shortLived = 0;
+                    }
                     this._log.info(
-                        `Connection to DC ${this._dcId} closed by server, reconnecting`
+                        `Connection to DC ${this._dcId} closed by server after ${aliveFor}ms (${e}), reconnecting`
                     );
+                    if (
+                        this._shortLived >= FLAPPING_CONNECTIONS &&
+                        this._shortLived % FLAPPING_CONNECTIONS === 0
+                    ) {
+                        this._log.warn(
+                            `Connection to DC ${this._dcId} died ${this._shortLived} times in a row without staying up for ${STABLE_CONNECTION_MS / 1000
+                            }s: the network path (or proxy) keeps dropping it`
+                        );
+                    }
                     this.reconnect();
                 }
                 return;
@@ -844,7 +865,13 @@ export class MTProtoSender {
                     }
                 }
             }
-            this._currentRetries = 0;
+            if (
+                this._currentRetries !== 0 &&
+                Date.now() - this._connectedAt >= STABLE_CONNECTION_MS
+            ) {
+                this._currentRetries = 0;
+                this._shortLived = 0;
+            }
         }
     }
 
@@ -866,7 +893,7 @@ export class MTProtoSender {
 
         if (this._tempBinding) {
             this._lifecycle = "dead";
-            this.authKey.setKey(undefined).catch(() => {});
+            this.authKey.setKey(undefined).catch(() => { });
             if (this._onConnectionBreak) {
                 this._onConnectionBreak(this._dcId);
             }
@@ -887,13 +914,13 @@ export class MTProtoSender {
             }
             this.authKey
                 .setKey(undefined)
-                .catch(() => {})
+                .catch(() => { })
                 .then(() => {
                     if (this._authKeyCallback) {
                         return this._authKeyCallback(undefined, this._dcId);
                     }
                 })
-                .catch(() => {})
+                .catch(() => { })
                 .then(() => this.reconnect());
         } else if (this._onConnectionBreak) {
             this._lifecycle = "dead";
@@ -912,7 +939,7 @@ export class MTProtoSender {
         }
         if (!this._autoReconnect) {
             this._lifecycle = "dead";
-            this._disconnect().catch(() => {});
+            this._disconnect().catch(() => { });
             if (!this._isMainSender && this._onConnectionBreak) {
                 this._onConnectionBreak(this._dcId);
             }

@@ -1462,12 +1462,16 @@ export async function getReactionUsers(
 
 // region polls
 
+export interface SendPollAnswer {
+    text: string;
+    media?: Api.TypeInputMedia;
+}
+
 /** Poll definition for {@link TelegramClient.sendPoll}. */
 export interface SendPollParams {
     /** The poll question. Parsed with the client parse mode — only custom emoji entities are allowed here (Premium users only). */
     question: string;
-    /** The possible answers (2 to the `poll_answers_max` server limit). Parsed with the client parse mode — only custom emoji entities are allowed. Voting happens via {@link TelegramClient.vote}. */
-    answers: string[];
+    answers: (string | SendPollAnswer)[];
     /** Whether multiple options can be chosen as answer. */
     multipleChoice?: boolean;
     /** Send as a quiz (with wrong and correct answers) — requires `correctAnswers`. */
@@ -1544,17 +1548,18 @@ export async function sendPoll(
             id: bigInt.zero,
             question: await _pollText(client, poll.question, poll.parseMode),
             answers: await Promise.all(
-                poll.answers.map(
-                    async (answer, i) =>
-                        new Api.PollAnswer({
-                            text: await _pollText(
-                                client,
-                                answer,
-                                poll.parseMode
-                            ),
-                            option: Buffer.from([48 + i]),
-                        })
-                )
+                poll.answers.map(async (answer) => {
+                    const item: SendPollAnswer =
+                        typeof answer === "string" ? { text: answer } : answer;
+                    return new Api.InputPollAnswer({
+                        text: await _pollText(
+                            client,
+                            item.text,
+                            poll.parseMode
+                        ),
+                        media: item.media,
+                    });
+                })
             ),
             multipleChoice: poll.multipleChoice,
             quiz: poll.quiz,

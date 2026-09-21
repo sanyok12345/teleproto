@@ -27,7 +27,7 @@ export class RequestIter implements AsyncIterable<any> {
         this.client = client;
         this.reverse = params.reverse;
         this.waitTime = params.waitTime;
-        this.limit = Math.max(!limit ? Number.MAX_SAFE_INTEGER : limit, 0);
+        this.limit = Math.max(limit ?? Number.MAX_SAFE_INTEGER, 0);
         this.left = this.limit;
         this.buffer = undefined;
         this.kwargs = args;
@@ -50,7 +50,7 @@ export class RequestIter implements AsyncIterable<any> {
                 if (this.buffer == undefined) {
                     this.buffer = [];
                     if (await this._init(this.kwargs)) {
-                        this.left = this.buffer.length;
+                        this.left = Math.min(this.left, this.buffer.length);
                     }
                 }
                 if (this.left <= 0) {
@@ -60,13 +60,11 @@ export class RequestIter implements AsyncIterable<any> {
                     };
                 }
                 if (this.index == this.buffer.length) {
-                    if (this.waitTime) {
-                        await sleep(
-                            this.waitTime -
-                                (new Date().getTime() / 1000 - this.lastLoad)
-                        );
+                    if (this.waitTime && this.lastLoad) {
+                        const delay = this.waitTime * 1000 - (Date.now() - this.lastLoad);
+                        if (delay > 0) await sleep(delay);
                     }
-                    this.lastLoad = new Date().getTime() / 1000;
+                    this.lastLoad = Date.now();
                     this.index = 0;
                     this.buffer = [];
                     const nextChunk = await this._loadNextChunk();
@@ -78,7 +76,7 @@ export class RequestIter implements AsyncIterable<any> {
                         };
                     }
                     if (nextChunk) {
-                        this.left = this.buffer.length;
+                        this.left = Math.min(this.left, this.buffer.length);
                     }
                 }
 

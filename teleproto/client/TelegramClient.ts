@@ -71,6 +71,12 @@ export class TelegramClient<
     S extends Session = Session
 > extends TelegramBaseClient<S> {
     private _updates?: ClientUpdates;
+    private readonly _reconnectHandlers = new Set<() => void | Promise<void>>();
+
+    onReconnect(handler: () => void | Promise<void>): () => void {
+        this._reconnectHandlers.add(handler);
+        return () => { this._reconnectHandlers.delete(handler); };
+    }
 
     /**
      * The update pipeline: middleware, typed subscriptions and live
@@ -3147,6 +3153,14 @@ export class TelegramClient<
             this._log.info("Restarting update loop after reconnect");
             _updateLoop(this);
             this._loopStarted = true;
+        }
+        if (!this._destroyed && !this._sender?.userDisconnected) {
+            for (const handler of this._reconnectHandlers) {
+                void Promise.resolve().then(handler).catch((error) => {
+                    this._log.error("Reconnect handler failed", error);
+                    if (this._errorHandler) void this._errorHandler(error);
+                });
+            }
         }
     }
 

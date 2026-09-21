@@ -1,12 +1,14 @@
-import { createHmac } from "node:crypto";
+import { createHmac, randomInt } from "node:crypto";
 
-import { ObfuscatedConnection } from "./Connection";
+import { ObfuscatedConnection, PacketCodec } from "./Connection";
+import { InvalidBufferError } from "../../errors/Common";
 import { AbridgedPacketCodec } from "./TCPAbridged";
 import { generateRandomBytes, sha256 } from "../../Helpers";
 import type { Logger } from "../../extensions/Logger";
 import type {
     SocketFactory,
     SocketInterface,
+    PacketReader,
 } from "../../extensions/SocketInterface";
 import { CTR } from "../../crypto/CTR";
 
@@ -96,6 +98,8 @@ interface TCPMTProxyInterfaceParams {
     loggers: Logger;
     proxy: ProxyInterface;
     socket: SocketFactory;
+    testServers?: boolean;
+    keepAliveInterval?: number;
 }
 
 const SECRET_LEN = 16;
@@ -105,6 +109,7 @@ const PREFIX_DD_PADDING = 0xdd;
 interface ParsedSecret {
     key: Buffer;
     fakeTlsDomain?: string;
+    padded?: boolean;
 }
 
 function decodeSecret(input: string): Buffer {
@@ -123,10 +128,11 @@ function parseProxySecret(input: string | undefined): ParsedSecret {
         return {
             key: Buffer.from(raw.subarray(1, 1 + SECRET_LEN)),
             fakeTlsDomain: raw.subarray(1 + SECRET_LEN).toString("utf8"),
+            padded: true,
         };
     }
     if (raw.length === 1 + SECRET_LEN && raw[0] === PREFIX_DD_PADDING) {
-        return { key: Buffer.from(raw.subarray(1)) };
+        return { key: Buffer.from(raw.subarray(1)), padded: true };
     }
     if (raw.length === SECRET_LEN) {
         return { key: raw };
@@ -145,8 +151,12 @@ const OBF_DC_OFFSET = 60;
 /** Header prefixes that collide with HTTP or other protocol sniffers. */
 const FORBIDDEN_HEADER_PREFIXES: ReadonlyArray<Buffer> = [
     Buffer.from("50567247", "hex"),
-    Buffer.from("474554", "hex"),
+    Buffer.from("47455420", "hex"),
     Buffer.from("504f5354", "hex"),
+    Buffer.from("48454144", "hex"),
+    Buffer.from("4f505449", "hex"),
+    Buffer.from("16030102", "hex"),
+    Buffer.from("dddddddd", "hex"),
     Buffer.from("eeeeeeee", "hex"),
 ];
 
@@ -178,7 +188,7 @@ class MTProxyIO {
     header?: Buffer;
 
     private readonly stream: ByteStream;
-    private readonly packetCodec: AbridgedPacketCodec;
+    private readonly packetCodec: { obfuscateTag: Buffer };
     private readonly secret: Buffer;
     private readonly dcId: number;
     private encryptor?: CTR;
@@ -189,7 +199,10 @@ class MTProxyIO {
         this.packetCodec =
             connection.PacketCodecClass as unknown as AbridgedPacketCodec;
         this.secret = connection._secret;
-        this.dcId = connection._dcId;
+        const dcId = connection._dcId;
+        this.dcId = connection._testServers
+            ? Math.sign(dcId) * (Math.abs(dcId) + 10000)
+            : dcId;
     }
 
     async initHeader(): Promise<void> {
@@ -214,11 +227,8 @@ class MTProxyIO {
         this.encryptor = new CTR(encryptKey, encryptIv);
         this.decryptor = new CTR(decryptKey, decryptIv);
 
-        // Stamp protocol tag and DC id (low byte first, byte 61 zeroed —
-        // matches gramjs / official client behavior, even for negative DC ids).
         this.packetCodec.obfuscateTag.copy(header, OBF_TAG_OFFSET);
-        header.writeInt8(this.dcId, OBF_DC_OFFSET);
-        header[OBF_DC_OFFSET + 1] = 0;
+        header.writeInt16LE(this.dcId, OBF_DC_OFFSET);
 
         // Re-encrypt the stamped tail in place — the CTR counter ends up
         // advanced by all 64 bytes, matching the server's view.
@@ -491,9 +501,9 @@ class FakeTlsSocket implements ByteStream {
         const stamp = createHmac("sha256", this.secret).update(hello).digest();
         const now = Math.floor(Date.now() / 1000) >>> 0;
         const lastWord =
-            (stamp.readUInt32BE(FAKE_TLS_RANDOM_TIMESTAMP_XOR_OFFSET) ^ now) >>>
+            (stamp.readUInt32LE(FAKE_TLS_RANDOM_TIMESTAMP_XOR_OFFSET) ^ now) >>>
             0;
-        stamp.writeUInt32BE(lastWord, FAKE_TLS_RANDOM_TIMESTAMP_XOR_OFFSET);
+        stamp.writeUInt32LE(lastWord, FAKE_TLS_RANDOM_TIMESTAMP_XOR_OFFSET);
         stamp.copy(hello, FAKE_TLS_HELLO_RANDOM_OFFSET);
 
         this.clientRandom = stamp;
@@ -571,12 +581,15 @@ export class TCPMTProxy extends ObfuscatedConnection {
 
     _secret: Buffer;
     _fakeTlsDomain?: string;
+    protected _padded: boolean;
 
     constructor({
         dcId,
         loggers,
         proxy,
         socket,
+        testServers,
+        keepAliveInterval,
     }: TCPMTProxyInterfaceParams) {
         super({
             ip: proxy.ip,
@@ -585,6 +598,8 @@ export class TCPMTProxy extends ObfuscatedConnection {
             loggers,
             socket,
             proxy,
+            testServers,
+            keepAliveInterval,
         });
 
         if (!("MTProxy" in proxy)) {
@@ -593,6 +608,7 @@ export class TCPMTProxy extends ObfuscatedConnection {
         const parsed = parseProxySecret(proxy.secret);
         this._secret = parsed.key;
         this._fakeTlsDomain = parsed.fakeTlsDomain;
+        this._padded = !!parsed.padded;
     }
 
     async _initConn(): Promise<void> {
@@ -609,10 +625,43 @@ export class TCPMTProxy extends ObfuscatedConnection {
     }
 }
 
-/**
- * MTProxy connection using the Abridged packet codec — automatically selected
- * when `proxy.MTProxy` is `true`.
- */
 export class ConnectionTCPMTProxyAbridged extends TCPMTProxy {
-    PacketCodecClass = AbridgedPacketCodec;
+    PacketCodecClass = this._padded ? PaddedIntermediatePacketCodec : AbridgedPacketCodec;
+}
+
+export class PaddedIntermediatePacketCodec extends PacketCodec {
+    static tag = Buffer.from("dddddddd", "hex");
+    static obfuscateTag = PaddedIntermediatePacketCodec.tag;
+
+    encodePacket(data: Buffer): Buffer {
+        const padding = randomInt(16);
+        const packet = Buffer.allocUnsafe(4 + data.length + padding);
+        packet.writeUInt32LE(data.length + padding, 0);
+        data.copy(packet, 4);
+        if (padding) generateRandomBytes(padding).copy(packet, 4 + data.length);
+        return packet;
+    }
+
+    async readPacket(reader: PacketReader): Promise<Buffer> {
+        const header = await reader.readExactly(4);
+        const length = header.readInt32LE(0);
+        if (length < 0) throw new InvalidBufferError(header);
+        if (length < 4 || length > (1 << 24) + 15) {
+            throw new Error(`Invalid padded intermediate packet length: ${length}`);
+        }
+        const body = await reader.readExactly(length);
+        if (length < 20) {
+            if (body.readInt32LE(0) < 0) throw new InvalidBufferError(body.subarray(0, 4));
+            throw new Error("Invalid padded intermediate payload");
+        }
+        if (body.readBigUInt64LE(0) === BigInt(0)) {
+            const end = 20 + body.readUInt32LE(16);
+            if (end > length || length - end > 15) {
+                throw new Error("Invalid unencrypted MTProto payload length");
+            }
+            return body.subarray(0, end);
+        }
+        if (length < 40) throw new Error("Invalid encrypted MTProto payload length");
+        return body.subarray(0, length - (length - 24) % 16);
+    }
 }

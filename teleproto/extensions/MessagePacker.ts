@@ -1,6 +1,4 @@
-import { MessageContainer } from "../tl/core";
-import { TLMessage } from "../tl/core";
-import { BinaryWriter } from "./BinaryWriter";
+import { packRequestBatch } from "../network/packing";
 import type { MTProtoState } from "../network/MTProtoState";
 import type { RequestState } from "../network/RequestState";
 const USE_INVOKE_AFTER_WITH = new Set([
@@ -129,77 +127,7 @@ export class MessagePacker {
             return undefined;
         }
 
-        let data;
-        let buffer = new BinaryWriter(Buffer.alloc(0));
-
-        const batch = [];
-        let size = 0;
-        while (
-            this._queue.length &&
-            batch.length <= MessageContainer.MAXIMUM_LENGTH
-        ) {
-            const state = this._queue.shift();
-            if (!state) {
-                continue;
-            }
-
-            size += state.data.length + TLMessage.SIZE_OVERHEAD;
-            if (size <= MessageContainer.MAXIMUM_SIZE) {
-                let afterId;
-                if (state.after) {
-                    afterId = state.after.msgId;
-                }
-                if (state.after) {
-                    afterId = state.after.msgId;
-                }
-                state.msgId = await this._state.writeDataAsMessage(
-                    buffer,
-                    state.data,
-                    state.request.classType === "request",
-                    afterId,
-                    state.forcedMsgId
-                );
-                this._log.debug(
-                    `Assigned msgId = ${state.msgId} to ${
-                        state.request.className ||
-                        state.request.constructor.name
-                    }`
-                );
-                batch.push(state);
-                continue;
-            }
-            if (batch.length) {
-                this._queue.unshift(state);
-                break;
-            }
-            this._log.warn(
-                `Message payload for ${
-                    state.request.className || state.request.constructor.name
-                } is too long ${state.data.length} and cannot be sent`
-            );
-            state.reject(new Error("Request payload is too big"));
-            size = 0;
-        }
-        if (!batch.length) {
-            return null;
-        }
-        if (batch.length > 1) {
-            const b = Buffer.alloc(8);
-            b.writeUInt32LE(MessageContainer.CONSTRUCTOR_ID, 0);
-            b.writeInt32LE(batch.length, 4);
-            data = Buffer.concat([b, buffer.getValue()]);
-            buffer = new BinaryWriter(Buffer.alloc(0));
-            const containerId = await this._state.writeDataAsMessage(
-                buffer,
-                data,
-                false
-            );
-            for (const s of batch) {
-                s.containerId = containerId;
-            }
-        }
-
-        data = buffer.getValue();
-        return { batch, data };
+        this._queue = this._queue.filter(Boolean);
+        return packRequestBatch(this._state, this._queue, this._log);
     }
 }

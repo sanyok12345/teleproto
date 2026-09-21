@@ -1,7 +1,8 @@
-import { BinaryWriter, Logger } from "../extensions";
+import { BinaryWriter } from "../extensions/BinaryWriter";
+import type { Logger } from "../extensions/Logger";
 import { MessageContainer, TLMessage } from "../tl/core";
-import { MTProtoState } from "./MTProtoState";
-import { RequestState } from "./RequestState";
+import type { MTProtoState } from "./MTProtoState";
+import type { RequestState } from "./RequestState";
 
 export interface PackedBatch {
     batch: RequestState[];

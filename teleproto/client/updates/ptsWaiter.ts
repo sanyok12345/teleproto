@@ -1,6 +1,6 @@
 import type { Api } from "../../tl";
 
-export const WAIT_FOR_SKIPPED_TIMEOUT_MS = 1000;
+export const WAIT_FOR_SKIPPED_TIMEOUT_MS = 500;
 
 export type SkippedTag = "update" | "updates";
 

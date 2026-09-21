@@ -530,7 +530,10 @@ export class UpdateManager {
                     }
                     return;
                 }
-                if (this.globalPtsTimer) clearTimeout(this.globalPtsTimer);
+                if (this.globalPtsTimer) {
+                    if (ms > 1) return;
+                    clearTimeout(this.globalPtsTimer);
+                }
                 this.globalPtsTimer = setTimeout(() => {
                     this.globalPtsTimer = undefined;
                     this.scheduleCommonDifference();
@@ -557,7 +560,10 @@ export class UpdateManager {
                     }
                     return;
                 }
-                if (t.timer) clearTimeout(t.timer);
+                if (t.timer) {
+                    if (ms > 1) return;
+                    clearTimeout(t.timer);
+                }
                 t.timer = setTimeout(() => {
                     t.timer = undefined;
                     void this.fetchChannelDifference(channelId);
@@ -577,7 +583,7 @@ export class UpdateManager {
     }
 
     private async fetchCommonDifference(): Promise<void> {
-        if (this.fetchingDifference || !this.state) return;
+        if (this.fetchingDifference || this.failRetryTimer || !this.state) return;
         this.fetchingDifference = true;
         this.globalPts.setRequesting(true);
         let failed = false;
@@ -598,7 +604,6 @@ export class UpdateManager {
             this.globalPts.setRequesting(false);
             if (this.state) this.globalPts.init(this.state.pts);
             this.fetchingDifference = false;
-            this.drainPendingSeq();
         }
         if (failed && this.running) {
             const delayMs = this.failTimeoutS * 1000;
@@ -609,6 +614,7 @@ export class UpdateManager {
                 this.scheduleCommonDifference();
             }, delayMs);
         }
+        this.drainPendingSeq();
     }
 
     private async fetchDifferenceLoop(): Promise<void> {

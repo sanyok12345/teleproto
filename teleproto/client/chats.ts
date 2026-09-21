@@ -25,6 +25,10 @@ const _MAX_PARTICIPANTS_CHUNK_SIZE = 200;
 const _MAX_ADMIN_LOG_CHUNK_SIZE = 100;
 const _MAX_PROFILE_PHOTO_CHUNK_SIZE = 100;
 
+export type UserWithParticipant = Api.User & {
+    participant?: Api.TypeChannelParticipant | Api.TypeChatParticipant;
+};
+
 interface ChatActionInterface {
     delay: number;
     autoCancel: boolean;
@@ -139,7 +143,7 @@ interface ParticipantsIterInterface {
 
 export class _ParticipantsIter extends RequestIter {
     private filterEntity: ((entity: Entity) => boolean) | undefined;
-    private requests?: Api.channels.GetParticipants[];
+    private request?: Api.channels.GetParticipants;
 
     async _init({
         entity,
@@ -187,7 +191,7 @@ export class _ParticipantsIter extends RequestIter {
             this.filterEntity = (entity: Entity) => true;
         }
         // Only used for channels, but we should always set the attribute
-        this.requests = [];
+        this.request = undefined;
         if (ty == helpers._EntityType.CHANNEL) {
             if (showTotal) {
                 const channel = await this.client.api.channels.getFullChannel(
@@ -201,19 +205,17 @@ export class _ParticipantsIter extends RequestIter {
             if (this.total && this.total <= 0) {
                 return false;
             }
-            this.requests.push(
-                new Api.channels.GetParticipants({
-                    channel: entity,
-                    filter:
-                        filter ||
-                        new Api.ChannelParticipantsSearch({
-                            q: search || "",
-                        }),
-                    offset,
-                    limit: _MAX_PARTICIPANTS_CHUNK_SIZE,
-                    hash: bigInt.zero,
-                })
-            );
+            this.request = new Api.channels.GetParticipants({
+                channel: entity,
+                filter:
+                    filter ||
+                    new Api.ChannelParticipantsSearch({
+                        q: search || "",
+                    }),
+                offset,
+                limit: _MAX_PARTICIPANTS_CHUNK_SIZE,
+                hash: bigInt.zero,
+            });
         } else if (ty == helpers._EntityType.CHAT) {
             if (!("chatId" in entity)) {
                 throw new Error(
@@ -244,7 +246,7 @@ export class _ParticipantsIter extends RequestIter {
                 for (const participant of full.fullChat.participants
                     .participants) {
                     const user = users.get(participant.userId.toString())!;
-                    if (!this.filterEntity(user)) {
+                    if (!user || !this.filterEntity(user)) {
                         continue;
                     }
                     (user as any).participant = participant;
@@ -266,50 +268,42 @@ export class _ParticipantsIter extends RequestIter {
     }
 
     async _loadNextChunk(): Promise<boolean | undefined> {
-        if (!this.requests?.length) {
-            return true;
-        }
-        this.requests[0].limit = Math.min(
-            this.limit - this.requests[0].offset,
-            _MAX_PARTICIPANTS_CHUNK_SIZE
-        );
-        const results = [];
-        for (const request of this.requests) {
-            results.push(await this.client.invoke(request));
-        }
-
-        for (let i = this.requests.length - 1; i >= 0; i--) {
-            const participants = results[i];
+        while (this.request) {
+            const request = this.request;
+            request.limit = Math.min(this.left, _MAX_PARTICIPANTS_CHUNK_SIZE);
+            const participants = await this.client.invoke(request);
             if (
                 participants instanceof
                     Api.channels.ChannelParticipantsNotModified ||
-                !participants.users.length
+                !participants.participants.length
             ) {
-                this.requests.splice(i, 1);
-                continue;
+                this.request = undefined;
+                return true;
             }
-
-            this.requests[i].offset += participants.participants.length;
+            request.offset += participants.participants.length;
             const users = new Map<string, Entity>();
             for (const user of participants.users) {
                 users.set(user.id.toString(), user);
             }
             for (const participant of participants.participants) {
-                if (!("userId" in participant)) {
-                    continue;
-                }
-                const user = users.get(participant.userId.toString())!;
-                if (this.filterEntity && !this.filterEntity(user)) {
+                const userId = "userId" in participant
+                    ? participant.userId
+                    : "peer" in participant && participant.peer instanceof Api.PeerUser
+                      ? participant.peer.userId
+                      : undefined;
+                const user = userId && users.get(userId.toString());
+                if (!user || (this.filterEntity && !this.filterEntity(user))) {
                     continue;
                 }
                 (user as any).participant = participant;
                 this.buffer?.push(user);
             }
+            if (this.buffer?.length) return undefined;
         }
-        return undefined;
+        return true;
     }
 
-    [Symbol.asyncIterator](): AsyncIterator<Api.User, any, undefined> {
+    [Symbol.asyncIterator](): AsyncIterator<UserWithParticipant, any, undefined> {
         return super[Symbol.asyncIterator]();
     }
 }
@@ -499,7 +493,7 @@ export async function getParticipants(
     params: IterParticipantsParams
 ) {
     const it = client.iterParticipants(entity, params);
-    return (await it.collect()) as TotalList<Api.User>;
+    return (await it.collect()) as TotalList<UserWithParticipant>;
 }
 
 /** @hidden */

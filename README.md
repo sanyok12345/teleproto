@@ -37,7 +37,9 @@ const client = new TelegramClient(session, apiId, apiHash, {
 await client.start({
   phoneNumber: () => rl.question("Phone: "),
   password:    () => rl.question("2FA password: "),
-  phoneCode:   () => rl.question("Code: "),
+  phoneCode:   (_, info) => rl.question(`Code (${info?.type}): `),
+  emailAddress: () => rl.question("Login email: "),
+  emailVerification: async () => ({ type: "code", code: await rl.question("Email code: ") }),
   onError: console.error,
 });
 
@@ -46,6 +48,8 @@ console.log("Session string:", client.session.save());
 
 rl.close();
 ```
+
+A code of type `app` arrives in the Telegram chat on your other devices, not by SMS. Telegram may also ask for a login email instead, which is what the email callbacks handle.
 
 The session string is your saved login. Drop it back into `new StringSession(saved)` next time and skip the auth flow entirely.
 

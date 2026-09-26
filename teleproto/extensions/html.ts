@@ -167,12 +167,19 @@ export class HTMLParser {
             case "em":
                 return new Api.MessageEntityItalic({ offset, length: 0 });
             case "u":
+            case "ins":
                 return new Api.MessageEntityUnderline({ offset, length: 0 });
             case "s":
             case "del":
+            case "strike":
                 return new Api.MessageEntityStrike({ offset, length: 0 });
             case "spoiler":
+            case "tg-spoiler":
                 return new Api.MessageEntitySpoiler({ offset, length: 0 });
+            case "span":
+                return attrs.class?.split(/\s+/).includes("tg-spoiler")
+                    ? new Api.MessageEntitySpoiler({ offset, length: 0 })
+                    : undefined;
             case "blockquote":
                 return new Api.MessageEntityBlockquote(
                     attrs.expandable !== undefined
@@ -243,7 +250,7 @@ export class HTMLParser {
             case "MessageEntityBold":
                 return ["<strong>", "</strong>"];
             case "MessageEntitySpoiler":
-                return ["<spoiler>", "</spoiler>"];
+                return ["<tg-spoiler>", "</tg-spoiler>"];
             case "MessageEntityItalic":
                 return ["<em>", "</em>"];
             case "MessageEntityCode":
@@ -253,7 +260,7 @@ export class HTMLParser {
             case "MessageEntityStrike":
                 return ["<del>", "</del>"];
             case "MessageEntityBlockquote":
-                return ["<blockquote>", "</blockquote>"];
+                return [entity.collapsed ? "<blockquote expandable>" : "<blockquote>", "</blockquote>"];
             case "MessageEntityPre":
                 return entity.language
                     ? [`<pre><code class="language-${HTMLParser._escapeHtml(entity.language)}">`, "</code></pre>"]

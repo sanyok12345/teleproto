@@ -3,11 +3,12 @@ import store, { StoreBase } from "store2";
 import { AuthKey } from "../crypto/AuthKey";
 import bigInt from "big-integer";
 import { LocalStorage } from "node-localstorage";
+import { resolve } from "path";
 
 /**
  * Persistent session that stores auth keys and entity data on disk using `node-localstorage`.
  *
- * Creates a directory named after the session in the current working directory.
+ * Accepts an absolute path or a directory relative to the working directory.
  * Suitable for long-running server applications where session data must survive restarts.
  *
  * @example
@@ -29,7 +30,7 @@ export class StoreSession extends MemorySession {
         }
         this.store = store.area(
             sessionName,
-            new LocalStorage("./" + sessionName)
+            new LocalStorage(resolve(sessionName))
         );
         if (divider == undefined) {
             divider = ":";

@@ -344,6 +344,7 @@ async function requestLoginCode(
         }
         return { phoneNumber, sentCode };
     } catch (err: any) {
+        if (err.errorMessage === "AUTH_RESTART") return undefined;
         if (
             err.errorMessage === "SESSION_PASSWORD_NEEDED" ||
             err.message === "AUTH_USER_CANCEL" ||

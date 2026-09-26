@@ -3156,9 +3156,15 @@ export class TelegramClient<
         }
         if (!this._destroyed && !this._sender?.userDisconnected) {
             for (const handler of this._reconnectHandlers) {
-                void Promise.resolve().then(handler).catch((error) => {
+                void Promise.resolve().then(handler).catch(async (error) => {
                     this._log.error("Reconnect handler failed", error);
-                    if (this._errorHandler) void this._errorHandler(error);
+                    if (this._errorHandler) {
+                        try {
+                            await this._errorHandler(error);
+                        } catch (handlerError) {
+                            this._log.error("Reconnect error handler failed", handlerError);
+                        }
+                    }
                 });
             }
         }

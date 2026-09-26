@@ -544,8 +544,13 @@ async function signInWithPhoneCode(
     | undefined
 > {
     let current = sentCode;
+    let resendAuthorization: Api.auth.TypeAuthorization | undefined;
     const resend = async (): Promise<SentCodeInfo> => {
         const next = await resendCode(client, phoneNumber, current);
+        if (next instanceof Api.auth.SentCodeSuccess) {
+            resendAuthorization = next.authorization;
+            throw new Error("Login completed while resending the code");
+        }
         if (!(next instanceof Api.auth.SentCode)) {
             throw new Error("Unexpected resend result " + next.className);
         }
@@ -564,8 +569,16 @@ async function signInWithPhoneCode(
                     info
                 );
             } catch (err: any) {
-                if (err.errorMessage === "RESTART_AUTH") return undefined;
+                if (!resendAuthorization && err.errorMessage === "RESTART_AUTH") {
+                    return undefined;
+                }
                 throw err;
+            }
+            if (resendAuthorization) {
+                return {
+                    phoneCodeHash: current.phoneCodeHash,
+                    authorization: resendAuthorization,
+                };
             }
             if (!phoneCode) {
                 throw new Error("Code is empty");
@@ -580,6 +593,12 @@ async function signInWithPhoneCode(
             );
             return { phoneCodeHash: current.phoneCodeHash, authorization };
         } catch (err: any) {
+            if (resendAuthorization) {
+                return {
+                    phoneCodeHash: current.phoneCodeHash,
+                    authorization: resendAuthorization,
+                };
+            }
             const next = await stepFailed(
                 authParams,
                 err,

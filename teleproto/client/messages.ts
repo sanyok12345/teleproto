@@ -1114,7 +1114,7 @@ export async function forwardMessages(
 
         const result = await client.invoke(request);
         sent.push(
-            client._getResponseMessage(request, result, entity) as Api.Message
+            ...(client._getResponseMessage(request, result, entity) as Api.Message[])
         );
     }
 

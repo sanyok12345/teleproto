@@ -281,7 +281,7 @@ export function getInnerText(text: string, entities: Api.TypeMessageEntity[]) {
  * @param entity
  * @returns {InputChannel|*}
  */
-export function getInputChannel(entity: EntityLike) {
+export function getInputChannel(entity: EntityLike): Api.TypeInputChannel {
     if (
         typeof entity === "string" ||
         typeof entity == "number" ||
@@ -295,7 +295,7 @@ export function getInputChannel(entity: EntityLike) {
     }
     if (entity.SUBCLASS_OF_ID === unionId("InputChannel")) {
 
-        return entity;
+        return entity as Api.TypeInputChannel;
     }
     if (
         entity instanceof Api.Channel ||
@@ -313,6 +313,13 @@ export function getInputChannel(entity: EntityLike) {
         return new Api.InputChannel({
             channelId: entity.channelId,
             accessHash: entity.accessHash,
+        });
+    }
+    if (entity instanceof Api.InputPeerChannelFromMessage) {
+        return new Api.InputChannelFromMessage({
+            peer: entity.peer,
+            msgId: entity.msgId,
+            channelId: entity.channelId,
         });
     }
     _raiseCastFail(entity, "InputChannel");
@@ -1164,8 +1171,19 @@ export function getPeer(peer: EntityLike | any) {
             peer instanceof Api.DialogPeer
         ) {
             return peer.peer;
-        } else if (peer instanceof Api.ChannelFull) {
+        } else if (peer instanceof Api.ChannelFull || peer instanceof Api.CommunityFull) {
             return new Api.PeerChannel({ channelId: peer.id });
+        } else if (
+            peer instanceof Api.DialogCommunity ||
+            peer instanceof Api.DialogPeerCommunity ||
+            peer instanceof Api.NotifyCommunity
+        ) {
+            return new Api.PeerChannel({ channelId: peer.communityId });
+        } else if (
+            peer instanceof Api.InputDialogPeerCommunity ||
+            peer instanceof Api.InputNotifyCommunity
+        ) {
+            return getPeer(peer.community);
         }
         if (
             peer.SUBCLASS_OF_ID === unionId("ChatParticipant") ||
@@ -1589,11 +1607,17 @@ export function splitText(
  * @param dialog The dialog to convert
  */
 export function getInputDialog(dialog: any): Api.TypeInputDialogPeer {
+    if (dialog.inputDialog) return dialog.inputDialog;
     if (dialog.SUBCLASS_OF_ID === undefined) {
         _raiseCastFail(dialog, "InputDialogPeer");
     }
     if (dialog.SUBCLASS_OF_ID === unionId("InputDialogPeer")) {
         return dialog;
+    }
+    if (dialog instanceof Api.Community || dialog instanceof Api.CommunityForbidden) {
+        return new Api.InputDialogPeerCommunity({
+            community: getInputChannel(getInputPeer(dialog)),
+        });
     }
     if (dialog.SUBCLASS_OF_ID === unionId("InputPeer")) {
         return new Api.InputDialogPeer({ peer: dialog });

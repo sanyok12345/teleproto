@@ -581,16 +581,16 @@ export async function getInputEntity(
         });
     } else if (peer instanceof Api.PeerChannel) {
         try {
-            const channels = await client.api.channels.getChannels({
-                id: [
+            const channels = await _getChannelsWithCommunityFallback(client,
+                [
                     new Api.InputChannel({
                         channelId: peer.channelId,
                         accessHash: bigInt.zero,
                     }),
-                ],
-            });
+                ]
+            );
 
-            return utils.getInputPeer(channels.chats[0]);
+            return utils.getInputPeer(channels[0]);
         } catch (e) {
             client._log.error("Error while resolving channel entity", e);
             if (client._errorHandler) {
@@ -730,6 +730,22 @@ export async function _getPeer(client: TelegramClient, peer: EntityLike) {
 
 /** @hidden */
 export async function _getInputDialog(client: TelegramClient, dialog: any) {
+    if (dialog?.inputDialog) return _getInputDialog(client, dialog.inputDialog);
+    if (dialog instanceof Api.InputDialogPeerCommunity) {
+        dialog.community = utils.getInputChannel(await client.getInputEntity(dialog.community));
+        return dialog;
+    }
+    if (dialog instanceof Api.InputDialogPeerFolder) return dialog;
+    if (dialog instanceof Api.Community || dialog instanceof Api.CommunityForbidden) {
+        return utils.getInputDialog(dialog);
+    }
+    if (dialog instanceof Api.DialogCommunity || dialog instanceof Api.DialogPeerCommunity) {
+        return new Api.InputDialogPeerCommunity({
+            community: utils.getInputChannel(await client.getInputEntity(
+                new Api.PeerChannel({ channelId: dialog.communityId })
+            )),
+        });
+    }
     try {
         if (dialog.SUBCLASS_OF_ID == unionId("InputDialogPeer")) {
 
@@ -749,6 +765,22 @@ export async function _getInputDialog(client: TelegramClient, dialog: any) {
 
 /** @hidden */
 export async function _getInputNotify(client: TelegramClient, notify: any) {
+    if (notify instanceof Api.Community || notify instanceof Api.CommunityForbidden) {
+        return new Api.InputNotifyCommunity({
+            community: utils.getInputChannel(await client.getInputEntity(notify)),
+        });
+    }
+    if (notify instanceof Api.InputNotifyCommunity) {
+        notify.community = utils.getInputChannel(await client.getInputEntity(notify.community));
+        return notify;
+    }
+    if (notify instanceof Api.NotifyCommunity || notify instanceof Api.DialogCommunity) {
+        return new Api.InputNotifyCommunity({
+            community: utils.getInputChannel(await client.getInputEntity(
+                new Api.PeerChannel({ channelId: notify.communityId })
+            )),
+        });
+    }
     try {
         if (notify.SUBCLASS_OF_ID == unionId("InputNotifyPeer")) {
             if (notify instanceof Api.InputNotifyPeer) {

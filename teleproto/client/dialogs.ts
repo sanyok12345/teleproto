@@ -51,6 +51,7 @@ export class _DialogsIter extends RequestIter {
     private seen?: Set<any>;
     private filterDate?: number;
     private ignoreMigrated?: boolean;
+    private lastOffset?: string;
 
     async _init({
         offsetDate,
@@ -84,6 +85,7 @@ export class _DialogsIter extends RequestIter {
         this.seen = new Set();
         this.filterDate = offsetDate;
         this.ignoreMigrated = ignoreMigrated;
+        this.lastOffset = undefined;
     }
     [Symbol.asyncIterator](): AsyncIterator<Dialog, any, undefined> {
         return super[Symbol.asyncIterator]();
@@ -93,110 +95,117 @@ export class _DialogsIter extends RequestIter {
         if (!this.request || !this.seen || !this.buffer) {
             return;
         }
-        this.request.limit = Math.min(this.left, _MAX_CHUNK_SIZE);
-        const r = await this.client.invoke(this.request);
-        if (r instanceof Api.messages.DialogsNotModified) {
-            return;
-        }
-        if ("count" in r) {
-            this.total = r.count;
-        } else {
-            this.total = r.dialogs.length;
-        }
-        const entities = new Map<string, Api.TypeUser | Api.TypeChat>();
-        const messages = new Map<string, Api.Message>();
+        while (true) {
+            this.request.limit = Math.min(this.left, _MAX_CHUNK_SIZE);
+            const r = await this.client.invoke(this.request);
+            if (r instanceof Api.messages.DialogsNotModified) {
+                return;
+            }
+            if ("count" in r) {
+                this.total = r.count;
+            } else {
+                this.total = r.dialogs.length;
+            }
+            const entities = new Map<string, Api.TypeUser | Api.TypeChat>();
+            const messages = new Map<string, Api.Message>();
 
-        for (const entity of [...r.users, ...r.chats]) {
-            if (
-                entity instanceof Api.UserEmpty ||
-                entity instanceof Api.ChatEmpty
-            ) {
-                continue;
-            }
-            entities.set(utils.getPeerId(entity), entity);
-        }
-        for (const m of r.messages) {
-            let message = m as unknown as Api.Message;
-            try {
-                if (message && "_finishInit" in message) {
-                    // todo make sure this never fails
-                    message._finishInit(this.client, entities, undefined);
-                }
-            } catch (e) {
-                this.client._log.error(
-                    "Got error while trying to finish init message with id " +
-                        m.id,
-                    e
-                );
-                if (this.client._errorHandler) {
-                    await this.client._errorHandler(e as Error);
-                }
-            }
-            messages.set(
-                _dialogMessageKey(message.peerId!, message.id),
-                message
-            );
-        }
-
-        for (const d of r.dialogs) {
-            if (
-                d instanceof Api.DialogFolder ||
-                d instanceof Api.DialogCommunity
-            ) {
-                continue;
-            }
-            const message = messages.get(
-                _dialogMessageKey(d.peer, d.topMessage)
-            );
-            if (this.filterDate != undefined) {
-                const date = message?.date!;
-                if (date == undefined || date > this.filterDate) {
-                    continue;
-                }
-            }
-            const peerId = utils.getPeerId(d.peer);
-            if (!this.seen.has(peerId)) {
-                this.seen.add(peerId);
-                if (!entities.has(peerId)) {
-                    /*
-                     > In which case can a UserEmpty appear in the list of banned members?
-                     > In a very rare cases. This is possible but isn't an expected behavior.
-                     Real world example: https://t.me/TelethonChat/271471
-                     */
-                    continue;
-                }
-                const cd = new Dialog(this.client, d, entities, message);
+            for (const entity of [...r.users, ...r.chats]) {
                 if (
-                    !this.ignoreMigrated ||
-                    (cd.entity != undefined && "migratedTo" in cd.entity)
+                    entity instanceof Api.UserEmpty ||
+                    entity instanceof Api.ChatEmpty
                 ) {
-                    this.buffer.push(cd);
+                    continue;
+                }
+                entities.set(utils.getPeerId(entity), entity);
+            }
+            for (const m of r.messages) {
+                let message = m as unknown as Api.Message;
+                try {
+                    if (message && "_finishInit" in message) {
+                        // todo make sure this never fails
+                        message._finishInit(this.client, entities, undefined);
+                    }
+                } catch (e) {
+                    this.client._log.error(
+                        "Got error while trying to finish init message with id " +
+                            m.id,
+                        e
+                    );
+                    if (this.client._errorHandler) {
+                        await this.client._errorHandler(e as Error);
+                    }
+                }
+                messages.set(
+                    _dialogMessageKey(message.peerId!, message.id),
+                    message
+                );
+            }
+
+            for (const d of r.dialogs) {
+                if (d instanceof Api.DialogFolder) {
+                    continue;
+                }
+                const peer = d instanceof Api.DialogCommunity
+                    ? new Api.PeerChannel({ channelId: d.communityId })
+                    : d.peer;
+                const message = d instanceof Api.Dialog
+                    ? messages.get(_dialogMessageKey(d.peer, d.topMessage))
+                    : undefined;
+                if (this.filterDate != undefined && d instanceof Api.Dialog) {
+                    const date = message?.date!;
+                    if (date == undefined || date > this.filterDate) {
+                        continue;
+                    }
+                }
+                const peerId = utils.getPeerId(peer);
+                if (!this.seen.has(peerId)) {
+                    this.seen.add(peerId);
+                    if (!entities.has(peerId)) {
+                        /*
+                         > In which case can a UserEmpty appear in the list of banned members?
+                         > In a very rare cases. This is possible but isn't an expected behavior.
+                         Real world example: https://t.me/TelethonChat/271471
+                         */
+                        continue;
+                    }
+                    const cd = new Dialog(this.client, d, entities, message);
+                    if (
+                        !this.ignoreMigrated ||
+                        !(cd.entity instanceof Api.Chat && cd.entity.migratedTo)
+                    ) {
+                        this.buffer.push(cd);
+                    }
                 }
             }
-        }
-        if (
-            r.dialogs.length < this.request.limit ||
-            !(r instanceof Api.messages.DialogsSlice)
-        ) {
-            return true;
-        }
-        let lastMessage;
-        for (let dialog of r.dialogs.reverse()) {
-            if (dialog instanceof Api.DialogCommunity) {
+            if (
+                r.dialogs.length < this.request.limit ||
+                !(r instanceof Api.messages.DialogsSlice)
+            ) {
+                return true;
+            }
+            const lastDialog = [...r.dialogs].reverse().find(
+                (dialog): dialog is Api.Dialog => dialog instanceof Api.Dialog
+            );
+            if (!lastDialog) {
+                if (this.request.excludePinned) return true;
+                this.request.excludePinned = true;
+                if (this.buffer.length) return;
                 continue;
             }
-            lastMessage = messages.get(
-                _dialogMessageKey(dialog.peer, dialog.topMessage)
-            );
-            if (lastMessage) {
-                break;
-            }
+            const lastMessage = messages.get(_dialogMessageKey(lastDialog.peer, lastDialog.topMessage));
+            const offsetEntity = entities.get(utils.getPeerId(lastDialog.peer));
+            const offsetPeer = offsetEntity
+                ? utils.getInputPeer(offsetEntity)
+                : await this.client.getInputEntity(lastDialog.peer);
+            const offset = `${utils.getPeerId(lastDialog.peer)}:${lastDialog.topMessage}`;
+            if (this.lastOffset === offset) return true;
+            this.lastOffset = offset;
+            this.request.excludePinned = true;
+            this.request.offsetId = lastDialog.topMessage;
+            this.request.offsetDate = lastMessage ? lastMessage.date! : 0;
+            this.request.offsetPeer = offsetPeer;
+            if (this.buffer.length) return;
         }
-        this.request.excludePinned = true;
-        this.request.offsetId = lastMessage ? lastMessage.id : 0;
-        this.request.offsetDate = lastMessage ? lastMessage.date! : 0;
-        this.request.offsetPeer =
-            this.buffer[this.buffer.length - 1]?.inputEntity;
     }
 }
 

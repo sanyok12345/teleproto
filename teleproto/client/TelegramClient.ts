@@ -18,6 +18,7 @@ import * as updateMethods from "./updates/dispatch";
 import * as uploadMethods from "./uploads";
 import * as userMethods from "./users";
 import * as chatMethods from "./chats";
+import * as communityMethods from "./communities";
 import * as inviteLinkMethods from "./inviteLinks";
 import * as accountMethods from "./account";
 import * as contactMethods from "./contacts";
@@ -2294,6 +2295,101 @@ export class TelegramClient<
     }
 
     //endregion
+    /** Creates a community and returns its entity. */
+    createCommunity(params: communityMethods.CreateCommunityParams) {
+        return communityMethods.createCommunity(this, params);
+    }
+
+    /** Fetches full community details and linked peers. */
+    getCommunity(community: EntityLike) {
+        return communityMethods.getCommunity(this, community);
+    }
+
+    /** Lists joined communities, retaining forbidden entries. */
+    getJoinedCommunities() {
+        return communityMethods.getJoinedCommunities(this);
+    }
+
+    /** Lists linked peers with visibility and history access metadata. */
+    getCommunityPeers(community: EntityLike) {
+        return communityMethods.getCommunityPeers(this, community);
+    }
+
+    /** Adds, changes visibility of, or removes a peer link. */
+    setCommunityPeerLink(
+        community: EntityLike,
+        peer: EntityLike,
+        action: communityMethods.CommunityPeerLinkAction
+    ) {
+        return communityMethods.setCommunityPeerLink(this, community, peer, action);
+    }
+
+    /** Groups or expands the community in the dialog list. */
+    setCommunityCollapsed(community: EntityLike, collapsed: boolean) {
+        return communityMethods.setCommunityCollapsed(this, community, collapsed);
+    }
+
+    /** Iterates pending links with requester and peer metadata. */
+    iterCommunityPeerLinkRequests(
+        community: EntityLike,
+        params: communityMethods.IterCommunityPeerLinkRequestsParams = {}
+    ) {
+        return communityMethods.iterCommunityPeerLinkRequests(this, community, params);
+    }
+
+    /** Collects pending peer links and their total count. */
+    getCommunityPeerLinkRequests(
+        community: EntityLike,
+        params: communityMethods.IterCommunityPeerLinkRequestsParams = {}
+    ) {
+        return communityMethods.getCommunityPeerLinkRequests(this, community, params);
+    }
+
+    /** Approves a peer link request, or rejects it when approved is false. */
+    setCommunityPeerLinkRequestApproval(
+        community: EntityLike,
+        peer: EntityLike,
+        approved: boolean
+    ) {
+        return communityMethods.setCommunityPeerLinkRequestApproval(
+            this, community, peer, approved
+        );
+    }
+
+    /** Approves or rejects all pending peer link requests. */
+    setAllCommunityPeerLinkRequestsApproval(community: EntityLike, approved: boolean) {
+        return communityMethods.setAllCommunityPeerLinkRequestsApproval(this, community, approved);
+    }
+
+    /** Bans a participant across the community, or unbans when banned is false. */
+    setCommunityParticipantBanned(
+        community: EntityLike,
+        participant: EntityLike,
+        banned: boolean
+    ) {
+        return communityMethods.setCommunityParticipantBanned(this, community, participant, banned);
+    }
+
+    /** Returns the community chats a participant owns or has joined. */
+    getCommunityParticipantJoinedChats(community: EntityLike, participant: EntityLike) {
+        return communityMethods.getCommunityParticipantJoinedChats(this, community, participant);
+    }
+
+    /** Pins or unpins the community's grouped dialog. */
+    pinCommunity(community: EntityLike, pinned = true) {
+        return communityMethods.pinCommunity(this, community, pinned);
+    }
+
+    /** Fetches notification settings using the community notification scope. */
+    getCommunityNotifySettings(community: EntityLike) {
+        return communityMethods.getCommunityNotifySettings(this, community);
+    }
+
+    /** Updates notification settings for the community notification scope. */
+    updateCommunityNotifySettings(community: EntityLike, params: accountMethods.UpdateNotifySettingsParams) {
+        return communityMethods.updateCommunityNotifySettings(this, community, params);
+    }
+
     //region forums
 
     /**

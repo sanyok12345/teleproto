@@ -52,7 +52,7 @@ type UpdateFields = {
     channelId?: bigInt.BigInteger;
     chatId?: bigInt.BigInteger;
     userId?: bigInt.BigInteger;
-    peer?: Api.TypePeer;
+    peer?: Api.TypePeer | Api.TypeDialogPeer | Api.TypeNotifyPeer;
     message?: { peerId?: Api.TypePeer };
     _entities?: Map<string, Api.TypeUser | Api.TypeChat>;
     state?: Record<string, unknown>;
@@ -150,6 +150,12 @@ function expandShortMessage(
 
 function peerOf(update: unknown): string | undefined {
     const fields = fieldsOf(update);
+    if (
+        fields.peer instanceof Api.DialogPeerCommunity ||
+        fields.peer instanceof Api.NotifyCommunity
+    ) {
+        return getPeerId(new Api.PeerChannel({ channelId: fields.peer.communityId }));
+    }
     const peer =
         fields.message?.peerId ??
         (fields.peer instanceof Api.PeerUser ||

@@ -3,6 +3,14 @@ export * as Rich from "./richMessage";
 import * as tl from "./tl";
 export { TelegramClient } from "./client/TelegramClient";
 export type { UserWithParticipant } from "./client/chats";
+export type {
+    CreateCommunityParams,
+    CommunityPeerLinkAction,
+    CommunityPeer,
+    CommunityPeerLinkRequest,
+    IterCommunityPeerLinkRequestsParams,
+    FullCommunity,
+} from "./client/communities";
 export { Button } from "./tl/custom/button";
 export {
     InlineKeyboard,

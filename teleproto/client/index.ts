@@ -3,6 +3,7 @@ import * as auth from "./auth";
 import * as bots from "./bots";
 import * as buttons from "./buttons";
 import * as chats from "./chats";
+import * as communities from "./communities";
 import * as dialogs from "./dialogs";
 import * as downloads from "./downloads";
 import * as messageParse from "./messageParse";
@@ -19,6 +20,7 @@ export {
     bots,
     buttons,
     chats,
+    communities,
     dialogs,
     downloads,
     messageParse,

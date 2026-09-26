@@ -17,7 +17,8 @@ type FullEntity =
     | Api.UserFull
     | Api.messages.ChatFull
     | Api.ChatFull
-    | Api.ChannelFull;
+    | Api.ChannelFull
+    | Api.CommunityFull;
 type PeerLike = Api.TypePeer | Api.TypeInputPeer | Entity | FullEntity;
 type EntityLike =
     | bigInt.BigInteger

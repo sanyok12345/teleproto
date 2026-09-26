@@ -44,6 +44,7 @@ interface MessageIterParams {
     replyTo: MessageIDLike;
     topMsgId?: number;
     savedPeerId?: EntityLike;
+    community?: EntityLike;
 }
 
 /**
@@ -79,6 +80,7 @@ export class _MessagesIter extends RequestIter {
         replyTo,
         topMsgId,
         savedPeerId,
+        community,
     }: MessageIterParams) {
         if (entity) {
             this.entity = await this.client.getInputEntity(entity);
@@ -125,6 +127,9 @@ export class _MessagesIter extends RequestIter {
         }
         if (!this.entity) {
             this.request = new Api.messages.SearchGlobal({
+                community: community === undefined
+                    ? undefined
+                    : utils.getInputChannel(await this.client.getInputEntity(community)),
                 q: search || "",
                 filter: filter,
                 minDate: 0,
@@ -471,6 +476,8 @@ export interface IterMessagesParams {
     topMsgId?: number;
     /** When searching your Saved Messages, restrict results to messages originally sent by this peer. */
     savedPeerId?: EntityLike;
+    /** Restricts global search to a community; leave the entity unspecified. */
+    community?: EntityLike;
 }
 
 const IterMessagesDefaults: IterMessagesParams = {
@@ -718,7 +725,14 @@ export function iterMessages(
         replyTo,
         topMsgId,
         savedPeerId,
+        community,
     } = { ...IterMessagesDefaults, ...options };
+    if (community !== undefined && (
+        entity !== undefined || ids !== undefined || fromUser !== undefined ||
+        replyTo !== undefined || topMsgId !== undefined || savedPeerId !== undefined
+    )) {
+        throw new Error("Community search requires global search without a peer, message IDs or thread filters");
+    }
     if (ids) {
         let idsArray;
         if (!isArrayLike(ids)) {
@@ -759,6 +773,7 @@ export function iterMessages(
             replyTo: replyTo,
             topMsgId: topMsgId,
             savedPeerId: savedPeerId,
+            community,
         }
     );
 }

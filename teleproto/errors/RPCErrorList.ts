@@ -169,6 +169,46 @@ export class AdminsTooMuchError extends BadRequestError {
     }
 }
 
+/** No AI task was specified. The caller must provide at least one of: proofread, translate (with a target language), tone, or emojify. */
+export class AiComposeTaskMissingError extends BadRequestError {
+    constructor(args: ErrorArgs) {
+        const message = "No AI task was specified. The caller must provide at least one of: proofread, translate (with a target language), tone, or emojify." + RPCError._fmtRequest(args.request);
+        super(message, args.request);
+        this.message = message;
+        this.errorMessage = "AI_COMPOSE_TASK_MISSING";
+    }
+}
+
+/** You've reached the daily limit of AI text transformations, upgrade to [Telegram Premium](https://core.telegram.org/api/premium) to get **50x** times more AI text transformations per day! */
+export class AicomposeFloodPremiumError extends BadRequestError {
+    constructor(args: ErrorArgs) {
+        const message = "You've reached the daily limit of AI text transformations, upgrade to [Telegram Premium](https://core.telegram.org/api/premium) to get **50x** times more AI text transformations per day!" + RPCError._fmtRequest(args.request);
+        super(message, args.request);
+        this.message = message;
+        this.errorMessage = "AICOMPOSE_FLOOD_PREMIUM";
+    }
+}
+
+/** The specified tone is invalid. */
+export class AicomposeToneInvalidError extends BadRequestError {
+    constructor(args: ErrorArgs) {
+        const message = "The specified tone is invalid." + RPCError._fmtRequest(args.request);
+        super(message, args.request);
+        this.message = message;
+        this.errorMessage = "AICOMPOSE_TONE_INVALID";
+    }
+}
+
+/** The specified tone title is invalid. */
+export class AicomposeToneTitleInvalidError extends BadRequestError {
+    constructor(args: ErrorArgs) {
+        const message = "The specified tone title is invalid." + RPCError._fmtRequest(args.request);
+        super(message, args.request);
+        this.message = message;
+        this.errorMessage = "AICOMPOSE_TONE_TITLE_INVALID";
+    }
+}
+
 /** You have uploaded too many profile photos, delete some before retrying. */
 export class AlbumPhotosTooManyError extends BadRequestError {
     constructor(args: ErrorArgs) {
@@ -329,6 +369,16 @@ export class BannedRightsInvalidError extends BadRequestError {
     }
 }
 
+/** The target user already has a birthday set. */
+export class BirthdayAlreadyError extends BadRequestError {
+    constructor(args: ErrorArgs) {
+        const message = "The target user already has a birthday set." + RPCError._fmtRequest(args.request);
+        super(message, args.request);
+        this.message = message;
+        this.errorMessage = "BIRTHDAY_ALREADY";
+    }
+}
+
 /** An invalid age was specified, must be between 0 and 150 years. */
 export class BirthdayInvalidError extends BadRequestError {
     constructor(args: ErrorArgs) {
@@ -459,6 +509,16 @@ export class BotCommandInvalidError extends BadRequestError {
     }
 }
 
+/** The current user already owns the maximum allowed number of owned bots, as specified by [`bots_create_limit_default` &raquo;](https://core.telegram.org/api/config#bots-create-limit-default) and [`bots_create_limit_premium` &raquo;](https://core.telegram.org/api/config#bots-create-limit-premium); if the current user doesn't have Telegram Premium, upgrading to Premium will allow them to create more bots. */
+export class BotCreateLimitExceededError extends BadRequestError {
+    constructor(args: ErrorArgs) {
+        const message = "The current user already owns the maximum allowed number of owned bots, as specified by [`bots_create_limit_default` &raquo;](https://core.telegram.org/api/config#bots-create-limit-default) and [`bots_create_limit_premium` &raquo;](https://core.telegram.org/api/config#bots-create-limit-premium); if the current user doesn't have Telegram Premium, upgrading to Premium will allow them to create more bots." + RPCError._fmtRequest(args.request);
+        super(message, args.request);
+        this.message = message;
+        this.errorMessage = "BOT_CREATE_LIMIT_EXCEEDED";
+    }
+}
+
 /** Bot domain invalid. */
 export class BotDomainInvalidError extends BadRequestError {
     constructor(args: ErrorArgs) {
@@ -496,6 +556,16 @@ export class BotGroupsBlockedError extends BadRequestError {
         super(message, args.request);
         this.message = message;
         this.errorMessage = "BOT_GROUPS_BLOCKED";
+    }
+}
+
+/** The specified bot ID is invalid. */
+export class BotIdInvalidError extends BadRequestError {
+    constructor(args: ErrorArgs) {
+        const message = "The specified bot ID is invalid." + RPCError._fmtRequest(args.request);
+        super(message, args.request);
+        this.message = message;
+        this.errorMessage = "BOT_ID_INVALID";
     }
 }
 
@@ -816,6 +886,16 @@ export class CallAlreadyDeclinedError extends BadRequestError {
         super(message, args.request);
         this.message = message;
         this.errorMessage = "CALL_ALREADY_DECLINED";
+    }
+}
+
+/** The specified call is not active. */
+export class CallNotActiveError extends BadRequestError {
+    constructor(args: ErrorArgs) {
+        const message = "The specified call is not active." + RPCError._fmtRequest(args.request);
+        super(message, args.request);
+        this.message = message;
+        this.errorMessage = "CALL_NOT_ACTIVE";
     }
 }
 
@@ -1189,6 +1269,16 @@ export class ChatTooBigError extends BadRequestError {
     }
 }
 
+/** You can't write in this chat. */
+export class ChatWriteForbiddenError extends BadRequestError {
+    constructor(args: ErrorArgs) {
+        const message = "You can't write in this chat." + RPCError._fmtRequest(args.request);
+        super(message, args.request);
+        this.message = message;
+        this.errorMessage = "CHAT_WRITE_FORBIDDEN";
+    }
+}
+
 /** The specified slug is empty. */
 export class ChatlinkSlugEmptyError extends BadRequestError {
     constructor(args: ErrorArgs) {
@@ -1286,6 +1376,16 @@ export class CollectibleNotFoundError extends BadRequestError {
         super(message, args.request);
         this.message = message;
         this.errorMessage = "COLLECTIBLE_NOT_FOUND";
+    }
+}
+
+/** The specified collection ID is invalid. */
+export class CollectionIdInvalidError extends BadRequestError {
+    constructor(args: ErrorArgs) {
+        const message = "The specified collection ID is invalid." + RPCError._fmtRequest(args.request);
+        super(message, args.request);
+        this.message = message;
+        this.errorMessage = "COLLECTION_ID_INVALID";
     }
 }
 
@@ -1399,6 +1499,16 @@ export class CreateCallFailedError extends BadRequestError {
     }
 }
 
+/** The specified credential is invalid. */
+export class CredentialInvalidError extends BadRequestError {
+    constructor(args: ErrorArgs) {
+        const message = "The specified credential is invalid." + RPCError._fmtRequest(args.request);
+        super(message, args.request);
+        this.message = message;
+        this.errorMessage = "CREDENTIAL_INVALID";
+    }
+}
+
 /** The total amount of all prices is invalid. */
 export class CurrencyTotalAmountInvalidError extends BadRequestError {
     constructor(args: ErrorArgs) {
@@ -1499,6 +1609,16 @@ export class DocumentInvalidError extends BadRequestError {
     }
 }
 
+/** Message [effects](https://core.telegram.org/api/effects) can only be used in private 1-on-1 chats, but the caller tried to send a message with an effect to a group or channel. */
+export class EffectChatInvalidError extends BadRequestError {
+    constructor(args: ErrorArgs) {
+        const message = "Message [effects](https://core.telegram.org/api/effects) can only be used in private 1-on-1 chats, but the caller tried to send a message with an effect to a group or channel." + RPCError._fmtRequest(args.request);
+        super(message, args.request);
+        this.message = message;
+        this.errorMessage = "EFFECT_CHAT_INVALID";
+    }
+}
+
 /** The specified effect ID is invalid. */
 export class EffectIdInvalidError extends BadRequestError {
     constructor(args: ErrorArgs) {
@@ -1516,6 +1636,16 @@ export class EmailHashExpiredError extends BadRequestError {
         super(message, args.request);
         this.message = message;
         this.errorMessage = "EMAIL_HASH_EXPIRED";
+    }
+}
+
+/** Attempting to send a code to the recovery email, but no email is configured. */
+export class EmailInstallMissingError extends BadRequestError {
+    constructor(args: ErrorArgs) {
+        const message = "Attempting to send a code to the recovery email, but no email is configured." + RPCError._fmtRequest(args.request);
+        super(message, args.request);
+        this.message = message;
+        this.errorMessage = "EMAIL_INSTALL_MISSING";
     }
 }
 
@@ -1702,6 +1832,36 @@ export class EntityBoundsInvalidError extends BadRequestError {
     }
 }
 
+/** One of the passed messageEntityFormattedDate objects has an invalid format (i.e. an invalid combination of the format flags). */
+export class EntityDateFormatInvalidError extends BadRequestError {
+    constructor(args: ErrorArgs) {
+        const message = "One of the passed messageEntityFormattedDate objects has an invalid format (i.e. an invalid combination of the format flags)." + RPCError._fmtRequest(args.request);
+        super(message, args.request);
+        this.message = message;
+        this.errorMessage = "ENTITY_DATE_FORMAT_INVALID";
+    }
+}
+
+/** One of the passed messageEntityFormattedDate objects has an invalid date: the allowed value ranges from `0` to the current date plus 1098 days (`time()+1098*86400`). */
+export class EntityDateInvalidError extends BadRequestError {
+    constructor(args: ErrorArgs) {
+        const message = "One of the passed messageEntityFormattedDate objects has an invalid date: the allowed value ranges from `0` to the current date plus 1098 days (`time()+1098*86400`)." + RPCError._fmtRequest(args.request);
+        super(message, args.request);
+        this.message = message;
+        this.errorMessage = "ENTITY_DATE_INVALID";
+    }
+}
+
+/** The maximum text span that can be covered by a date entity is 31 UTF-16 code units if any of the date formatting flags is set, or 127 UTF-16 code units without.  . */
+export class EntityDateTooLongError extends BadRequestError {
+    constructor(args: ErrorArgs) {
+        const message = "The maximum text span that can be covered by a date entity is 31 UTF-16 code units if any of the date formatting flags is set, or 127 UTF-16 code units without.  ." + RPCError._fmtRequest(args.request);
+        super(message, args.request);
+        this.message = message;
+        this.errorMessage = "ENTITY_DATE_TOO_LONG";
+    }
+}
+
 /** You mentioned an invalid user. */
 export class EntityMentionUserInvalidError extends BadRequestError {
     constructor(args: ErrorArgs) {
@@ -1762,6 +1922,16 @@ export class ExtendedMediaAmountInvalidError extends BadRequestError {
     }
 }
 
+/** The specified extended media is empty. */
+export class ExtendedMediaEmptyError extends BadRequestError {
+    constructor(args: ErrorArgs) {
+        const message = "The specified extended media is empty." + RPCError._fmtRequest(args.request);
+        super(message, args.request);
+        this.message = message;
+        this.errorMessage = "EXTENDED_MEDIA_EMPTY";
+    }
+}
+
 /** The specified paid media is invalid. */
 export class ExtendedMediaInvalidError extends BadRequestError {
     constructor(args: ErrorArgs) {
@@ -1769,6 +1939,16 @@ export class ExtendedMediaInvalidError extends BadRequestError {
         super(message, args.request);
         this.message = message;
         this.errorMessage = "EXTENDED_MEDIA_INVALID";
+    }
+}
+
+/** Paid media is not allowed for the target peer. */
+export class ExtendedMediaPeerInvalidError extends BadRequestError {
+    constructor(args: ErrorArgs) {
+        const message = "Paid media is not allowed for the target peer." + RPCError._fmtRequest(args.request);
+        super(message, args.request);
+        this.message = message;
+        this.errorMessage = "EXTENDED_MEDIA_PEER_INVALID";
     }
 }
 
@@ -1892,6 +2072,19 @@ export class FilePartsInvalidError extends BadRequestError {
     }
 }
 
+/** The file reference of the media file at offset %d in the multi_media array is invalid. */
+export class FileReferenceEmptyError extends BadRequestError {
+    public value: number;
+
+    constructor(args: ErrorArgs) {
+        const value = Number(args.capture || 0);
+        const message = "The file reference of the media file at offset " + value + " in the multi_media array is invalid." + RPCError._fmtRequest(args.request);
+        super(message, args.request);
+        this.message = message;
+        this.value = value;
+    }
+}
+
 /** The file reference of the media file at index %d in the passed media array expired, it [must be refreshed as specified in the documentation](https://core.telegram.org/api/file-references). . */
 export class FileReferenceExpiredError extends BadRequestError {
     public value: number;
@@ -1915,16 +2108,6 @@ export class FileReferenceInvalidError extends BadRequestError {
         super(message, args.request);
         this.message = message;
         this.value = value;
-    }
-}
-
-/** An empty [file reference](https://core.telegram.org/api/file-references) was specified. */
-export class FileReferenceEmptyError extends BadRequestError {
-    constructor(args: ErrorArgs) {
-        const message = "An empty [file reference](https://core.telegram.org/api/file-references) was specified." + RPCError._fmtRequest(args.request);
-        super(message, args.request);
-        this.message = message;
-        this.errorMessage = "FILE_REFERENCE_EMPTY";
     }
 }
 
@@ -2238,10 +2421,10 @@ export class GroupcallAlreadyDiscardedError extends BadRequestError {
     }
 }
 
-/** The group call has already ended. */
+/** The specified group call cannot be used in this context. */
 export class GroupcallForbiddenError extends BadRequestError {
     constructor(args: ErrorArgs) {
-        const message = "The group call has already ended." + RPCError._fmtRequest(args.request);
+        const message = "The specified group call cannot be used in this context." + RPCError._fmtRequest(args.request);
         super(message, args.request);
         this.message = message;
         this.errorMessage = "GROUPCALL_FORBIDDEN";
@@ -2478,6 +2661,26 @@ export class InputPurposeInvalidError extends BadRequestError {
     }
 }
 
+/** The specified offer amount in stars is invalid, see [here &raquo;](https://core.telegram.org/api/gifts#collectible-gift-purchase-offers) for the allowed range. */
+export class InputStarsAmountInvalidError extends BadRequestError {
+    constructor(args: ErrorArgs) {
+        const message = "The specified offer amount in stars is invalid, see [here &raquo;](https://core.telegram.org/api/gifts#collectible-gift-purchase-offers) for the allowed range." + RPCError._fmtRequest(args.request);
+        super(message, args.request);
+        this.message = message;
+        this.errorMessage = "INPUT_STARS_AMOUNT_INVALID";
+    }
+}
+
+/**  The specified offer amount in nanotons is invalid, see [here &raquo;](https://core.telegram.org/api/gifts#collectible-gift-purchase-offers) for the allowed range. */
+export class InputStarsNanosInvalidError extends BadRequestError {
+    constructor(args: ErrorArgs) {
+        const message = " The specified offer amount in nanotons is invalid, see [here &raquo;](https://core.telegram.org/api/gifts#collectible-gift-purchase-offers) for the allowed range." + RPCError._fmtRequest(args.request);
+        super(message, args.request);
+        this.message = message;
+        this.errorMessage = "INPUT_STARS_NANOS_INVALID";
+    }
+}
+
 /** The specified text is empty. */
 export class InputTextEmptyError extends BadRequestError {
     constructor(args: ErrorArgs) {
@@ -2698,6 +2901,16 @@ export class LimitInvalidError extends BadRequestError {
     }
 }
 
+/** The specified reactions_limit value is invalid. */
+export class LimitPerPostInvalidError extends BadRequestError {
+    constructor(args: ErrorArgs) {
+        const message = "The specified reactions_limit value is invalid." + RPCError._fmtRequest(args.request);
+        super(message, args.request);
+        this.message = message;
+        this.errorMessage = "LIMIT_PER_POST_INVALID";
+    }
+}
+
 /** Discussion link not modified. */
 export class LinkNotModifiedError extends BadRequestError {
     constructor(args: ErrorArgs) {
@@ -2715,6 +2928,26 @@ export class LocationInvalidError extends BadRequestError {
         super(message, args.request);
         this.message = message;
         this.errorMessage = "LOCATION_INVALID";
+    }
+}
+
+/** The specified manager bot is invalid. */
+export class ManagerInvalidError extends BadRequestError {
+    constructor(args: ErrorArgs) {
+        const message = "The specified manager bot is invalid." + RPCError._fmtRequest(args.request);
+        super(message, args.request);
+        this.message = message;
+        this.errorMessage = "MANAGER_INVALID";
+    }
+}
+
+/** The specified manager bot does not have the [user](https://core.telegram.org/constructor/user).`bot_can_manage_bots` flag set. */
+export class ManagerPermissionMissingError extends BadRequestError {
+    constructor(args: ErrorArgs) {
+        const message = "The specified manager bot does not have the [user](https://core.telegram.org/constructor/user).`bot_can_manage_bots` flag set." + RPCError._fmtRequest(args.request);
+        super(message, args.request);
+        this.message = message;
+        this.errorMessage = "MANAGER_PERMISSION_MISSING";
     }
 }
 
@@ -2978,6 +3211,16 @@ export class MessagePollClosedError extends BadRequestError {
     }
 }
 
+/** A non-empty list of IDs must be passed to `id`. */
+export class MessageRequiredError extends BadRequestError {
+    constructor(args: ErrorArgs) {
+        const message = "A non-empty list of IDs must be passed to `id`." + RPCError._fmtRequest(args.request);
+        super(message, args.request);
+        this.message = message;
+        this.errorMessage = "MESSAGE_REQUIRED";
+    }
+}
+
 /** The provided message is too long. */
 export class MessageTooLongError extends BadRequestError {
     constructor(args: ErrorArgs) {
@@ -3058,6 +3301,16 @@ export class MsgVoiceMissingError extends BadRequestError {
     }
 }
 
+/** The specified voice message is too long to be transcribed. */
+export class MsgVoiceTooLongError extends BadRequestError {
+    constructor(args: ErrorArgs) {
+        const message = "The specified voice message is too long to be transcribed." + RPCError._fmtRequest(args.request);
+        super(message, args.request);
+        this.message = message;
+        this.errorMessage = "MSG_VOICE_TOO_LONG";
+    }
+}
+
 /** A waiting call returned an error. */
 export class MsgWaitError extends BadRequestError {
     constructor(args: ErrorArgs) {
@@ -3075,6 +3328,26 @@ export class MultiMediaTooLongError extends BadRequestError {
         super(message, args.request);
         this.message = message;
         this.errorMessage = "MULTI_MEDIA_TOO_LONG";
+    }
+}
+
+/** The specified bot name is invalid. */
+export class NameInvalidError extends BadRequestError {
+    constructor(args: ErrorArgs) {
+        const message = "The specified bot name is invalid." + RPCError._fmtRequest(args.request);
+        super(message, args.request);
+        this.message = message;
+        this.errorMessage = "NAME_INVALID";
+    }
+}
+
+/** The caller didn't specify a valid action (either save or suggest) for the contact profile photo upload. */
+export class NeedActionMissingError extends BadRequestError {
+    constructor(args: ErrorArgs) {
+        const message = "The caller didn't specify a valid action (either save or suggest) for the contact profile photo upload." + RPCError._fmtRequest(args.request);
+        super(message, args.request);
+        this.message = message;
+        this.errorMessage = "NEED_ACTION_MISSING";
     }
 }
 
@@ -3295,6 +3568,16 @@ export class ParticipantsTooFewError extends BadRequestError {
         super(message, args.request);
         this.message = message;
         this.errorMessage = "PARTICIPANTS_TOO_FEW";
+    }
+}
+
+/** Third-party clients currently don't support passkeys even when changing the origin. */
+export class PasskeyOriginMismatchError extends BadRequestError {
+    constructor(args: ErrorArgs) {
+        const message = "Third-party clients currently don't support passkeys even when changing the origin." + RPCError._fmtRequest(args.request);
+        super(message, args.request);
+        this.message = message;
+        this.errorMessage = "PASSKEY_ORIGIN_MISMATCH";
     }
 }
 
@@ -3741,6 +4024,16 @@ export class PinnedTooMuchError extends BadRequestError {
     }
 }
 
+/** The specified topic is already pinned. */
+export class PinnedTopicNotModifiedError extends BadRequestError {
+    constructor(args: ErrorArgs) {
+        const message = "The specified topic is already pinned." + RPCError._fmtRequest(args.request);
+        super(message, args.request);
+        this.message = message;
+        this.errorMessage = "PINNED_TOPIC_NOT_MODIFIED";
+    }
+}
+
 /** One of the poll answers is not acceptable. */
 export class PollAnswerInvalidError extends BadRequestError {
     constructor(args: ErrorArgs) {
@@ -3801,6 +4094,16 @@ export class PremiumAccountRequiredError extends BadRequestError {
     }
 }
 
+/** The specified InputStorePaymentPurpose is invalid. */
+export class PremiumPurposeInvalidError extends BadRequestError {
+    constructor(args: ErrorArgs) {
+        const message = "The specified InputStorePaymentPurpose is invalid." + RPCError._fmtRequest(args.request);
+        super(message, args.request);
+        this.message = message;
+        this.errorMessage = "PREMIUM_PURPOSE_INVALID";
+    }
+}
+
 /** The pricing for the [subscription](https://core.telegram.org/api/subscriptions) is invalid, the maximum price is specified in the [`stars_subscription_amount_max` config key &raquo;](https://core.telegram.org/api/config#stars-subscription-amount-max). */
 export class PricingChatInvalidError extends BadRequestError {
     constructor(args: ErrorArgs) {
@@ -3838,6 +4141,26 @@ export class PrivacyValueInvalidError extends BadRequestError {
         super(message, args.request);
         this.message = message;
         this.errorMessage = "PRIVACY_VALUE_INVALID";
+    }
+}
+
+/** `channel` only accepts a channel, but a supergroup was passed. */
+export class PublicBroadcastExpectedError extends BadRequestError {
+    constructor(args: ErrorArgs) {
+        const message = "`channel` only accepts a channel, but a supergroup was passed." + RPCError._fmtRequest(args.request);
+        super(message, args.request);
+        this.message = message;
+        this.errorMessage = "PUBLIC_BROADCAST_EXPECTED";
+    }
+}
+
+/** The specified e2e public key is invalid. */
+export class PublicKeyInvalidError extends BadRequestError {
+    constructor(args: ErrorArgs) {
+        const message = "The specified e2e public key is invalid." + RPCError._fmtRequest(args.request);
+        super(message, args.request);
+        this.message = message;
+        this.errorMessage = "PUBLIC_KEY_INVALID";
     }
 }
 
@@ -3978,6 +4301,16 @@ export class RaiseHandForbiddenError extends BadRequestError {
         super(message, args.request);
         this.message = message;
         this.errorMessage = "RAISE_HAND_FORBIDDEN";
+    }
+}
+
+/** You provided a random ID that was already used. */
+export class RandomIdDuplicateError extends BadRequestError {
+    constructor(args: ErrorArgs) {
+        const message = "You provided a random ID that was already used." + RPCError._fmtRequest(args.request);
+        super(message, args.request);
+        this.message = message;
+        this.errorMessage = "RANDOM_ID_DUPLICATE";
     }
 }
 
@@ -4171,6 +4504,16 @@ export class ReplyToUserInvalidError extends BadRequestError {
     }
 }
 
+/** The request specified in request_msg_id has already expired. */
+export class RequestMsgExpiredError extends BadRequestError {
+    constructor(args: ErrorArgs) {
+        const message = "The request specified in request_msg_id has already expired." + RPCError._fmtRequest(args.request);
+        super(message, args.request);
+        this.message = message;
+        this.errorMessage = "REQUEST_MSG_EXPIRED";
+    }
+}
+
 /** The master DC did not accept the `request_token` from the CDN DC. Continue downloading the file from the master DC using upload.getFile. */
 export class RequestTokenInvalidError extends BadRequestError {
     constructor(args: ErrorArgs) {
@@ -4178,6 +4521,26 @@ export class RequestTokenInvalidError extends BadRequestError {
         super(message, args.request);
         this.message = message;
         this.errorMessage = "REQUEST_TOKEN_INVALID";
+    }
+}
+
+/** The offered price is too low. */
+export class ResellStarsTooFewError extends BadRequestError {
+    constructor(args: ErrorArgs) {
+        const message = "The offered price is too low." + RPCError._fmtRequest(args.request);
+        super(message, args.request);
+        this.message = message;
+        this.errorMessage = "RESELL_STARS_TOO_FEW";
+    }
+}
+
+/** The offered price is too high. */
+export class ResellStarsTooMuchError extends BadRequestError {
+    constructor(args: ErrorArgs) {
+        const message = "The offered price is too high." + RPCError._fmtRequest(args.request);
+        super(message, args.request);
+        this.message = message;
+        this.errorMessage = "RESELL_STARS_TOO_MUCH";
     }
 }
 
@@ -4624,6 +4987,16 @@ export class StargiftAlreadyUpgradedError extends BadRequestError {
     }
 }
 
+/** One of the specified star gift attributes is invalid. */
+export class StargiftAttributeInvalidError extends BadRequestError {
+    constructor(args: ErrorArgs) {
+        const message = "One of the specified star gift attributes is invalid." + RPCError._fmtRequest(args.request);
+        super(message, args.request);
+        this.message = message;
+        this.errorMessage = "STARGIFT_ATTRIBUTE_INVALID";
+    }
+}
+
 /** The passed gift is invalid. */
 export class StargiftInvalidError extends BadRequestError {
     constructor(args: ErrorArgs) {
@@ -4634,6 +5007,16 @@ export class StargiftInvalidError extends BadRequestError {
     }
 }
 
+/** The specified inputInvoiceStarGift.message is invalid. */
+export class StargiftMessageInvalidError extends BadRequestError {
+    constructor(args: ErrorArgs) {
+        const message = "The specified inputInvoiceStarGift.message is invalid." + RPCError._fmtRequest(args.request);
+        super(message, args.request);
+        this.message = message;
+        this.errorMessage = "STARGIFT_MESSAGE_INVALID";
+    }
+}
+
 /** The specified gift was not found. */
 export class StargiftNotFoundError extends BadRequestError {
     constructor(args: ErrorArgs) {
@@ -4641,6 +5024,56 @@ export class StargiftNotFoundError extends BadRequestError {
         super(message, args.request);
         this.message = message;
         this.errorMessage = "STARGIFT_NOT_FOUND";
+    }
+}
+
+/** You're not the owner of the gift you trying to transfer. */
+export class StargiftNotOwnerError extends BadRequestError {
+    constructor(args: ErrorArgs) {
+        const message = "You're not the owner of the gift you trying to transfer." + RPCError._fmtRequest(args.request);
+        super(message, args.request);
+        this.message = message;
+        this.errorMessage = "STARGIFT_NOT_OWNER";
+    }
+}
+
+/** You can't transfer a non-collectible gift. */
+export class StargiftNotUniqueError extends BadRequestError {
+    constructor(args: ErrorArgs) {
+        const message = "You can't transfer a non-collectible gift." + RPCError._fmtRequest(args.request);
+        super(message, args.request);
+        this.message = message;
+        this.errorMessage = "STARGIFT_NOT_UNIQUE";
+    }
+}
+
+/** The specified star gift object is invalid. */
+export class StargiftObjectInvalidError extends BadRequestError {
+    constructor(args: ErrorArgs) {
+        const message = "The specified star gift object is invalid." + RPCError._fmtRequest(args.request);
+        super(message, args.request);
+        this.message = message;
+        this.errorMessage = "STARGIFT_OBJECT_INVALID";
+    }
+}
+
+/** The specified offer amount is invalid. */
+export class StargiftOfferInvalidError extends BadRequestError {
+    constructor(args: ErrorArgs) {
+        const message = "The specified offer amount is invalid." + RPCError._fmtRequest(args.request);
+        super(message, args.request);
+        this.message = message;
+        this.errorMessage = "STARGIFT_OFFER_INVALID";
+    }
+}
+
+/** You can't send a purchase offer for this gift. */
+export class StargiftOfferNotAllowedError extends BadRequestError {
+    constructor(args: ErrorArgs) {
+        const message = "You can't send a purchase offer for this gift." + RPCError._fmtRequest(args.request);
+        super(message, args.request);
+        this.message = message;
+        this.errorMessage = "STARGIFT_OFFER_NOT_ALLOWED";
     }
 }
 
@@ -4671,6 +5104,19 @@ export class StargiftResellCurrencyNotAllowedError extends BadRequestError {
         super(message, args.request);
         this.message = message;
         this.errorMessage = "STARGIFT_RESELL_CURRENCY_NOT_ALLOWED";
+    }
+}
+
+/** You will be able to resell this gift in %d seconds. */
+export class StargiftResellTooEarlyError extends BadRequestError {
+    public value: number;
+
+    constructor(args: ErrorArgs) {
+        const value = Number(args.capture || 0);
+        const message = "You will be able to resell this gift in " + value + " seconds." + RPCError._fmtRequest(args.request);
+        super(message, args.request);
+        this.message = message;
+        this.value = value;
     }
 }
 
@@ -5077,6 +5523,19 @@ export class StoryIdInvalidError extends BadRequestError {
     }
 }
 
+/** This peer already has an active live story, and its ID is equal to %d. */
+export class StoryLiveAlreadyError extends BadRequestError {
+    public value: number;
+
+    constructor(args: ErrorArgs) {
+        const value = Number(args.capture || 0);
+        const message = "This peer already has an active live story, and its ID is equal to " + value + "." + RPCError._fmtRequest(args.request);
+        super(message, args.request);
+        this.message = message;
+        this.value = value;
+    }
+}
+
 /** The new story information you passed is equal to the previous story information, thus it wasn't modified. */
 export class StoryNotModifiedError extends BadRequestError {
     constructor(args: ErrorArgs) {
@@ -5253,6 +5712,16 @@ export class TermsUrlInvalidError extends BadRequestError {
     }
 }
 
+/** sendMessageTextDraftAction can only be used in private 1-on-1 chats. */
+export class TextdraftPeerInvalidError extends BadRequestError {
+    constructor(args: ErrorArgs) {
+        const message = "sendMessageTextDraftAction can only be used in private 1-on-1 chats." + RPCError._fmtRequest(args.request);
+        super(message, args.request);
+        this.message = message;
+        this.errorMessage = "TEXTDRAFT_PEER_INVALID";
+    }
+}
+
 /** Invalid theme file provided. */
 export class ThemeFileInvalidError extends BadRequestError {
     constructor(args: ErrorArgs) {
@@ -5400,6 +5869,16 @@ export class TodoItemsEmptyError extends BadRequestError {
         super(message, args.request);
         this.message = message;
         this.errorMessage = "TODO_ITEMS_EMPTY";
+    }
+}
+
+/** You specified too many todo list items. */
+export class TodoItemsTooMuchError extends BadRequestError {
+    constructor(args: ErrorArgs) {
+        const message = "You specified too many todo list items." + RPCError._fmtRequest(args.request);
+        super(message, args.request);
+        this.message = message;
+        this.errorMessage = "TODO_ITEMS_TOO_MUCH";
     }
 }
 
@@ -5613,6 +6092,16 @@ export class UntilDateInvalidError extends BadRequestError {
     }
 }
 
+/** The specified OAuth request has expired. */
+export class UrlExpiredError extends BadRequestError {
+    constructor(args: ErrorArgs) {
+        const message = "The specified OAuth request has expired." + RPCError._fmtRequest(args.request);
+        super(message, args.request);
+        this.message = message;
+        this.errorMessage = "URL_EXPIRED";
+    }
+}
+
 /** Invalid URL provided. */
 export class UrlInvalidError extends BadRequestError {
     constructor(args: ErrorArgs) {
@@ -5710,6 +6199,16 @@ export class UserBotRequiredError extends BadRequestError {
         super(message, args.request);
         this.message = message;
         this.errorMessage = "USER_BOT_REQUIRED";
+    }
+}
+
+/** Bot-to-bot messaging is disabled because one of the two bots hasn't enabled the Bot to Bot setting in @BotFather. */
+export class UserBotToBotDisabledError extends BadRequestError {
+    constructor(args: ErrorArgs) {
+        const message = "Bot-to-bot messaging is disabled because one of the two bots hasn't enabled the Bot to Bot setting in @BotFather." + RPCError._fmtRequest(args.request);
+        super(message, args.request);
+        this.message = message;
+        this.errorMessage = "USER_BOT_TO_BOT_DISABLED";
     }
 }
 
@@ -5883,6 +6382,16 @@ export class UsernamePurchaseAvailableError extends BadRequestError {
     }
 }
 
+/** The required `bot` suffix is missing from the passed username. */
+export class UsernameSuffixMissingError extends BadRequestError {
+    constructor(args: ErrorArgs) {
+        const message = "The required `bot` suffix is missing from the passed username." + RPCError._fmtRequest(args.request);
+        super(message, args.request);
+        this.message = message;
+        this.errorMessage = "USERNAME_SUFFIX_MISSING";
+    }
+}
+
 /** The maximum number of active usernames was reached. */
 export class UsernamesActiveTooMuchError extends BadRequestError {
     constructor(args: ErrorArgs) {
@@ -5940,6 +6449,16 @@ export class VideoContentTypeInvalidError extends BadRequestError {
         super(message, args.request);
         this.message = message;
         this.errorMessage = "VIDEO_CONTENT_TYPE_INVALID";
+    }
+}
+
+/** The duration of the specified video is invalid. */
+export class VideoDurationInvalidError extends BadRequestError {
+    constructor(args: ErrorArgs) {
+        const message = "The duration of the specified video is invalid." + RPCError._fmtRequest(args.request);
+        super(message, args.request);
+        this.message = message;
+        this.errorMessage = "VIDEO_DURATION_INVALID";
     }
 }
 
@@ -6040,6 +6559,26 @@ export class WcConvertUrlInvalidError extends BadRequestError {
         super(message, args.request);
         this.message = message;
         this.errorMessage = "WC_CONVERT_URL_INVALID";
+    }
+}
+
+/** The specified webapp_req_id is invalid. */
+export class WebappReqIdInvalidError extends BadRequestError {
+    constructor(args: ErrorArgs) {
+        const message = "The specified webapp_req_id is invalid." + RPCError._fmtRequest(args.request);
+        super(message, args.request);
+        this.message = message;
+        this.errorMessage = "WEBAPP_REQ_ID_INVALID";
+    }
+}
+
+/** The specified auth token has expired. */
+export class WebauthTokenExpiredError extends BadRequestError {
+    constructor(args: ErrorArgs) {
+        const message = "The specified auth token has expired." + RPCError._fmtRequest(args.request);
+        super(message, args.request);
+        this.message = message;
+        this.errorMessage = "WEBAUTH_TOKEN_EXPIRED";
     }
 }
 
@@ -6419,6 +6958,16 @@ export class UserDeactivatedBanError extends UnauthorizedError {
     }
 }
 
+/** The account was deactivated, or is a bot/service account. */
+export class AccessDeniedError extends ForbiddenError {
+    constructor(args: ErrorArgs) {
+        const message = "The account was deactivated, or is a bot/service account." + RPCError._fmtRequest(args.request);
+        super(message, args.request);
+        this.message = message;
+        this.errorMessage = "ACCESS_DENIED";
+    }
+}
+
 /** This peer charges %d [Telegram Stars](https://core.telegram.org/api/stars) per message, but the `allow_paid_stars` was not set or its value is smaller than %d. */
 export class AllowPaymentRequiredError extends ForbiddenError {
     public value: number;
@@ -6432,16 +6981,6 @@ export class AllowPaymentRequiredError extends ForbiddenError {
     }
 }
 
-/** Sorry, anonymous administrators cannot leave reactions or participate in polls. */
-export class AnonymousReactionsDisabledError extends ForbiddenError {
-    constructor(args: ErrorArgs) {
-        const message = "Sorry, anonymous administrators cannot leave reactions or participate in polls." + RPCError._fmtRequest(args.request);
-        super(message, args.request);
-        this.message = message;
-        this.errorMessage = "ANONYMOUS_REACTIONS_DISABLED";
-    }
-}
-
 /** The specified method *can* be used over a [business connection](https://core.telegram.org/api/bots/connected-business-bots) for some operations, but the specified query attempted an operation that is not allowed over a business connection. */
 export class BotAccessForbiddenError extends ForbiddenError {
     constructor(args: ErrorArgs) {
@@ -6449,6 +6988,26 @@ export class BotAccessForbiddenError extends ForbiddenError {
         super(message, args.request);
         this.message = message;
         this.errorMessage = "BOT_ACCESS_FORBIDDEN";
+    }
+}
+
+/** Since the bot's user.bot_forum_can_manage_topics flag is **not** set, the user cannot create or modify bot forum topics. */
+export class BotForumCreateForbiddenError extends ForbiddenError {
+    constructor(args: ErrorArgs) {
+        const message = "Since the bot's user.bot_forum_can_manage_topics flag is **not** set, the user cannot create or modify bot forum topics." + RPCError._fmtRequest(args.request);
+        super(message, args.request);
+        this.message = message;
+        this.errorMessage = "BOT_FORUM_CREATE_FORBIDDEN";
+    }
+}
+
+/** This bot is not designated as a "join guard" bot. This method is only available to bots that mediate user joins to chats. . */
+export class BotGuardNotSupportedError extends ForbiddenError {
+    constructor(args: ErrorArgs) {
+        const message = "This bot is not designated as a \"join guard\" bot. This method is only available to bots that mediate user joins to chats. ." + RPCError._fmtRequest(args.request);
+        super(message, args.request);
+        this.message = message;
+        this.errorMessage = "BOT_GUARD_NOT_SUPPORTED";
     }
 }
 
@@ -6652,16 +7211,6 @@ export class ChatTypeInvalidError extends ForbiddenError {
     }
 }
 
-/** You can't write in this chat. */
-export class ChatWriteForbiddenError extends ForbiddenError {
-    constructor(args: ErrorArgs) {
-        const message = "You can't write in this chat." + RPCError._fmtRequest(args.request);
-        super(message, args.request);
-        this.message = message;
-        this.errorMessage = "CHAT_WRITE_FORBIDDEN";
-    }
-}
-
 /** Normal users can't edit invites that were created by bots. */
 export class EditBotInviteForbiddenError extends ForbiddenError {
     constructor(args: ErrorArgs) {
@@ -6679,6 +7228,16 @@ export class GroupcallAlreadyStartedError extends ForbiddenError {
         super(message, args.request);
         this.message = message;
         this.errorMessage = "GROUPCALL_ALREADY_STARTED";
+    }
+}
+
+/** You cannot change this group call setting. */
+export class GroupcallChangeForbiddenError extends ForbiddenError {
+    constructor(args: ErrorArgs) {
+        const message = "You cannot change this group call setting." + RPCError._fmtRequest(args.request);
+        super(message, args.request);
+        this.message = message;
+        this.errorMessage = "GROUPCALL_CHANGE_FORBIDDEN";
     }
 }
 
@@ -6772,6 +7331,16 @@ export class UserDeletedError extends ForbiddenError {
     }
 }
 
+/** The recipient user has configured restrictions on which categories of star gifts they're willing to accept (unique, limited, or unlimited): the sender attempted to get a payment form for a gift that falls into a category the recipient has blocked. */
+export class UserDisallowedStargiftsError extends ForbiddenError {
+    constructor(args: ErrorArgs) {
+        const message = "The recipient user has configured restrictions on which categories of star gifts they're willing to accept (unique, limited, or unlimited): the sender attempted to get a payment form for a gift that falls into a category the recipient has blocked." + RPCError._fmtRequest(args.request);
+        super(message, args.request);
+        this.message = message;
+        this.errorMessage = "USER_DISALLOWED_STARGIFTS";
+    }
+}
+
 /** The user hasn't granted or has revoked the bot's access to change their emoji status using [bots.toggleUserEmojiStatusPermission](https://core.telegram.org/method/bots.toggleUserEmojiStatusPermission). */
 export class UserPermissionDeniedError extends ForbiddenError {
     constructor(args: ErrorArgs) {
@@ -6852,6 +7421,16 @@ export class CallProtocolCompatLayerInvalidError extends AuthKeyError {
     }
 }
 
+/** Message editing is temporarily forbidden for this user due to regulatory restrictions. */
+export class EditMessageTempRestrictedError extends AuthKeyError {
+    constructor(args: ErrorArgs) {
+        const message = "Message editing is temporarily forbidden for this user due to regulatory restrictions." + RPCError._fmtRequest(args.request);
+        super(message, args.request);
+        this.message = message;
+        this.errorMessage = "EDIT_MESSAGE_TEMP_RESTRICTED";
+    }
+}
+
 /** The client has to be updated in order to support [file references](https://core.telegram.org/api/file-references). */
 export class FilerefUpgradeNeededError extends AuthKeyError {
     constructor(args: ErrorArgs) {
@@ -6899,6 +7478,26 @@ export class PhonePasswordFloodError extends AuthKeyError {
         super(message, args.request);
         this.message = message;
         this.errorMessage = "PHONE_PASSWORD_FLOOD";
+    }
+}
+
+/** Users from the current user's country cannot vote in this [country-restricted poll &raquo;](https://core.telegram.org/api/poll#country-restricted-polls). */
+export class PollCountryRestrictedError extends AuthKeyError {
+    constructor(args: ErrorArgs) {
+        const message = "Users from the current user's country cannot vote in this [country-restricted poll &raquo;](https://core.telegram.org/api/poll#country-restricted-polls)." + RPCError._fmtRequest(args.request);
+        super(message, args.request);
+        this.message = message;
+        this.errorMessage = "POLL_COUNTRY_RESTRICTED";
+    }
+}
+
+/** Only channel subscribers can vote in this poll. */
+export class PollMemberRestrictedError extends AuthKeyError {
+    constructor(args: ErrorArgs) {
+        const message = "Only channel subscribers can vote in this poll." + RPCError._fmtRequest(args.request);
+        super(message, args.request);
+        this.message = message;
+        this.errorMessage = "POLL_MEMBER_RESTRICTED";
     }
 }
 
@@ -7090,6 +7689,16 @@ export class TakeoutInitDelayError extends FloodError {
     }
 }
 
+/** A timeout occurred while composing the message. */
+export class AicomposeTimeoutError extends ServerError {
+    constructor(args: ErrorArgs) {
+        const message = "A timeout occurred while composing the message." + RPCError._fmtRequest(args.request);
+        super(message, args.request);
+        this.message = message;
+        this.errorMessage = "AICOMPOSE_TIMEOUT";
+    }
+}
+
 /** Internal error, please repeat the method call. */
 export class AuthKeyUnsynchronizedError extends ServerError {
     constructor(args: ErrorArgs) {
@@ -7133,6 +7742,16 @@ export class ChatIdGenerateFailedError extends ServerError {
     }
 }
 
+/** The specified OAuth request is invalid. */
+export class OauthRequestInvalidError extends ServerError {
+    constructor(args: ErrorArgs) {
+        const message = "The specified OAuth request is invalid." + RPCError._fmtRequest(args.request);
+        super(message, args.request);
+        this.message = message;
+        this.errorMessage = "OAUTH_REQUEST_INVALID";
+    }
+}
+
 /** Channel internal replication issues, try again later (treat this like an RPC_CALL_FAIL). */
 export class PersistentTimestampOutdatedError extends ServerError {
     constructor(args: ErrorArgs) {
@@ -7140,16 +7759,6 @@ export class PersistentTimestampOutdatedError extends ServerError {
         super(message, args.request);
         this.message = message;
         this.errorMessage = "PERSISTENT_TIMESTAMP_OUTDATED";
-    }
-}
-
-/** You provided a random ID that was already used. */
-export class RandomIdDuplicateError extends ServerError {
-    constructor(args: ErrorArgs) {
-        const message = "You provided a random ID that was already used." + RPCError._fmtRequest(args.request);
-        super(message, args.request);
-        this.message = message;
-        this.errorMessage = "RANDOM_ID_DUPLICATE";
     }
 }
 
@@ -7213,6 +7822,16 @@ export class MsgWaitTimeoutError extends TimedOutError {
     }
 }
 
+/** Sorry, anonymous administrators cannot leave reactions or participate in polls. */
+export class AnonymousReactionsDisabledError extends ForbiddenError {
+    constructor(args: ErrorArgs) {
+        const message = "Sorry, anonymous administrators cannot leave reactions or participate in polls." + RPCError._fmtRequest(args.request);
+        super(message, args.request);
+        this.message = message;
+        this.errorMessage = "ANONYMOUS_REACTIONS_DISABLED";
+    }
+}
+
 /** A wait of %d seconds is required in the test servers before repeating the action. */
 export class FloodTestPhoneWaitError extends FloodError {
     public seconds: number;
@@ -7238,6 +7857,10 @@ export const rpcErrorsDict: Map<string, any> = new Map<string, any>([
     ["ADMIN_RANK_INVALID", AdminRankInvalidError],
     ["ADMIN_RIGHTS_EMPTY", AdminRightsEmptyError],
     ["ADMINS_TOO_MUCH", AdminsTooMuchError],
+    ["AI_COMPOSE_TASK_MISSING", AiComposeTaskMissingError],
+    ["AICOMPOSE_FLOOD_PREMIUM", AicomposeFloodPremiumError],
+    ["AICOMPOSE_TONE_INVALID", AicomposeToneInvalidError],
+    ["AICOMPOSE_TONE_TITLE_INVALID", AicomposeToneTitleInvalidError],
     ["ALBUM_PHOTOS_TOO_MANY", AlbumPhotosTooManyError],
     ["API_ID_INVALID", ApiIdInvalidError],
     ["API_ID_PUBLISHED_FLOOD", ApiIdPublishedFloodError],
@@ -7254,6 +7877,7 @@ export const rpcErrorsDict: Map<string, any> = new Map<string, any>([
     ["BALANCE_TOO_LOW", BalanceTooLowError],
     ["BANK_CARD_NUMBER_INVALID", BankCardNumberInvalidError],
     ["BANNED_RIGHTS_INVALID", BannedRightsInvalidError],
+    ["BIRTHDAY_ALREADY", BirthdayAlreadyError],
     ["BIRTHDAY_INVALID", BirthdayInvalidError],
     ["BOOST_NOT_MODIFIED", BoostNotModifiedError],
     ["BOOST_PEER_INVALID", BoostPeerInvalidError],
@@ -7267,10 +7891,12 @@ export const rpcErrorsDict: Map<string, any> = new Map<string, any>([
     ["BOT_CHANNELS_NA", BotChannelsNaError],
     ["BOT_COMMAND_DESCRIPTION_INVALID", BotCommandDescriptionInvalidError],
     ["BOT_COMMAND_INVALID", BotCommandInvalidError],
+    ["BOT_CREATE_LIMIT_EXCEEDED", BotCreateLimitExceededError],
     ["BOT_DOMAIN_INVALID", BotDomainInvalidError],
     ["BOT_FALLBACK_UNSUPPORTED", BotFallbackUnsupportedError],
     ["BOT_GAMES_DISABLED", BotGamesDisabledError],
     ["BOT_GROUPS_BLOCKED", BotGroupsBlockedError],
+    ["BOT_ID_INVALID", BotIdInvalidError],
     ["BOT_INLINE_DISABLED", BotInlineDisabledError],
     ["BOT_INVALID", BotInvalidError],
     ["BOT_INVOICE_INVALID", BotInvoiceInvalidError],
@@ -7303,6 +7929,7 @@ export const rpcErrorsDict: Map<string, any> = new Map<string, any>([
     ["BUTTON_USER_PRIVACY_RESTRICTED", ButtonUserPrivacyRestrictedError],
     ["CALL_ALREADY_ACCEPTED", CallAlreadyAcceptedError],
     ["CALL_ALREADY_DECLINED", CallAlreadyDeclinedError],
+    ["CALL_NOT_ACTIVE", CallNotActiveError],
     ["CALL_OCCUPY_FAILED", CallOccupyFailedError],
     ["CALL_PEER_INVALID", CallPeerInvalidError],
     ["CALL_PROTOCOL_FLAGS_INVALID", CallProtocolFlagsInvalidError],
@@ -7340,6 +7967,7 @@ export const rpcErrorsDict: Map<string, any> = new Map<string, any>([
     ["CHAT_SEND_INLINE_FORBIDDEN", ChatSendInlineForbiddenError],
     ["CHAT_TITLE_EMPTY", ChatTitleEmptyError],
     ["CHAT_TOO_BIG", ChatTooBigError],
+    ["CHAT_WRITE_FORBIDDEN", ChatWriteForbiddenError],
     ["CHATLINK_SLUG_EMPTY", ChatlinkSlugEmptyError],
     ["CHATLINK_SLUG_EXPIRED", ChatlinkSlugExpiredError],
     ["CHATLINKS_TOO_MUCH", ChatlinksTooMuchError],
@@ -7350,6 +7978,7 @@ export const rpcErrorsDict: Map<string, any> = new Map<string, any>([
     ["CODE_INVALID", CodeInvalidError],
     ["COLLECTIBLE_INVALID", CollectibleInvalidError],
     ["COLLECTIBLE_NOT_FOUND", CollectibleNotFoundError],
+    ["COLLECTION_ID_INVALID", CollectionIdInvalidError],
     ["COLOR_INVALID", ColorInvalidError],
     ["CONNECTION_API_ID_INVALID", ConnectionApiIdInvalidError],
     ["CONNECTION_APP_VERSION_EMPTY", ConnectionAppVersionEmptyError],
@@ -7361,6 +7990,7 @@ export const rpcErrorsDict: Map<string, any> = new Map<string, any>([
     ["CONTACT_NAME_EMPTY", ContactNameEmptyError],
     ["CONTACT_REQ_MISSING", ContactReqMissingError],
     ["CREATE_CALL_FAILED", CreateCallFailedError],
+    ["CREDENTIAL_INVALID", CredentialInvalidError],
     ["CURRENCY_TOTAL_AMOUNT_INVALID", CurrencyTotalAmountInvalidError],
     ["CUSTOM_REACTIONS_TOO_MANY", CustomReactionsTooManyError],
     ["DATA_HASH_SIZE_INVALID", DataHashSizeInvalidError],
@@ -7371,8 +8001,10 @@ export const rpcErrorsDict: Map<string, any> = new Map<string, any>([
     ["DC_ID_INVALID", DcIdInvalidError],
     ["DH_G_A_INVALID", DhGAInvalidError],
     ["DOCUMENT_INVALID", DocumentInvalidError],
+    ["EFFECT_CHAT_INVALID", EffectChatInvalidError],
     ["EFFECT_ID_INVALID", EffectIdInvalidError],
     ["EMAIL_HASH_EXPIRED", EmailHashExpiredError],
+    ["EMAIL_INSTALL_MISSING", EmailInstallMissingError],
     ["EMAIL_INVALID", EmailInvalidError],
     ["EMAIL_NOT_ALLOWED", EmailNotAllowedError],
     ["EMAIL_NOT_SETUP", EmailNotSetupError],
@@ -7391,13 +8023,18 @@ export const rpcErrorsDict: Map<string, any> = new Map<string, any>([
     ["ENCRYPTION_ID_INVALID", EncryptionIdInvalidError],
     ["ENTITIES_TOO_LONG", EntitiesTooLongError],
     ["ENTITY_BOUNDS_INVALID", EntityBoundsInvalidError],
+    ["ENTITY_DATE_FORMAT_INVALID", EntityDateFormatInvalidError],
+    ["ENTITY_DATE_INVALID", EntityDateInvalidError],
+    ["ENTITY_DATE_TOO_LONG", EntityDateTooLongError],
     ["ENTITY_MENTION_USER_INVALID", EntityMentionUserInvalidError],
     ["ERROR_TEXT_EMPTY", ErrorTextEmptyError],
     ["EXPIRE_DATE_INVALID", ExpireDateInvalidError],
     ["EXPIRES_AT_INVALID", ExpiresAtInvalidError],
     ["EXPORT_CARD_INVALID", ExportCardInvalidError],
     ["EXTENDED_MEDIA_AMOUNT_INVALID", ExtendedMediaAmountInvalidError],
+    ["EXTENDED_MEDIA_EMPTY", ExtendedMediaEmptyError],
     ["EXTENDED_MEDIA_INVALID", ExtendedMediaInvalidError],
+    ["EXTENDED_MEDIA_PEER_INVALID", ExtendedMediaPeerInvalidError],
     ["EXTERNAL_URL_INVALID", ExternalUrlInvalidError],
     ["FILE_CONTENT_TYPE_INVALID", FileContentTypeInvalidError],
     ["FILE_EMTPY", FileEmtpyError],
@@ -7410,9 +8047,9 @@ export const rpcErrorsDict: Map<string, any> = new Map<string, any>([
     ["FILE_PART_TOO_BIG", FilePartTooBigError],
     ["FILE_PART_TOO_SMALL", FilePartTooSmallError],
     ["FILE_PARTS_INVALID", FilePartsInvalidError],
+    ["FILE_REFERENCE_EMPTY", FileReferenceEmptyError],
     ["FILE_REFERENCE_EXPIRED", FileReferenceExpiredError],
     ["FILE_REFERENCE_INVALID", FileReferenceInvalidError],
-    ["FILE_REFERENCE_EMPTY", FileReferenceEmptyError],
     ["FILE_TITLE_EMPTY", FileTitleEmptyError],
     ["FILE_TOKEN_INVALID", FileTokenInvalidError],
     ["FILTER_ID_INVALID", FilterIdInvalidError],
@@ -7468,6 +8105,8 @@ export const rpcErrorsDict: Map<string, any> = new Map<string, any>([
     ["INPUT_FILTER_INVALID", InputFilterInvalidError],
     ["INPUT_PEERS_EMPTY", InputPeersEmptyError],
     ["INPUT_PURPOSE_INVALID", InputPurposeInvalidError],
+    ["INPUT_STARS_AMOUNT_INVALID", InputStarsAmountInvalidError],
+    ["INPUT_STARS_NANOS_INVALID", InputStarsNanosInvalidError],
     ["INPUT_TEXT_EMPTY", InputTextEmptyError],
     ["INPUT_TEXT_TOO_LONG", InputTextTooLongError],
     ["INPUT_USER_DEACTIVATED", InputUserDeactivatedError],
@@ -7490,8 +8129,11 @@ export const rpcErrorsDict: Map<string, any> = new Map<string, any>([
     ["LANGUAGE_INVALID", LanguageInvalidError],
     ["LASTNAME_INVALID", LastnameInvalidError],
     ["LIMIT_INVALID", LimitInvalidError],
+    ["LIMIT_PER_POST_INVALID", LimitPerPostInvalidError],
     ["LINK_NOT_MODIFIED", LinkNotModifiedError],
     ["LOCATION_INVALID", LocationInvalidError],
+    ["MANAGER_INVALID", ManagerInvalidError],
+    ["MANAGER_PERMISSION_MISSING", ManagerPermissionMissingError],
     ["MAX_DATE_INVALID", MaxDateInvalidError],
     ["MAX_ID_INVALID", MaxIdInvalidError],
     ["MAX_QTS_INVALID", MaxQtsInvalidError],
@@ -7518,6 +8160,7 @@ export const rpcErrorsDict: Map<string, any> = new Map<string, any>([
     ["MESSAGE_NOT_MODIFIED", MessageNotModifiedError],
     ["MESSAGE_NOT_READ_YET", MessageNotReadYetError],
     ["MESSAGE_POLL_CLOSED", MessagePollClosedError],
+    ["MESSAGE_REQUIRED", MessageRequiredError],
     ["MESSAGE_TOO_LONG", MessageTooLongError],
     ["MESSAGE_TOO_OLD", MessageTooOldError],
     ["METHOD_INVALID", MethodInvalidError],
@@ -7526,8 +8169,11 @@ export const rpcErrorsDict: Map<string, any> = new Map<string, any>([
     ["MSG_ID_INVALID", MsgIdInvalidError],
     ["MSG_TOO_OLD", MsgTooOldError],
     ["MSG_VOICE_MISSING", MsgVoiceMissingError],
+    ["MSG_VOICE_TOO_LONG", MsgVoiceTooLongError],
     ["MSG_WAIT_FAILED", MsgWaitError],
     ["MULTI_MEDIA_TOO_LONG", MultiMediaTooLongError],
+    ["NAME_INVALID", NameInvalidError],
+    ["NEED_ACTION_MISSING", NeedActionMissingError],
     ["NEW_SALT_INVALID", NewSaltInvalidError],
     ["NEW_SETTINGS_EMPTY", NewSettingsEmptyError],
     ["NEW_SETTINGS_INVALID", NewSettingsInvalidError],
@@ -7550,6 +8196,7 @@ export const rpcErrorsDict: Map<string, any> = new Map<string, any>([
     ["PARTICIPANT_JOIN_MISSING", ParticipantJoinMissingError],
     ["PARTICIPANT_VERSION_OUTDATED", ParticipantVersionOutdatedError],
     ["PARTICIPANTS_TOO_FEW", ParticipantsTooFewError],
+    ["PASSKEY_ORIGIN_MISMATCH", PasskeyOriginMismatchError],
     ["PASSWORD_EMPTY", PasswordEmptyError],
     ["PASSWORD_HASH_INVALID", PasswordHashInvalidError],
     ["PASSWORD_MISSING", PasswordMissingError],
@@ -7593,16 +8240,20 @@ export const rpcErrorsDict: Map<string, any> = new Map<string, any>([
     ["PIN_RESTRICTED", PinRestrictedError],
     ["PINNED_DIALOGS_TOO_MUCH", PinnedDialogsTooMuchError],
     ["PINNED_TOO_MUCH", PinnedTooMuchError],
+    ["PINNED_TOPIC_NOT_MODIFIED", PinnedTopicNotModifiedError],
     ["POLL_ANSWER_INVALID", PollAnswerInvalidError],
     ["POLL_ANSWERS_INVALID", PollAnswersInvalidError],
     ["POLL_OPTION_DUPLICATE", PollOptionDuplicateError],
     ["POLL_OPTION_INVALID", PollOptionInvalidError],
     ["POLL_QUESTION_INVALID", PollQuestionInvalidError],
     ["PREMIUM_ACCOUNT_REQUIRED", PremiumAccountRequiredError],
+    ["PREMIUM_PURPOSE_INVALID", PremiumPurposeInvalidError],
     ["PRICING_CHAT_INVALID", PricingChatInvalidError],
     ["PRIVACY_KEY_INVALID", PrivacyKeyInvalidError],
     ["PRIVACY_TOO_LONG", PrivacyTooLongError],
     ["PRIVACY_VALUE_INVALID", PrivacyValueInvalidError],
+    ["PUBLIC_BROADCAST_EXPECTED", PublicBroadcastExpectedError],
+    ["PUBLIC_KEY_INVALID", PublicKeyInvalidError],
     ["PUBLIC_KEY_REQUIRED", PublicKeyRequiredError],
     ["PURPOSE_INVALID", PurposeInvalidError],
     ["QUERY_ID_EMPTY", QueryIdEmptyError],
@@ -7617,6 +8268,7 @@ export const rpcErrorsDict: Map<string, any> = new Map<string, any>([
     ["QUIZ_MULTIPLE_INVALID", QuizMultipleInvalidError],
     ["QUOTE_TEXT_INVALID", QuoteTextInvalidError],
     ["RAISE_HAND_FORBIDDEN", RaiseHandForbiddenError],
+    ["RANDOM_ID_DUPLICATE", RandomIdDuplicateError],
     ["RANDOM_ID_EMPTY", RandomIdEmptyError],
     ["RANDOM_ID_EXPIRED", RandomIdExpiredError],
     ["RANDOM_ID_INVALID", RandomIdInvalidError],
@@ -7636,7 +8288,10 @@ export const rpcErrorsDict: Map<string, any> = new Map<string, any>([
     ["REPLY_TO_INVALID", ReplyToInvalidError],
     ["REPLY_TO_MONOFORUM_PEER_INVALID", ReplyToMonoforumPeerInvalidError],
     ["REPLY_TO_USER_INVALID", ReplyToUserInvalidError],
+    ["REQUEST_MSG_EXPIRED", RequestMsgExpiredError],
     ["REQUEST_TOKEN_INVALID", RequestTokenInvalidError],
+    ["RESELL_STARS_TOO_FEW", ResellStarsTooFewError],
+    ["RESELL_STARS_TOO_MUCH", ResellStarsTooMuchError],
     ["RESET_REQUEST_MISSING", ResetRequestMissingError],
     ["RESULT_ID_DUPLICATE", ResultIdDuplicateError],
     ["RESULT_ID_EMPTY", ResultIdEmptyError],
@@ -7680,8 +8335,15 @@ export const rpcErrorsDict: Map<string, any> = new Map<string, any>([
     ["STARGIFT_ALREADY_CONVERTED", StargiftAlreadyConvertedError],
     ["STARGIFT_ALREADY_REFUNDED", StargiftAlreadyRefundedError],
     ["STARGIFT_ALREADY_UPGRADED", StargiftAlreadyUpgradedError],
+    ["STARGIFT_ATTRIBUTE_INVALID", StargiftAttributeInvalidError],
     ["STARGIFT_INVALID", StargiftInvalidError],
+    ["STARGIFT_MESSAGE_INVALID", StargiftMessageInvalidError],
     ["STARGIFT_NOT_FOUND", StargiftNotFoundError],
+    ["STARGIFT_NOT_OWNER", StargiftNotOwnerError],
+    ["STARGIFT_NOT_UNIQUE", StargiftNotUniqueError],
+    ["STARGIFT_OBJECT_INVALID", StargiftObjectInvalidError],
+    ["STARGIFT_OFFER_INVALID", StargiftOfferInvalidError],
+    ["STARGIFT_OFFER_NOT_ALLOWED", StargiftOfferNotAllowedError],
     ["STARGIFT_OWNER_INVALID", StargiftOwnerInvalidError],
     ["STARGIFT_PEER_INVALID", StargiftPeerInvalidError],
     ["STARGIFT_RESELL_CURRENCY_NOT_ALLOWED", StargiftResellCurrencyNotAllowedError],
@@ -7739,6 +8401,7 @@ export const rpcErrorsDict: Map<string, any> = new Map<string, any>([
     ["TEMP_AUTH_KEY_ALREADY_BOUND", TempAuthKeyAlreadyBoundError],
     ["TEMP_AUTH_KEY_EMPTY", TempAuthKeyEmptyError],
     ["TERMS_URL_INVALID", TermsUrlInvalidError],
+    ["TEXTDRAFT_PEER_INVALID", TextdraftPeerInvalidError],
     ["THEME_FILE_INVALID", ThemeFileInvalidError],
     ["THEME_FORMAT_INVALID", ThemeFormatInvalidError],
     ["THEME_INVALID", ThemeInvalidError],
@@ -7754,6 +8417,7 @@ export const rpcErrorsDict: Map<string, any> = new Map<string, any>([
     ["TO_LANG_INVALID", ToLangInvalidError],
     ["TODO_ITEM_DUPLICATE", TodoItemDuplicateError],
     ["TODO_ITEMS_EMPTY", TodoItemsEmptyError],
+    ["TODO_ITEMS_TOO_MUCH", TodoItemsTooMuchError],
     ["TODO_NOT_MODIFIED", TodoNotModifiedError],
     ["TOKEN_EMPTY", TokenEmptyError],
     ["TOKEN_INVALID", TokenInvalidError],
@@ -7775,6 +8439,7 @@ export const rpcErrorsDict: Map<string, any> = new Map<string, any>([
     ["TYPES_EMPTY", TypesEmptyError],
     ["UNSUPPORTED", UnsupportedError],
     ["UNTIL_DATE_INVALID", UntilDateInvalidError],
+    ["URL_EXPIRED", UrlExpiredError],
     ["URL_INVALID", UrlInvalidError],
     ["USAGE_LIMIT_INVALID", UsageLimitInvalidError],
     ["USER_ADMIN_INVALID", UserAdminInvalidError],
@@ -7785,6 +8450,7 @@ export const rpcErrorsDict: Map<string, any> = new Map<string, any>([
     ["USER_BOT", UserBotError],
     ["USER_BOT_INVALID", UserBotInvalidError],
     ["USER_BOT_REQUIRED", UserBotRequiredError],
+    ["USER_BOT_TO_BOT_DISABLED", UserBotToBotDisabledError],
     ["USER_CHANNELS_TOO_MUCH", UserChannelsTooMuchError],
     ["USER_CREATOR", UserCreatorError],
     ["USER_GIFT_UNAVAILABLE", UserGiftUnavailableError],
@@ -7802,12 +8468,14 @@ export const rpcErrorsDict: Map<string, any> = new Map<string, any>([
     ["USERNAME_NOT_OCCUPIED", UsernameNotOccupiedError],
     ["USERNAME_OCCUPIED", UsernameOccupiedError],
     ["USERNAME_PURCHASE_AVAILABLE", UsernamePurchaseAvailableError],
+    ["USERNAME_SUFFIX_MISSING", UsernameSuffixMissingError],
     ["USERNAMES_ACTIVE_TOO_MUCH", UsernamesActiveTooMuchError],
     ["USERPIC_UPLOAD_REQUIRED", UserpicUploadRequiredError],
     ["USERS_TOO_FEW", UsersTooFewError],
     ["USERS_TOO_MUCH", UsersTooMuchError],
     ["VENUE_ID_INVALID", VenueIdInvalidError],
     ["VIDEO_CONTENT_TYPE_INVALID", VideoContentTypeInvalidError],
+    ["VIDEO_DURATION_INVALID", VideoDurationInvalidError],
     ["VIDEO_FILE_INVALID", VideoFileInvalidError],
     ["VIDEO_PAUSE_FORBIDDEN", VideoPauseForbiddenError],
     ["VIDEO_STOP_FORBIDDEN", VideoStopForbiddenError],
@@ -7818,6 +8486,8 @@ export const rpcErrorsDict: Map<string, any> = new Map<string, any>([
     ["WALLPAPER_MIME_INVALID", WallpaperMimeInvalidError],
     ["WALLPAPER_NOT_FOUND", WallpaperNotFoundError],
     ["WC_CONVERT_URL_INVALID", WcConvertUrlInvalidError],
+    ["WEBAPP_REQ_ID_INVALID", WebappReqIdInvalidError],
+    ["WEBAUTH_TOKEN_EXPIRED", WebauthTokenExpiredError],
     ["WEBDOCUMENT_INVALID", WebdocumentInvalidError],
     ["WEBDOCUMENT_MIME_INVALID", WebdocumentMimeInvalidError],
     ["WEBDOCUMENT_SIZE_TOO_BIG", WebdocumentSizeTooBigError],
@@ -7853,9 +8523,11 @@ export const rpcErrorsDict: Map<string, any> = new Map<string, any>([
     ["SESSION_REVOKED", SessionRevokedError],
     ["USER_DEACTIVATED", UserDeactivatedError],
     ["USER_DEACTIVATED_BAN", UserDeactivatedBanError],
+    ["ACCESS_DENIED", AccessDeniedError],
     ["ALLOW_PAYMENT_REQUIRED", AllowPaymentRequiredError],
-    ["ANONYMOUS_REACTIONS_DISABLED", AnonymousReactionsDisabledError],
     ["BOT_ACCESS_FORBIDDEN", BotAccessForbiddenError],
+    ["BOT_FORUM_CREATE_FORBIDDEN", BotForumCreateForbiddenError],
+    ["BOT_GUARD_NOT_SUPPORTED", BotGuardNotSupportedError],
     ["BOT_VERIFIER_FORBIDDEN", BotVerifierForbiddenError],
     ["BROADCAST_FORBIDDEN", BroadcastForbiddenError],
     ["CHANNEL_PUBLIC_GROUP_NA", ChannelPublicGroupNaError],
@@ -7876,9 +8548,9 @@ export const rpcErrorsDict: Map<string, any> = new Map<string, any>([
     ["CHAT_SEND_VOICES_FORBIDDEN", ChatSendVoicesForbiddenError],
     ["CHAT_SEND_WEBPAGE_FORBIDDEN", ChatSendWebpageForbiddenError],
     ["CHAT_TYPE_INVALID", ChatTypeInvalidError],
-    ["CHAT_WRITE_FORBIDDEN", ChatWriteForbiddenError],
     ["EDIT_BOT_INVITE_FORBIDDEN", EditBotInviteForbiddenError],
     ["GROUPCALL_ALREADY_STARTED", GroupcallAlreadyStartedError],
+    ["GROUPCALL_CHANGE_FORBIDDEN", GroupcallChangeForbiddenError],
     ["INLINE_BOT_REQUIRED", InlineBotRequiredError],
     ["MESSAGE_AUTHOR_REQUIRED", MessageAuthorRequiredError],
     ["MESSAGE_DELETE_FORBIDDEN", MessageDeleteForbiddenError],
@@ -7888,6 +8560,7 @@ export const rpcErrorsDict: Map<string, any> = new Map<string, any>([
     ["RIGHT_FORBIDDEN", RightForbiddenError],
     ["SENSITIVE_CHANGE_FORBIDDEN", SensitiveChangeForbiddenError],
     ["USER_DELETED", UserDeletedError],
+    ["USER_DISALLOWED_STARGIFTS", UserDisallowedStargiftsError],
     ["USER_PERMISSION_DENIED", UserPermissionDeniedError],
     ["USER_PRIVACY_RESTRICTED", UserPrivacyRestrictedError],
     ["USER_RESTRICTED", UserRestrictedError],
@@ -7896,11 +8569,14 @@ export const rpcErrorsDict: Map<string, any> = new Map<string, any>([
     ["API_GIFT_RESTRICTED_UPDATE_APP", ApiGiftRestrictedUpdateAppError],
     ["BUSINESS_ADDRESS_ACTIVE", BusinessAddressActiveError],
     ["CALL_PROTOCOL_COMPAT_LAYER_INVALID", CallProtocolCompatLayerInvalidError],
+    ["EDIT_MESSAGE_TEMP_RESTRICTED", EditMessageTempRestrictedError],
     ["FILEREF_UPGRADE_NEEDED", FilerefUpgradeNeededError],
     ["FRESH_CHANGE_PHONE_FORBIDDEN", FreshChangePhoneForbiddenError],
     ["FRESH_RESET_AUTHORISATION_FORBIDDEN", FreshResetAuthorisationForbiddenError],
     ["PAYMENT_UNSUPPORTED", PaymentUnsupportedError],
     ["PHONE_PASSWORD_FLOOD", PhonePasswordFloodError],
+    ["POLL_COUNTRY_RESTRICTED", PollCountryRestrictedError],
+    ["POLL_MEMBER_RESTRICTED", PollMemberRestrictedError],
     ["PRECHECKOUT_FAILED", PrecheckoutFailedError],
     ["PREMIUM_CURRENTLY_UNAVAILABLE", PremiumCurrentlyUnavailableError],
     ["SEND_CODE_UNAVAILABLE", SendCodeUnavailableError],
@@ -7912,18 +8588,20 @@ export const rpcErrorsDict: Map<string, any> = new Map<string, any>([
     ["USERPIC_PRIVACY_REQUIRED", UserpicPrivacyRequiredError],
     ["AUTH_KEY_DUPLICATED", AuthKeyDuplicatedError],
     ["FROZEN_METHOD_INVALID", FrozenMethodInvalidError],
+    ["AICOMPOSE_TIMEOUT", AicomposeTimeoutError],
     ["AUTH_KEY_UNSYNCHRONIZED", AuthKeyUnsynchronizedError],
     ["AUTH_RESTART", AuthRestartError],
     ["CDN_UPLOAD_TIMEOUT", CdnUploadTimeoutError],
     ["CHAT_ID_GENERATE_FAILED", ChatIdGenerateFailedError],
+    ["OAUTH_REQUEST_INVALID", OauthRequestInvalidError],
     ["PERSISTENT_TIMESTAMP_OUTDATED", PersistentTimestampOutdatedError],
-    ["RANDOM_ID_DUPLICATE", RandomIdDuplicateError],
     ["SEND_MEDIA_INVALID", SendMediaInvalidError],
     ["SIGN_IN_FAILED", SignInFailedError],
     ["TRANSLATE_REQ_FAILED", TranslateReqFailedError],
     ["TRANSLATION_TIMEOUT", TranslationTimeoutError],
     ["Timeout", TimeoutError],
     ["MSG_WAIT_TIMEOUT", MsgWaitTimeoutError],
+    ["ANONYMOUS_REACTIONS_DISABLED", AnonymousReactionsDisabledError],
 ]);
 
 export const rpcErrorsRe: Map<RegExp, any> = new Map<RegExp, any>([
@@ -7932,11 +8610,14 @@ export const rpcErrorsRe: Map<RegExp, any> = new Map<RegExp, any>([
     [/^STATS_MIGRATE_(\d+)$/, StatsMigrateError],
     [/^USER_MIGRATE_(\d+)$/, UserMigrateError],
     [/^EMAIL_UNCONFIRMED_(\d+)$/, EmailUnconfirmedError],
+    [/^FILE_REFERENCE_(\d+)_EMPTY$/, FileReferenceEmptyError],
     [/^FILE_REFERENCE_(\d+)_EXPIRED$/, FileReferenceExpiredError],
     [/^FILE_REFERENCE_(\d+)_INVALID$/, FileReferenceInvalidError],
     [/^PASSWORD_TOO_FRESH_(\d+)$/, PasswordTooFreshError],
     [/^SESSION_TOO_FRESH_(\d+)$/, SessionTooFreshError],
+    [/^STARGIFT_RESELL_TOO_EARLY_(\d+)$/, StargiftResellTooEarlyError],
     [/^STARGIFT_TRANSFER_TOO_EARLY_(\d+)$/, StargiftTransferTooEarlyError],
+    [/^STORY_LIVE_ALREADY_(\d+)$/, StoryLiveAlreadyError],
     [/^STORY_SEND_FLOOD_MONTHLY_(\d+)$/, StorySendFloodMonthlyError],
     [/^STORY_SEND_FLOOD_WEEKLY_(\d+)$/, StorySendFloodWeeklyError],
     [/^FILE_MIGRATE_(\d+)$/, FileMigrateError],

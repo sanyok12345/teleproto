@@ -58,6 +58,12 @@ const LEGACY_EXTRA: Array<{
     description: string;
 }> = [
     {
+        name: "ANONYMOUS_REACTIONS_DISABLED",
+        code: 403,
+        description:
+            "Sorry, anonymous administrators cannot leave reactions or participate in polls.",
+    },
+    {
         name: "FLOOD_TEST_PHONE_WAIT_%d",
         code: 420,
         description:

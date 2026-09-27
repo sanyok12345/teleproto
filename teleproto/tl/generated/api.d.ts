@@ -36436,17 +36436,25 @@ export namespace Api {
     mnc: string;
   }
   export interface AuthCheckPaidAuthParams {
+    /** Phone number */
     phoneNumber: string;
+    /** The phone code hash obtained from auth.sendCode */
     phoneCodeHash: string;
+    /** The payment form ID passed to payments.sendPaymentForm . */
     formId: long;
   }
   export interface AuthInitPasskeyLoginParams {
+    /** Application identifier (see App configuration ) */
     apiId: int;
+    /** Application identifier hash (see App configuration ) */
     apiHash: string;
   }
   export interface AuthFinishPasskeyLoginParams {
+    /** Passkey assertion result. */
     credential: TypeInputPasskeyCredentialIn;
+    /** DC ID used for the initial auth.initPasskeyLogin request; set only if the user's DC is different from the DC used for the initial auth.initPasskeyLogin . */
     fromDcId?: int;
+    /** Auth key ID for the connection to from_dc_id (use the permanent auth key ID if PFS is enabled); set only if the user's DC is different from the DC used for the initial auth.initPasskeyLogin . */
     fromAuthKeyId?: long;
   }
   export interface AuthInitFirebasePnvLoginParams {
@@ -37032,17 +37040,19 @@ export namespace Api {
     hash: long;
   }
   export interface AccountGetUniqueGiftChatThemesParams {
-    /** Offset for pagination . */
+    /** Offset for pagination , intially an empty string, then equal the value of the last returned account.chatThemes . next_offset (if set). */
     offset: string;
-    /** Maximum number of results to return, see pagination */
+    /** Maximum number of results to return, see pagination . Note that the server may return less than limit results, even if the actual number of remaining results is >= limit , paginate to fetch them all. */
     limit: int;
     /** Hash from a previously returned account.chatThemes constructor, to avoid returning any result if the theme list hasn't changed. */
     hash: long;
   }
   export interface AccountRegisterPasskeyParams {
+    /** Registration result. */
     credential: TypeInputPasskeyCredentialIn;
   }
   export interface AccountDeletePasskeyParams {
+    /** Identifier of the passkey to delete, taken from passkey . id , usually obtained using account.getPasskeys . */
     id: string;
   }
   export interface AccountConfirmBotConnectionParams {
@@ -37095,7 +37105,9 @@ export namespace Api {
     documents: TypeInputDocumentIn[];
   }
   export interface UsersSuggestBirthdayParams {
+    /** The user that will receive the suggested birthday date. */
     id: Api.TypeEntityLike;
+    /** The birthday to suggest. */
     birthday: TypeBirthdayIn;
   }
   export interface ContactsGetContactIDsParams {
@@ -37171,6 +37183,7 @@ export namespace Api {
     channels?: boolean;
     /** Most frequently used Main Mini Bot Apps . */
     botsApp?: boolean;
+    /** Most frequently used guest bots » */
     botsGuestchat?: boolean;
     /** Offset for pagination */
     offset: int;
@@ -37200,6 +37213,7 @@ export namespace Api {
     lastName: string;
     /** User's phone number, may be omitted to simply add the user to the contact list, without a phone number. */
     phone: string;
+    /** A private note for this contact, only visible to us; see here » for more info on contact notes. */
     note?: TypeTextWithEntitiesIn;
   }
   export interface ContactsAcceptContactParams {
@@ -37249,7 +37263,9 @@ export namespace Api {
     q: string;
   }
   export interface ContactsUpdateContactNoteParams {
+    /** The contact. */
     id: Api.TypeEntityLike;
+    /** The note. */
     note: TypeTextWithEntitiesIn;
   }
   export interface MessagesGetMessagesParams {
@@ -37325,7 +37341,7 @@ export namespace Api {
   export interface MessagesReadHistoryParams {
     /** Target user or group */
     peer: Api.TypeEntityLike;
-    /** If a positive value is passed, only messages with identifiers less or equal than the given one will be read */
+    /** If a positive value is passed, only messages with identifiers less than or equal to the given one will be read */
     maxId: int;
   }
   export interface MessagesDeleteHistoryParams {
@@ -37383,7 +37399,7 @@ export namespace Api {
     replyTo?: TypeInputReplyToIn;
     /** The message */
     message: string;
-    /** Unique client message ID required to prevent message resending */
+    /** Unique client message ID required to prevent message resending. See here » for more info on random ID deduplication and updateMessageID mapping. */
     randomId?: long;
     /** Reply markup for sending bot buttons */
     replyMarkup?: TypeReplyMarkupIn;
@@ -37391,6 +37407,7 @@ export namespace Api {
     entities?: TypeMessageEntityIn[];
     /** Scheduled message date for scheduled messages */
     scheduleDate?: int;
+    /** Once sent, this message will be automatically re-scheduled to be re-sent again this many seconds in the future, see here » for more info on repeating scheduled messages. */
     scheduleRepeatPeriod?: int;
     /** Send this message as the specified peer */
     sendAs?: Api.TypeEntityLike;
@@ -37427,7 +37444,7 @@ export namespace Api {
     media: TypeInputMediaIn;
     /** Caption */
     message: string;
-    /** Random ID to avoid resending the same message */
+    /** Random ID to avoid resending the same message. See here » for more info on random ID deduplication and updateMessageID mapping. */
     randomId?: long;
     /** Reply markup for bot keyboards */
     replyMarkup?: TypeReplyMarkupIn;
@@ -37435,6 +37452,7 @@ export namespace Api {
     entities?: TypeMessageEntityIn[];
     /** Scheduled message date for scheduled messages */
     scheduleDate?: int;
+    /** Once sent, this message will be automatically re-scheduled to be re-sent again this many seconds in the future, see here » for more info on repeating scheduled messages. */
     scheduleRepeatPeriod?: int;
     /** Send this message as the specified peer */
     sendAs?: Api.TypeEntityLike;
@@ -37467,7 +37485,7 @@ export namespace Api {
     fromPeer: Api.TypeEntityLike;
     /** IDs of messages */
     id: int[];
-    /** Random ID to prevent resending of messages */
+    /** Random ID to prevent resending of messages. See here » for more info on random ID deduplication and updateMessageID mapping. */
     randomId: long[];
     /** Destination peer */
     toPeer: Api.TypeEntityLike;
@@ -37477,11 +37495,13 @@ export namespace Api {
     replyTo?: TypeInputReplyToIn;
     /** Scheduled message date for scheduled messages */
     scheduleDate?: int;
+    /** Once sent, this message will be automatically re-scheduled to be re-sent again this many seconds in the future, see here » for more info on repeating scheduled messages. */
     scheduleRepeatPeriod?: int;
     /** Forward the messages as the specified peer */
     sendAs?: Api.TypeEntityLike;
     /** Add the messages to the specified quick reply shortcut » , instead. */
     quickReplyShortcut?: TypeInputQuickReplyShortcutIn;
+    /** Specifies a message effect » to use for the message. */
     effect?: long;
     /** Start playing the video at the specified timestamp (seconds). */
     videoTimestamp?: int;
@@ -37561,7 +37581,7 @@ export namespace Api {
   export interface MessagesRequestEncryptionParams {
     /** User ID */
     userId: Api.TypeEntityLike;
-    /** Unique client request ID required to prevent resending. This also doubles as the chat ID. */
+    /** Unique client request ID required to prevent resending. This also doubles as the chat ID. See here » for more info on random ID deduplication and updateMessageID mapping. */
     randomId: int;
     /** A = g ^ a mod p , see Wikipedia */
     gA: bytes;
@@ -37597,7 +37617,7 @@ export namespace Api {
     silent?: boolean;
     /** Secret chat ID */
     peer: TypeInputEncryptedChatIn;
-    /** Unique client message ID, necessary to avoid message resending */
+    /** Unique client message ID, necessary to avoid message resending. See here » for more info on random ID deduplication and updateMessageID mapping. */
     randomId?: long;
     /** TL-serialization of DecryptedMessage type, encrypted with a key that was created during chat initialization */
     data: bytes;
@@ -37607,7 +37627,7 @@ export namespace Api {
     silent?: boolean;
     /** Secret chat ID */
     peer: TypeInputEncryptedChatIn;
-    /** Unique client message ID necessary to prevent message resending */
+    /** Unique client message ID necessary to prevent message resending. See here » for more info on random ID deduplication and updateMessageID mapping. */
     randomId?: long;
     /** TL-serialization of DecryptedMessage type, encrypted with a key generated during chat initialization */
     data: bytes;
@@ -37617,7 +37637,7 @@ export namespace Api {
   export interface MessagesSendEncryptedServiceParams {
     /** Secret chat ID */
     peer: TypeInputEncryptedChatIn;
-    /** Unique client message ID required to prevent message resending */
+    /** Unique client message ID required to prevent message resending. See here » for more info on random ID deduplication and updateMessageID mapping. */
     randomId?: long;
     /** TL-serialization of DecryptedMessage type, encrypted with a key generated during chat initialization */
     data: bytes;
@@ -37695,7 +37715,7 @@ export namespace Api {
     bot: Api.TypeEntityLike;
     /** The chat where to start the bot, can be the bot's private chat or a group */
     peer: Api.TypeEntityLike;
-    /** Random ID to avoid resending the same message */
+    /** Random ID to avoid resending the same message. See here » for more info on random ID deduplication and updateMessageID mapping. */
     randomId?: long;
     /** Deep linking parameter */
     startParam: string;
@@ -37816,7 +37836,7 @@ export namespace Api {
     peer: Api.TypeEntityLike;
     /** If set, indicates that the message should be sent in reply to the specified message or story. */
     replyTo?: TypeInputReplyToIn;
-    /** Random ID to avoid resending the same query */
+    /** Random ID to avoid resending the same query. See here » for more info on random ID deduplication and updateMessageID mapping. */
     randomId?: long;
     /** Query ID from messages.getInlineBotResults */
     queryId: long;
@@ -37856,6 +37876,7 @@ export namespace Api {
     entities?: TypeMessageEntityIn[];
     /** Scheduled message date for scheduled messages */
     scheduleDate?: int;
+    /** Once sent, this message will be automatically re-scheduled to be re-sent again this many seconds in the future, see here » for more info on repeating scheduled messages. */
     scheduleRepeatPeriod?: int;
     /** If specified, edits a quick reply shortcut message, instead » . */
     quickReplyShortcutId?: int;
@@ -38072,7 +38093,7 @@ export namespace Api {
     peer: Api.TypeEntityLike;
     /** Indicates the message that was screenshotted (the specified message ID can also be 0 to avoid indicating any specific message). */
     replyTo: TypeInputReplyToIn;
-    /** Random ID to avoid message resending */
+    /** Random ID to avoid message resending. See here » for more info on random ID deduplication and updateMessageID mapping. */
     randomId?: long;
   }
   export interface MessagesGetFavedStickersParams {
@@ -38104,11 +38125,11 @@ export namespace Api {
   export interface MessagesReadMentionsParams {
     /** Dialog */
     peer: Api.TypeEntityLike;
-    /** Mark as read only mentions within the specified forum topic */
+    /** Mark as read only mentions within the specified forum topic (except for monoforums). */
     topMsgId?: MessageIDLike;
   }
   export interface MessagesGetRecentLocationsParams {
-    /** User */
+    /** Target group or private chat. */
     peer: Api.TypeEntityLike;
     /** Maximum number of results to return, see pagination */
     limit: int;
@@ -38198,6 +38219,7 @@ export namespace Api {
     peer: Api.TypeEntityLike;
     /** Message ID of poll message */
     msgId: MessageIDLike;
+    /** Pass the poll.hash from the last received poll state; the server skips returning unchanged data */
     pollHash: long;
   }
   export interface MessagesGetOnlinesParams {
@@ -38253,11 +38275,13 @@ export namespace Api {
     buttonId?: int;
     /** URL used for link URL authorization, click here for more info » */
     url?: string;
+    /** For OAuth authorization from mini apps » : the origin of the webview that originated the OAuth request, in the format scheme://host (or scheme://host:port for non-default ports) */
     inAppOrigin?: string;
   }
   export interface MessagesAcceptUrlAuthParams {
     /** Set this flag to allow the bot to send messages to you (if requested) */
     writeAllowed?: boolean;
+    /** Set this flag to share the user's phone number with the bot (if requested via urlAuthResultRequest . request_phone_number and consented to by the user) */
     sharePhoneNumber?: boolean;
     /** The location of the message */
     peer?: Api.TypeEntityLike;
@@ -38267,6 +38291,7 @@ export namespace Api {
     buttonId?: int;
     /** URL used for link URL authorization, click here for more info » */
     url?: string;
+    /** If urlAuthResultRequest . match_codes was set, the emoji or code selected by the user from the provided list; must always be provided when match_codes is set, even if match_codes_first was set and the code was already validated via messages.checkUrlAuthMatchCode */
     matchCode?: string;
   }
   export interface MessagesHidePeerSettingsBarParams {
@@ -38552,6 +38577,7 @@ export namespace Api {
     peer: Api.TypeEntityLike;
     /** Enable or disable content protection */
     enabled: Bool;
+    /** Used only inside private chats to accept or refuse a request to disable content protection, see here » for more info on the full flow. */
     requestMsgId?: MessageIDLike;
   }
   export interface MessagesSaveDefaultSendAsParams {
@@ -38617,6 +38643,7 @@ export namespace Api {
     text?: TypeTextWithEntitiesIn[];
     /** Two-letter ISO 639-1 language code of the language to which the message is translated */
     toLang: string;
+    /** If set, rephrases the translation using the specified AI composer tone » (pass the tone identifier) */
     tone?: string;
   }
   export interface MessagesGetUnreadReactionsParams {
@@ -38738,7 +38765,7 @@ export namespace Api {
   export interface MessagesSendWebViewDataParams {
     /** Bot that owns the web app */
     bot: Api.TypeEntityLike;
-    /** Unique client message ID to prevent duplicate sending of the same event */
+    /** Unique client message ID to prevent duplicate sending of the same event. See here » for more info on random ID deduplication and updateMessageID mapping. */
     randomId?: long;
     /** Text of the keyboardButtonSimpleWebView that was pressed to open the web app. */
     buttonText: string;
@@ -38808,6 +38835,7 @@ export namespace Api {
     peer: Api.TypeEntityLike;
     /** ID of the message that contained the reply keyboard with the keyboardButtonRequestPeer button. */
     msgId?: MessageIDLike;
+    /** If the button was prepared for a Mini App » , the Mini App request ID returned by bots.requestWebViewButton . */
     webappReqId?: string;
     /** The button_id field from the keyboardButtonRequestPeer constructor. */
     buttonId: int;
@@ -39003,7 +39031,7 @@ export namespace Api {
     shortcutId: int;
     /** Specify a subset of messages from the shortcut to send; if empty, defaults to all of them. */
     id: int[];
-    /** Unique client IDs required to prevent message resending, one for each message we're sending, may be empty (but not recommended). */
+    /** Unique client IDs required to prevent message resending, one for each message we're sending, may be empty (but not recommended). See here » for more info on random ID deduplication and updateMessageID mapping. */
     randomId: long[];
   }
   export interface MessagesDeleteQuickReplyMessagesParams {
@@ -39073,7 +39101,7 @@ export namespace Api {
     msgId: MessageIDLike;
     /** The number of stars to send (each will increment the reaction counter by one). */
     count: int;
-    /** Unique client message ID required to prevent message resending. Note : this argument must be composed of a 64-bit integer where the lower 32 bits are random, and the higher 32 bits are equal to the current unixtime , i.e. uint64_t random_id = (time() << 32) | ((uint64_t)random_uint32_t()) : this differs from the random_id format of all other methods in the API, which just take 64 random bits. */
+    /** Unique client message ID required to prevent message resending. Note : this argument must be composed of a 64-bit integer where the lower 32 bits are random, and the higher 32 bits are equal to the current unixtime , i.e. `uint64_t random_id = (time() << 32). See here » for more info on random ID deduplication and updateMessageID mapping. */
     randomId?: long;
     /** Each post with star reactions has a leaderboard with the top senders, but users can opt out of appearing there if they prefer more privacy. Not populating this field will use the default reaction privacy, stored on the server and synced to clients using updatePaidReactionPrivacy (see here for more info). */
     private?: TypePaidReactionPrivacyIn;
@@ -39087,7 +39115,7 @@ export namespace Api {
     private: TypePaidReactionPrivacyIn;
   }
   export interface MessagesViewSponsoredMessageParams {
-    /** The ad's unique ID. */
+    /** The ad's unique ID. See here » for more info on random ID deduplication and updateMessageID mapping. */
     randomId: bytes;
   }
   export interface MessagesClickSponsoredMessageParams {
@@ -39095,11 +39123,11 @@ export namespace Api {
     media?: boolean;
     /** The user expanded the video to full screen, and then clicked on it. */
     fullscreen?: boolean;
-    /** The ad's unique ID. */
+    /** The ad's unique ID. See here » for more info on random ID deduplication and updateMessageID mapping. */
     randomId: bytes;
   }
   export interface MessagesReportSponsoredMessageParams {
-    /** The ad's unique ID. */
+    /** The ad's unique ID. See here » for more info on random ID deduplication and updateMessageID mapping. */
     randomId: bytes;
     /** Chosen report option, initially an empty string, see here » for more info on the full flow. */
     option: bytes;
@@ -39159,7 +39187,7 @@ export namespace Api {
     parentPeer: Api.TypeEntityLike;
     /** ID of the topic. */
     peer: Api.TypeEntityLike;
-    /** If a positive value is passed, only messages with identifiers less or equal than the given one will be read. */
+    /** If a positive value is passed, only messages with identifiers less than or equal to the given one will be read. */
     maxId: int;
   }
   export interface MessagesToggleTodoCompletedParams {
@@ -39193,130 +39221,209 @@ export namespace Api {
     rejectComment?: string;
   }
   export interface MessagesGetForumTopicsParams {
+    /** The supergroup forum, private chat (for forum-enabled bots) or bot forum (for users) where the topic is located. */
     peer: Api.TypeEntityLike;
+    /** Search query */
     q?: string;
+    /** Offsets for pagination, for more info click here , date of the last message of the last found topic. Use 0 or any date in the future to get results from the last topic. */
     offsetDate: int;
+    /** Offsets for pagination, for more info click here , ID of the last message of the last found topic (or initially 0 ). */
     offsetId: int;
+    /** Offsets for pagination, for more info click here , ID of the last found topic (or initially 0 ). */
     offsetTopic: int;
+    /** Maximum number of results to return, see pagination . For optimal performance, the number of returned topics is chosen by the server and can be smaller than the specified limit. */
     limit: int;
   }
   export interface MessagesGetForumTopicsByIDParams {
+    /** The supergroup forum, private chat (for forum-enabled bots) or bot forum (for users) where the topic is located. */
     peer: Api.TypeEntityLike;
+    /** Topic IDs */
     topics: int[];
   }
   export interface MessagesEditForumTopicParams {
+    /** The supergroup forum, private chat (for forum-enabled bots) or bot forum (for users) where the topic is located. */
     peer: Api.TypeEntityLike;
+    /** Topic ID */
     topicId: int;
+    /** If present, will update the topic title (maximum UTF-8 length: 128). */
     title?: string;
+    /** If present, updates the custom emoji used as topic icon. Telegram Premium users can use any custom emoji, other users can only use the custom emojis contained in the inputStickerSetEmojiDefaultTopicIcons emoji pack. Pass 0 to switch to the fallback topic icon. */
     iconEmojiId?: long;
+    /** If present, will update the open/closed status of the topic. */
     closed?: Bool;
+    /** If present, will hide/unhide the topic (only valid for the "General" topic, id=1 ). */
     hidden?: Bool;
   }
   export interface MessagesUpdatePinnedForumTopicParams {
+    /** The supergroup forum, private chat (for forum-enabled bots) or bot forum (for users) where the topic is located. */
     peer: Api.TypeEntityLike;
+    /** Forum topic ID */
     topicId: int;
+    /** Whether to pin or unpin the topic */
     pinned: Bool;
   }
   export interface MessagesReorderPinnedForumTopicsParams {
+    /** If not set, the order of only the topics present both server-side and in order will be changed (i.e. mentioning topics not pinned server-side in order will not pin them, and not mentioning topics pinned server-side will not unpin them). If set, the entire server-side pinned topic list will be replaced with order (i.e. mentioning topics not pinned server-side in order will pin them, and not mentioning topics pinned server-side will unpin them) */
     force?: boolean;
+    /** The supergroup forum, private chat (for forum-enabled bots) or bot forum (for users) where the topic is located. */
     peer: Api.TypeEntityLike;
+    /** Topic IDs » */
     order: int[];
   }
   export interface MessagesCreateForumTopicParams {
+    /** If set, the topic has no user-defined title, can only be set for the per-user topics of bot forums ; if this field is set, the topic title likely needs to be changed by the bot. */
     titleMissing?: boolean;
+    /** The supergroup, private chat (for forum-enabled bots) or forum bot (for users) where to create the topic. */
     peer: Api.TypeEntityLike;
+    /** Topic title (maximum UTF-8 length: 128) */
     title: string;
+    /** If no custom emoji icon is specified, specifies the color of the fallback topic icon (RGB), one of 0x6FB9F0 , 0xFFD67E , 0xCB86DB , 0x8EEE98 , 0xFF93B2 , or 0xFB6F5F . */
     iconColor?: int;
+    /** ID of the custom emoji used as topic icon. Telegram Premium users can use any custom emoji, other users can only use the custom emojis contained in the inputStickerSetEmojiDefaultTopicIcons emoji pack. */
     iconEmojiId?: long;
+    /** Unique client message ID to prevent duplicate sending of the same event. See here » for more info on random ID deduplication and updateMessageID mapping. */
     randomId?: long;
+    /** Create the topic as the specified peer */
     sendAs?: Api.TypeEntityLike;
   }
   export interface MessagesDeleteTopicHistoryParams {
+    /** The supergroup forum, private chat (for forum-enabled bots) or bot forum (for users) where the topic is located. */
     peer: Api.TypeEntityLike;
+    /** Topic ID */
     topMsgId: MessageIDLike;
   }
   export interface MessagesSummarizeTextParams {
+    /** The peer where the message is located. */
     peer: Api.TypeEntityLike;
+    /** Message ID. */
     id: int;
+    /** If set, generates the summary in the specified target language (two-letter ISO 639-1 language code) instead of the message's language. */
     toLang?: string;
+    /** If set, rephrases the summary using the specified AI composer tone » (pass the tone identifier) */
     tone?: string;
   }
   export interface MessagesEditChatCreatorParams {
+    /** Owned group/supergroup/channel. */
     peer: Api.TypeEntityLike;
+    /** ID of the new owner. */
     userId: Api.TypeEntityLike;
+    /** The current account's 2FA password . */
     password: TypeInputCheckPasswordSRPIn;
   }
   export interface MessagesGetFutureChatCreatorAfterLeaveParams {
+    /** The basic group/supergroup/channel we're about to leave. */
     peer: Api.TypeEntityLike;
   }
   export interface MessagesEditChatParticipantRankParams {
+    /** The basic group/supergroup. */
     peer: Api.TypeEntityLike;
+    /** The participant. */
     participant: Api.TypeEntityLike;
+    /** The new tag. */
     rank: string;
   }
   export interface MessagesDeclineUrlAuthParams {
+    /** The OAuth deep link from the OAUTH_REQUEST push notification or the oauth_request web event */
     url: string;
   }
   export interface MessagesCheckUrlAuthMatchCodeParams {
+    /** The OAuth deep link */
     url: string;
+    /** The emoji or code selected by the user from the list in urlAuthResultRequest . match_codes */
     matchCode: string;
   }
   export interface MessagesComposeMessageWithAIParams {
+    /** If set, proofreads and fixes mistakes in the message */
     proofread?: boolean;
+    /** If set, adds emojis to the message */
     emojify?: boolean;
+    /** The message */
     text: TypeTextWithEntitiesIn;
+    /** If set, translates the message to the specified language */
     translateToLang?: string;
+    /** If set, rephrases the message using the specified AI composer tone » */
     tone?: TypeInputAiComposeToneIn;
   }
   export interface MessagesReportReadMetricsParams {
+    /** Peer where the messages are located */
     peer: Api.TypeEntityLike;
+    /** List of read metrics for individual messages */
     metrics: TypeInputMessageReadMetricIn[];
   }
   export interface MessagesReportMusicListenParams {
+    /** The InputDocument of the listened song */
     id: TypeInputDocumentIn;
+    /** Accumulated playing time in whole seconds */
     listenedDuration: int;
   }
   export interface MessagesAddPollAnswerParams {
+    /** Peer where the poll is located */
     peer: Api.TypeEntityLike;
+    /** Message ID of the poll */
     msgId: MessageIDLike;
+    /** The new answer option to add, use inputPollAnswer */
     answer: TypePollAnswerIn;
   }
   export interface MessagesDeletePollAnswerParams {
+    /** Peer where the poll is located */
     peer: Api.TypeEntityLike;
+    /** Message ID of the poll */
     msgId: MessageIDLike;
+    /** The option identifier of the answer to remove */
     option: bytes;
   }
   export interface MessagesGetUnreadPollVotesParams {
+    /** The chat to fetch unread poll votes from */
     peer: Api.TypeEntityLike;
+    /** If the chat is a forum, restrict results to this topic */
     topMsgId?: MessageIDLike;
+    /** Offsets for pagination, for more info click here */
     offsetId: int;
+    /** Offsets for pagination, for more info click here */
     addOffset: int;
+    /** Maximum number of results to return, see pagination */
     limit: int;
+    /** Only return messages with IDs less than or equal to this value */
     maxId: int;
+    /** Only return messages with IDs greater than or equal to this value */
     minId: int;
   }
   export interface MessagesReadPollVotesParams {
+    /** The chat to mark poll votes as read in */
     peer: Api.TypeEntityLike;
+    /** If the chat is a forum, restrict to this topic */
     topMsgId?: MessageIDLike;
   }
   export interface MessagesSetBotGuestChatResultParams {
+    /** Query identifier from the updateBotGuestChatQuery . query_id field */
     queryId: long;
+    /** The result to send as the answer to the query */
     result: TypeInputBotInlineResultIn;
   }
   export interface MessagesDeleteParticipantReactionsParams {
+    /** The group or channel where the participant's reactions should be removed */
     peer: Api.TypeEntityLike;
+    /** The participant whose reactions should be removed */
     participant: Api.TypeEntityLike;
   }
   export interface MessagesDeleteParticipantReactionParams {
+    /** The group or channel where the message is located */
     peer: Api.TypeEntityLike;
+    /** ID of the message whose reactions should be removed */
     msgId: MessageIDLike;
+    /** The participant whose reactions should be removed from the message */
     participant: Api.TypeEntityLike;
   }
   export interface MessagesGetPersonalChannelHistoryParams {
+    /** The user whose personal channel history to fetch */
     userId: Api.TypeEntityLike;
+    /** Maximum number of results to return, see pagination */
     limit: int;
+    /** If a positive value was transferred, the method will return only messages with IDs less than max_id */
     maxId: int;
+    /** If a positive value was transferred, the method will return only messages with IDs more than min_id */
     minId: int;
+    /** Result hash */
     hash: long;
   }
   export interface MessagesGetRichMessageParams {
@@ -39637,7 +39744,7 @@ export namespace Api {
     userId: Api.TypeEntityLike;
     /** The admin rights */
     adminRights: TypeChatAdminRightsIn;
-    /** Indicates the role (rank) of the admin in the group: just an arbitrary string */
+    /** Indicates the role (rank) of the admin in the group: just an arbitrary string. If the flag is not set, the rank is left unchanged. */
     rank?: string;
   }
   export interface ChannelsEditTitleParams {
@@ -39790,8 +39897,9 @@ export namespace Api {
   export interface ChannelsGetSendAsParams {
     /** If set, fetches the list of peers that can be used to send paid reactions to messages of a specific peer. */
     forPaidReactions?: boolean;
+    /** Fetch the peers that may be passed to phone.sendGroupCallMessage . send_as to comment or react in a live story » . */
     forLiveStories?: boolean;
-    /** The group where we intend to send messages */
+    /** The target peer; when for_live_stories is set, the peer that owns the live story. */
     peer: Api.TypeEntityLike;
   }
   export interface ChannelsDeleteParticipantHistoryParams {
@@ -40139,32 +40247,47 @@ export namespace Api {
     bot: Api.TypeEntityLike;
   }
   export interface BotsCheckUsernameParams {
+    /** Username to check; only letters, digits and underscores are allowed, must end in bot , and the full username must be 5–32 characters long */
     username: string;
   }
   export interface BotsCreateBotParams {
+    /** Set only if the creation prompt was opened from a managed bot creation request deep link » */
     viaDeeplink?: boolean;
+    /** Display name of the bot, 1–64 characters */
     name: string;
+    /** Username for the bot, as validated by bots.checkUsername */
     username: string;
+    /** The manager bot that will control the created bot; must have the user . bot_can_manage_bots flag set */
     managerId: Api.TypeEntityLike;
   }
   export interface BotsExportBotTokenParams {
+    /** The managed bot to export the token for */
     bot: Api.TypeEntityLike;
+    /** If boolTrue , revoke the current token and generate a new one */
     revoke: Bool;
   }
   export interface BotsRequestWebViewButtonParams {
+    /** The user that will use the prepared button in the Mini App */
     userId: Api.TypeEntityLike;
+    /** The button to prepare, an inputKeyboardButtonRequestPeer of any RequestPeerType */
     button: TypeKeyboardButtonIn;
   }
   export interface BotsGetRequestedWebViewButtonParams {
+    /** The bot that owns the Mini App */
     bot: Api.TypeEntityLike;
+    /** The Mini App request ID, taken from the web_app_request_chat event's req_id */
     webappReqId: string;
   }
   export interface BotsGetAccessSettingsParams {
+    /** The managed bot whose access settings to retrieve */
     bot: Api.TypeEntityLike;
   }
   export interface BotsEditAccessSettingsParams {
+    /** If set, restricts access to the managed bot to only the owner and the users in add_users */
     restricted?: boolean;
+    /** The managed bot whose access settings to edit */
     bot: Api.TypeEntityLike;
+    /** Additional users (max 10, excluding the owner) allowed to access the managed bot when restricted is set */
     addUsers?: Api.TypeEntityLike[];
   }
   export interface BotsSetJoinChatResultsParams {
@@ -40258,7 +40381,7 @@ export namespace Api {
     purpose: TypeInputStorePaymentPurposeIn;
   }
   export interface PaymentsGetStarsStatusParams {
-    /** If set, returns the channel/ad revenue balance in nanotons. */
+    /** If set, returns the channel/ad revenue balance in nanograms. */
     ton?: boolean;
     /** Peer of which to get the balance. */
     peer: Api.TypeEntityLike;
@@ -40270,7 +40393,7 @@ export namespace Api {
     outbound?: boolean;
     /** Return transactions in ascending order by date (instead of descending order by date). */
     ascending?: boolean;
-    /** If set, returns the channel/ad revenue transactions in nanotons, instead. */
+    /** If set, returns the channel/ad revenue transactions in nanograms, instead. */
     ton?: boolean;
     /** If set, fetches only transactions for the specified Telegram Star subscription » . */
     subscriptionId?: string;
@@ -40306,7 +40429,7 @@ export namespace Api {
     ton?: boolean;
     /** Channel or bot from which to withdraw funds. */
     peer: Api.TypeEntityLike;
-    /** The amount of stars or nanotons to withdraw. */
+    /** The amount of stars or nanograms to withdraw. */
     amount?: long;
     /** 2FA password, see here » for more info. */
     password: TypeInputCheckPasswordSRPIn;
@@ -40316,7 +40439,7 @@ export namespace Api {
     peer: Api.TypeEntityLike;
   }
   export interface PaymentsGetStarsTransactionsByIDParams {
-    /** If set, returns channel/bot ad revenue transactions in nanotons. */
+    /** If set, returns channel/bot ad revenue transactions in nanograms. */
     ton?: boolean;
     /** Channel or bot. */
     peer: Api.TypeEntityLike;
@@ -40356,7 +40479,7 @@ export namespace Api {
   export interface PaymentsSaveStarGiftParams {
     /** If set, hides the gift from our profile. */
     unsave?: boolean;
-    /** The gift to display or remove. */
+    /** The gift to display or remove. A hosted collectible gift » may be used by its host or owner. */
     stargift: TypeInputSavedStarGiftIn;
   }
   export interface PaymentsConvertStarGiftParams {
@@ -40448,9 +40571,11 @@ export namespace Api {
     excludeUpgradable?: boolean;
     /** Exclude gifts that cannot be upgraded to collectible gifts » . */
     excludeUnupgradable?: boolean;
+    /** If set, only returns collectible gifts whose palette can be used as a collectible message palette » . */
     peerColorAvailable?: boolean;
+    /** If set, excludes hosted collectible gifts » , returning only gifts owned or received by peer . */
     excludeHosted?: boolean;
-    /** Fetch only gifts owned by the specified peer, such as: a user, with peer= inputPeerUser ; a channel, with peer= inputPeerChannel ; a connected business user (when executing the method as a bot, over the business connection), with peer= inputPeerUser . */
+    /** Fetch only gifts owned, received or hosted » by the specified peer, such as: a user, with peer= inputPeerUser ; a channel, with peer= inputPeerChannel ; a connected business user » (when executing the method as a bot, over the business connection), with peer= inputPeerUser . */
     peer: Api.TypeEntityLike;
     /** Only returns gifts within the specified collection » . */
     collectionId?: int;
@@ -40490,7 +40615,9 @@ export namespace Api {
     sortByPrice?: boolean;
     /** Sort gifts by number (ascending). */
     sortByNum?: boolean;
+    /** Only return collectible gifts that can be bought and used for crafting » ; render each returned gift's starGiftUnique . craft_chance_permille as its crafting success contribution. */
     forCraft?: boolean;
+    /** Only return gifts that can be bought using Stars . */
     starsOnly?: boolean;
     /** If a previous call to the method was made and payments.resaleStarGifts . attributes_hash was set, pass it here to avoid returning any results if they haven't changed. Otherwise, set this flag and pass 0 to return payments.resaleStarGifts . attributes_hash and payments.resaleStarGifts . attributes , these two fields will not be set if this flag is not set. */
     attributesHash?: long;
@@ -40558,36 +40685,53 @@ export namespace Api {
     giftId: long;
   }
   export interface PaymentsGetStarGiftAuctionStateParams {
+    /** Either the ID of the gift linked to the auction, or an auction deep link slug » . */
     auction: TypeInputStarGiftAuctionIn;
+    /** Initially 0 , then set to the returned starGiftAuctionState . version , to avoid refetching results if they haven't changed. */
     version: int;
   }
   export interface PaymentsGetStarGiftAuctionAcquiredGiftsParams {
+    /** The gift ID linked to the auction. */
     giftId: long;
   }
   export interface PaymentsGetStarGiftActiveAuctionsParams {
+    /** Hash generated as specified here » */
     hash: long;
   }
   export interface PaymentsResolveStarGiftOfferParams {
+    /** If set, declines the offer; otherwise, accepts it. */
     decline?: boolean;
+    /** Identifier of the messageActionStarGiftPurchaseOffer service message describing the offer to act upon. */
     offerMsgId: MessageIDLike;
   }
   export interface PaymentsSendStarGiftOfferParams {
+    /** Owner of the collectible gift: equal to starGiftUnique . owner_id . */
     peer: Api.TypeEntityLike;
+    /** Identifier of the collectible gift: equal to starGiftUnique . slug . */
     slug: string;
+    /** Offer price, in stars or TON. */
     price: TypeStarsAmountIn;
+    /** Duration of the offer, in seconds: must be one of 21600 , 43200 , 86400 , 129600 , 172800 , or 259200 ; can also be 120 in test mode. */
     duration: int;
+    /** Random 64-bit identifier used to avoid sending the same offer twice in case of network issues. See here » for more info on random ID deduplication and updateMessageID mapping. */
     randomId?: long;
+    /** If the destination peer has paid messages » enabled, specifies the amount of Telegram Stars the sending user has agreed to pay in order to send the offer (in addition to the amount for the offer itself, contained in price ). */
     allowPaidStars?: long;
   }
   export interface PaymentsGetStarGiftUpgradeAttributesParams {
+    /** Non-collectible base gift ID, from starGift . id */
     giftId: long;
   }
   export interface PaymentsGetCraftStarGiftsParams {
+    /** Identifier of the base gift type, equal to starGiftUnique . gift_id of the first selected gift. */
     giftId: long;
+    /** Offset for pagination. */
     offset: string;
+    /** Maximum number of results to return, see pagination */
     limit: int;
   }
   export interface PaymentsCraftStarGiftParams {
+    /** 1 to 4 owned collectible gifts of the same type to use for crafting » . The first gift's ID is reused if crafting succeeds. */
     stargift: TypeInputSavedStarGiftIn[];
   }
   export interface StickersCreateStickerSetParams {
@@ -40673,7 +40817,7 @@ export namespace Api {
     video?: boolean;
     /** Destination of the phone call */
     userId: Api.TypeEntityLike;
-    /** Random ID to avoid resending the same object */
+    /** Random ID to avoid resending the same object. See here » for more info on random ID deduplication and updateMessageID mapping. */
     randomId: int;
     /** Parameter for E2E encryption key exchange » */
     gAHash: bytes;
@@ -40715,19 +40859,19 @@ export namespace Api {
     connectionId: long;
   }
   export interface PhoneSetCallRatingParams {
-    /** Whether the user decided on their own initiative to rate the call */
+    /** Whether the user decided on their own initiative to rate the call, must NOT be set if rating was requested by the server with phoneCallDiscarded . need_rating . */
     userInitiative?: boolean;
     /** The call to rate */
     peer: TypeInputPhoneCallIn;
     /** Rating in 1-5 stars */
     rating: int;
-    /** An additional comment */
+    /** An additional comment with problem hashtags, see here » for more info on the full flow. */
     comment: string;
   }
   export interface PhoneSaveCallDebugParams {
     /** Phone call */
     peer: TypeInputPhoneCallIn;
-    /** Debug statistics obtained from libtgvoip */
+    /** Debug statistics obtained from tgcalls */
     debug: TypeDataJSONIn;
   }
   export interface PhoneSendSignalingDataParams {
@@ -40737,43 +40881,43 @@ export namespace Api {
     data: bytes;
   }
   export interface PhoneCreateGroupCallParams {
-    /** Whether RTMP stream support should be enabled: only the group/supergroup/channel owner can use this flag. */
+    /** Create the call in RTMP livestream mode » , where one external streamer publishes all audio and video */
     rtmpStream?: boolean;
     /** Associate the group call or livestream to the provided group/supergroup/channel */
     peer: Api.TypeEntityLike;
-    /** Unique client message ID required to prevent creation of duplicate group calls */
+    /** Unique client message ID required to prevent creation of duplicate group calls. See here » for more info on random ID deduplication and updateMessageID mapping. */
     randomId: int;
-    /** Call title */
+    /** Call title, if not set defaults to the group/channel's name. */
     title?: string;
-    /** For scheduled group call or livestreams, the absolute date when the group call will start */
+    /** Schedule date, at least 10 seconds and at most 8 days in the future; the call must still be manually started using phone.startScheduledGroupCall */
     scheduleDate?: int;
   }
   export interface PhoneJoinGroupCallParams {
-    /** If set, the user will be muted by default upon joining. */
+    /** Join muted; required for live story listeners and RTMP-mode viewers */
     muted?: boolean;
-    /** If set, the user's video will be disabled by default upon joining. */
+    /** Join with video disabled; required for live story listeners and RTMP-mode viewers */
     videoStopped?: boolean;
-    /** The group call */
+    /** Group call to join */
     call: TypeInputGroupCallIn;
-    /** Join the group call, presenting yourself as the specified user/channel */
+    /** Join the group call, presenting yourself as the specified user/channel; this peer is also used as the author of in-call messages in normal video chats/livestreams. Only video chats/livestreams may use another peer; this field must be equal to inputPeerSelf when joining live stories » or conference calls » . */
     joinAs: Api.TypeEntityLike;
-    /** The invitation hash from the invite link » , if provided allows speaking in a livestream or muted group chat. */
+    /** The invitation hash from the invite link » , if provided allows speaking in a livestream or muted group call ( video chats/livestreams » only, cannot be used by live stories » or conference calls » ). */
     inviteHash?: string;
-    /** For conference calls, your public key. */
+    /** For conference calls » only, your public key. */
     publicKey?: int256;
-    /** The block containing an appropriate e2e.chain.changeSetGroupState event . */
+    /** The main-chain block that adds the joining user » , only for conference calls » . */
     block?: bytes;
-    /** WebRTC parameters */
+    /** Join payload generated by the local tgcalls group-call engine, as described above */
     params: TypeDataJSONIn;
   }
   export interface PhoneLeaveGroupCallParams {
-    /** The group call */
+    /** Group call to leave */
     call: TypeInputGroupCallIn;
-    /** Your source ID */
+    /** Source ID of the main group call stream */
     source: int;
   }
   export interface PhoneInviteToGroupCallParams {
-    /** The group call */
+    /** The video chat/livestream » */
     call: TypeInputGroupCallIn;
     /** The users to invite. */
     users: Api.TypeEntityLike[];
@@ -40783,37 +40927,39 @@ export namespace Api {
     call: TypeInputGroupCallIn;
   }
   export interface PhoneToggleGroupCallSettingsParams {
-    /** Invalidate existing invite links */
+    /** Invalidate existing invite links for video chats, livestreams and conferences */
     resetInviteHash?: boolean;
-    /** Group call */
+    /** Group call whose settings should be changed */
     call: TypeInputGroupCallIn;
-    /** Whether all users will that join this group call are muted by default upon joining the group call */
+    /** Whether users joining a non-RTMP video chat/livestream should be muted by default */
     joinMuted?: Bool;
+    /** Enable or disable the in-call message overlay in video chats/livestreams, conferences and live stories, including in RTMP mode */
     messagesEnabled?: Bool;
+    /** Set the minimum Telegram Stars donation required from users other than the live story owner for each comment; the owner may always comment without donating, and 0 allows free comments for everyone */
     sendPaidMessagesStars?: long;
   }
   export interface PhoneGetGroupCallParams {
-    /** The group call */
+    /** Group call of any type to fetch */
     call: TypeInputGroupCallIn;
-    /** Maximum number of results to return, see pagination */
+    /** Maximum number of participants to return in this call (0 to return a server-defined amount). If the number of returned participants is less than groupCall . participants_count , paginate through the remaining participants using phone.getGroupParticipants , passing to offset the phone.groupCall . participants_next_offset returned by this call. This parameter behaves in a different way compared to the limit of phone.getGroupParticipants , see here » for more info. */
     limit: int;
   }
   export interface PhoneGetGroupParticipantsParams {
-    /** Group call */
+    /** Group call whose participants should be fetched */
     call: TypeInputGroupCallIn;
     /** If specified, will fetch group participant info about the specified peers */
     ids: Api.TypeEntityLike[];
     /** If specified, will fetch group participant info about the specified WebRTC source IDs */
     sources: int[];
-    /** Offset for results, taken from the next_offset field of phone.groupParticipants , initially an empty string. Note: if no more results are available, the method call will return an empty next_offset ; thus, avoid providing the next_offset returned in phone.groupParticipants if it is empty, to avoid an infinite loop. */
+    /** Offset for results, taken from the next_offset field of phone.groupParticipants or the participants_next_offset field of phone.groupCall , initially an empty string. Note: if no more results are available, the method call will return an empty next_offset ; thus, avoid providing the next_offset returned in phone.groupParticipants if it is empty, to avoid an infinite loop. */
     offset: string;
     /** Maximum number of results to return, see pagination */
     limit: int;
   }
   export interface PhoneCheckGroupCallParams {
-    /** Group call */
+    /** Group call whose WebRTC connections should be checked */
     call: TypeInputGroupCallIn;
-    /** Source IDs */
+    /** Non-zero SSRC/source IDs of the caller's main and presentation connections */
     sources: int[];
   }
   export interface PhoneToggleGroupCallRecordParams {
@@ -40821,7 +40967,7 @@ export namespace Api {
     start?: boolean;
     /** Whether to also record video streams */
     video?: boolean;
-    /** The group call or livestream */
+    /** Video chat/livestream to record */
     call: TypeInputGroupCallIn;
     /** Recording title */
     title?: string;
@@ -40829,80 +40975,81 @@ export namespace Api {
     videoPortrait?: Bool;
   }
   export interface PhoneEditGroupCallParticipantParams {
-    /** The group call */
+    /** Non-RTMP video chat/livestream or conference */
     call: TypeInputGroupCallIn;
     /** The group call participant (can also be the user itself) */
     participant: Api.TypeEntityLike;
-    /** Whether to mute or unmute the specified participant */
+    /** Change the participant's mute state; allowing a forcibly muted participant to self-unmute does not immediately unmute them */
     muted?: Bool;
-    /** New volume */
+    /** New volume, between 1 and 20000 ; 10000 represents 100%. Without moderation rights, changing another participant's volume affects only local playback */
     volume?: int;
-    /** Raise or lower hand */
+    /** Raise or lower hand; only supported in video chats/livestreams */
     raiseHand?: Bool;
-    /** Start or stop the video stream */
+    /** Start or stop the current user's video stream */
     videoStopped?: Bool;
-    /** Pause or resume the video stream */
+    /** Pause or resume the current user's video stream */
     videoPaused?: Bool;
-    /** Pause or resume the screen sharing stream */
+    /** Pause or resume the current user's presentation stream */
     presentationPaused?: Bool;
   }
   export interface PhoneEditGroupCallTitleParams {
-    /** Group call */
+    /** Video chat or livestream whose title should be changed */
     call: TypeInputGroupCallIn;
     /** New title */
     title: string;
   }
   export interface PhoneGetGroupCallJoinAsParams {
-    /** The dialog whose group call or livestream we're trying to join */
+    /** The basic group, supergroup or channel whose video chat/livestream we're trying to join; cannot target a live story. */
     peer: Api.TypeEntityLike;
   }
   export interface PhoneExportGroupCallInviteParams {
-    /** For livestreams or muted group chats, if set, users that join using this link will be able to speak without explicitly requesting permission by (for example by raising their hand). */
+    /** For public video chats/livestreams, group call admins only: allow users that join using this link to speak without explicitly requesting permission, for example by raising their hand. */
     canSelfUnmute?: boolean;
-    /** The group call */
+    /** The public video chat/livestream » */
     call: TypeInputGroupCallIn;
   }
   export interface PhoneToggleGroupCallStartSubscriptionParams {
-    /** Scheduled group call */
+    /** Scheduled video chat/livestream that has not started yet */
     call: TypeInputGroupCallIn;
-    /** Enable or disable subscription */
+    /** Whether to receive a service-notification message when the call starts */
     subscribed: Bool;
   }
   export interface PhoneStartScheduledGroupCallParams {
-    /** The scheduled group call */
+    /** Scheduled video chat/livestream to start, before or after its scheduled date */
     call: TypeInputGroupCallIn;
   }
   export interface PhoneSaveDefaultGroupCallJoinAsParams {
-    /** The dialog */
+    /** Basic group, supergroup or channel whose video chat/livestream default should be changed */
     peer: Api.TypeEntityLike;
-    /** The default peer that will be used to join group calls in this dialog, presenting yourself as a specific user/channel. */
+    /** Eligible peer to use by default when joining the dialog's video chats/livestreams, selected from phone.getGroupCallJoinAs */
     joinAs: Api.TypeEntityLike;
   }
   export interface PhoneJoinGroupCallPresentationParams {
-    /** The group call */
+    /** Joined non-RTMP video chat/livestream or conference in which to start presenting */
     call: TypeInputGroupCallIn;
-    /** WebRTC parameters */
+    /** Join payload generated by a separate local call-engine instance for the presentation */
     params: TypeDataJSONIn;
   }
   export interface PhoneLeaveGroupCallPresentationParams {
-    /** The group call */
+    /** Group call whose presentation connection should be stopped */
     call: TypeInputGroupCallIn;
   }
   export interface PhoneGetGroupCallStreamChannelsParams {
-    /** Group call or livestream */
+    /** RTMP-mode video chat, livestream or live story */
     call: TypeInputGroupCallIn;
   }
   export interface PhoneGetGroupCallStreamRtmpUrlParams {
+    /** Obtain credentials for an RTMP live story instead of a video chat/livestream */
     liveStory?: boolean;
-    /** Peer to livestream into */
+    /** Peer that will host the RTMP video chat, livestream or live story */
     peer: Api.TypeEntityLike;
-    /** Whether to revoke the previous stream key or simply return the existing one */
+    /** Whether to invalidate the previous stream key and generate a new one, instead of returning the existing key */
     revoke: Bool;
   }
   export interface PhoneSaveCallLogParams {
     /** Phone call */
     peer: TypeInputPhoneCallIn;
-    /** Logs */
+    /** Libtgvoip logs */
     file: TypeInputFileIn;
   }
   export interface PhoneCreateConferenceCallParams {
@@ -40912,13 +41059,13 @@ export namespace Api {
     videoStopped?: boolean;
     /** If set, also join the call, otherwise just create the call link. */
     join?: boolean;
-    /** Unique client message ID required to prevent creation of duplicate group calls. */
+    /** Unique client message ID required to prevent creation of duplicate group calls. See here » for more info on random ID deduplication and updateMessageID mapping. */
     randomId: int;
-    /** Public key (can only be used if join is set). */
+    /** Fresh E2E public key for the creator (can only be used if join is set). */
     publicKey?: int256;
-    /** Initial blockchain block (can only be used if join is set). */
+    /** Initial main-chain block for subchain 0 (can only be used if join is set). */
     block?: bytes;
-    /** Parameters from tgcalls (can only be used if join is set). */
+    /** Join payload generated by the local call engine (can only be used if join is set). */
     params?: TypeDataJSONIn;
   }
   export interface PhoneDeleteConferenceCallParticipantsParams {
@@ -40926,21 +41073,21 @@ export namespace Api {
     onlyLeft?: boolean;
     /** Whether this is a forced removal of active members in a conference call. */
     kick?: boolean;
-    /** The conference call. */
+    /** Conference from which to remove participants */
     call: TypeInputGroupCallIn;
-    /** IDs of users to remove. */
+    /** User IDs to remove from the conference and E2E blockchain */
     ids: long[];
-    /** The block containing an appropriate e2e.chain.changeSetGroupState event */
+    /** Main-chain block removing the specified users and establishing a new shared key, see removing a participant » */
     block: bytes;
   }
   export interface PhoneSendConferenceCallBroadcastParams {
-    /** The conference where to broadcast the block. */
+    /** Conference whose verification subchain should receive the message */
     call: TypeInputGroupCallIn;
-    /** The block to broadcast. */
+    /** Serialized e2e.chain.GroupBroadcast verification message. */
     block: bytes;
   }
   export interface PhoneInviteConferenceCallParticipantParams {
-    /** Invite the user to also turn on their video feed. */
+    /** Whether this is a video conference invitation */
     video?: boolean;
     /** The conference call. */
     call: TypeInputGroupCallIn;
@@ -40952,41 +41099,57 @@ export namespace Api {
     msgId: MessageIDLike;
   }
   export interface PhoneGetGroupCallChainBlocksParams {
-    /** The conference. */
+    /** Conference whose subchain blocks should be fetched */
     call: TypeInputGroupCallIn;
-    /** Subchain ID. */
+    /** 0 for the main state blockchain, 1 for the call verification subchain */
     subChainId: int;
-    /** Offset for pagination. */
+    /** Fetch blocks starting from this height; pass -1 to fetch the latest block */
     offset: int;
-    /** Maximum number of blocks to return in this call, see pagination */
+    /** Maximum number of blocks to return in this call, see pagination , max 100. */
     limit: int;
   }
   export interface PhoneSendGroupCallMessageParams {
+    /** Video chat/livestream or live story that should receive the message, reaction or donation */
     call: TypeInputGroupCallIn;
+    /** Fresh client-generated random ID used to deduplicate the message or donation. See here » for more info on random ID deduplication and updateMessageID mapping. */
     randomId?: long;
+    /** Message text or emoji reaction; pass an empty value when sending a standalone paid live story donation */
     message: TypeTextWithEntitiesIn;
+    /** User-confirmed number of Telegram Stars to donate with a live story comment or standalone donation */
     allowPaidStars?: long;
+    /** Optional peer to display as the author of a live story message or reaction; can only be used for live stories */
     sendAs?: Api.TypeEntityLike;
   }
   export interface PhoneSendGroupCallEncryptedMessageParams {
+    /** Conference call that should receive the encrypted message or reaction */
     call: TypeInputGroupCallIn;
+    /** Complete encrypted message or reaction packet produced as specified here » */
     encryptedMessage: bytes;
   }
   export interface PhoneDeleteGroupCallMessagesParams {
+    /** When moderating another participant's messages, also report them as spam */
     reportSpam?: boolean;
+    /** Video chat/livestream or live story containing the messages */
     call: TypeInputGroupCallIn;
+    /** IDs of the messages to delete */
     messages: int[];
   }
   export interface PhoneDeleteGroupCallParticipantMessagesParams {
+    /** Also report the participant's messages as spam */
     reportSpam?: boolean;
+    /** Video chat/livestream or live story containing the messages */
     call: TypeInputGroupCallIn;
+    /** The participant whose messages should be deleted */
     participant: Api.TypeEntityLike;
   }
   export interface PhoneGetGroupCallStarsParams {
+    /** Live story group call */
     call: TypeInputGroupCallIn;
   }
   export interface PhoneSaveDefaultSendAsParams {
+    /** Live story group call */
     call: TypeInputGroupCallIn;
+    /** Peer to display as the author of subsequent comments and reactions */
     sendAs: Api.TypeEntityLike;
   }
   export interface LangpackGetLangPackParams {
@@ -41080,8 +41243,11 @@ export namespace Api {
     limit: int;
   }
   export interface StatsGetPollStatsParams {
+    /** Whether to enable dark theme for graph colors */
     dark?: boolean;
+    /** The peer where the poll was sent */
     peer: Api.TypeEntityLike;
+    /** ID of the message containing the poll */
     msgId: MessageIDLike;
   }
   export interface ChatlistsExportChatlistInviteParams {
@@ -41155,7 +41321,7 @@ export namespace Api {
     pinned?: boolean;
     /** If set, disables forwards, screenshots, and downloads. */
     noforwards?: boolean;
-    /** Set this flag when reposting stories with fwd_from_id + fwd_from_id , if the media was modified before reposting. */
+    /** Set this flag when reposting stories with fwd_from_id + fwd_from_story , if the media was modified before reposting. */
     fwdModified?: boolean;
     /** The peer to send the story as. */
     peer: Api.TypeEntityLike;
@@ -41169,7 +41335,7 @@ export namespace Api {
     entities?: TypeMessageEntityIn[];
     /** Privacy rules for the story, indicating who can or can't view the story. */
     privacyRules: TypeInputPrivacyRuleIn[];
-    /** Unique client message ID required to prevent message resending. */
+    /** Unique client message ID required to prevent message resending. See here » for more info on random ID deduplication and updateMessageID mapping. */
     randomId?: long;
     /** Period after which the story is moved to archive (and to the profile if pinned is set), in seconds; must be one of 6 * 3600 , 12 * 3600 , 86400 , or 2 * 86400 for Telegram Premium users, and 86400 otherwise. */
     period?: int;
@@ -41179,6 +41345,7 @@ export namespace Api {
     fwdFromStory?: int;
     /** If set, adds the story to the specified albums. */
     albums?: int[];
+    /** If set, the audio track to play as background music for the story. */
     music?: TypeInputDocumentIn;
   }
   export interface StoriesEditStoryParams {
@@ -41196,6 +41363,7 @@ export namespace Api {
     entities?: TypeMessageEntityIn[];
     /** If specified, alters the privacy settings » of the story, changing who can or can't view the story. */
     privacyRules?: TypeInputPrivacyRuleIn[];
+    /** If set, the new audio track to play as background music for the story. */
     music?: TypeInputDocumentIn;
   }
   export interface StoriesDeleteStoriesParams {
@@ -41319,7 +41487,7 @@ export namespace Api {
     peer: Api.TypeEntityLike;
   }
   export interface StoriesGetPeerMaxIDsParams {
-    /** Peers */
+    /** Peers whose active story summaries » should be fetched. */
     id: Api.TypeEntityLike[];
   }
   export interface StoriesTogglePeerStoriesHiddenParams {
@@ -41411,15 +41579,25 @@ export namespace Api {
     limit: int;
   }
   export interface StoriesStartLiveParams {
+    /** Whether to pin the live story on the peer's profile */
     pinned?: boolean;
+    /** Whether viewers must be prevented from forwarding or saving the live story */
     noforwards?: boolean;
+    /** Create the live story in RTMP livestream mode » , where one external streamer publishes all audio and video */
     rtmpStream?: boolean;
+    /** User, supergroup or channel that will own the live story; basic groups cannot post live stories */
     peer: Api.TypeEntityLike;
+    /** Live story caption */
     caption?: string;
+    /** Message entities for styled text */
     entities?: TypeMessageEntityIn[];
+    /** Privacy rules defining who can view the live story */
     privacyRules: TypeInputPrivacyRuleIn[];
+    /** Client-generated random ID used to prevent duplicate live stories. See here » for more info on random ID deduplication and updateMessageID mapping. */
     randomId?: long;
+    /** Whether the in-call message overlay » should be enabled */
     messagesEnabled?: Bool;
+    /** Minimum Telegram Stars donation required from users other than the live story owner for each comment; the owner may always comment without donating, and 0 allows free comments for everyone */
     sendPaidMessagesStars?: long;
   }
   export interface PremiumGetBoostsListParams {
@@ -41467,33 +41645,49 @@ export namespace Api {
     collectible: TypeInputCollectibleIn;
   }
   export interface AicomposeCreateToneParams {
+    /** If set, the current user will be publicly credited as the author of the tone */
     displayAuthor?: boolean;
+    /** Custom emoji ID of the tone's icon */
     emojiId: long;
+    /** Human-readable tone name, up to aicompose_tone_title_length_max » UTF-8 characters long */
     title: string;
+    /** The prompt that describes how the AI should rephrase messages using this tone, up to aicompose_tone_prompt_length_max » UTF-8 characters long */
     prompt: string;
   }
   export interface AicomposeUpdateToneParams {
+    /** The tone to edit */
     tone: TypeInputAiComposeToneIn;
+    /** If set, changes whether the current user is publicly credited as the author of the tone (ternary value, can be not set, set and true, set and false). */
     displayAuthor?: Bool;
+    /** If set, the new custom emoji ID of the tone's icon */
     emojiId?: long;
+    /** If set, the new human-readable tone name, up to aicompose_tone_title_length_max » UTF-8 characters long */
     title?: string;
+    /** If set, the new prompt that describes how the AI should rephrase messages using this tone, up to aicompose_tone_prompt_length_max » UTF-8 characters long */
     prompt?: string;
   }
   export interface AicomposeSaveToneParams {
+    /** The tone to save or unsave */
     tone: TypeInputAiComposeToneIn;
+    /** If false , installs (saves) the tone; if true , uninstalls (unsaves) it */
     unsave: Bool;
   }
   export interface AicomposeDeleteToneParams {
+    /** The tone to delete */
     tone: TypeInputAiComposeToneIn;
   }
   export interface AicomposeGetToneParams {
+    /** The tone to fetch */
     tone: TypeInputAiComposeToneIn;
   }
   export interface AicomposeGetTonesParams {
+    /** Hash from a previously cached aicompose.tones . hash to avoid refetching the list if it hasn't changed; initially 0. */
     hash: long;
   }
   export interface AicomposeGetToneExampleParams {
+    /** The tone to preview */
     tone: TypeInputAiComposeToneIn;
+    /** 0-based index of the example to fetch, to cycle through the available examples (there are aicompose_tone_examples_num » examples per tone) */
     num: int;
   }
   export interface CommunitiesCreateParams {
@@ -41628,7 +41822,7 @@ export namespace Api {
   }
 
   export type InitConnectionErrors = RpcErrors.ConnectionLayerInvalidError;
-  export type InvokeWithLayerErrors = RpcErrors.AuthBytesInvalidError | RpcErrors.CdnMethodInvalidError | RpcErrors.ConnectionApiIdInvalidError | RpcErrors.InviteHashExpiredError | RpcErrors.ChatWriteForbiddenError;
+  export type InvokeWithLayerErrors = RpcErrors.AuthBytesInvalidError | RpcErrors.CdnMethodInvalidError | RpcErrors.ConnectionApiIdInvalidError | RpcErrors.ConnectionLayerInvalidError | RpcErrors.InviteHashExpiredError | RpcErrors.ChatWriteForbiddenError;
   export type AuthSendCodeErrors = RpcErrors.ApiIdInvalidError | RpcErrors.ApiIdPublishedFloodError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PhoneNumberAppSignupForbiddenError | RpcErrors.PhoneNumberBannedError | RpcErrors.PhoneNumberFloodError | RpcErrors.PhoneNumberInvalidError | RpcErrors.PhonePasswordProtectedError | RpcErrors.SmsCodeCreateFailedError | RpcErrors.PhonePasswordFloodError | RpcErrors.UpdateAppToLoginError | RpcErrors.AuthRestartError;
   export type AuthSignUpErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.FirstnameInvalidError | RpcErrors.LastnameInvalidError | RpcErrors.PhoneCodeEmptyError | RpcErrors.PhoneCodeExpiredError | RpcErrors.PhoneCodeInvalidError | RpcErrors.PhoneNumberFloodError | RpcErrors.PhoneNumberInvalidError | RpcErrors.PhoneNumberOccupiedError;
   export type AuthSignInErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PhoneCodeEmptyError | RpcErrors.PhoneCodeExpiredError | RpcErrors.PhoneCodeInvalidError | RpcErrors.PhoneNumberInvalidError | RpcErrors.PhoneNumberUnoccupiedError | RpcErrors.UpdateAppToLoginError | RpcErrors.AuthRestartError | RpcErrors.SignInFailedError;
@@ -41640,16 +41834,19 @@ export namespace Api {
   export type AuthCheckPasswordErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PasswordHashInvalidError | RpcErrors.SrpIdInvalidError | RpcErrors.SrpPasswordChangedError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.AuthKeyUnsynchronizedError;
   export type AuthRequestPasswordRecoveryErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PasswordEmptyError | RpcErrors.PasswordRecoveryNaError | RpcErrors.AuthKeyUnregisteredError;
   export type AuthRecoverPasswordErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.CodeEmptyError | RpcErrors.NewSettingsInvalidError | RpcErrors.AuthKeyUnregisteredError;
-  export type AuthResendCodeErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PhoneCodeEmptyError | RpcErrors.PhoneCodeExpiredError | RpcErrors.PhoneCodeHashEmptyError | RpcErrors.PhoneNumberInvalidError | RpcErrors.SendCodeUnavailableError;
+  export type AuthResendCodeErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.EmailInstallMissingError | RpcErrors.PhoneCodeEmptyError | RpcErrors.PhoneCodeExpiredError | RpcErrors.PhoneCodeHashEmptyError | RpcErrors.PhoneNumberInvalidError | RpcErrors.SendCodeUnavailableError;
   export type AuthCancelCodeErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PhoneCodeExpiredError | RpcErrors.PhoneNumberInvalidError;
-  export type AuthExportLoginTokenErrors = RpcErrors.ApiIdInvalidError | RpcErrors.ApiIdPublishedFloodError | RpcErrors.BusinessConnectionNotAllowedError;
+  export type AuthExportLoginTokenErrors = RpcErrors.ApiIdInvalidError | RpcErrors.ApiIdPublishedFloodError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthRestartError;
   export type AuthImportLoginTokenErrors = RpcErrors.AuthTokenAlreadyAcceptedError | RpcErrors.AuthTokenExpiredError | RpcErrors.AuthTokenInvalidError | RpcErrors.AuthTokenInvalidxError | RpcErrors.BusinessConnectionNotAllowedError;
   export type AuthAcceptLoginTokenErrors = RpcErrors.AuthTokenAlreadyAcceptedError | RpcErrors.AuthTokenExceptionError | RpcErrors.AuthTokenExpiredError | RpcErrors.AuthTokenInvalidxError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
   export type AuthCheckRecoveryPasswordErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.CodeEmptyError | RpcErrors.PasswordRecoveryExpiredError | RpcErrors.AuthKeyUnregisteredError;
-  export type AuthImportWebTokenAuthorizationErrors = RpcErrors.ApiIdInvalidError | RpcErrors.BusinessConnectionNotAllowedError;
+  export type AuthImportWebTokenAuthorizationErrors = RpcErrors.ApiIdInvalidError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.WebauthTokenExpiredError;
   export type AuthRequestFirebaseSmsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PhoneCodeEmptyError | RpcErrors.PhoneNumberInvalidError;
-  export type AuthResetLoginEmailErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PhoneNumberInvalidError | RpcErrors.TaskAlreadyExistsError;
+  export type AuthResetLoginEmailErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.EmailInstallMissingError | RpcErrors.PhoneNumberInvalidError | RpcErrors.TaskAlreadyExistsError;
   export type AuthReportMissingCodeErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PhoneNumberInvalidError;
+  export type AuthCheckPaidAuthErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PhoneNumberInvalidError;
+  export type AuthInitPasskeyLoginErrors = RpcErrors.ApiIdInvalidError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthRestartError;
+  export type AuthFinishPasskeyLoginErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.CredentialInvalidError | RpcErrors.PasskeyOriginMismatchError | RpcErrors.AuthRestartError;
   export type AccountRegisterDeviceErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.TokenEmptyError | RpcErrors.TokenInvalidError | RpcErrors.TokenTypeInvalidError | RpcErrors.WebpushAuthInvalidError | RpcErrors.WebpushKeyInvalidError | RpcErrors.WebpushTokenInvalidError | RpcErrors.AuthKeyUnregisteredError;
   export type AccountUnregisterDeviceErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.TokenInvalidError | RpcErrors.AuthKeyUnregisteredError;
   export type AccountUpdateNotifySettingsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.MsgIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.SettingsInvalidError | RpcErrors.AuthKeyUnregisteredError;
@@ -41667,7 +41864,7 @@ export namespace Api {
   export type AccountGetAccountTTLErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
   export type AccountSetAccountTTLErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.TtlDaysInvalidError | RpcErrors.AuthKeyUnregisteredError;
   export type AccountSendChangePhoneCodeErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PhoneNumberBannedError | RpcErrors.PhoneNumberInvalidError | RpcErrors.PhoneNumberOccupiedError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.FreshChangePhoneForbiddenError;
-  export type AccountChangePhoneErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PhoneCodeEmptyError | RpcErrors.PhoneCodeExpiredError | RpcErrors.PhoneNumberInvalidError | RpcErrors.PhoneNumberOccupiedError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountChangePhoneErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PhoneCodeEmptyError | RpcErrors.PhoneCodeExpiredError | RpcErrors.PhoneCodeInvalidError | RpcErrors.PhoneNumberInvalidError | RpcErrors.PhoneNumberOccupiedError | RpcErrors.AuthKeyUnregisteredError;
   export type AccountUpdateDeviceLockedErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
   export type AccountGetAuthorizationsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
   export type AccountResetAuthorizationErrors = RpcErrors.HashInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.FreshResetAuthorisationForbiddenError;
@@ -41688,8 +41885,8 @@ export namespace Api {
   export type AccountAcceptAuthorizationErrors = RpcErrors.BotInvalidError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PublicKeyRequiredError | RpcErrors.AuthKeyUnregisteredError;
   export type AccountSendVerifyPhoneCodeErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PhoneNumberInvalidError | RpcErrors.AuthKeyUnregisteredError;
   export type AccountVerifyPhoneErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PhoneCodeEmptyError | RpcErrors.PhoneCodeExpiredError | RpcErrors.PhoneNumberInvalidError | RpcErrors.AuthKeyUnregisteredError;
-  export type AccountSendVerifyEmailCodeErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.EmailInvalidError | RpcErrors.EmailNotAllowedError | RpcErrors.EmailNotSetupError | RpcErrors.PhoneHashExpiredError | RpcErrors.PhoneNumberInvalidError;
-  export type AccountVerifyEmailErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.EmailInvalidError | RpcErrors.EmailNotAllowedError | RpcErrors.EmailVerifyExpiredError | RpcErrors.PhoneNumberInvalidError;
+  export type AccountSendVerifyEmailCodeErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.EmailInvalidError | RpcErrors.EmailNotAllowedError | RpcErrors.EmailNotSetupError | RpcErrors.PhoneCodeEmptyError | RpcErrors.PhoneHashExpiredError | RpcErrors.PhoneNumberInvalidError;
+  export type AccountVerifyEmailErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.CodeInvalidError | RpcErrors.EmailInvalidError | RpcErrors.EmailNotAllowedError | RpcErrors.EmailVerifyExpiredError | RpcErrors.PhoneCodeExpiredError | RpcErrors.PhoneNumberInvalidError;
   export type AccountInitTakeoutSessionErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.TakeoutInitDelayError;
   export type AccountFinishTakeoutSessionErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.TakeoutRequiredError;
   export type AccountConfirmPasswordEmailErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.CodeInvalidError | RpcErrors.EmailHashExpiredError | RpcErrors.AuthKeyUnregisteredError;
@@ -41726,7 +41923,7 @@ export namespace Api {
   export type AccountGetSavedRingtonesErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
   export type AccountSaveRingtoneErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.RingtoneInvalidError | RpcErrors.AuthKeyUnregisteredError;
   export type AccountUploadRingtoneErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.RingtoneMimeInvalidError | RpcErrors.AuthKeyUnregisteredError;
-  export type AccountUpdateEmojiStatusErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.CollectibleInvalidError | RpcErrors.DocumentInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountUpdateEmojiStatusErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.CollectibleInvalidError | RpcErrors.DocumentInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.PremiumAccountRequiredError;
   export type AccountGetDefaultEmojiStatusesErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
   export type AccountGetRecentEmojiStatusesErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
   export type AccountClearRecentEmojiStatusesErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
@@ -41746,19 +41943,19 @@ export namespace Api {
   export type AccountUpdateBusinessLocationErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
   export type AccountUpdateBusinessGreetingMessageErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
   export type AccountUpdateBusinessAwayMessageErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
-  export type AccountUpdateConnectedBotErrors = RpcErrors.BotBusinessMissingError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.BusinessRecipientsEmptyError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.PremiumAccountRequiredError;
+  export type AccountUpdateConnectedBotErrors = RpcErrors.BotBusinessMissingError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.BusinessRecipientsEmptyError | RpcErrors.AuthKeyUnregisteredError;
   export type AccountGetConnectedBotsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
   export type AccountGetBotBusinessConnectionErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ConnectionIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
   export type AccountUpdateBusinessIntroErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
   export type AccountToggleConnectedBotPausedErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
   export type AccountDisablePeerConnectedBotErrors = RpcErrors.BotAlreadyDisabledError | RpcErrors.BotNotConnectedYetError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
   export type AccountUpdateBirthdayErrors = RpcErrors.BirthdayInvalidError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
-  export type AccountCreateBusinessChatLinkErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChatlinksTooMuchError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.PremiumAccountRequiredError;
+  export type AccountCreateBusinessChatLinkErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChatlinksTooMuchError | RpcErrors.DocumentInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.PremiumAccountRequiredError;
   export type AccountEditBusinessChatLinkErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChatlinkSlugEmptyError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.PremiumAccountRequiredError;
   export type AccountDeleteBusinessChatLinkErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChatlinkSlugEmptyError | RpcErrors.ChatlinkSlugExpiredError | RpcErrors.AuthKeyUnregisteredError;
   export type AccountGetBusinessChatLinksErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
   export type AccountResolveBusinessChatLinkErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChatlinkSlugEmptyError | RpcErrors.ChatlinkSlugExpiredError | RpcErrors.AuthKeyUnregisteredError;
-  export type AccountUpdatePersonalChannelErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountUpdatePersonalChannelErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PublicBroadcastExpectedError | RpcErrors.AuthKeyUnregisteredError;
   export type AccountToggleSponsoredMessagesErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
   export type AccountGetReactionsNotifySettingsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
   export type AccountSetReactionsNotifySettingsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
@@ -41769,12 +41966,22 @@ export namespace Api {
   export type AccountSaveMusicErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.DocumentInvalidError | RpcErrors.AuthKeyUnregisteredError;
   export type AccountGetSavedMusicIdsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
   export type AccountGetUniqueGiftChatThemesErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
-  export type UsersGetUsersErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.FromMessageBotDisabledError | RpcErrors.MsgIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.UserBannedInChannelError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountInitPasskeyRegistrationErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.AccessDeniedError | RpcErrors.FreshResetAuthorisationForbiddenError;
+  export type AccountRegisterPasskeyErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.CredentialInvalidError | RpcErrors.PasskeyOriginMismatchError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountGetPasskeysErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountDeletePasskeyErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountConfirmBotConnectionErrors = RpcErrors.BotIdInvalidError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountGetWebBrowserSettingsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountUpdateWebBrowserSettingsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountToggleWebBrowserSettingsExceptionErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.UrlInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type AccountDeleteWebBrowserSettingsExceptionsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type UsersGetUsersErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelMonoforumUnsupportedError | RpcErrors.ChannelPrivateError | RpcErrors.FromMessageBotDisabledError | RpcErrors.MsgIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.UserBannedInChannelError | RpcErrors.AuthKeyUnregisteredError;
   export type UsersGetFullUserErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.MsgIdInvalidError | RpcErrors.UserIdInvalidError | RpcErrors.UsernameOccupiedError | RpcErrors.AuthKeyUnregisteredError;
   export type UsersSetSecureValueErrorsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.DataHashSizeInvalidError | RpcErrors.HashSizeInvalidError | RpcErrors.UserBotRequiredError | RpcErrors.UserIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
   export type UsersGetRequirementsToContactErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
   export type UsersGetSavedMusicErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.UserIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
   export type UsersGetSavedMusicByIDErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.UserIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type UsersSuggestBirthdayErrors = RpcErrors.BirthdayAlreadyError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.UserIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
   export type ContactsGetContactIDsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
   export type ContactsGetStatusesErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
   export type ContactsGetContactsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
@@ -41802,7 +42009,8 @@ export namespace Api {
   export type ContactsSetBlockedErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
   export type ContactsGetBirthdaysErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
   export type ContactsGetSponsoredPeersErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.SearchQueryEmptyError | RpcErrors.AuthKeyUnregisteredError;
-  export type MessagesGetMessagesErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type ContactsUpdateContactNoteErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ContactIdInvalidError | RpcErrors.ContactMissingError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesGetMessagesErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.MessageIdInvalidError | RpcErrors.MsgIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
   export type MessagesGetDialogsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChatNotModifiedError | RpcErrors.FolderIdInvalidError | RpcErrors.OffsetPeerIdInvalidError | RpcErrors.PinnedDialogsTooMuchError | RpcErrors.TakeoutInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.ChatWriteForbiddenError;
   export type MessagesGetHistoryErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.ChatIdInvalidError | RpcErrors.ChatNotModifiedError | RpcErrors.FrozenParticipantMissingError | RpcErrors.MsgIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.TakeoutInvalidError | RpcErrors.AuthKeyUnregisteredError;
   export type MessagesSearchErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.ChatAdminRequiredError | RpcErrors.ChatIdInvalidError | RpcErrors.FromPeerInvalidError | RpcErrors.InputFilterInvalidError | RpcErrors.InputUserDeactivatedError | RpcErrors.MsgIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.PeerIdNotSupportedError | RpcErrors.SearchQueryEmptyError | RpcErrors.TakeoutInvalidError | RpcErrors.UserIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
@@ -41810,13 +42018,13 @@ export namespace Api {
   export type MessagesDeleteHistoryErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelPrivateError | RpcErrors.ChatAdminRequiredError | RpcErrors.ChatIdInvalidError | RpcErrors.ChatRevokeDateUnsupportedError | RpcErrors.MaxDateInvalidError | RpcErrors.MessageIdInvalidError | RpcErrors.MinDateInvalidError | RpcErrors.MsgIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
   export type MessagesDeleteMessagesErrors = RpcErrors.BusinessConnectionInvalidError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.MessageIdInvalidError | RpcErrors.SelfDeleteRestrictedError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.BotAccessForbiddenError | RpcErrors.MessageDeleteForbiddenError;
   export type MessagesReceivedMessagesErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
-  export type MessagesSetTypingErrors = RpcErrors.BusinessConnectionInvalidError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.BusinessPeerInvalidError | RpcErrors.BusinessPeerUsageMissingError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.ChatAdminRequiredError | RpcErrors.ChatIdInvalidError | RpcErrors.InputUserDeactivatedError | RpcErrors.MsgIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.UserBannedInChannelError | RpcErrors.UserIsBlockedError | RpcErrors.UserIsBotError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.ChatWriteForbiddenError | RpcErrors.GroupcallForbiddenError;
-  export type MessagesSendMessageErrors = RpcErrors.AdminRightsEmptyError | RpcErrors.BalanceTooLowError | RpcErrors.BotDomainInvalidError | RpcErrors.BotInvalidError | RpcErrors.BusinessConnectionInvalidError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.BusinessPeerInvalidError | RpcErrors.BusinessPeerUsageMissingError | RpcErrors.ButtonCopyTextInvalidError | RpcErrors.ButtonDataInvalidError | RpcErrors.ButtonIdInvalidError | RpcErrors.ButtonTypeInvalidError | RpcErrors.ButtonUrlInvalidError | RpcErrors.ButtonUserInvalidError | RpcErrors.ButtonUserPrivacyRestrictedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelMonoforumUnsupportedError | RpcErrors.ChannelPrivateError | RpcErrors.ChatAdminRequiredError | RpcErrors.ChatForwardsRestrictedError | RpcErrors.ChatIdInvalidError | RpcErrors.ChatRestrictedError | RpcErrors.DocumentInvalidError | RpcErrors.EncryptionDeclinedError | RpcErrors.EntitiesTooLongError | RpcErrors.EntityBoundsInvalidError | RpcErrors.EntityMentionUserInvalidError | RpcErrors.FromMessageBotDisabledError | RpcErrors.InputUserDeactivatedError | RpcErrors.MessageEmptyError | RpcErrors.MessageTooLongError | RpcErrors.MsgIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.PeerTypesInvalidError | RpcErrors.PinnedDialogsTooMuchError | RpcErrors.PollOptionInvalidError | RpcErrors.QuickRepliesBotNotAllowedError | RpcErrors.QuickRepliesTooMuchError | RpcErrors.QuoteTextInvalidError | RpcErrors.ReplyMarkupInvalidError | RpcErrors.ReplyMarkupTooLongError | RpcErrors.ReplyMessageIdInvalidError | RpcErrors.ReplyMessagesTooMuchError | RpcErrors.ReplyToInvalidError | RpcErrors.ReplyToMonoforumPeerInvalidError | RpcErrors.ReplyToUserInvalidError | RpcErrors.ScheduleBotNotAllowedError | RpcErrors.ScheduleDateTooLateError | RpcErrors.ScheduleStatusPrivateError | RpcErrors.ScheduleTooMuchError | RpcErrors.SendAsPeerInvalidError | RpcErrors.StoriesNeverCreatedError | RpcErrors.StoryIdInvalidError | RpcErrors.SuggestedPostAmountInvalidError | RpcErrors.SuggestedPostPeerInvalidError | RpcErrors.TopicClosedError | RpcErrors.TopicDeletedError | RpcErrors.UserBannedInChannelError | RpcErrors.UserIsBlockedError | RpcErrors.UserIsBotError | RpcErrors.WcConvertUrlInvalidError | RpcErrors.YouBlockedUserError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.AllowPaymentRequiredError | RpcErrors.ChatGuestSendForbiddenError | RpcErrors.ChatSendPlainForbiddenError | RpcErrors.ChatWriteForbiddenError | RpcErrors.PremiumAccountRequiredError | RpcErrors.PrivacyPremiumRequiredError | RpcErrors.PaymentUnsupportedError | RpcErrors.SlowModeWaitError | RpcErrors.MsgWaitError | RpcErrors.RandomIdDuplicateError;
-  export type MessagesSendMediaErrors = RpcErrors.BotGamesDisabledError | RpcErrors.BotPaymentsDisabledError | RpcErrors.BroadcastPublicVotersForbiddenError | RpcErrors.BusinessConnectionInvalidError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.BusinessPeerInvalidError | RpcErrors.ButtonCopyTextInvalidError | RpcErrors.ButtonDataInvalidError | RpcErrors.ButtonPosInvalidError | RpcErrors.ButtonTypeInvalidError | RpcErrors.ButtonUrlInvalidError | RpcErrors.ButtonUserPrivacyRestrictedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.ChatAdminRequiredError | RpcErrors.ChatForwardsRestrictedError | RpcErrors.ChatRestrictedError | RpcErrors.CurrencyTotalAmountInvalidError | RpcErrors.DocumentInvalidError | RpcErrors.EffectIdInvalidError | RpcErrors.EmoticonInvalidError | RpcErrors.EntityBoundsInvalidError | RpcErrors.ExtendedMediaAmountInvalidError | RpcErrors.ExtendedMediaInvalidError | RpcErrors.ExternalUrlInvalidError | RpcErrors.FilePartLengthInvalidError | RpcErrors.FilePartsInvalidError | RpcErrors.FileReferenceEmptyError | RpcErrors.FileReferenceExpiredError | RpcErrors.GameBotInvalidError | RpcErrors.ImageProcessFailedError | RpcErrors.InputFileInvalidError | RpcErrors.InputUserDeactivatedError | RpcErrors.InvoicePayloadInvalidError | RpcErrors.Md5ChecksumInvalidError | RpcErrors.MediaCaptionTooLongError | RpcErrors.MediaEmptyError | RpcErrors.MediaInvalidError | RpcErrors.MessageEmptyError | RpcErrors.MsgIdInvalidError | RpcErrors.PaymentProviderInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.PhotoExtInvalidError | RpcErrors.PhotoInvalidDimensionsError | RpcErrors.PhotoSaveFileInvalidError | RpcErrors.PollAnswerInvalidError | RpcErrors.PollAnswersInvalidError | RpcErrors.PollOptionDuplicateError | RpcErrors.PollOptionInvalidError | RpcErrors.PollQuestionInvalidError | RpcErrors.QuickRepliesBotNotAllowedError | RpcErrors.QuickRepliesTooMuchError | RpcErrors.QuizCorrectAnswerInvalidError | RpcErrors.QuizCorrectAnswersEmptyError | RpcErrors.QuizCorrectAnswersTooMuchError | RpcErrors.QuizMultipleInvalidError | RpcErrors.ReplyMarkupBuyEmptyError | RpcErrors.ReplyMarkupGameEmptyError | RpcErrors.ReplyMarkupInvalidError | RpcErrors.ReplyMarkupTooLongError | RpcErrors.ReplyMessageIdInvalidError | RpcErrors.ReplyMessagesTooMuchError | RpcErrors.ScheduleBotNotAllowedError | RpcErrors.ScheduleDateTooLateError | RpcErrors.ScheduleTooMuchError | RpcErrors.SendAsPeerInvalidError | RpcErrors.StarsInvoiceInvalidError | RpcErrors.StoryIdInvalidError | RpcErrors.SubscriptionExportMissingError | RpcErrors.SuggestedPostPeerInvalidError | RpcErrors.TermsUrlInvalidError | RpcErrors.TodoItemDuplicateError | RpcErrors.TodoItemsEmptyError | RpcErrors.TopicClosedError | RpcErrors.TopicDeletedError | RpcErrors.TtlMediaInvalidError | RpcErrors.UserBannedInChannelError | RpcErrors.UserIsBlockedError | RpcErrors.UserIsBotError | RpcErrors.VideoContentTypeInvalidError | RpcErrors.VoiceMessagesForbiddenError | RpcErrors.WebdocumentMimeInvalidError | RpcErrors.WebpageCurlFailedError | RpcErrors.WebpageMediaEmptyError | RpcErrors.WebpageNotFoundError | RpcErrors.WebpageUrlInvalidError | RpcErrors.YouBlockedUserError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.AllowPaymentRequiredError | RpcErrors.ChatGuestSendForbiddenError | RpcErrors.ChatSendAudiosForbiddenError | RpcErrors.ChatSendDocsForbiddenError | RpcErrors.ChatSendGifsForbiddenError | RpcErrors.ChatSendMediaForbiddenError | RpcErrors.ChatSendPhotosForbiddenError | RpcErrors.ChatSendPlainForbiddenError | RpcErrors.ChatSendPollForbiddenError | RpcErrors.ChatSendRoundvideosForbiddenError | RpcErrors.ChatSendStickersForbiddenError | RpcErrors.ChatSendVideosForbiddenError | RpcErrors.ChatSendVoicesForbiddenError | RpcErrors.ChatWriteForbiddenError | RpcErrors.PremiumAccountRequiredError | RpcErrors.PrivacyPremiumRequiredError | RpcErrors.SlowModeWaitError | RpcErrors.RandomIdDuplicateError;
-  export type MessagesForwardMessagesErrors = RpcErrors.BroadcastPublicVotersForbiddenError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.ChatAdminRequiredError | RpcErrors.ChatForwardsRestrictedError | RpcErrors.ChatIdInvalidError | RpcErrors.ChatRestrictedError | RpcErrors.GroupedMediaInvalidError | RpcErrors.InputUserDeactivatedError | RpcErrors.MediaEmptyError | RpcErrors.MessageIdInvalidError | RpcErrors.MessageIdsEmptyError | RpcErrors.MsgIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.QuickRepliesBotNotAllowedError | RpcErrors.QuickRepliesTooMuchError | RpcErrors.QuizAnswerMissingError | RpcErrors.RandomIdInvalidError | RpcErrors.ReplyMessagesTooMuchError | RpcErrors.ReplyToMonoforumPeerInvalidError | RpcErrors.ScheduleBotNotAllowedError | RpcErrors.ScheduleDateTooLateError | RpcErrors.ScheduleTooMuchError | RpcErrors.SendAsPeerInvalidError | RpcErrors.SlowmodeMultiMsgsDisabledError | RpcErrors.SuggestedPostPeerInvalidError | RpcErrors.TopicClosedError | RpcErrors.TopicDeletedError | RpcErrors.UserBannedInChannelError | RpcErrors.UserIsBlockedError | RpcErrors.UserIsBotError | RpcErrors.YouBlockedUserError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.AllowPaymentRequiredError | RpcErrors.ChatGuestSendForbiddenError | RpcErrors.ChatSendAudiosForbiddenError | RpcErrors.ChatSendDocsForbiddenError | RpcErrors.ChatSendGameForbiddenError | RpcErrors.ChatSendGifsForbiddenError | RpcErrors.ChatSendInlineForbiddenError | RpcErrors.ChatSendMediaForbiddenError | RpcErrors.ChatSendPhotosForbiddenError | RpcErrors.ChatSendPlainForbiddenError | RpcErrors.ChatSendPollForbiddenError | RpcErrors.ChatSendStickersForbiddenError | RpcErrors.ChatSendVideosForbiddenError | RpcErrors.ChatSendVoicesForbiddenError | RpcErrors.ChatSendWebpageForbiddenError | RpcErrors.ChatWriteForbiddenError | RpcErrors.PremiumAccountRequiredError | RpcErrors.PrivacyPremiumRequiredError | RpcErrors.VoiceMessagesForbiddenError | RpcErrors.PaymentUnsupportedError | RpcErrors.SlowModeWaitError | RpcErrors.RandomIdDuplicateError;
+  export type MessagesSetTypingErrors = RpcErrors.BusinessConnectionInvalidError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.BusinessPeerInvalidError | RpcErrors.BusinessPeerUsageMissingError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelMonoforumUnsupportedError | RpcErrors.ChannelPrivateError | RpcErrors.ChatAdminRequiredError | RpcErrors.ChatIdInvalidError | RpcErrors.InputUserDeactivatedError | RpcErrors.MessageTooLongError | RpcErrors.MsgIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.TextdraftPeerInvalidError | RpcErrors.UserBannedInChannelError | RpcErrors.UserIsBlockedError | RpcErrors.UserIsBotError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.ChatWriteForbiddenError | RpcErrors.GroupcallForbiddenError;
+  export type MessagesSendMessageErrors = RpcErrors.AdminRightsEmptyError | RpcErrors.BalanceTooLowError | RpcErrors.BotDomainInvalidError | RpcErrors.BotInvalidError | RpcErrors.BusinessConnectionInvalidError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.BusinessPeerInvalidError | RpcErrors.BusinessPeerUsageMissingError | RpcErrors.ButtonCopyTextInvalidError | RpcErrors.ButtonDataInvalidError | RpcErrors.ButtonIdInvalidError | RpcErrors.ButtonTypeInvalidError | RpcErrors.ButtonUrlInvalidError | RpcErrors.ButtonUserInvalidError | RpcErrors.ButtonUserPrivacyRestrictedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelMonoforumUnsupportedError | RpcErrors.ChannelPrivateError | RpcErrors.ChatAdminRequiredError | RpcErrors.ChatForwardsRestrictedError | RpcErrors.ChatIdInvalidError | RpcErrors.ChatRestrictedError | RpcErrors.DocumentInvalidError | RpcErrors.EffectChatInvalidError | RpcErrors.EncryptionDeclinedError | RpcErrors.EntitiesTooLongError | RpcErrors.EntityBoundsInvalidError | RpcErrors.EntityDateFormatInvalidError | RpcErrors.EntityDateInvalidError | RpcErrors.EntityDateTooLongError | RpcErrors.EntityMentionUserInvalidError | RpcErrors.FromMessageBotDisabledError | RpcErrors.InputUserDeactivatedError | RpcErrors.MessageEmptyError | RpcErrors.MessageTooLongError | RpcErrors.MsgIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.PeerTypesInvalidError | RpcErrors.PinnedDialogsTooMuchError | RpcErrors.PollOptionInvalidError | RpcErrors.QuickRepliesBotNotAllowedError | RpcErrors.QuickRepliesTooMuchError | RpcErrors.QuoteTextInvalidError | RpcErrors.RandomIdEmptyError | RpcErrors.ReplyMarkupInvalidError | RpcErrors.ReplyMarkupTooLongError | RpcErrors.ReplyMessageIdInvalidError | RpcErrors.ReplyMessagesTooMuchError | RpcErrors.ReplyToInvalidError | RpcErrors.ReplyToMonoforumPeerInvalidError | RpcErrors.ReplyToUserInvalidError | RpcErrors.ScheduleBotNotAllowedError | RpcErrors.ScheduleDateTooLateError | RpcErrors.ScheduleStatusPrivateError | RpcErrors.ScheduleTooMuchError | RpcErrors.SendAsPeerInvalidError | RpcErrors.StoriesNeverCreatedError | RpcErrors.StoryIdInvalidError | RpcErrors.SuggestedPostAmountInvalidError | RpcErrors.SuggestedPostPeerInvalidError | RpcErrors.TopicClosedError | RpcErrors.TopicDeletedError | RpcErrors.UserBannedInChannelError | RpcErrors.UserBotToBotDisabledError | RpcErrors.UserIsBlockedError | RpcErrors.UserIsBotError | RpcErrors.WcConvertUrlInvalidError | RpcErrors.YouBlockedUserError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.AllowPaymentRequiredError | RpcErrors.ChatGuestSendForbiddenError | RpcErrors.ChatSendPlainForbiddenError | RpcErrors.ChatWriteForbiddenError | RpcErrors.PremiumAccountRequiredError | RpcErrors.PrivacyPremiumRequiredError | RpcErrors.PaymentUnsupportedError | RpcErrors.SlowModeWaitError | RpcErrors.MsgWaitError | RpcErrors.RandomIdDuplicateError;
+  export type MessagesSendMediaErrors = RpcErrors.BotGamesDisabledError | RpcErrors.BotPaymentsDisabledError | RpcErrors.BroadcastPublicVotersForbiddenError | RpcErrors.BusinessConnectionInvalidError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.BusinessPeerInvalidError | RpcErrors.BusinessPeerUsageMissingError | RpcErrors.ButtonCopyTextInvalidError | RpcErrors.ButtonDataInvalidError | RpcErrors.ButtonPosInvalidError | RpcErrors.ButtonTypeInvalidError | RpcErrors.ButtonUrlInvalidError | RpcErrors.ButtonUserPrivacyRestrictedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.ChatAdminRequiredError | RpcErrors.ChatForwardsRestrictedError | RpcErrors.ChatRestrictedError | RpcErrors.CurrencyTotalAmountInvalidError | RpcErrors.DocumentInvalidError | RpcErrors.EffectChatInvalidError | RpcErrors.EffectIdInvalidError | RpcErrors.EmoticonInvalidError | RpcErrors.EntityBoundsInvalidError | RpcErrors.ExtendedMediaAmountInvalidError | RpcErrors.ExtendedMediaEmptyError | RpcErrors.ExtendedMediaInvalidError | RpcErrors.ExtendedMediaPeerInvalidError | RpcErrors.ExternalUrlInvalidError | RpcErrors.FilePartLengthInvalidError | RpcErrors.FilePartsInvalidError | RpcErrors.FileReferenceEmptyError | RpcErrors.FileReferenceExpiredError | RpcErrors.GameBotInvalidError | RpcErrors.ImageProcessFailedError | RpcErrors.InputFileInvalidError | RpcErrors.InputUserDeactivatedError | RpcErrors.InvoicePayloadInvalidError | RpcErrors.Md5ChecksumInvalidError | RpcErrors.MediaCaptionTooLongError | RpcErrors.MediaEmptyError | RpcErrors.MediaFileInvalidError | RpcErrors.MediaInvalidError | RpcErrors.MessageEmptyError | RpcErrors.MessageTooLongError | RpcErrors.MsgIdInvalidError | RpcErrors.PaymentProviderInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.PhotoExtInvalidError | RpcErrors.PhotoInvalidDimensionsError | RpcErrors.PhotoSaveFileInvalidError | RpcErrors.PollAnswerInvalidError | RpcErrors.PollAnswersInvalidError | RpcErrors.PollOptionDuplicateError | RpcErrors.PollOptionInvalidError | RpcErrors.PollQuestionInvalidError | RpcErrors.QuickRepliesBotNotAllowedError | RpcErrors.QuickRepliesTooMuchError | RpcErrors.QuizCorrectAnswerInvalidError | RpcErrors.QuizCorrectAnswersEmptyError | RpcErrors.QuizCorrectAnswersTooMuchError | RpcErrors.QuizMultipleInvalidError | RpcErrors.ReplyMarkupBuyEmptyError | RpcErrors.ReplyMarkupGameEmptyError | RpcErrors.ReplyMarkupInvalidError | RpcErrors.ReplyMarkupTooLongError | RpcErrors.ReplyMessageIdInvalidError | RpcErrors.ReplyMessagesTooMuchError | RpcErrors.ReplyToMonoforumPeerInvalidError | RpcErrors.ScheduleBotNotAllowedError | RpcErrors.ScheduleDateTooLateError | RpcErrors.ScheduleTooMuchError | RpcErrors.SendAsPeerInvalidError | RpcErrors.StarsInvoiceInvalidError | RpcErrors.StoryIdInvalidError | RpcErrors.SubscriptionExportMissingError | RpcErrors.SuggestedPostPeerInvalidError | RpcErrors.TermsUrlInvalidError | RpcErrors.TodoItemDuplicateError | RpcErrors.TodoItemsEmptyError | RpcErrors.TodoItemsTooMuchError | RpcErrors.TopicClosedError | RpcErrors.TopicDeletedError | RpcErrors.TtlMediaInvalidError | RpcErrors.UserBannedInChannelError | RpcErrors.UserBotToBotDisabledError | RpcErrors.UserIsBlockedError | RpcErrors.UserIsBotError | RpcErrors.VideoContentTypeInvalidError | RpcErrors.VoiceMessagesForbiddenError | RpcErrors.WebdocumentMimeInvalidError | RpcErrors.WebpageCurlFailedError | RpcErrors.WebpageMediaEmptyError | RpcErrors.WebpageNotFoundError | RpcErrors.WebpageUrlInvalidError | RpcErrors.YouBlockedUserError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.AllowPaymentRequiredError | RpcErrors.ChatGuestSendForbiddenError | RpcErrors.ChatSendAudiosForbiddenError | RpcErrors.ChatSendDocsForbiddenError | RpcErrors.ChatSendGifsForbiddenError | RpcErrors.ChatSendMediaForbiddenError | RpcErrors.ChatSendPhotosForbiddenError | RpcErrors.ChatSendPlainForbiddenError | RpcErrors.ChatSendPollForbiddenError | RpcErrors.ChatSendRoundvideosForbiddenError | RpcErrors.ChatSendStickersForbiddenError | RpcErrors.ChatSendVideosForbiddenError | RpcErrors.ChatSendVoicesForbiddenError | RpcErrors.ChatWriteForbiddenError | RpcErrors.PremiumAccountRequiredError | RpcErrors.PrivacyPremiumRequiredError | RpcErrors.SlowModeWaitError | RpcErrors.RandomIdDuplicateError;
+  export type MessagesForwardMessagesErrors = RpcErrors.BroadcastPublicVotersForbiddenError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.ChatAdminRequiredError | RpcErrors.ChatForwardsRestrictedError | RpcErrors.ChatIdInvalidError | RpcErrors.ChatRestrictedError | RpcErrors.GroupedMediaInvalidError | RpcErrors.InputUserDeactivatedError | RpcErrors.MediaEmptyError | RpcErrors.MediaFileInvalidError | RpcErrors.MessageIdInvalidError | RpcErrors.MessageIdsEmptyError | RpcErrors.MsgIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.QuickRepliesBotNotAllowedError | RpcErrors.QuickRepliesTooMuchError | RpcErrors.QuizAnswerMissingError | RpcErrors.RandomIdInvalidError | RpcErrors.ReplyMessagesTooMuchError | RpcErrors.ReplyToMonoforumPeerInvalidError | RpcErrors.ScheduleBotNotAllowedError | RpcErrors.ScheduleDateTooLateError | RpcErrors.ScheduleTooMuchError | RpcErrors.SendAsPeerInvalidError | RpcErrors.SlowmodeMultiMsgsDisabledError | RpcErrors.SuggestedPostPeerInvalidError | RpcErrors.TopicClosedError | RpcErrors.TopicDeletedError | RpcErrors.UserBannedInChannelError | RpcErrors.UserBotToBotDisabledError | RpcErrors.UserIsBlockedError | RpcErrors.UserIsBotError | RpcErrors.YouBlockedUserError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.AllowPaymentRequiredError | RpcErrors.ChatGuestSendForbiddenError | RpcErrors.ChatSendAudiosForbiddenError | RpcErrors.ChatSendDocsForbiddenError | RpcErrors.ChatSendGameForbiddenError | RpcErrors.ChatSendGifsForbiddenError | RpcErrors.ChatSendInlineForbiddenError | RpcErrors.ChatSendMediaForbiddenError | RpcErrors.ChatSendPhotosForbiddenError | RpcErrors.ChatSendPlainForbiddenError | RpcErrors.ChatSendPollForbiddenError | RpcErrors.ChatSendStickersForbiddenError | RpcErrors.ChatSendVideosForbiddenError | RpcErrors.ChatSendVoicesForbiddenError | RpcErrors.ChatSendWebpageForbiddenError | RpcErrors.ChatWriteForbiddenError | RpcErrors.PremiumAccountRequiredError | RpcErrors.PrivacyPremiumRequiredError | RpcErrors.VoiceMessagesForbiddenError | RpcErrors.PaymentUnsupportedError | RpcErrors.SlowModeWaitError | RpcErrors.RandomIdDuplicateError;
   export type MessagesReportSpamErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelPrivateError | RpcErrors.MsgIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
   export type MessagesGetPeerSettingsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelMonoforumUnsupportedError | RpcErrors.ChannelPrivateError | RpcErrors.MsgIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
-  export type MessagesReportErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.OptionInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesReportErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.MessageRequiredError | RpcErrors.OptionInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
   export type MessagesGetChatsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChatIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
   export type MessagesGetFullChatErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChatIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
   export type MessagesEditChatTitleErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChatAdminRequiredError | RpcErrors.ChatIdInvalidError | RpcErrors.ChatNotModifiedError | RpcErrors.ChatTitleEmptyError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
@@ -41825,21 +42033,21 @@ export namespace Api {
   export type MessagesDeleteChatUserErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChatAdminRequiredError | RpcErrors.ChatIdInvalidError | RpcErrors.InputUserDeactivatedError | RpcErrors.PeerIdInvalidError | RpcErrors.UserIdInvalidError | RpcErrors.UserNotParticipantError | RpcErrors.AuthKeyUnregisteredError;
   export type MessagesCreateChatErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChatInvalidError | RpcErrors.ChatMemberAddFailedError | RpcErrors.ChatTitleEmptyError | RpcErrors.InputUserDeactivatedError | RpcErrors.TtlPeriodInvalidError | RpcErrors.UsersTooFewError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.UserRestrictedError | RpcErrors.ChatIdGenerateFailedError;
   export type MessagesGetDhConfigErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.RandomLengthInvalidError | RpcErrors.AuthKeyUnregisteredError;
-  export type MessagesRequestEncryptionErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.DhGAInvalidError | RpcErrors.InputUserDeactivatedError | RpcErrors.UserIdInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.UserIsBlockedError;
+  export type MessagesRequestEncryptionErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.DhGAInvalidError | RpcErrors.InputUserDeactivatedError | RpcErrors.RandomIdDuplicateError | RpcErrors.UserIdInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.UserIsBlockedError;
   export type MessagesAcceptEncryptionErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChatIdInvalidError | RpcErrors.EncryptionAlreadyAcceptedError | RpcErrors.EncryptionAlreadyDeclinedError | RpcErrors.AuthKeyUnregisteredError;
   export type MessagesDiscardEncryptionErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChatIdEmptyError | RpcErrors.EncryptionAlreadyAcceptedError | RpcErrors.EncryptionAlreadyDeclinedError | RpcErrors.EncryptionIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
   export type MessagesSetEncryptedTypingErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChatIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
   export type MessagesReadEncryptedHistoryErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChatIdInvalidError | RpcErrors.MaxDateInvalidError | RpcErrors.MsgWaitError | RpcErrors.AuthKeyUnregisteredError;
   export type MessagesSendEncryptedErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChatIdInvalidError | RpcErrors.DataInvalidError | RpcErrors.DataTooLongError | RpcErrors.EncryptionDeclinedError | RpcErrors.MsgWaitError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.UserIsBlockedError;
   export type MessagesSendEncryptedFileErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChatIdInvalidError | RpcErrors.DataTooLongError | RpcErrors.EncryptionDeclinedError | RpcErrors.FileEmtpyError | RpcErrors.Md5ChecksumInvalidError | RpcErrors.MsgWaitError | RpcErrors.AuthKeyUnregisteredError;
-  export type MessagesSendEncryptedServiceErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChatIdInvalidError | RpcErrors.DataInvalidError | RpcErrors.EncryptionDeclinedError | RpcErrors.EncryptionIdInvalidError | RpcErrors.MsgWaitError | RpcErrors.UserIsBlockedError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.UserDeletedError;
+  export type MessagesSendEncryptedServiceErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChatIdInvalidError | RpcErrors.DataInvalidError | RpcErrors.DataTooLongError | RpcErrors.EncryptionDeclinedError | RpcErrors.EncryptionIdInvalidError | RpcErrors.MsgWaitError | RpcErrors.UserIsBlockedError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.UserDeletedError;
   export type MessagesReceivedQueueErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.MaxQtsInvalidError | RpcErrors.MsgWaitError | RpcErrors.AuthKeyUnregisteredError;
   export type MessagesReportEncryptedSpamErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChatIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
   export type MessagesReadMessageContentsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
   export type MessagesGetStickersErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.EmoticonEmptyError | RpcErrors.AuthKeyUnregisteredError;
   export type MessagesGetAllStickersErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
   export type MessagesGetWebPagePreviewErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.EntityBoundsInvalidError | RpcErrors.MessageEmptyError | RpcErrors.AuthKeyUnregisteredError;
-  export type MessagesExportChatInviteErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelMonoforumUnsupportedError | RpcErrors.ChannelPrivateError | RpcErrors.ChatAdminRequiredError | RpcErrors.ChatIdInvalidError | RpcErrors.ExpireDateInvalidError | RpcErrors.MsgIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.PricingChatInvalidError | RpcErrors.SubscriptionPeriodInvalidError | RpcErrors.UsageLimitInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.ChatWriteForbiddenError;
+  export type MessagesExportChatInviteErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelMonoforumUnsupportedError | RpcErrors.ChannelPrivateError | RpcErrors.ChatAdminRequiredError | RpcErrors.ChatIdInvalidError | RpcErrors.ExpireDateInvalidError | RpcErrors.InputUserDeactivatedError | RpcErrors.MsgIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.PricingChatInvalidError | RpcErrors.SubscriptionPeriodInvalidError | RpcErrors.UsageLimitInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.ChatWriteForbiddenError;
   export type MessagesCheckChatInviteErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.InviteHashEmptyError | RpcErrors.InviteHashExpiredError | RpcErrors.InviteHashInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.ChannelPrivateError;
   export type MessagesImportChatInviteErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.ChannelsTooMuchError | RpcErrors.ChatInvalidError | RpcErrors.InviteHashEmptyError | RpcErrors.InviteHashExpiredError | RpcErrors.InviteHashInvalidError | RpcErrors.InviteRequestSentError | RpcErrors.MsgIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.StarsPaymentRequiredError | RpcErrors.UserAlreadyParticipantError | RpcErrors.UserChannelsTooMuchError | RpcErrors.UsersTooMuchError | RpcErrors.AuthKeyUnregisteredError;
   export type MessagesGetStickerSetErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.EmoticonStickerpackMissingError | RpcErrors.StickersetInvalidError | RpcErrors.AuthKeyUnregisteredError;
@@ -41855,15 +42063,15 @@ export namespace Api {
   export type MessagesGetSavedGifsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
   export type MessagesSaveGifErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.GifIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
   export type MessagesGetInlineBotResultsErrors = RpcErrors.BotInlineDisabledError | RpcErrors.BotInvalidError | RpcErrors.BotResponseTimeoutError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.InputUserDeactivatedError | RpcErrors.MsgIdInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.TimeoutError;
-  export type MessagesSetInlineBotResultsErrors = RpcErrors.ArticleTitleEmptyError | RpcErrors.AudioContentUrlEmptyError | RpcErrors.AudioTitleEmptyError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ButtonDataInvalidError | RpcErrors.ButtonTypeInvalidError | RpcErrors.ButtonUrlInvalidError | RpcErrors.DocumentInvalidError | RpcErrors.FileContentTypeInvalidError | RpcErrors.FileTitleEmptyError | RpcErrors.GifContentTypeInvalidError | RpcErrors.MessageEmptyError | RpcErrors.MessageTooLongError | RpcErrors.NextOffsetInvalidError | RpcErrors.PeerTypesInvalidError | RpcErrors.PhotoContentTypeInvalidError | RpcErrors.PhotoContentUrlEmptyError | RpcErrors.PhotoInvalidError | RpcErrors.PhotoThumbUrlEmptyError | RpcErrors.QueryIdInvalidError | RpcErrors.ReplyMarkupInvalidError | RpcErrors.ResultIdDuplicateError | RpcErrors.ResultIdInvalidError | RpcErrors.ResultTypeInvalidError | RpcErrors.ResultsTooMuchError | RpcErrors.SendMessageMediaInvalidError | RpcErrors.SendMessageTypeInvalidError | RpcErrors.StartParamEmptyError | RpcErrors.StartParamInvalidError | RpcErrors.StickerDocumentInvalidError | RpcErrors.SwitchPmTextEmptyError | RpcErrors.SwitchWebviewUrlInvalidError | RpcErrors.UrlInvalidError | RpcErrors.UserBotRequiredError | RpcErrors.VideoContentTypeInvalidError | RpcErrors.VideoTitleEmptyError | RpcErrors.WebdocumentInvalidError | RpcErrors.WebdocumentMimeInvalidError | RpcErrors.WebdocumentSizeTooBigError | RpcErrors.WebdocumentUrlEmptyError | RpcErrors.WebdocumentUrlInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesSetInlineBotResultsErrors = RpcErrors.ArticleTitleEmptyError | RpcErrors.AudioContentUrlEmptyError | RpcErrors.AudioTitleEmptyError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ButtonDataInvalidError | RpcErrors.ButtonTypeInvalidError | RpcErrors.ButtonUrlInvalidError | RpcErrors.DocumentInvalidError | RpcErrors.FileContentTypeInvalidError | RpcErrors.FileTitleEmptyError | RpcErrors.GifContentTypeInvalidError | RpcErrors.MediaCaptionTooLongError | RpcErrors.MessageEmptyError | RpcErrors.MessageTooLongError | RpcErrors.NextOffsetInvalidError | RpcErrors.PeerTypesInvalidError | RpcErrors.PhotoContentTypeInvalidError | RpcErrors.PhotoContentUrlEmptyError | RpcErrors.PhotoInvalidError | RpcErrors.PhotoThumbUrlEmptyError | RpcErrors.QueryIdInvalidError | RpcErrors.ReplyMarkupInvalidError | RpcErrors.ResultIdDuplicateError | RpcErrors.ResultIdInvalidError | RpcErrors.ResultTypeInvalidError | RpcErrors.ResultsTooMuchError | RpcErrors.SendMessageMediaInvalidError | RpcErrors.SendMessageTypeInvalidError | RpcErrors.StartParamEmptyError | RpcErrors.StartParamInvalidError | RpcErrors.StickerDocumentInvalidError | RpcErrors.SwitchPmTextEmptyError | RpcErrors.SwitchWebviewUrlInvalidError | RpcErrors.UrlInvalidError | RpcErrors.UserBotRequiredError | RpcErrors.VideoContentTypeInvalidError | RpcErrors.VideoTitleEmptyError | RpcErrors.WebdocumentInvalidError | RpcErrors.WebdocumentMimeInvalidError | RpcErrors.WebdocumentSizeTooBigError | RpcErrors.WebdocumentUrlEmptyError | RpcErrors.WebdocumentUrlInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.UserBotInvalidError;
   export type MessagesSendInlineBotResultErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.ChatAdminRequiredError | RpcErrors.ChatRestrictedError | RpcErrors.ChatSendInlineForbiddenError | RpcErrors.EntityBoundsInvalidError | RpcErrors.InlineResultExpiredError | RpcErrors.InputUserDeactivatedError | RpcErrors.MediaEmptyError | RpcErrors.MsgIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.QueryIdEmptyError | RpcErrors.QuickRepliesTooMuchError | RpcErrors.ReplyMessagesTooMuchError | RpcErrors.ResultIdEmptyError | RpcErrors.ResultIdInvalidError | RpcErrors.ScheduleDateTooLateError | RpcErrors.ScheduleTooMuchError | RpcErrors.SendAsPeerInvalidError | RpcErrors.TopicDeletedError | RpcErrors.UserBannedInChannelError | RpcErrors.VoiceMessagesForbiddenError | RpcErrors.WebpageCurlFailedError | RpcErrors.WebpageMediaEmptyError | RpcErrors.YouBlockedUserError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.AllowPaymentRequiredError | RpcErrors.ChatGuestSendForbiddenError | RpcErrors.ChatSendAudiosForbiddenError | RpcErrors.ChatSendGameForbiddenError | RpcErrors.ChatSendGifsForbiddenError | RpcErrors.ChatSendMediaForbiddenError | RpcErrors.ChatSendPhotosForbiddenError | RpcErrors.ChatSendPlainForbiddenError | RpcErrors.ChatSendStickersForbiddenError | RpcErrors.ChatSendVoicesForbiddenError | RpcErrors.ChatWriteForbiddenError | RpcErrors.PrivacyPremiumRequiredError | RpcErrors.SlowModeWaitError | RpcErrors.RandomIdDuplicateError | RpcErrors.SendMediaInvalidError;
   export type MessagesGetMessageEditDataErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChatAdminRequiredError | RpcErrors.MessageIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.ChatWriteForbiddenError | RpcErrors.MessageAuthorRequiredError;
-  export type MessagesEditMessageErrors = RpcErrors.BotDomainInvalidError | RpcErrors.BotInvalidError | RpcErrors.BusinessConnectionInvalidError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.BusinessPeerInvalidError | RpcErrors.ButtonCopyTextInvalidError | RpcErrors.ButtonDataInvalidError | RpcErrors.ButtonTypeInvalidError | RpcErrors.ButtonUrlInvalidError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.ChatAdminRequiredError | RpcErrors.ChatForwardsRestrictedError | RpcErrors.DocumentInvalidError | RpcErrors.EntitiesTooLongError | RpcErrors.EntityBoundsInvalidError | RpcErrors.FilePartsInvalidError | RpcErrors.ImageProcessFailedError | RpcErrors.InputUserDeactivatedError | RpcErrors.MediaCaptionTooLongError | RpcErrors.MediaEmptyError | RpcErrors.MediaGroupedInvalidError | RpcErrors.MediaInvalidError | RpcErrors.MediaNewInvalidError | RpcErrors.MediaPrevInvalidError | RpcErrors.MediaTtlInvalidError | RpcErrors.MessageEditTimeExpiredError | RpcErrors.MessageEmptyError | RpcErrors.MessageIdInvalidError | RpcErrors.MessageNotModifiedError | RpcErrors.MessageTooLongError | RpcErrors.MsgIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.PeerTypesInvalidError | RpcErrors.PhotoInvalidDimensionsError | RpcErrors.PhotoSaveFileInvalidError | RpcErrors.ReplyMarkupInvalidError | RpcErrors.ReplyMarkupTooLongError | RpcErrors.ScheduleDateInvalidError | RpcErrors.TodoItemDuplicateError | RpcErrors.TodoItemsEmptyError | RpcErrors.UserBannedInChannelError | RpcErrors.WebpageNotFoundError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.ChatSendGifsForbiddenError | RpcErrors.ChatWriteForbiddenError | RpcErrors.InlineBotRequiredError | RpcErrors.MessageAuthorRequiredError | RpcErrors.MsgWaitError;
+  export type MessagesEditMessageErrors = RpcErrors.BotDomainInvalidError | RpcErrors.BotInvalidError | RpcErrors.BusinessConnectionInvalidError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.BusinessPeerInvalidError | RpcErrors.ButtonCopyTextInvalidError | RpcErrors.ButtonDataInvalidError | RpcErrors.ButtonTypeInvalidError | RpcErrors.ButtonUrlInvalidError | RpcErrors.ButtonUserPrivacyRestrictedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.ChatAdminRequiredError | RpcErrors.ChatForwardsRestrictedError | RpcErrors.DocumentInvalidError | RpcErrors.EntitiesTooLongError | RpcErrors.EntityBoundsInvalidError | RpcErrors.FilePartsInvalidError | RpcErrors.ImageProcessFailedError | RpcErrors.InputUserDeactivatedError | RpcErrors.MediaCaptionTooLongError | RpcErrors.MediaEmptyError | RpcErrors.MediaGroupedInvalidError | RpcErrors.MediaInvalidError | RpcErrors.MediaNewInvalidError | RpcErrors.MediaPrevInvalidError | RpcErrors.MediaTtlInvalidError | RpcErrors.MessageEditTimeExpiredError | RpcErrors.MessageEmptyError | RpcErrors.MessageIdInvalidError | RpcErrors.MessageNotModifiedError | RpcErrors.MessageTooLongError | RpcErrors.MsgIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.PeerTypesInvalidError | RpcErrors.PhotoExtInvalidError | RpcErrors.PhotoInvalidDimensionsError | RpcErrors.PhotoSaveFileInvalidError | RpcErrors.ReplyMarkupInvalidError | RpcErrors.ReplyMarkupTooLongError | RpcErrors.ScheduleDateInvalidError | RpcErrors.TodoItemDuplicateError | RpcErrors.TodoItemsEmptyError | RpcErrors.UserBannedInChannelError | RpcErrors.WebpageNotFoundError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.ChatSendGifsForbiddenError | RpcErrors.ChatWriteForbiddenError | RpcErrors.InlineBotRequiredError | RpcErrors.MessageAuthorRequiredError | RpcErrors.EditMessageTempRestrictedError | RpcErrors.MsgWaitError;
   export type MessagesEditInlineBotMessageErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ButtonDataInvalidError | RpcErrors.EntityBoundsInvalidError | RpcErrors.MessageIdInvalidError | RpcErrors.MessageNotModifiedError | RpcErrors.AuthKeyUnregisteredError;
-  export type MessagesGetBotCallbackAnswerErrors = RpcErrors.BotResponseTimeoutError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.DataInvalidError | RpcErrors.MessageIdInvalidError | RpcErrors.PasswordMissingError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.TimeoutError;
+  export type MessagesGetBotCallbackAnswerErrors = RpcErrors.BotResponseTimeoutError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.DataInvalidError | RpcErrors.MessageIdInvalidError | RpcErrors.MsgIdInvalidError | RpcErrors.PasswordMissingError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.TimeoutError;
   export type MessagesSetBotCallbackAnswerErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.MessageTooLongError | RpcErrors.QueryIdInvalidError | RpcErrors.UrlInvalidError | RpcErrors.UserBotRequiredError | RpcErrors.AuthKeyUnregisteredError;
   export type MessagesGetPeerDialogsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.FrozenParticipantMissingError | RpcErrors.InputPeersEmptyError | RpcErrors.MsgIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
-  export type MessagesSaveDraftErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.EntityBoundsInvalidError | RpcErrors.InputUserDeactivatedError | RpcErrors.MsgIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesSaveDraftErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChatAdminRequiredError | RpcErrors.EntityBoundsInvalidError | RpcErrors.InputUserDeactivatedError | RpcErrors.MsgIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.ChatWriteForbiddenError;
   export type MessagesGetAllDraftsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
   export type MessagesGetFeaturedStickersErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
   export type MessagesReadFeaturedStickersErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
@@ -41877,7 +42085,7 @@ export namespace Api {
   export type MessagesSetInlineGameScoreErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.MessageIdInvalidError | RpcErrors.UserBotRequiredError | RpcErrors.AuthKeyUnregisteredError;
   export type MessagesGetGameHighScoresErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.MessageIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.UserBotRequiredError | RpcErrors.AuthKeyUnregisteredError;
   export type MessagesGetInlineGameHighScoresErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.MessageIdInvalidError | RpcErrors.UserBotRequiredError | RpcErrors.AuthKeyUnregisteredError;
-  export type MessagesGetCommonChatsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.MsgIdInvalidError | RpcErrors.UserIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesGetCommonChatsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelPrivateError | RpcErrors.MsgIdInvalidError | RpcErrors.UserIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
   export type MessagesGetWebPageErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.WcConvertUrlInvalidError | RpcErrors.AuthKeyUnregisteredError;
   export type MessagesToggleDialogPinErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelPrivateError | RpcErrors.PeerHistoryEmptyError | RpcErrors.PeerIdInvalidError | RpcErrors.PinnedDialogsTooMuchError | RpcErrors.AuthKeyUnregisteredError;
   export type MessagesReorderPinnedDialogsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
@@ -41891,7 +42099,7 @@ export namespace Api {
   export type MessagesGetUnreadMentionsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.MsgIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
   export type MessagesReadMentionsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.MsgIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
   export type MessagesGetRecentLocationsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
-  export type MessagesSendMultiMediaErrors = RpcErrors.BusinessConnectionInvalidError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.BusinessPeerInvalidError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.ChatAdminRequiredError | RpcErrors.ChatForwardsRestrictedError | RpcErrors.EffectIdInvalidError | RpcErrors.EntityBoundsInvalidError | RpcErrors.FileReferenceExpiredError | RpcErrors.FileReferenceInvalidError | RpcErrors.MediaCaptionTooLongError | RpcErrors.MediaEmptyError | RpcErrors.MediaInvalidError | RpcErrors.MsgIdInvalidError | RpcErrors.MultiMediaTooLongError | RpcErrors.PeerIdInvalidError | RpcErrors.QuickRepliesBotNotAllowedError | RpcErrors.QuickRepliesTooMuchError | RpcErrors.RandomIdEmptyError | RpcErrors.ReplyMessagesTooMuchError | RpcErrors.ReplyToInvalidError | RpcErrors.ScheduleDateTooLateError | RpcErrors.ScheduleTooMuchError | RpcErrors.SendAsPeerInvalidError | RpcErrors.TopicClosedError | RpcErrors.TopicDeletedError | RpcErrors.UserBannedInChannelError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.AllowPaymentRequiredError | RpcErrors.ChatSendMediaForbiddenError | RpcErrors.ChatSendPhotosForbiddenError | RpcErrors.ChatSendVideosForbiddenError | RpcErrors.ChatWriteForbiddenError | RpcErrors.SlowModeWaitError | RpcErrors.RandomIdDuplicateError;
+  export type MessagesSendMultiMediaErrors = RpcErrors.BusinessConnectionInvalidError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.BusinessPeerInvalidError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.ChatAdminRequiredError | RpcErrors.ChatForwardsRestrictedError | RpcErrors.EffectIdInvalidError | RpcErrors.EntityBoundsInvalidError | RpcErrors.FileReferenceEmptyError | RpcErrors.FileReferenceExpiredError | RpcErrors.FileReferenceInvalidError | RpcErrors.MediaCaptionTooLongError | RpcErrors.MediaEmptyError | RpcErrors.MediaInvalidError | RpcErrors.MsgIdInvalidError | RpcErrors.MultiMediaTooLongError | RpcErrors.PeerIdInvalidError | RpcErrors.QuickRepliesBotNotAllowedError | RpcErrors.QuickRepliesTooMuchError | RpcErrors.RandomIdEmptyError | RpcErrors.ReplyMessagesTooMuchError | RpcErrors.ReplyToInvalidError | RpcErrors.ScheduleDateTooLateError | RpcErrors.ScheduleTooMuchError | RpcErrors.SendAsPeerInvalidError | RpcErrors.TopicClosedError | RpcErrors.TopicDeletedError | RpcErrors.UserBannedInChannelError | RpcErrors.UserIsBlockedError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.AllowPaymentRequiredError | RpcErrors.ChatSendMediaForbiddenError | RpcErrors.ChatSendPhotosForbiddenError | RpcErrors.ChatSendVideosForbiddenError | RpcErrors.ChatWriteForbiddenError | RpcErrors.PrivacyPremiumRequiredError | RpcErrors.SlowModeWaitError | RpcErrors.RandomIdDuplicateError;
   export type MessagesUploadEncryptedFileErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChatIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
   export type MessagesSearchStickerSetsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
   export type MessagesGetSplitRangesErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
@@ -41899,7 +42107,7 @@ export namespace Api {
   export type MessagesGetDialogUnreadMarksErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
   export type MessagesClearAllDraftsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
   export type MessagesUpdatePinnedMessageErrors = RpcErrors.BotOnesideNotAvailError | RpcErrors.BusinessConnectionInvalidError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.BusinessPeerInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.ChatAdminRequiredError | RpcErrors.ChatInvalidError | RpcErrors.ChatNotModifiedError | RpcErrors.InputUserDeactivatedError | RpcErrors.MessageIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.PinRestrictedError | RpcErrors.UserBannedInChannelError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.ChatWriteForbiddenError;
-  export type MessagesSendVoteErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.MessageIdInvalidError | RpcErrors.MessagePollClosedError | RpcErrors.MsgIdInvalidError | RpcErrors.OptionInvalidError | RpcErrors.OptionsTooMuchError | RpcErrors.PeerIdInvalidError | RpcErrors.RevoteNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesSendVoteErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.MessageIdInvalidError | RpcErrors.MessagePollClosedError | RpcErrors.MsgIdInvalidError | RpcErrors.OptionInvalidError | RpcErrors.OptionsTooMuchError | RpcErrors.PeerIdInvalidError | RpcErrors.RevoteNotAllowedError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.PollCountryRestrictedError | RpcErrors.PollMemberRestrictedError;
   export type MessagesGetPollResultsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.MessageIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
   export type MessagesGetOnlinesErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelPrivateError | RpcErrors.ChatIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
   export type MessagesEditChatAboutErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.ChatAboutNotModifiedError | RpcErrors.ChatAboutTooLongError | RpcErrors.ChatAdminRequiredError | RpcErrors.ChatIdInvalidError | RpcErrors.ChatNotModifiedError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.ChatWriteForbiddenError;
@@ -41909,13 +42117,13 @@ export namespace Api {
   export type MessagesGetEmojiKeywordsLanguagesErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
   export type MessagesGetEmojiURLErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
   export type MessagesGetSearchCountersErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
-  export type MessagesRequestUrlAuthErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesRequestUrlAuthErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.UrlExpiredError | RpcErrors.UrlInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.OauthRequestInvalidError;
   export type MessagesAcceptUrlAuthErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
   export type MessagesHidePeerSettingsBarErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
   export type MessagesGetScheduledHistoryErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChatAdminRequiredError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
-  export type MessagesGetScheduledMessagesErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChatAdminRequiredError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesGetScheduledMessagesErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChatAdminRequiredError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
   export type MessagesSendScheduledMessagesErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.MessageIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.RandomIdDuplicateError;
-  export type MessagesDeleteScheduledMessagesErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.MessageDeleteForbiddenError;
+  export type MessagesDeleteScheduledMessagesErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.MessageDeleteForbiddenError;
   export type MessagesGetPollVotesErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.MsgIdInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.BroadcastForbiddenError | RpcErrors.PollVoteRequiredError;
   export type MessagesToggleStickerSetsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
   export type MessagesGetDialogFiltersErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
@@ -41930,9 +42138,9 @@ export namespace Api {
   export type MessagesDeleteChatErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChatAdminRequiredError | RpcErrors.ChatIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
   export type MessagesDeletePhoneCallHistoryErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
   export type MessagesCheckHistoryImportErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ImportFormatUnrecognizedError | RpcErrors.AuthKeyUnregisteredError;
-  export type MessagesInitHistoryImportErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChatAdminRequiredError | RpcErrors.ImportFileInvalidError | RpcErrors.ImportFormatDateInvalidError | RpcErrors.ImportFormatUnrecognizedError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.PreviousChatImportActiveWaitMinError;
+  export type MessagesInitHistoryImportErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChatAdminRequiredError | RpcErrors.ImportFileInvalidError | RpcErrors.ImportFormatDateInvalidError | RpcErrors.ImportFormatUnrecognizedError | RpcErrors.PeerIdInvalidError | RpcErrors.UserNotMutualContactError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.PreviousChatImportActiveWaitMinError;
   export type MessagesUploadImportedMediaErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChatAdminRequiredError | RpcErrors.ImportIdInvalidError | RpcErrors.MediaInvalidError | RpcErrors.AuthKeyUnregisteredError;
-  export type MessagesStartHistoryImportErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ImportIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesStartHistoryImportErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChatAdminRequiredError | RpcErrors.ImportIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
   export type MessagesGetExportedChatInvitesErrors = RpcErrors.AdminIdInvalidError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.ChatAdminRequiredError | RpcErrors.ChatIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.ChatWriteForbiddenError;
   export type MessagesGetExportedChatInviteErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.ChatAdminRequiredError | RpcErrors.InviteHashExpiredError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.ChatWriteForbiddenError;
   export type MessagesEditExportedChatInviteErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelPrivateError | RpcErrors.ChatAdminRequiredError | RpcErrors.ChatInvitePermanentError | RpcErrors.InviteHashExpiredError | RpcErrors.PeerIdInvalidError | RpcErrors.UsageLimitInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.ChatWriteForbiddenError | RpcErrors.EditBotInviteForbiddenError;
@@ -41940,7 +42148,7 @@ export namespace Api {
   export type MessagesDeleteExportedChatInviteErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChatAdminRequiredError | RpcErrors.InviteHashExpiredError | RpcErrors.InviteRevokedMissingError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
   export type MessagesGetAdminsWithInvitesErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChatAdminRequiredError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.ChatWriteForbiddenError;
   export type MessagesGetChatInviteImportersErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.ChatAdminRequiredError | RpcErrors.InviteHashExpiredError | RpcErrors.PeerIdInvalidError | RpcErrors.SearchWithLinkNotSupportedError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.ChatWriteForbiddenError;
-  export type MessagesSetHistoryTTLErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChatNotModifiedError | RpcErrors.PeerIdInvalidError | RpcErrors.TtlPeriodInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesSetHistoryTTLErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChatAdminRequiredError | RpcErrors.ChatNotModifiedError | RpcErrors.PeerIdInvalidError | RpcErrors.TtlPeriodInvalidError | RpcErrors.AuthKeyUnregisteredError;
   export type MessagesCheckHistoryImportPeerErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChatAdminRequiredError | RpcErrors.PeerIdInvalidError | RpcErrors.UserNotMutualContactError | RpcErrors.AuthKeyUnregisteredError;
   export type MessagesSetChatThemeErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.EmojiInvalidError | RpcErrors.EmojiNotModifiedError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
   export type MessagesGetMessageReadParticipantsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChatTooBigError | RpcErrors.MsgIdInvalidError | RpcErrors.MsgTooOldError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
@@ -41948,12 +42156,12 @@ export namespace Api {
   export type MessagesGetSearchResultsPositionsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
   export type MessagesHideChatJoinRequestErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelPrivateError | RpcErrors.ChannelsTooMuchError | RpcErrors.ChatAdminRequiredError | RpcErrors.HideRequesterMissingError | RpcErrors.InputUserDeactivatedError | RpcErrors.MsgIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.UserAlreadyParticipantError | RpcErrors.UserChannelsTooMuchError | RpcErrors.UserIdInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.ChatWriteForbiddenError;
   export type MessagesHideAllChatJoinRequestsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.ChannelsTooMuchError | RpcErrors.ChatAdminRequiredError | RpcErrors.HideRequesterMissingError | RpcErrors.InviteHashExpiredError | RpcErrors.PeerIdInvalidError | RpcErrors.UserChannelsTooMuchError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.ChatWriteForbiddenError;
-  export type MessagesToggleNoForwardsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChatAdminRequiredError | RpcErrors.ChatNotModifiedError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesToggleNoForwardsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChatAdminRequiredError | RpcErrors.ChatNotModifiedError | RpcErrors.PeerIdInvalidError | RpcErrors.RequestMsgExpiredError | RpcErrors.AuthKeyUnregisteredError;
   export type MessagesSaveDefaultSendAsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.SendAsPeerInvalidError | RpcErrors.AuthKeyUnregisteredError;
-  export type MessagesSendReactionErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.CustomReactionsTooManyError | RpcErrors.DocumentInvalidError | RpcErrors.MessageIdInvalidError | RpcErrors.MessageNotModifiedError | RpcErrors.MsgIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.ReactionEmptyError | RpcErrors.ReactionInvalidError | RpcErrors.ReactionsTooManyError | RpcErrors.UserBannedInChannelError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.AnonymousReactionsDisabledError | RpcErrors.ChatWriteForbiddenError | RpcErrors.PremiumAccountRequiredError;
-  export type MessagesGetMessagesReactionsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.AuthKeyUnregisteredError;
-  export type MessagesGetMessageReactionsListErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.MsgIdInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.BroadcastForbiddenError;
-  export type MessagesSetChatAvailableReactionsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChatAdminRequiredError | RpcErrors.ChatNotModifiedError | RpcErrors.DocumentInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.ReactionInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesSendReactionErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.ChatWriteForbiddenError | RpcErrors.CustomReactionsTooManyError | RpcErrors.DocumentInvalidError | RpcErrors.MessageIdInvalidError | RpcErrors.MessageNotModifiedError | RpcErrors.MsgIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.ReactionEmptyError | RpcErrors.ReactionInvalidError | RpcErrors.ReactionsTooManyError | RpcErrors.UserBannedInChannelError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.PremiumAccountRequiredError;
+  export type MessagesGetMessagesReactionsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.MsgIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesGetMessageReactionsListErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.MsgIdInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.BroadcastForbiddenError;
+  export type MessagesSetChatAvailableReactionsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChatAdminRequiredError | RpcErrors.ChatNotModifiedError | RpcErrors.DocumentInvalidError | RpcErrors.LimitPerPostInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.ReactionInvalidError | RpcErrors.AuthKeyUnregisteredError;
   export type MessagesGetAvailableReactionsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
   export type MessagesSetDefaultReactionErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ReactionInvalidError | RpcErrors.AuthKeyUnregisteredError;
   export type MessagesTranslateTextErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.InputTextEmptyError | RpcErrors.InputTextTooLongError | RpcErrors.MsgIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.ToLangInvalidError | RpcErrors.TranslateReqQuotaExceededError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.TranslationsDisabledError | RpcErrors.TranslateReqFailedError | RpcErrors.TranslationTimeoutError;
@@ -41968,7 +42176,7 @@ export namespace Api {
   export type MessagesRequestSimpleWebViewErrors = RpcErrors.BotInvalidError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.UrlInvalidError | RpcErrors.AuthKeyUnregisteredError;
   export type MessagesSendWebViewResultMessageErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.QueryIdInvalidError | RpcErrors.UserBotRequiredError | RpcErrors.AuthKeyUnregisteredError;
   export type MessagesSendWebViewDataErrors = RpcErrors.BotInvalidError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
-  export type MessagesTranscribeAudioErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.MsgIdInvalidError | RpcErrors.MsgVoiceMissingError | RpcErrors.PeerIdInvalidError | RpcErrors.TranscriptionFailedError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.PremiumAccountRequiredError;
+  export type MessagesTranscribeAudioErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.MsgIdInvalidError | RpcErrors.MsgVoiceMissingError | RpcErrors.MsgVoiceTooLongError | RpcErrors.PeerIdInvalidError | RpcErrors.TranscriptionFailedError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.PremiumAccountRequiredError;
   export type MessagesRateTranscribedAudioErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
   export type MessagesGetCustomEmojiDocumentsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
   export type MessagesGetEmojiStickersErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
@@ -41991,7 +42199,7 @@ export namespace Api {
   export type MessagesSetChatWallPaperErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.WallpaperInvalidError | RpcErrors.WallpaperNotFoundError | RpcErrors.AuthKeyUnregisteredError;
   export type MessagesSearchEmojiStickerSetsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
   export type MessagesGetSavedDialogsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
-  export type MessagesGetSavedHistoryErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesGetSavedHistoryErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChatAdminRequiredError | RpcErrors.ParentPeerInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
   export type MessagesDeleteSavedHistoryErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
   export type MessagesGetPinnedSavedDialogsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
   export type MessagesToggleSavedDialogPinErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
@@ -42016,13 +42224,13 @@ export namespace Api {
   export type MessagesDeleteFactCheckErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.ChatActionForbiddenError;
   export type MessagesGetFactCheckErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
   export type MessagesRequestMainWebViewErrors = RpcErrors.BotInvalidError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
-  export type MessagesSendPaidReactionErrors = RpcErrors.BalanceTooLowError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.MessageIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.RandomIdEmptyError | RpcErrors.RandomIdExpiredError | RpcErrors.ReactionsCountInvalidError | RpcErrors.SendAsPeerInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.ChatWriteForbiddenError;
+  export type MessagesSendPaidReactionErrors = RpcErrors.BalanceTooLowError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.MessageIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.RandomIdEmptyError | RpcErrors.RandomIdExpiredError | RpcErrors.ReactionsCountInvalidError | RpcErrors.SendAsPeerInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.ChatWriteForbiddenError;
   export type MessagesTogglePaidReactionPrivacyErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.ReactionEmptyError | RpcErrors.AuthKeyUnregisteredError;
   export type MessagesGetPaidReactionPrivacyErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
   export type MessagesViewSponsoredMessageErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
   export type MessagesClickSponsoredMessageErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
   export type MessagesReportSponsoredMessageErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
-  export type MessagesGetSponsoredMessagesErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesGetSponsoredMessagesErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.MessageIdInvalidError | RpcErrors.MsgIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
   export type MessagesSavePreparedInlineMessageErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ResultIdInvalidError | RpcErrors.SendMessageGameInvalidError | RpcErrors.UserBotRequiredError | RpcErrors.UserIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
   export type MessagesGetPreparedInlineMessageErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.IdExpiredError | RpcErrors.IdInvalidError | RpcErrors.AuthKeyUnregisteredError;
   export type MessagesSearchStickersErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
@@ -42032,14 +42240,40 @@ export namespace Api {
   export type MessagesToggleTodoCompletedErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
   export type MessagesAppendTodoListErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.MessageIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.TodoItemDuplicateError | RpcErrors.TodoNotModifiedError | RpcErrors.AuthKeyUnregisteredError;
   export type MessagesToggleSuggestedPostApprovalErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesGetForumTopicsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelForumMissingError | RpcErrors.ChannelInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesGetForumTopicsByIDErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.TopicsEmptyError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesEditForumTopicErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.TopicCloseSeparatelyError | RpcErrors.TopicNotModifiedError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesUpdatePinnedForumTopicErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesReorderPinnedForumTopicsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesCreateForumTopicErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelForumMissingError | RpcErrors.ChannelInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.BotForumCreateForbiddenError | RpcErrors.PremiumAccountRequiredError;
+  export type MessagesDeleteTopicHistoryErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesGetEmojiGameInfoErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesSummarizeTextErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.InputTextTooLongError | RpcErrors.MsgIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesEditChatCreatorErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelPrivateError | RpcErrors.ChannelsAdminPublicTooMuchError | RpcErrors.ChatAdminRequiredError | RpcErrors.ChatMemberAddFailedError | RpcErrors.InputUserDeactivatedError | RpcErrors.PasswordHashInvalidError | RpcErrors.PasswordMissingError | RpcErrors.PasswordTooFreshError | RpcErrors.SessionTooFreshError | RpcErrors.SrpIdInvalidError | RpcErrors.UserNotMutualContactError | RpcErrors.UsersTooMuchError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.UserChannelsTooMuchError | RpcErrors.UserPrivacyRestrictedError;
+  export type MessagesGetFutureChatCreatorAfterLeaveErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesEditChatParticipantRankErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesDeclineUrlAuthErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.UrlInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesCheckUrlAuthMatchCodeErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.UrlInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesComposeMessageWithAIErrors = RpcErrors.AiComposeTaskMissingError | RpcErrors.AicomposeFloodPremiumError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.MessageEmptyError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.AicomposeTimeoutError;
+  export type MessagesReportReadMetricsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesReportMusicListenErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesAddPollAnswerErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesDeletePollAnswerErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesGetUnreadPollVotesErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesReadPollVotesErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesSetBotGuestChatResultErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.UserBotRequiredError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.UserBotInvalidError;
+  export type MessagesDeleteParticipantReactionsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesDeleteParticipantReactionErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesGetPersonalChannelHistoryErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.UserBotRequiredError | RpcErrors.UserIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type MessagesGetRichMessageErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.MessageIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
   export type UpdatesGetStateErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
   export type UpdatesGetDifferenceErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.CdnMethodInvalidError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.ChatNotModifiedError | RpcErrors.DateEmptyError | RpcErrors.MsgIdInvalidError | RpcErrors.PersistentTimestampEmptyError | RpcErrors.PersistentTimestampInvalidError | RpcErrors.UserNotParticipantError | RpcErrors.UsernameInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.ChatWriteForbiddenError | RpcErrors.RandomIdDuplicateError;
   export type UpdatesGetChannelDifferenceErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.ChatNotModifiedError | RpcErrors.FromMessageBotDisabledError | RpcErrors.FrozenParticipantMissingError | RpcErrors.MsgIdInvalidError | RpcErrors.PersistentTimestampEmptyError | RpcErrors.PersistentTimestampInvalidError | RpcErrors.PinnedDialogsTooMuchError | RpcErrors.RangesInvalidError | RpcErrors.UserBannedInChannelError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.ChannelPublicGroupNaError | RpcErrors.ChatWriteForbiddenError | RpcErrors.PersistentTimestampOutdatedError;
   export type PhotosUpdateProfilePhotoErrors = RpcErrors.AlbumPhotosTooManyError | RpcErrors.BotFallbackUnsupportedError | RpcErrors.FilePartsInvalidError | RpcErrors.ImageProcessFailedError | RpcErrors.LocationInvalidError | RpcErrors.PhotoCropSizeSmallError | RpcErrors.PhotoExtInvalidError | RpcErrors.PhotoIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
   export type PhotosUploadProfilePhotoErrors = RpcErrors.AlbumPhotosTooManyError | RpcErrors.BotInvalidError | RpcErrors.EmojiMarkupInvalidError | RpcErrors.FilePartsInvalidError | RpcErrors.ImageProcessFailedError | RpcErrors.PhotoCropFileMissingError | RpcErrors.PhotoCropSizeSmallError | RpcErrors.PhotoExtInvalidError | RpcErrors.PhotoFileMissingError | RpcErrors.PhotoInvalidError | RpcErrors.StickerMimeInvalidError | RpcErrors.VideoFileInvalidError | RpcErrors.AuthKeyUnregisteredError;
   export type PhotosDeletePhotosErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
-  export type PhotosGetUserPhotosErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.MaxIdInvalidError | RpcErrors.MsgIdInvalidError | RpcErrors.UserIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
-  export type PhotosUploadContactProfilePhotoErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ContactMissingError | RpcErrors.UserIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type PhotosGetUserPhotosErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelPrivateError | RpcErrors.MaxIdInvalidError | RpcErrors.MsgIdInvalidError | RpcErrors.UserIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type PhotosUploadContactProfilePhotoErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ContactMissingError | RpcErrors.NeedActionMissingError | RpcErrors.UserIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
   export type UploadSaveFilePartErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.FilePartEmptyError | RpcErrors.FilePartInvalidError | RpcErrors.MsgIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
   export type UploadGetFileErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.CdnMethodInvalidError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.FileIdInvalidError | RpcErrors.FileReferenceEmptyError | RpcErrors.FileReferenceExpiredError | RpcErrors.FileReferenceInvalidError | RpcErrors.LimitInvalidError | RpcErrors.LocationInvalidError | RpcErrors.MsgIdInvalidError | RpcErrors.OffsetInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.FilerefUpgradeNeededError | RpcErrors.FloodWaitError;
   export type UploadSaveBigFilePartErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.FilePartEmptyError | RpcErrors.FilePartInvalidError | RpcErrors.FilePartSizeChangedError | RpcErrors.FilePartSizeInvalidError | RpcErrors.FilePartTooBigError | RpcErrors.FilePartTooSmallError | RpcErrors.FilePartsInvalidError | RpcErrors.AuthKeyUnregisteredError;
@@ -42074,7 +42308,7 @@ export namespace Api {
   export type HelpGetPeerProfileColorsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
   export type HelpGetTimezonesListErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
   export type ChannelsReadHistoryErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.MsgIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
-  export type ChannelsDeleteMessagesErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.MsgIdInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.MessageDeleteForbiddenError | RpcErrors.FrozenMethodInvalidError;
+  export type ChannelsDeleteMessagesErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.ChatAdminRequiredError | RpcErrors.MsgIdInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.MessageDeleteForbiddenError | RpcErrors.FrozenMethodInvalidError;
   export type ChannelsReportSpamErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChatAdminRequiredError | RpcErrors.InputUserDeactivatedError | RpcErrors.MsgIdInvalidError | RpcErrors.UserIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
   export type ChannelsGetMessagesErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.ChatNotModifiedError | RpcErrors.FrozenParticipantMissingError | RpcErrors.MessageIdsEmptyError | RpcErrors.MsgIdInvalidError | RpcErrors.UserBannedInChannelError | RpcErrors.AuthKeyUnregisteredError;
   export type ChannelsGetParticipantsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelMonoforumUnsupportedError | RpcErrors.ChannelPrivateError | RpcErrors.ChatAdminRequiredError | RpcErrors.MsgIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
@@ -42082,12 +42316,12 @@ export namespace Api {
   export type ChannelsGetChannelsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.MsgIdInvalidError | RpcErrors.UserBannedInChannelError | RpcErrors.AuthKeyUnregisteredError;
   export type ChannelsGetFullChannelErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.ChatNotModifiedError | RpcErrors.MsgIdInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.ChannelPublicGroupNaError;
   export type ChannelsCreateChannelErrors = RpcErrors.AddressInvalidError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelsAdminLocatedTooMuchError | RpcErrors.ChannelsTooMuchError | RpcErrors.ChatAboutTooLongError | RpcErrors.ChatTitleEmptyError | RpcErrors.TtlPeriodInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.UserRestrictedError | RpcErrors.ChatInvalidError;
-  export type ChannelsEditAdminErrors = RpcErrors.AdminRankEmojiNotAllowedError | RpcErrors.AdminRankInvalidError | RpcErrors.AdminsTooMuchError | RpcErrors.BotChannelsNaError | RpcErrors.BotGroupsBlockedError | RpcErrors.BotsTooMuchError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelMonoforumUnsupportedError | RpcErrors.ChannelPrivateError | RpcErrors.ChatAdminRequiredError | RpcErrors.FreshChangeAdminsForbiddenError | RpcErrors.InputUserDeactivatedError | RpcErrors.MsgIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.UserBlockedError | RpcErrors.UserCreatorError | RpcErrors.UserIdInvalidError | RpcErrors.UserNotMutualContactError | RpcErrors.UsersTooMuchError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.ChatAdminInviteRequiredError | RpcErrors.ChatWriteForbiddenError | RpcErrors.RightForbiddenError | RpcErrors.UserChannelsTooMuchError | RpcErrors.UserPrivacyRestrictedError | RpcErrors.UserRestrictedError;
+  export type ChannelsEditAdminErrors = RpcErrors.AdminRankEmojiNotAllowedError | RpcErrors.AdminRankInvalidError | RpcErrors.AdminsTooMuchError | RpcErrors.BotChannelsNaError | RpcErrors.BotGroupsBlockedError | RpcErrors.BotsTooMuchError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelMonoforumUnsupportedError | RpcErrors.ChannelPrivateError | RpcErrors.ChatAdminRequiredError | RpcErrors.FreshChangeAdminsForbiddenError | RpcErrors.InputUserDeactivatedError | RpcErrors.MsgIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.UserBlockedError | RpcErrors.UserCreatorError | RpcErrors.UserIdInvalidError | RpcErrors.UserKickedError | RpcErrors.UserNotMutualContactError | RpcErrors.UsersTooMuchError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.ChatAdminInviteRequiredError | RpcErrors.ChatWriteForbiddenError | RpcErrors.RightForbiddenError | RpcErrors.UserChannelsTooMuchError | RpcErrors.UserPrivacyRestrictedError | RpcErrors.UserRestrictedError;
   export type ChannelsEditTitleErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.ChatAdminRequiredError | RpcErrors.ChatInvalidError | RpcErrors.ChatNotModifiedError | RpcErrors.ChatTitleEmptyError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.ChatWriteForbiddenError;
-  export type ChannelsEditPhotoErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.ChatAdminRequiredError | RpcErrors.ChatNotModifiedError | RpcErrors.FilePartsInvalidError | RpcErrors.FileReferenceInvalidError | RpcErrors.ImageProcessFailedError | RpcErrors.PhotoCropSizeSmallError | RpcErrors.PhotoExtInvalidError | RpcErrors.PhotoFileMissingError | RpcErrors.PhotoInvalidError | RpcErrors.StickerMimeInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.ChatWriteForbiddenError;
+  export type ChannelsEditPhotoErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.ChatAdminRequiredError | RpcErrors.ChatInvalidError | RpcErrors.ChatNotModifiedError | RpcErrors.FilePartsInvalidError | RpcErrors.FileReferenceInvalidError | RpcErrors.ImageProcessFailedError | RpcErrors.PeerIdInvalidError | RpcErrors.PhotoCropSizeSmallError | RpcErrors.PhotoExtInvalidError | RpcErrors.PhotoFileMissingError | RpcErrors.PhotoInvalidError | RpcErrors.StickerMimeInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.ChatWriteForbiddenError;
   export type ChannelsCheckUsernameErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.ChannelsAdminPublicTooMuchError | RpcErrors.ChatIdInvalidError | RpcErrors.MsgIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.UsernameInvalidError | RpcErrors.UsernameOccupiedError | RpcErrors.UsernamePurchaseAvailableError | RpcErrors.AuthKeyUnregisteredError;
   export type ChannelsUpdateUsernameErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.ChannelsAdminPublicTooMuchError | RpcErrors.ChatAdminRequiredError | RpcErrors.ChatNotModifiedError | RpcErrors.UsernameInvalidError | RpcErrors.UsernameNotModifiedError | RpcErrors.UsernameOccupiedError | RpcErrors.UsernamePurchaseAvailableError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.ChatWriteForbiddenError;
-  export type ChannelsJoinChannelErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelMonoforumUnsupportedError | RpcErrors.ChannelPrivateError | RpcErrors.ChannelsTooMuchError | RpcErrors.ChatInvalidError | RpcErrors.InviteHashEmptyError | RpcErrors.InviteHashExpiredError | RpcErrors.InviteHashInvalidError | RpcErrors.InviteRequestSentError | RpcErrors.MsgIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.UserAlreadyParticipantError | RpcErrors.UserChannelsTooMuchError | RpcErrors.UsersTooMuchError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.FrozenMethodInvalidError;
+  export type ChannelsJoinChannelErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelMonoforumUnsupportedError | RpcErrors.ChannelPrivateError | RpcErrors.ChannelsTooMuchError | RpcErrors.ChatInvalidError | RpcErrors.InviteHashEmptyError | RpcErrors.InviteHashExpiredError | RpcErrors.InviteHashInvalidError | RpcErrors.InviteRequestSentError | RpcErrors.MsgIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.UserAlreadyParticipantError | RpcErrors.UserBannedInChannelError | RpcErrors.UserChannelsTooMuchError | RpcErrors.UsersTooMuchError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.FrozenMethodInvalidError;
   export type ChannelsLeaveChannelErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.ChatInvalidError | RpcErrors.MsgIdInvalidError | RpcErrors.UserBannedInChannelError | RpcErrors.UserCreatorError | RpcErrors.UserNotParticipantError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.ChannelPublicGroupNaError;
   export type ChannelsInviteToChannelErrors = RpcErrors.BotGroupsBlockedError | RpcErrors.BotsTooMuchError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelMonoforumUnsupportedError | RpcErrors.ChannelPrivateError | RpcErrors.ChatAdminRequiredError | RpcErrors.ChatInvalidError | RpcErrors.ChatMemberAddFailedError | RpcErrors.InputUserDeactivatedError | RpcErrors.MsgIdInvalidError | RpcErrors.UserBannedInChannelError | RpcErrors.UserBlockedError | RpcErrors.UserBotError | RpcErrors.UserChannelsTooMuchError | RpcErrors.UserIdInvalidError | RpcErrors.UserKickedError | RpcErrors.UserNotMutualContactError | RpcErrors.UsersTooMuchError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.ChatWriteForbiddenError | RpcErrors.UserPrivacyRestrictedError;
   export type ChannelsDeleteChannelErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.ChannelTooLargeError | RpcErrors.ChatAdminRequiredError | RpcErrors.ChatNotModifiedError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.ChatWriteForbiddenError;
@@ -42114,7 +42348,7 @@ export namespace Api {
   export type ChannelsReorderUsernamesErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChatNotModifiedError | RpcErrors.AuthKeyUnregisteredError;
   export type ChannelsToggleUsernameErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.ChatAdminRequiredError | RpcErrors.ChatNotModifiedError | RpcErrors.UsernameInvalidError | RpcErrors.UsernameNotModifiedError | RpcErrors.UsernamesActiveTooMuchError | RpcErrors.AuthKeyUnregisteredError;
   export type ChannelsDeactivateAllUsernamesErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.AuthKeyUnregisteredError;
-  export type ChannelsToggleForumErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChatDiscussionUnallowedError | RpcErrors.ChatNotModifiedError | RpcErrors.AuthKeyUnregisteredError;
+  export type ChannelsToggleForumErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChatAdminRequiredError | RpcErrors.ChatDiscussionUnallowedError | RpcErrors.ChatIdInvalidError | RpcErrors.ChatNotModifiedError | RpcErrors.AuthKeyUnregisteredError;
   export type ChannelsToggleAntiSpamErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChatNotModifiedError | RpcErrors.AuthKeyUnregisteredError;
   export type ChannelsReportAntiSpamFalsePositiveErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.AuthKeyUnregisteredError;
   export type ChannelsToggleParticipantsHiddenErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChatAdminRequiredError | RpcErrors.ChatIdInvalidError | RpcErrors.ChatNotModifiedError | RpcErrors.ParticipantsTooFewError | RpcErrors.AuthKeyUnregisteredError;
@@ -42125,7 +42359,7 @@ export namespace Api {
   export type ChannelsSetBoostsToUnblockRestrictionsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.AuthKeyUnregisteredError;
   export type ChannelsSetEmojiStickersErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.AuthKeyUnregisteredError;
   export type ChannelsRestrictSponsoredMessagesErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.AuthKeyUnregisteredError;
-  export type ChannelsSearchPostsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.FrozenMethodInvalidError;
+  export type ChannelsSearchPostsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.OffsetPeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.PremiumAccountRequiredError | RpcErrors.FrozenMethodInvalidError;
   export type ChannelsUpdatePaidMessagesPriceErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelMonoforumUnsupportedError | RpcErrors.ChatNotModifiedError | RpcErrors.StarsAmountInvalidError | RpcErrors.AuthKeyUnregisteredError;
   export type ChannelsToggleAutotranslationErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.AuthKeyUnregisteredError;
   export type ChannelsGetMessageAuthorErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.AuthKeyUnregisteredError;
@@ -42161,7 +42395,15 @@ export namespace Api {
   export type BotsUpdateStarRefProgramErrors = RpcErrors.BotInvalidError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.StarrefAwaitingEndError | RpcErrors.StarrefPermilleInvalidError | RpcErrors.StarrefPermilleTooLowError | RpcErrors.AuthKeyUnregisteredError;
   export type BotsSetCustomVerificationErrors = RpcErrors.BotInvalidError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.BotVerifierForbiddenError;
   export type BotsGetBotRecommendationsErrors = RpcErrors.BotInvalidError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
-  export type PaymentsGetPaymentFormErrors = RpcErrors.BoostPeerInvalidError | RpcErrors.BotInvoiceInvalidError | RpcErrors.BusinessConnectionInvalidError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.GiftMonthsInvalidError | RpcErrors.InvoiceInvalidError | RpcErrors.MessageIdInvalidError | RpcErrors.MonthInvalidError | RpcErrors.NoPaymentNeededError | RpcErrors.PeerIdInvalidError | RpcErrors.SlugInvalidError | RpcErrors.StargiftAlreadyConvertedError | RpcErrors.StargiftAlreadyRefundedError | RpcErrors.StargiftAlreadyUpgradedError | RpcErrors.StargiftInvalidError | RpcErrors.StargiftNotFoundError | RpcErrors.StargiftOwnerInvalidError | RpcErrors.StargiftPeerInvalidError | RpcErrors.StargiftResellCurrencyNotAllowedError | RpcErrors.StargiftSlugInvalidError | RpcErrors.StargiftTransferTooEarlyError | RpcErrors.StargiftUpgradeUnavailableError | RpcErrors.ToIdInvalidError | RpcErrors.UntilDateInvalidError | RpcErrors.BotAccessForbiddenError | RpcErrors.ApiGiftRestrictedUpdateAppError | RpcErrors.StargiftExportInProgressError | RpcErrors.StarsFormAmountMismatchError;
+  export type BotsCheckUsernameErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.UsernameInvalidError | RpcErrors.UsernameOccupiedError | RpcErrors.UsernameSuffixMissingError | RpcErrors.AuthKeyUnregisteredError;
+  export type BotsCreateBotErrors = RpcErrors.BotCreateLimitExceededError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ManagerInvalidError | RpcErrors.ManagerPermissionMissingError | RpcErrors.NameInvalidError | RpcErrors.UsernameInvalidError | RpcErrors.UsernameOccupiedError | RpcErrors.UsernameSuffixMissingError | RpcErrors.AuthKeyUnregisteredError;
+  export type BotsExportBotTokenErrors = RpcErrors.BotInvalidError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.UserBotRequiredError | RpcErrors.AuthKeyUnregisteredError;
+  export type BotsRequestWebViewButtonErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ButtonInvalidError | RpcErrors.UserBotRequiredError | RpcErrors.UserIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type BotsGetRequestedWebViewButtonErrors = RpcErrors.BotIdInvalidError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.WebappReqIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type BotsGetAccessSettingsErrors = RpcErrors.BotInvalidError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.UserBotRequiredError | RpcErrors.AuthKeyUnregisteredError;
+  export type BotsEditAccessSettingsErrors = RpcErrors.BotInvalidError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.UserBotRequiredError | RpcErrors.AuthKeyUnregisteredError;
+  export type BotsSetJoinChatResultsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.UserBotRequiredError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.BotGuardNotSupportedError;
+  export type PaymentsGetPaymentFormErrors = RpcErrors.BoostPeerInvalidError | RpcErrors.BotInvoiceInvalidError | RpcErrors.BusinessConnectionInvalidError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.GiftMonthsInvalidError | RpcErrors.GiftStarsInvalidError | RpcErrors.InvoiceInvalidError | RpcErrors.MessageIdInvalidError | RpcErrors.MessageTooLongError | RpcErrors.MonthInvalidError | RpcErrors.MsgIdInvalidError | RpcErrors.NoPaymentNeededError | RpcErrors.PeerIdInvalidError | RpcErrors.PremiumPurposeInvalidError | RpcErrors.SlugInvalidError | RpcErrors.StargiftAlreadyConvertedError | RpcErrors.StargiftAlreadyRefundedError | RpcErrors.StargiftAlreadyUpgradedError | RpcErrors.StargiftInvalidError | RpcErrors.StargiftMessageInvalidError | RpcErrors.StargiftNotFoundError | RpcErrors.StargiftNotOwnerError | RpcErrors.StargiftNotUniqueError | RpcErrors.StargiftOwnerInvalidError | RpcErrors.StargiftPeerInvalidError | RpcErrors.StargiftResellCurrencyNotAllowedError | RpcErrors.StargiftResellTooEarlyError | RpcErrors.StargiftSlugInvalidError | RpcErrors.StargiftTransferTooEarlyError | RpcErrors.StargiftUpgradeUnavailableError | RpcErrors.ToIdInvalidError | RpcErrors.UntilDateInvalidError | RpcErrors.BotAccessForbiddenError | RpcErrors.UserDisallowedStargiftsError | RpcErrors.ApiGiftRestrictedUpdateAppError | RpcErrors.StargiftExportInProgressError | RpcErrors.StarsFormAmountMismatchError;
   export type PaymentsGetPaymentReceiptErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.MessageIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
   export type PaymentsValidateRequestedInfoErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.MessageIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
   export type PaymentsSendPaymentFormErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.FormUnsupportedError | RpcErrors.InvoiceInvalidError | RpcErrors.MessageIdInvalidError | RpcErrors.PaymentCredentialsInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.TmpPasswordInvalidError;
@@ -42181,7 +42423,7 @@ export namespace Api {
   export type PaymentsGetStarsTransactionsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChatAdminRequiredError | RpcErrors.PeerIdInvalidError | RpcErrors.SubscriptionIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
   export type PaymentsSendStarsFormErrors = RpcErrors.BalanceTooLowError | RpcErrors.BotInvoiceInvalidError | RpcErrors.BusinessConnectionInvalidError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.FormExpiredError | RpcErrors.FormIdEmptyError | RpcErrors.FormSubmitDuplicateError | RpcErrors.FormUnsupportedError | RpcErrors.GiftStarsInvalidError | RpcErrors.MediaAlreadyPaidError | RpcErrors.MonthInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.PurposeInvalidError | RpcErrors.StargiftAlreadyUpgradedError | RpcErrors.StargiftNotFoundError | RpcErrors.StargiftOwnerInvalidError | RpcErrors.StargiftSlugInvalidError | RpcErrors.StargiftUsageLimitedError | RpcErrors.StargiftUserUsageLimitedError | RpcErrors.ToIdInvalidError | RpcErrors.UserIdInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.BotAccessForbiddenError | RpcErrors.ApiGiftRestrictedUpdateAppError | RpcErrors.PrecheckoutFailedError | RpcErrors.StarsFormAmountMismatchError;
   export type PaymentsRefundStarsChargeErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChargeAlreadyRefundedError | RpcErrors.ChargeIdEmptyError | RpcErrors.UserBotRequiredError | RpcErrors.UserIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
-  export type PaymentsGetStarsRevenueStatsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type PaymentsGetStarsRevenueStatsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
   export type PaymentsGetStarsRevenueWithdrawalUrlErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PasswordHashInvalidError | RpcErrors.PasswordMissingError | RpcErrors.PasswordTooFreshError | RpcErrors.SessionTooFreshError | RpcErrors.AuthKeyUnregisteredError;
   export type PaymentsGetStarsRevenueAdsAccountUrlErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.ChatWriteForbiddenError;
   export type PaymentsGetStarsTransactionsByIDErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.TransactionIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
@@ -42191,7 +42433,7 @@ export namespace Api {
   export type PaymentsFulfillStarsSubscriptionErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
   export type PaymentsGetStarsGiveawayOptionsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
   export type PaymentsGetStarGiftsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
-  export type PaymentsSaveStarGiftErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.MessageIdInvalidError | RpcErrors.SavedIdEmptyError | RpcErrors.StargiftOwnerInvalidError | RpcErrors.UserIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type PaymentsSaveStarGiftErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.MessageIdInvalidError | RpcErrors.SavedIdEmptyError | RpcErrors.StargiftObjectInvalidError | RpcErrors.StargiftOwnerInvalidError | RpcErrors.UserIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
   export type PaymentsConvertStarGiftErrors = RpcErrors.BusinessConnectionInvalidError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.MessageIdInvalidError | RpcErrors.SavedIdEmptyError | RpcErrors.StargiftPeerInvalidError | RpcErrors.UserIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
   export type PaymentsBotCancelStarsSubscriptionErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChargeIdInvalidError | RpcErrors.UserIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
   export type PaymentsGetConnectedStarRefBotsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
@@ -42199,17 +42441,17 @@ export namespace Api {
   export type PaymentsGetSuggestedStarRefBotsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.PeerIdInvalidError;
   export type PaymentsConnectStarRefBotErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
   export type PaymentsEditConnectedStarRefBotErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.StarrefHashRevokedError | RpcErrors.AuthKeyUnregisteredError;
-  export type PaymentsGetStarGiftUpgradePreviewErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.StargiftInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type PaymentsGetStarGiftUpgradePreviewErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.StargiftInvalidError | RpcErrors.StargiftUpgradeUnavailableError | RpcErrors.AuthKeyUnregisteredError;
   export type PaymentsUpgradeStarGiftErrors = RpcErrors.BusinessConnectionInvalidError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.MessageIdInvalidError | RpcErrors.PaymentRequiredError | RpcErrors.SavedIdEmptyError | RpcErrors.StargiftAlreadyConvertedError | RpcErrors.StargiftAlreadyUpgradedError | RpcErrors.StargiftUpgradeUnavailableError | RpcErrors.AuthKeyUnregisteredError;
-  export type PaymentsTransferStarGiftErrors = RpcErrors.BusinessConnectionInvalidError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.MessageIdInvalidError | RpcErrors.PaymentRequiredError | RpcErrors.PeerIdInvalidError | RpcErrors.SavedIdEmptyError | RpcErrors.StargiftNotFoundError | RpcErrors.StargiftOwnerInvalidError | RpcErrors.StargiftPeerInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type PaymentsTransferStarGiftErrors = RpcErrors.BusinessConnectionInvalidError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.MessageIdInvalidError | RpcErrors.PaymentRequiredError | RpcErrors.PeerIdInvalidError | RpcErrors.SavedIdEmptyError | RpcErrors.StargiftNotFoundError | RpcErrors.StargiftNotOwnerError | RpcErrors.StargiftNotUniqueError | RpcErrors.StargiftOwnerInvalidError | RpcErrors.StargiftPeerInvalidError | RpcErrors.StargiftTransferTooEarlyError | RpcErrors.AuthKeyUnregisteredError;
   export type PaymentsGetUniqueStarGiftErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.StargiftSlugInvalidError | RpcErrors.AuthKeyUnregisteredError;
-  export type PaymentsGetSavedStarGiftsErrors = RpcErrors.BusinessConnectionInvalidError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
-  export type PaymentsGetSavedStarGiftErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.SavedIdEmptyError | RpcErrors.StargiftSlugInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type PaymentsGetSavedStarGiftsErrors = RpcErrors.BusinessConnectionInvalidError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.CollectionIdInvalidError | RpcErrors.MsgIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type PaymentsGetSavedStarGiftErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.SavedIdEmptyError | RpcErrors.StargiftOwnerInvalidError | RpcErrors.StargiftSlugInvalidError | RpcErrors.AuthKeyUnregisteredError;
   export type PaymentsGetStarGiftWithdrawalUrlErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PasswordHashInvalidError | RpcErrors.PasswordTooFreshError | RpcErrors.SessionTooFreshError | RpcErrors.AuthKeyUnregisteredError;
   export type PaymentsToggleChatStarGiftNotificationsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
   export type PaymentsToggleStarGiftsPinnedToTopErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
   export type PaymentsCanPurchaseStoreErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.InputPurposeInvalidError | RpcErrors.PremiumCurrentlyUnavailableError;
-  export type PaymentsGetResaleStarGiftsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.StargiftInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type PaymentsGetResaleStarGiftsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.StargiftAttributeInvalidError | RpcErrors.StargiftInvalidError | RpcErrors.AuthKeyUnregisteredError;
   export type PaymentsUpdateStarGiftPriceErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.SavedIdEmptyError | RpcErrors.StargiftNotFoundError | RpcErrors.AuthKeyUnregisteredError;
   export type PaymentsCreateStarGiftCollectionErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
   export type PaymentsUpdateStarGiftCollectionErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
@@ -42218,6 +42460,14 @@ export namespace Api {
   export type PaymentsGetStarGiftCollectionsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
   export type PaymentsGetUniqueStarGiftValueInfoErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.StargiftSlugInvalidError | RpcErrors.AuthKeyUnregisteredError;
   export type PaymentsCheckCanSendGiftErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.StargiftInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type PaymentsGetStarGiftAuctionStateErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.StargiftInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type PaymentsGetStarGiftAuctionAcquiredGiftsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.StargiftInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type PaymentsGetStarGiftActiveAuctionsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type PaymentsResolveStarGiftOfferErrors = RpcErrors.MessageIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type PaymentsSendStarGiftOfferErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.InputStarsAmountInvalidError | RpcErrors.InputStarsNanosInvalidError | RpcErrors.InvoiceInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.ResellStarsTooFewError | RpcErrors.ResellStarsTooMuchError | RpcErrors.StargiftOfferInvalidError | RpcErrors.StargiftOfferNotAllowedError | RpcErrors.StargiftSlugInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type PaymentsGetStarGiftUpgradeAttributesErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.StargiftInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type PaymentsGetCraftStarGiftsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.StargiftInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type PaymentsCraftStarGiftErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.SavedIdEmptyError | RpcErrors.AuthKeyUnregisteredError;
   export type StickersCreateStickerSetErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PackShortNameInvalidError | RpcErrors.PackShortNameOccupiedError | RpcErrors.PackTitleInvalidError | RpcErrors.PackTypeInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.StickerEmojiInvalidError | RpcErrors.StickerFileInvalidError | RpcErrors.StickerGifDimensionsError | RpcErrors.StickerPngDimensionsError | RpcErrors.StickerPngNopngError | RpcErrors.StickerTgsNodocError | RpcErrors.StickerTgsNotgsError | RpcErrors.StickerThumbPngNopngError | RpcErrors.StickerThumbTgsNotgsError | RpcErrors.StickerVideoBigError | RpcErrors.StickerVideoNodocError | RpcErrors.StickerVideoNowebmError | RpcErrors.StickersEmptyError | RpcErrors.UserIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
   export type StickersRemoveStickerFromSetErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.StickerInvalidError | RpcErrors.AuthKeyUnregisteredError;
   export type StickersChangeStickerPositionErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.StickerInvalidError | RpcErrors.AuthKeyUnregisteredError;
@@ -42230,29 +42480,29 @@ export namespace Api {
   export type StickersDeleteStickerSetErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.StickersetInvalidError | RpcErrors.AuthKeyUnregisteredError;
   export type StickersReplaceStickerErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.StickerInvalidError | RpcErrors.AuthKeyUnregisteredError;
   export type PhoneGetCallConfigErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
-  export type PhoneRequestCallErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.CallProtocolFlagsInvalidError | RpcErrors.CallProtocolLayerInvalidError | RpcErrors.InputUserDeactivatedError | RpcErrors.ParticipantVersionOutdatedError | RpcErrors.UserIdInvalidError | RpcErrors.UserIsBlockedError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.UserPrivacyRestrictedError;
+  export type PhoneRequestCallErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.CallProtocolFlagsInvalidError | RpcErrors.CallProtocolLayerInvalidError | RpcErrors.InputUserDeactivatedError | RpcErrors.ParticipantVersionOutdatedError | RpcErrors.UserIdInvalidError | RpcErrors.UserIsBlockedError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.UserPrivacyRestrictedError | RpcErrors.RandomIdDuplicateError;
   export type PhoneAcceptCallErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.CallAlreadyAcceptedError | RpcErrors.CallAlreadyDeclinedError | RpcErrors.CallPeerInvalidError | RpcErrors.CallProtocolFlagsInvalidError | RpcErrors.CallProtocolLayerInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.CallProtocolCompatLayerInvalidError | RpcErrors.CallOccupyFailedError;
   export type PhoneConfirmCallErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.CallAlreadyDeclinedError | RpcErrors.CallPeerInvalidError | RpcErrors.AuthKeyUnregisteredError;
   export type PhoneReceivedCallErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.CallAlreadyDeclinedError | RpcErrors.CallPeerInvalidError | RpcErrors.AuthKeyUnregisteredError;
   export type PhoneDiscardCallErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.CallAlreadyAcceptedError | RpcErrors.CallOccupyFailedError | RpcErrors.CallPeerInvalidError | RpcErrors.AuthKeyUnregisteredError;
   export type PhoneSetCallRatingErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.CallPeerInvalidError | RpcErrors.AuthKeyUnregisteredError;
   export type PhoneSaveCallDebugErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.CallPeerInvalidError | RpcErrors.DataJsonInvalidError | RpcErrors.AuthKeyUnregisteredError;
-  export type PhoneSendSignalingDataErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.CallPeerInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type PhoneSendSignalingDataErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.CallNotActiveError | RpcErrors.CallPeerInvalidError | RpcErrors.AuthKeyUnregisteredError;
   export type PhoneCreateGroupCallErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelPrivateError | RpcErrors.ChatAdminRequiredError | RpcErrors.CreateCallFailedError | RpcErrors.GroupcallAlreadyDiscardedError | RpcErrors.PeerIdInvalidError | RpcErrors.ScheduleDateInvalidError | RpcErrors.AuthKeyUnregisteredError;
-  export type PhoneJoinGroupCallErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.DataJsonInvalidError | RpcErrors.GroupcallInvalidError | RpcErrors.GroupcallSsrcDuplicateMuchError | RpcErrors.JoinAsPeerInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.GroupcallForbiddenError;
+  export type PhoneJoinGroupCallErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChatAdminRequiredError | RpcErrors.DataJsonInvalidError | RpcErrors.GroupcallInvalidError | RpcErrors.GroupcallSsrcDuplicateMuchError | RpcErrors.JoinAsPeerInvalidError | RpcErrors.PublicKeyInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.ChatWriteForbiddenError | RpcErrors.GroupcallForbiddenError;
   export type PhoneLeaveGroupCallErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.GroupcallInvalidError | RpcErrors.AuthKeyUnregisteredError;
   export type PhoneInviteToGroupCallErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.GroupcallInvalidError | RpcErrors.InviteForbiddenWithJoinasError | RpcErrors.UserAlreadyInvitedError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.ChatTypeInvalidError | RpcErrors.GroupcallForbiddenError | RpcErrors.UserNotParticipantError;
   export type PhoneDiscardGroupCallErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.GroupcallAlreadyDiscardedError | RpcErrors.GroupcallInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.GroupcallForbiddenError;
-  export type PhoneToggleGroupCallSettingsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.GroupcallInvalidError | RpcErrors.GroupcallNotModifiedError | RpcErrors.AuthKeyUnregisteredError;
+  export type PhoneToggleGroupCallSettingsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.GroupcallInvalidError | RpcErrors.GroupcallNotModifiedError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.GroupcallChangeForbiddenError | RpcErrors.GroupcallForbiddenError;
   export type PhoneGetGroupCallErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.GroupcallInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.GroupcallForbiddenError;
   export type PhoneGetGroupParticipantsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.GroupcallInvalidError | RpcErrors.AuthKeyUnregisteredError;
   export type PhoneCheckGroupCallErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.GroupcallInvalidError | RpcErrors.GroupcallJoinMissingError | RpcErrors.AuthKeyUnregisteredError;
   export type PhoneToggleGroupCallRecordErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.GroupcallInvalidError | RpcErrors.GroupcallNotModifiedError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.GroupcallForbiddenError;
-  export type PhoneEditGroupCallParticipantErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.GroupcallForbiddenError | RpcErrors.GroupcallInvalidError | RpcErrors.ParticipantJoinMissingError | RpcErrors.RaiseHandForbiddenError | RpcErrors.UserVolumeInvalidError | RpcErrors.VideoPauseForbiddenError | RpcErrors.VideoStopForbiddenError | RpcErrors.AuthKeyUnregisteredError;
+  export type PhoneEditGroupCallParticipantErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.GroupcallForbiddenError | RpcErrors.GroupcallInvalidError | RpcErrors.ParticipantJoinMissingError | RpcErrors.RaiseHandForbiddenError | RpcErrors.UserIdInvalidError | RpcErrors.UserVolumeInvalidError | RpcErrors.VideoPauseForbiddenError | RpcErrors.VideoStopForbiddenError | RpcErrors.AuthKeyUnregisteredError;
   export type PhoneEditGroupCallTitleErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.GroupcallInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.GroupcallForbiddenError;
   export type PhoneGetGroupCallJoinAsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
   export type PhoneExportGroupCallInviteErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.GroupcallInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.PublicChannelMissingError;
-  export type PhoneToggleGroupCallStartSubscriptionErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.GroupcallInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.GroupcallAlreadyStartedError;
+  export type PhoneToggleGroupCallStartSubscriptionErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.GroupcallInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.GroupcallAlreadyStartedError | RpcErrors.GroupcallForbiddenError;
   export type PhoneStartScheduledGroupCallErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.GroupcallInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.GroupcallAlreadyStartedError;
   export type PhoneSaveDefaultGroupCallJoinAsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.JoinAsPeerInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
   export type PhoneJoinGroupCallPresentationErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.GroupcallInvalidError | RpcErrors.ParticipantJoinMissingError | RpcErrors.AuthKeyUnregisteredError;
@@ -42266,6 +42516,12 @@ export namespace Api {
   export type PhoneInviteConferenceCallParticipantErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.GroupcallInvalidError | RpcErrors.AuthKeyUnregisteredError;
   export type PhoneDeclineConferenceCallInviteErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.MessageIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
   export type PhoneGetGroupCallChainBlocksErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.GroupcallInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type PhoneSendGroupCallMessageErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.GroupcallInvalidError | RpcErrors.GroupcallJoinMissingError | RpcErrors.AuthKeyUnregisteredError;
+  export type PhoneSendGroupCallEncryptedMessageErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.GroupcallInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type PhoneDeleteGroupCallMessagesErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.GroupcallInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type PhoneDeleteGroupCallParticipantMessagesErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.GroupcallInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type PhoneGetGroupCallStarsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.GroupcallInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type PhoneSaveDefaultSendAsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.GroupcallInvalidError | RpcErrors.AuthKeyUnregisteredError;
   export type LangpackGetLangPackErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.LangCodeNotSupportedError | RpcErrors.LangPackInvalidError | RpcErrors.LanguageInvalidError;
   export type LangpackGetStringsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.LangCodeNotSupportedError | RpcErrors.LangPackInvalidError;
   export type LangpackGetDifferenceErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.LangPackInvalidError;
@@ -42277,8 +42533,9 @@ export namespace Api {
   export type StatsGetMegagroupStatsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChatAdminRequiredError | RpcErrors.MegagroupRequiredError | RpcErrors.AuthKeyUnregisteredError;
   export type StatsGetMessagePublicForwardsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChatAdminRequiredError | RpcErrors.MessageIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
   export type StatsGetMessageStatsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChatAdminRequiredError | RpcErrors.MessageIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
-  export type StatsGetStoryStatsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.StoriesNeverCreatedError | RpcErrors.AuthKeyUnregisteredError;
+  export type StatsGetStoryStatsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.StoriesNeverCreatedError | RpcErrors.AuthKeyUnregisteredError;
   export type StatsGetStoryPublicForwardsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type StatsGetPollStatsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
   export type ChatlistsExportChatlistInviteErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.ChatAdminRequiredError | RpcErrors.ChatlistsTooMuchError | RpcErrors.FilterIdInvalidError | RpcErrors.FilterNotSupportedError | RpcErrors.InvitesTooMuchError | RpcErrors.PeersListEmptyError | RpcErrors.AuthKeyUnregisteredError;
   export type ChatlistsDeleteExportedInviteErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.FilterIdInvalidError | RpcErrors.FilterNotSupportedError | RpcErrors.InviteSlugExpiredError | RpcErrors.InviteSlugInvalidError | RpcErrors.AuthKeyUnregisteredError;
   export type ChatlistsEditExportedInviteErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.FilterIdInvalidError | RpcErrors.FilterNotSupportedError | RpcErrors.InviteSlugEmptyError | RpcErrors.InviteSlugExpiredError | RpcErrors.PeersListEmptyError | RpcErrors.AuthKeyUnregisteredError;
@@ -42291,14 +42548,14 @@ export namespace Api {
   export type ChatlistsGetLeaveChatlistSuggestionsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.FilterIdInvalidError | RpcErrors.FilterNotSupportedError | RpcErrors.AuthKeyUnregisteredError;
   export type ChatlistsLeaveChatlistErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.FilterIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
   export type StoriesCanSendStoryErrors = RpcErrors.BoostsRequiredError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChatAdminRequiredError | RpcErrors.PeerIdInvalidError | RpcErrors.PremiumAccountRequiredError | RpcErrors.StoriesTooMuchError | RpcErrors.StorySendFloodMonthlyError | RpcErrors.StorySendFloodWeeklyError | RpcErrors.AuthKeyUnregisteredError;
-  export type StoriesSendStoryErrors = RpcErrors.BoostsRequiredError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChatAdminRequiredError | RpcErrors.ImageProcessFailedError | RpcErrors.MediaEmptyError | RpcErrors.MediaFileInvalidError | RpcErrors.MediaTypeInvalidError | RpcErrors.MediaVideoStoryMissingError | RpcErrors.PeerIdInvalidError | RpcErrors.PremiumAccountRequiredError | RpcErrors.StoriesTooMuchError | RpcErrors.StoryPeriodInvalidError | RpcErrors.VenueIdInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.BotAccessForbiddenError;
+  export type StoriesSendStoryErrors = RpcErrors.BoostsRequiredError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChatAdminRequiredError | RpcErrors.ImageProcessFailedError | RpcErrors.MediaCaptionTooLongError | RpcErrors.MediaEmptyError | RpcErrors.MediaFileInvalidError | RpcErrors.MediaTypeInvalidError | RpcErrors.MediaVideoStoryMissingError | RpcErrors.PeerIdInvalidError | RpcErrors.PhotoInvalidDimensionsError | RpcErrors.PremiumAccountRequiredError | RpcErrors.ReactionInvalidError | RpcErrors.StoriesTooMuchError | RpcErrors.StoryPeriodInvalidError | RpcErrors.VenueIdInvalidError | RpcErrors.VideoDurationInvalidError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.BotAccessForbiddenError;
   export type StoriesEditStoryErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.StoryNotModifiedError | RpcErrors.AuthKeyUnregisteredError;
   export type StoriesDeleteStoriesErrors = RpcErrors.BusinessConnectionInvalidError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.StoryIdEmptyError | RpcErrors.AuthKeyUnregisteredError | RpcErrors.BotAccessForbiddenError;
   export type StoriesTogglePinnedErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
   export type StoriesGetAllStoriesErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
   export type StoriesGetPinnedStoriesErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.UserIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
   export type StoriesGetStoriesArchiveErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChatAdminRequiredError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
-  export type StoriesGetStoriesByIDErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.PeerIdInvalidError | RpcErrors.StoriesNeverCreatedError | RpcErrors.StoryIdEmptyError | RpcErrors.AuthKeyUnregisteredError;
+  export type StoriesGetStoriesByIDErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.MsgIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.StoriesNeverCreatedError | RpcErrors.StoryIdEmptyError | RpcErrors.AuthKeyUnregisteredError;
   export type StoriesToggleAllStoriesHiddenErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
   export type StoriesReadStoriesErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.MaxIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.StoriesNeverCreatedError | RpcErrors.AuthKeyUnregisteredError;
   export type StoriesIncrementStoryViewsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.StoryIdEmptyError | RpcErrors.AuthKeyUnregisteredError;
@@ -42307,7 +42564,7 @@ export namespace Api {
   export type StoriesExportStoryLinkErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.StoryIdEmptyError | RpcErrors.UserPublicMissingError | RpcErrors.AuthKeyUnregisteredError;
   export type StoriesReportErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
   export type StoriesActivateStealthModeErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PremiumAccountRequiredError | RpcErrors.AuthKeyUnregisteredError;
-  export type StoriesSendReactionErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.ReactionInvalidError | RpcErrors.StoryIdEmptyError | RpcErrors.StoryIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type StoriesSendReactionErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.ReactionInvalidError | RpcErrors.StoriesNeverCreatedError | RpcErrors.StoryIdEmptyError | RpcErrors.StoryIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
   export type StoriesGetPeerStoriesErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelInvalidError | RpcErrors.ChannelPrivateError | RpcErrors.MsgIdInvalidError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
   export type StoriesGetAllReadPeerStoriesErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
   export type StoriesGetPeerMaxIDsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
@@ -42322,6 +42579,7 @@ export namespace Api {
   export type StoriesDeleteAlbumErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
   export type StoriesGetAlbumsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
   export type StoriesGetAlbumStoriesErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
+  export type StoriesStartLiveErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChannelMonoforumUnsupportedError | RpcErrors.ChatAdminRequiredError | RpcErrors.PeerIdInvalidError | RpcErrors.StoryLiveAlreadyError | RpcErrors.AuthKeyUnregisteredError;
   export type PremiumGetBoostsListErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.ChatAdminRequiredError | RpcErrors.PeerIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
   export type PremiumGetMyBoostsErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
   export type PremiumApplyBoostErrors = RpcErrors.BoostsEmptyError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.PeerIdInvalidError | RpcErrors.SlotsEmptyError | RpcErrors.AuthKeyUnregisteredError;
@@ -42335,6 +42593,13 @@ export namespace Api {
   export type SmsjobsGetSmsJobErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.SmsjobIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
   export type SmsjobsFinishJobErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.SmsjobIdInvalidError | RpcErrors.AuthKeyUnregisteredError;
   export type FragmentGetCollectibleInfoErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.CollectibleInvalidError | RpcErrors.CollectibleNotFoundError | RpcErrors.AuthKeyUnregisteredError;
+  export type AicomposeCreateToneErrors = RpcErrors.AicomposeToneTitleInvalidError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type AicomposeUpdateToneErrors = RpcErrors.AicomposeToneInvalidError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type AicomposeSaveToneErrors = RpcErrors.AicomposeToneInvalidError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type AicomposeDeleteToneErrors = RpcErrors.AicomposeToneInvalidError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type AicomposeGetToneErrors = RpcErrors.AicomposeToneInvalidError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type AicomposeGetTonesErrors = RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
+  export type AicomposeGetToneExampleErrors = RpcErrors.AicomposeToneInvalidError | RpcErrors.BusinessConnectionNotAllowedError | RpcErrors.AuthKeyUnregisteredError;
 
   export interface InputClientProxyIn {
     _?: "inputClientProxy";
@@ -46567,7 +46832,7 @@ export namespace Api {
        */
       importAuthorization(params: AuthImportAuthorizationParams, opts?: ApiCallOptions): Promise<auth.TypeAuthorization>;
       /**
-       * Binds a temporary authorization key temp_auth_key_id to the permanent authorization key perm_auth_key_id . Each permanent key may only be bound to one temporary key at a time, binding a new temporary key overwrites the previous one. For more information, see Perfect Forward Secrecy .
+       * Binds a temporary authorization key temp_auth_key_id to the permanent authorization key perm_auth_key_id . For more information, see Perfect Forward Secrecy .
        * @see https://core.telegram.org/method/auth.bindTempAuthKey
        * @throws {AuthBindTempAuthKeyErrors}
        */
@@ -46675,15 +46940,24 @@ export namespace Api {
        */
       reportMissingCode(params: AuthReportMissingCodeParams, opts?: ApiCallOptions): Promise<Bool>;
       /**
+       * Checks the status of a login payment .
+       * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/auth.checkPaidAuth
+       * @throws {AuthCheckPaidAuthErrors}
        */
       checkPaidAuth(params: AuthCheckPaidAuthParams, opts?: ApiCallOptions): Promise<auth.TypeSentCode>;
       /**
+       * Initialize login with a passkey over an unauthenticated connection, see here » for more info.
+       * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/auth.initPasskeyLogin
+       * @throws {AuthInitPasskeyLoginErrors}
        */
       initPasskeyLogin(params: AuthInitPasskeyLoginParams, opts?: ApiCallOptions): Promise<auth.TypePasskeyLoginOptions>;
       /**
+       * Complete login with a passkey over an unauthenticated connection, see here » for more info. Must be sent to the user's native DC, as specified by the user_handle ( dcId:userId ) returned in the passkey assertion, see here » for the full flow.
+       * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/auth.finishPasskeyLogin
+       * @throws {AuthFinishPasskeyLoginErrors}
        */
       finishPasskeyLogin(params: AuthFinishPasskeyLoginParams, opts?: ApiCallOptions): Promise<auth.TypeAuthorization>;
       /**
@@ -47484,7 +47758,7 @@ export namespace Api {
        */
       setReactionsNotifySettings(params: AccountSetReactionsNotifySettingsParams, opts?: ApiCallOptions): Promise<Api.TypeReactionsNotifySettings>;
       /**
-       * Obtain a list of emoji statuses » for owned collectible gifts .
+       * Obtain a list of emoji statuses » for owned or hosted collectible gifts » .
        * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/account.getCollectibleEmojiStatuses
        * @throws {AccountGetCollectibleEmojiStatusesErrors}
@@ -47526,46 +47800,68 @@ export namespace Api {
        */
       getSavedMusicIds(params: AccountGetSavedMusicIdsParams, opts?: ApiCallOptions): Promise<account.TypeSavedMusicIds>;
       /**
-       * Obtain all chat themes » associated to owned collectible gifts » .
+       * Obtain all chat themes » associated to owned or hosted collectible gifts » .
        * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/account.getUniqueGiftChatThemes
        * @throws {AccountGetUniqueGiftChatThemesErrors}
        */
       getUniqueGiftChatThemes(params: AccountGetUniqueGiftChatThemesParams, opts?: ApiCallOptions): Promise<account.TypeChatThemes>;
       /**
+       * Initialize passkey registration for the current account, see here » for more info on the full flow.
+       * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/account.initPasskeyRegistration
+       * @throws {AccountInitPasskeyRegistrationErrors}
        */
       initPasskeyRegistration(opts?: ApiCallOptions): Promise<account.TypePasskeyRegistrationOptions>;
       /**
+       * Complete passkey registration for the current account, see here » for more info on the full flow.
+       * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/account.registerPasskey
+       * @throws {AccountRegisterPasskeyErrors}
        */
       registerPasskey(params: AccountRegisterPasskeyParams, opts?: ApiCallOptions): Promise<Api.TypePasskey>;
       /**
+       * List the passkeys associated to the current account that can be used to log in, see here » for more info on passkeys.
+       * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/account.getPasskeys
+       * @throws {AccountGetPasskeysErrors}
        */
       getPasskeys(opts?: ApiCallOptions): Promise<account.TypePasskeys>;
       /**
+       * Delete a passkey associated to the current account, see here » for more info.
+       * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/account.deletePasskey
+       * @throws {AccountDeletePasskeyErrors}
        */
       deletePasskey(params: AccountDeletePasskeyParams, opts?: ApiCallOptions): Promise<Bool>;
       /**
+       * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/account.confirmBotConnection
+       * @throws {AccountConfirmBotConnectionErrors}
        */
       confirmBotConnection(params: AccountConfirmBotConnectionParams, opts?: ApiCallOptions): Promise<Bool>;
       /**
+       * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/account.getWebBrowserSettings
+       * @throws {AccountGetWebBrowserSettingsErrors}
        */
       getWebBrowserSettings(params: AccountGetWebBrowserSettingsParams, opts?: ApiCallOptions): Promise<account.TypeWebBrowserSettings>;
       /**
+       * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/account.updateWebBrowserSettings
+       * @throws {AccountUpdateWebBrowserSettingsErrors}
        */
       updateWebBrowserSettings(params: AccountUpdateWebBrowserSettingsParams, opts?: ApiCallOptions): Promise<account.TypeWebBrowserSettings>;
       /**
+       * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/account.toggleWebBrowserSettingsException
+       * @throws {AccountToggleWebBrowserSettingsExceptionErrors}
        */
       toggleWebBrowserSettingsException(params: AccountToggleWebBrowserSettingsExceptionParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
       /**
+       * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/account.deleteWebBrowserSettingsExceptions
+       * @throws {AccountDeleteWebBrowserSettingsExceptionsErrors}
        */
       deleteWebBrowserSettingsExceptions(opts?: ApiCallOptions): Promise<account.TypeWebBrowserSettings>;
     };
@@ -47598,7 +47894,6 @@ export namespace Api {
       getRequirementsToContact(params: UsersGetRequirementsToContactParams, opts?: ApiCallOptions): Promise<Api.TypeRequirementToContact[]>;
       /**
        * Get songs pinned to the user's profile, see here » for more info.
-       * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/users.getSavedMusic
        * @throws {UsersGetSavedMusicErrors}
        */
@@ -47611,7 +47906,10 @@ export namespace Api {
        */
       getSavedMusicByID(params: UsersGetSavedMusicByIDParams, opts?: ApiCallOptions): Promise<users.TypeSavedMusic>;
       /**
+       * Suggest a birthday to another user, see here » for more info on birthdays in the API.
+       * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/users.suggestBirthday
+       * @throws {UsersSuggestBirthdayErrors}
        */
       suggestBirthday(params: UsersSuggestBirthdayParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
     };
@@ -47756,7 +48054,7 @@ export namespace Api {
        */
       blockFromReplies(params: ContactsBlockFromRepliesParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
       /**
-       * Resolve a phone number to get user info, if their privacy settings allow it.
+       * Resolve a phone number to get user info, if their privacy settings allow it. Make sure to implement client-side ratelimiting/debounce for this method, allowing at most 1 call every 3 seconds.
        * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/contacts.resolvePhone
        * @throws {ContactsResolvePhoneErrors}
@@ -47805,7 +48103,10 @@ export namespace Api {
        */
       getSponsoredPeers(params: ContactsGetSponsoredPeersParams, opts?: ApiCallOptions): Promise<contacts.TypeSponsoredPeers>;
       /**
+       * Update the private note associated to a contact; see here » for more info.
+       * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/contacts.updateContactNote
+       * @throws {ContactsUpdateContactNoteErrors}
        */
       updateContactNote(params: ContactsUpdateContactNoteParams, opts?: ApiCallOptions): Promise<Bool>;
     };
@@ -47824,7 +48125,7 @@ export namespace Api {
        */
       getDialogs(params: MessagesGetDialogsParams, opts?: ApiCallOptions): Promise<messages.TypeDialogs>;
       /**
-       * Returns the conversation history with one interlocutor / within a chat
+       * Returns the message history in a peer. Results are ordered by date (descending).
        * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/messages.getHistory
        * @throws {MessagesGetHistoryErrors}
@@ -48408,14 +48709,14 @@ export namespace Api {
        */
       getUnreadMentions(params: MessagesGetUnreadMentionsParams, opts?: ApiCallOptions): Promise<messages.TypeMessages>;
       /**
-       * Mark mentions as read
+       * Mark mentions as read; can be used in forums but cannot be used in monoforums .
        * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/messages.readMentions
        * @throws {MessagesReadMentionsErrors}
        */
       readMentions(params: MessagesReadMentionsParams, opts?: ApiCallOptions): Promise<messages.TypeAffectedHistory>;
       /**
-       * Get live location history of a certain user
+       * Get all recent live locations sent to a specific chat: returns up to 1 location message ( messageMediaGeoLive ) per chat participant.
        * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/messages.getRecentLocations
        * @throws {MessagesGetRecentLocationsErrors}
@@ -48478,7 +48779,7 @@ export namespace Api {
        */
       updatePinnedMessage(params: MessagesUpdatePinnedMessageParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
       /**
-       * Vote in a poll Starting from layer 159, the vote will be sent from the peer specified using messages.saveDefaultSendAs .
+       * Vote in a poll Starting from layer 159, the vote will be sent from the peer specified using messages.saveDefaultSendAs . Before voting, clients should check that the user is actually allowed to vote: voting is not possible if the poll is closed, if it is subscriber-only » and the user is not an eligible subscriber, or if it is country-restricted » and the user's phone_country_iso2 » is not in the poll's allowed country list. See vote restrictions » for the full list of conditions.
        * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/messages.sendVote
        * @throws {MessagesSendVoteErrors}
@@ -48816,7 +49117,7 @@ export namespace Api {
        */
       hideAllChatJoinRequests(params: MessagesHideAllChatJoinRequestsParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
       /**
-       * Enable or disable content protection on a channel or chat
+       * Enable or disable content protection on a channel, group or private chat.
        * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/messages.toggleNoForwards
        * @throws {MessagesToggleNoForwardsErrors}
@@ -49401,107 +49702,177 @@ export namespace Api {
        */
       toggleSuggestedPostApproval(params: MessagesToggleSuggestedPostApprovalParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
       /**
+       * Get topics of a forum
+       * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/messages.getForumTopics
+       * @throws {MessagesGetForumTopicsErrors}
        */
       getForumTopics(params: MessagesGetForumTopicsParams, opts?: ApiCallOptions): Promise<messages.TypeForumTopics>;
       /**
+       * Get forum topics by their ID
        * @see https://core.telegram.org/method/messages.getForumTopicsByID
+       * @throws {MessagesGetForumTopicsByIDErrors}
        */
       getForumTopicsByID(params: MessagesGetForumTopicsByIDParams, opts?: ApiCallOptions): Promise<messages.TypeForumTopics>;
       /**
+       * Edit forum topic .
        * @see https://core.telegram.org/method/messages.editForumTopic
+       * @throws {MessagesEditForumTopicErrors}
        */
       editForumTopic(params: MessagesEditForumTopicParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
       /**
+       * Pin or unpin forum topics
+       * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/messages.updatePinnedForumTopic
+       * @throws {MessagesUpdatePinnedForumTopicErrors}
        */
       updatePinnedForumTopic(params: MessagesUpdatePinnedForumTopicParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
       /**
+       * Reorder pinned forum topics
+       * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/messages.reorderPinnedForumTopics
+       * @throws {MessagesReorderPinnedForumTopicsErrors}
        */
       reorderPinnedForumTopics(params: MessagesReorderPinnedForumTopicsParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
       /**
+       * Create a forum topic .
        * @see https://core.telegram.org/method/messages.createForumTopic
+       * @throws {MessagesCreateForumTopicErrors}
        */
       createForumTopic(params: MessagesCreateForumTopicParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
       /**
+       * Delete message history of a forum topic
        * @see https://core.telegram.org/method/messages.deleteTopicHistory
+       * @throws {MessagesDeleteTopicHistoryErrors}
        */
       deleteTopicHistory(params: MessagesDeleteTopicHistoryParams, opts?: ApiCallOptions): Promise<messages.TypeAffectedHistory>;
       /**
+       * Fetch dice game information.
+       * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/messages.getEmojiGameInfo
+       * @throws {MessagesGetEmojiGameInfoErrors}
        */
       getEmojiGameInfo(opts?: ApiCallOptions): Promise<messages.TypeEmojiGameInfo>;
       /**
+       * Summarize the contents of a message with AI, see here » for more info. Clients should use message . summary_from_language as a hint for showing a summarization button; its absence does not forbid invoking this method.
+       * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/messages.summarizeText
+       * @throws {MessagesSummarizeTextErrors}
        */
       summarizeText(params: MessagesSummarizeTextParams, opts?: ApiCallOptions): Promise<Api.TypeTextWithEntities>;
       /**
+       * Transfer the ownership of a basic group, supergroup or channel to another user, see here » for the full flow.
+       * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/messages.editChatCreator
+       * @throws {MessagesEditChatCreatorErrors}
        */
       editChatCreator(params: MessagesEditChatCreatorParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
       /**
+       * Group/channel owners only: returns the ID of the user that will become the new owner of the group if we decide to leave the group, see here » for more info on the full flow.
+       * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/messages.getFutureChatCreatorAfterLeave
+       * @throws {MessagesGetFutureChatCreatorAfterLeaveErrors}
        */
       getFutureChatCreatorAfterLeave(params: MessagesGetFutureChatCreatorAfterLeaveParams, opts?: ApiCallOptions): Promise<Api.TypeUser>;
       /**
+       * Edit a group participant's tag » .
        * @see https://core.telegram.org/method/messages.editChatParticipantRank
+       * @throws {MessagesEditChatParticipantRankErrors}
        */
       editChatParticipantRank(params: MessagesEditChatParticipantRankParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
       /**
+       * Decline an incoming OAuth authorization request » , notifying the server that the user refused the login request.
+       * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/messages.declineUrlAuth
+       * @throws {MessagesDeclineUrlAuthErrors}
        */
       declineUrlAuth(params: MessagesDeclineUrlAuthParams, opts?: ApiCallOptions): Promise<Bool>;
       /**
+       * Validate the match code selected by the user against the code shown on the login page, as part of the OAuth authorization flow » . Only usable when both match_codes and match_codes_first are set in the urlAuthResultRequest returned by messages.requestUrlAuth . If boolTrue is returned, proceed with the login flow and pass the verified code to messages.acceptUrlAuth . match_code .
+       * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/messages.checkUrlAuthMatchCode
+       * @throws {MessagesCheckUrlAuthMatchCodeErrors}
        */
       checkUrlAuthMatchCode(params: MessagesCheckUrlAuthMatchCodeParams, opts?: ApiCallOptions): Promise<Bool>;
       /**
+       * Invokes telegram's AI Editor that can translate, transform, fixup and/or emojify your message in a number of different ways, privately powered by Cocoon , see here » for more info! All of the modes specified below can be combined.
+       * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/messages.composeMessageWithAI
+       * @throws {MessagesComposeMessageWithAIErrors}
        */
       composeMessageWithAI(params: MessagesComposeMessageWithAIParams, opts?: ApiCallOptions): Promise<messages.TypeComposedMessageWithAI>;
       /**
+       * Report viewport read metrics for visible messages, indicating how long each message stayed in the chat viewport, see here » for more info on the full flow.
+       * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/messages.reportReadMetrics
+       * @throws {MessagesReportReadMetricsErrors}
        */
       reportReadMetrics(params: MessagesReportReadMetricsParams, opts?: ApiCallOptions): Promise<Bool>;
       /**
+       * Report the listening duration of a music track (audio document without the voice flag), see here » for more info on the full flow.
+       * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/messages.reportMusicListen
+       * @throws {MessagesReportMusicListenErrors}
        */
       reportMusicListen(params: MessagesReportMusicListenParams, opts?: ApiCallOptions): Promise<Bool>;
       /**
+       * Add an answer option to an open-answer poll »
+       * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/messages.addPollAnswer
+       * @throws {MessagesAddPollAnswerErrors}
        */
       addPollAnswer(params: MessagesAddPollAnswerParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
       /**
+       * Remove an answer option from an open-answer poll »
+       * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/messages.deletePollAnswer
+       * @throws {MessagesDeletePollAnswerErrors}
        */
       deletePollAnswer(params: MessagesDeletePollAnswerParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
       /**
+       * Get messages containing polls with unread votes »
+       * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/messages.getUnreadPollVotes
+       * @throws {MessagesGetUnreadPollVotesErrors}
        */
       getUnreadPollVotes(params: MessagesGetUnreadPollVotesParams, opts?: ApiCallOptions): Promise<messages.TypeMessages>;
       /**
+       * Mark all unread poll votes » in a chat as read
+       * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/messages.readPollVotes
+       * @throws {MessagesReadPollVotesErrors}
        */
       readPollVotes(params: MessagesReadPollVotesParams, opts?: ApiCallOptions): Promise<messages.TypeAffectedHistory>;
       /**
+       * Bots may use this method to answer a guest mode » query received via an updateBotGuestChatQuery update, providing the message to post into the chat as a guest, see here » for more info.
+       * @remarks bots-only
        * @see https://core.telegram.org/method/messages.setBotGuestChatResult
+       * @throws {MessagesSetBotGuestChatResultErrors}
        */
       setBotGuestChatResult(params: MessagesSetBotGuestChatResultParams, opts?: ApiCallOptions): Promise<Api.TypeInputBotInlineMessageID>;
       /**
+       * As an admin, remove all of a specific participant's reactions from every message in a group or channel.
        * @see https://core.telegram.org/method/messages.deleteParticipantReactions
+       * @throws {MessagesDeleteParticipantReactionsErrors}
        */
       deleteParticipantReactions(params: MessagesDeleteParticipantReactionsParams, opts?: ApiCallOptions): Promise<Bool>;
       /**
+       * As an admin, remove all of a specific participant's reactions from a single message.
        * @see https://core.telegram.org/method/messages.deleteParticipantReaction
+       * @throws {MessagesDeleteParticipantReactionErrors}
        */
       deleteParticipantReaction(params: MessagesDeleteParticipantReactionParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
       /**
+       * Fetch the message history of a user's personal channel » .
+       * @remarks bots-only
        * @see https://core.telegram.org/method/messages.getPersonalChannelHistory
+       * @throws {MessagesGetPersonalChannelHistoryErrors}
        */
       getPersonalChannelHistory(params: MessagesGetPersonalChannelHistoryParams, opts?: ApiCallOptions): Promise<messages.TypeMessages>;
       /**
+       * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/messages.getRichMessage
+       * @throws {MessagesGetRichMessageErrors}
        */
       getRichMessage(params: MessagesGetRichMessageParams, opts?: ApiCallOptions): Promise<messages.TypeMessages>;
       /**
@@ -50026,7 +50397,7 @@ export namespace Api {
        */
       convertToGigagroup(params: ChannelsConvertToGigagroupParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
       /**
-       * Obtains a list of peers that can be used to send messages in a specific group
+       * Obtains a list of peers that can be displayed as the sender in a specific context. With for_live_stories , returns peers that may author live story in-call messages » .
        * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/channels.getSendAs
        * @throws {ChannelsGetSendAsErrors}
@@ -50403,35 +50774,58 @@ export namespace Api {
        */
       getBotRecommendations(params: BotsGetBotRecommendationsParams, opts?: ApiCallOptions): Promise<users.TypeUsers>;
       /**
+       * Check whether a username is available and valid for use when creating a managed bot » .
+       * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/bots.checkUsername
+       * @throws {BotsCheckUsernameErrors}
        */
       checkUsername(params: BotsCheckUsernameParams, opts?: ApiCallOptions): Promise<Bool>;
       /**
+       * Create a managed bot » owned by the current user and controlled by the specified manager bot.
+       * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/bots.createBot
+       * @throws {BotsCreateBotErrors}
        */
       createBot(params: BotsCreateBotParams, opts?: ApiCallOptions): Promise<Api.TypeUser>;
       /**
+       * Export the bot token of a managed bot » ; can only be called by the manager bot.
+       * @remarks bots-only
        * @see https://core.telegram.org/method/bots.exportBotToken
+       * @throws {BotsExportBotTokenErrors}
        */
       exportBotToken(params: BotsExportBotTokenParams, opts?: ApiCallOptions): Promise<bots.TypeExportedBotToken>;
       /**
+       * Bots may use this method to prepare a peer request button for a Mini App , see here » for more info.
+       * @remarks bots-only
        * @see https://core.telegram.org/method/bots.requestWebViewButton
+       * @throws {BotsRequestWebViewButtonErrors}
        */
       requestWebViewButton(params: BotsRequestWebViewButtonParams, opts?: ApiCallOptions): Promise<bots.TypeRequestedButton>;
       /**
+       * Fetch the peer request button a bot prepared for a Mini App with bots.requestWebViewButton , invoked when the Mini App emits a web_app_request_chat event, see here » for more info.
+       * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/bots.getRequestedWebViewButton
+       * @throws {BotsGetRequestedWebViewButtonErrors}
        */
       getRequestedWebViewButton(params: BotsGetRequestedWebViewButtonParams, opts?: ApiCallOptions): Promise<Api.TypeKeyboardButton>;
       /**
+       * Get the access restriction settings » of a managed bot; can only be called by the manager bot.
+       * @remarks bots-only
        * @see https://core.telegram.org/method/bots.getAccessSettings
+       * @throws {BotsGetAccessSettingsErrors}
        */
       getAccessSettings(params: BotsGetAccessSettingsParams, opts?: ApiCallOptions): Promise<bots.TypeAccessSettings>;
       /**
+       * Edit the access restriction settings » of a managed bot; can only be called by the manager bot.
+       * @remarks bots-only
        * @see https://core.telegram.org/method/bots.editAccessSettings
+       * @throws {BotsEditAccessSettingsErrors}
        */
       editAccessSettings(params: BotsEditAccessSettingsParams, opts?: ApiCallOptions): Promise<Bool>;
       /**
+       * @remarks bots-only
        * @see https://core.telegram.org/method/bots.setJoinChatResults
+       * @throws {BotsSetJoinChatResultsErrors}
        */
       setJoinChatResults(params: BotsSetJoinChatResultsParams, opts?: ApiCallOptions): Promise<Bool>;
     };
@@ -50549,7 +50943,7 @@ export namespace Api {
        */
       getStarsTopupOptions(opts?: ApiCallOptions): Promise<Api.TypeStarsTopupOption[]>;
       /**
-       * Get the current Telegram Stars balance of the current account (with peer= inputPeerSelf ), or the stars balance of the bot specified in peer .
+       * Get the current Telegram Stars balance of the current account (with peer= inputPeerSelf ), or the stars balance of the bot or channel specified in peer .
        * @remarks user-only (bots rejected) · works over a business connection
        * @see https://core.telegram.org/method/payments.getStarsStatus
        * @throws {PaymentsGetStarsStatusErrors}
@@ -50645,7 +51039,7 @@ export namespace Api {
        */
       getStarGifts(params: PaymentsGetStarGiftsParams, opts?: ApiCallOptions): Promise<payments.TypeStarGifts>;
       /**
-       * Display or remove a received gift » from our profile.
+       * Display or remove a received or hosted gift » from our profile.
        * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/payments.saveStarGift
        * @throws {PaymentsSaveStarGiftErrors}
@@ -50729,8 +51123,8 @@ export namespace Api {
        */
       getUniqueStarGift(params: PaymentsGetUniqueStarGiftParams, opts?: ApiCallOptions): Promise<payments.TypeUniqueStarGift>;
       /**
-       * Fetch the full list of gifts owned by a peer. Note that unlike what the name suggests, the method can be used to fetch both "saved" and "unsaved" gifts (aka gifts both pinned and not pinned) to the profile, depending on the passed flags.
-       * @remarks user-only (bots rejected) · works over a business connection
+       * Fetch the full list of gifts » owned, received or hosted » by a peer. Note that unlike what the name suggests, the method can be used to fetch both "saved" and "unsaved" gifts (aka gifts both pinned and not pinned) to the profile, depending on the passed flags.
+       * @remarks works over a business connection
        * @see https://core.telegram.org/method/payments.getSavedStarGifts
        * @throws {PaymentsGetSavedStarGiftsErrors}
        */
@@ -50834,35 +51228,58 @@ export namespace Api {
        */
       checkCanSendGift(params: PaymentsCheckCanSendGiftParams, opts?: ApiCallOptions): Promise<payments.TypeCheckCanSendGiftResult>;
       /**
+       * Returns info about a collectible gift auction » ; also subscribes the user to auction updates, see here » for more info on the full flow.
+       * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/payments.getStarGiftAuctionState
+       * @throws {PaymentsGetStarGiftAuctionStateErrors}
        */
       getStarGiftAuctionState(params: PaymentsGetStarGiftAuctionStateParams, opts?: ApiCallOptions): Promise<payments.TypeStarGiftAuctionState>;
       /**
+       * Fetches all the gifts that the current user won in an auction .
+       * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/payments.getStarGiftAuctionAcquiredGifts
+       * @throws {PaymentsGetStarGiftAuctionAcquiredGiftsErrors}
        */
       getStarGiftAuctionAcquiredGifts(params: PaymentsGetStarGiftAuctionAcquiredGiftsParams, opts?: ApiCallOptions): Promise<payments.TypeStarGiftAuctionAcquiredGifts>;
       /**
+       * Fetches all currently active gift auctions the user has ever bid on (including auctions where the user was outbid and their bid was returned), as long as the auction hasn't ended yet. This method is primarily used to display an auction badge in the chat list immediately on app startup, without waiting for real-time updateStarGiftAuctionState updates to arrive: the client calls it to discover which auctions the user is participating in and show the badge proactively. To instead fetch the full state of a single auction, subscribe to its real-time updates and render the detailed auction UI (typically when the user opens a specific auction), use payments.getStarGiftAuctionState .
+       * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/payments.getStarGiftActiveAuctions
+       * @throws {PaymentsGetStarGiftActiveAuctionsErrors}
        */
       getStarGiftActiveAuctions(params: PaymentsGetStarGiftActiveAuctionsParams, opts?: ApiCallOptions): Promise<payments.TypeStarGiftActiveAuctions>;
       /**
+       * Accept or decline a previously received collectible gift purchase offer » , see here » for the full flow.
        * @see https://core.telegram.org/method/payments.resolveStarGiftOffer
+       * @throws {PaymentsResolveStarGiftOfferErrors}
        */
       resolveStarGiftOffer(params: PaymentsResolveStarGiftOfferParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
       /**
+       * Send an offer to purchase a collectible gift » , see here » for the full flow.
+       * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/payments.sendStarGiftOffer
+       * @throws {PaymentsSendStarGiftOfferErrors}
        */
       sendStarGiftOffer(params: PaymentsSendStarGiftOfferParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
       /**
+       * Obtains the full list of just the collectible attributes that may appear for a gift type once it's upgraded to a collectible gift » . The result may also include starGiftAttributeModel constructors with the crafted flag set: these models are reserved for crafting » and should be filtered out from regular upgrade previews (and vice versa).
+       * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/payments.getStarGiftUpgradeAttributes
+       * @throws {PaymentsGetStarGiftUpgradeAttributesErrors}
        */
       getStarGiftUpgradeAttributes(params: PaymentsGetStarGiftUpgradeAttributesParams, opts?: ApiCallOptions): Promise<payments.TypeStarGiftUpgradeAttributes>;
       /**
+       * Obtain owned collectible gifts » of a specific type that can be used for crafting » .
+       * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/payments.getCraftStarGifts
+       * @throws {PaymentsGetCraftStarGiftsErrors}
        */
       getCraftStarGifts(params: PaymentsGetCraftStarGiftsParams, opts?: ApiCallOptions): Promise<payments.TypeSavedStarGifts>;
       /**
+       * Craft a new collectible gift » by combining 1 to 4 owned collectible gifts of the same base gift type. The passed gifts must all have the same starGiftUnique . gift_id , must be usable for crafting, and must not be blocked by a future can_craft_at timestamp. The first passed gift must not be located on the TON blockchain .
+       * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/payments.craftStarGift
+       * @throws {PaymentsCraftStarGiftErrors}
        */
       craftStarGift(params: PaymentsCraftStarGiftParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
     };
@@ -50938,286 +51355,304 @@ export namespace Api {
     };
     phone: {
       /**
-       * Get phone call configuration to be passed to libtgvoip's shared config
+       * DEPRECATED: Get phone call configuration to be passed to the libtgvoip (deprecated) shared config.
        * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/phone.getCallConfig
        * @throws {PhoneGetCallConfigErrors}
        */
       getCallConfig(opts?: ApiCallOptions): Promise<Api.TypeDataJSON>;
       /**
-       * Start a telegram phone call
+       * Start a telegram phone call, see here » for more info on the full flow.
        * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/phone.requestCall
        * @throws {PhoneRequestCallErrors}
        */
       requestCall(params: PhoneRequestCallParams, opts?: ApiCallOptions): Promise<phone.TypePhoneCall>;
       /**
-       * Accept incoming call
+       * Accept incoming call, see here » for more info on the full flow.
        * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/phone.acceptCall
        * @throws {PhoneAcceptCallErrors}
        */
       acceptCall(params: PhoneAcceptCallParams, opts?: ApiCallOptions): Promise<phone.TypePhoneCall>;
       /**
-       * Complete phone call E2E encryption key exchange »
+       * Complete phone call E2E encryption key exchange » , see here » for more info on the full flow.
        * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/phone.confirmCall
        * @throws {PhoneConfirmCallErrors}
        */
       confirmCall(params: PhoneConfirmCallParams, opts?: ApiCallOptions): Promise<phone.TypePhoneCall>;
       /**
-       * Optional: notify the server that the user is currently busy in a call: this will automatically refuse all incoming phone calls until the current phone call is ended.
+       * Optional: notify the server that the user is currently busy in a call: this will automatically refuse all incoming phone calls until the current phone call is ended, see here » for more info on the full flow.
        * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/phone.receivedCall
        * @throws {PhoneReceivedCallErrors}
        */
       receivedCall(params: PhoneReceivedCallParams, opts?: ApiCallOptions): Promise<Bool>;
       /**
-       * Refuse or end running call
+       * Refuse or end running call, see here » for more info on the full flow.
        * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/phone.discardCall
        * @throws {PhoneDiscardCallErrors}
        */
       discardCall(params: PhoneDiscardCallParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
       /**
-       * Rate a call, returns info about the rating message sent to the official VoIP bot.
+       * Rate a call, returns info about the rating message sent to the official VoIP bot, see here » for more info on the full flow.
        * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/phone.setCallRating
        * @throws {PhoneSetCallRatingErrors}
        */
       setCallRating(params: PhoneSetCallRatingParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
       /**
-       * Send phone call debug data to server
+       * Send phone call debug data to server.
        * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/phone.saveCallDebug
        * @throws {PhoneSaveCallDebugErrors}
        */
       saveCallDebug(params: PhoneSaveCallDebugParams, opts?: ApiCallOptions): Promise<Bool>;
       /**
-       * Send VoIP signaling data
+       * Send VoIP signaling data for an ongoing phone call.
        * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/phone.sendSignalingData
        * @throws {PhoneSendSignalingDataErrors}
        */
       sendSignalingData(params: PhoneSendSignalingDataParams, opts?: ApiCallOptions): Promise<Bool>;
       /**
-       * Create a group call or livestream
+       * Create a video chat or livestream, see here » for the full flow.
        * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/phone.createGroupCall
        * @throws {PhoneCreateGroupCallErrors}
        */
       createGroupCall(params: PhoneCreateGroupCallParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
       /**
-       * Join a group call
+       * Join any group call type » . Conference calls additionally require the E2E joining flow » . The params field must contain a join payload generated by the local tgcalls group-call engine. It contains a random non-zero audio ssrc , ICE ufrag and pwd , DTLS fingerprints , and, when publishing video, ssrc-groups . For example, a join payload without published video has the following shape: When joining an RTMP-mode call, generate the payload without published video source groups.
        * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/phone.joinGroupCall
        * @throws {PhoneJoinGroupCallErrors}
        */
       joinGroupCall(params: PhoneJoinGroupCallParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
       /**
-       * Leave a group call
+       * Leave a group call without ending it for other participants. This method can be used with all group call types, see here » for more info.
        * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/phone.leaveGroupCall
        * @throws {PhoneLeaveGroupCallErrors}
        */
       leaveGroupCall(params: PhoneLeaveGroupCallParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
       /**
-       * Invite a set of users to a group call.
+       * Invite a set of users to a video chat/livestream » ; cannot be used for live stories » or conference calls » .
        * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/phone.inviteToGroupCall
        * @throws {PhoneInviteToGroupCallErrors}
        */
       inviteToGroupCall(params: PhoneInviteToGroupCallParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
       /**
-       * Terminate a group call
+       * Terminate a group call, ending the room for all participants. This method can be used with all group call types, see here » for more info.
        * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/phone.discardGroupCall
        * @throws {PhoneDiscardGroupCallErrors}
        */
       discardGroupCall(params: PhoneDiscardGroupCallParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
       /**
-       * Change group call settings
+       * Change group call settings. Each setting supports different group call types, see here » for more info.
        * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/phone.toggleGroupCallSettings
        * @throws {PhoneToggleGroupCallSettingsErrors}
        */
       toggleGroupCallSettings(params: PhoneToggleGroupCallSettingsParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
       /**
-       * Get info about a group call
+       * Get info about a group call and its participants.
        * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/phone.getGroupCall
        * @throws {PhoneGetGroupCallErrors}
        */
       getGroupCall(params: PhoneGetGroupCallParams, opts?: ApiCallOptions): Promise<phone.TypeGroupCall>;
       /**
-       * Get group call participants
+       * Get group call participants.
        * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/phone.getGroupParticipants
        * @throws {PhoneGetGroupParticipantsErrors}
        */
       getGroupParticipants(params: PhoneGetGroupParticipantsParams, opts?: ApiCallOptions): Promise<phone.TypeGroupParticipants>;
       /**
-       * Check whether the group call Server Forwarding Unit is currently receiving the streams with the specified WebRTC source IDs. Returns an intersection of the source IDs specified in sources , and the source IDs currently being forwarded by the SFU.
+       * Check which of the specified source IDs the server still recognizes as joined to a group call. This method can be used with all group call types, see here » for more info. After joining the main connection with phone.joinGroupCall , pass its non-zero SSRC/source ID to this method periodically. If a presentation connection is also active, include the separate source registered using phone.joinGroupCallPresentation . The method returns the subset of the supplied sources that are still joined. A missing source means that the corresponding connection must be recreated and joined again; it does not indicate whether media packets are currently flowing. If the method returns GROUPCALL_JOIN_MISSING , the main connection must be rejoined.
        * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/phone.checkGroupCall
        * @throws {PhoneCheckGroupCallErrors}
        */
       checkGroupCall(params: PhoneCheckGroupCallParams, opts?: ApiCallOptions): Promise<int[]>;
       /**
-       * Start or stop recording a group call: the recorded audio and video streams will be automatically sent to Saved messages (the chat with ourselves).
+       * Start or stop recording a video chat/livestream, see here » for more info. The recorded audio and video streams will be automatically sent to Saved Messages (the chat with ourselves).
        * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/phone.toggleGroupCallRecord
        * @throws {PhoneToggleGroupCallRecordErrors}
        */
       toggleGroupCallRecord(params: PhoneToggleGroupCallRecordParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
       /**
-       * Edit information about a given group call participant Note: flags .N? Bool parameters can have three possible values:
+       * Edit information about a participant of a non-RTMP video chat/livestream or conference. The raise_hand field is only supported in video chats/livestreams, see here » for more info. Note: flags .N? Bool parameters can have three possible values:
        * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/phone.editGroupCallParticipant
        * @throws {PhoneEditGroupCallParticipantErrors}
        */
       editGroupCallParticipant(params: PhoneEditGroupCallParticipantParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
       /**
-       * Edit the title of a group call or livestream
+       * Edit the title of a video chat or livestream. This method cannot be used with live stories or conferences, see here » for more info.
        * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/phone.editGroupCallTitle
        * @throws {PhoneEditGroupCallTitleErrors}
        */
       editGroupCallTitle(params: PhoneEditGroupCallTitleParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
       /**
-       * Get a list of peers that can be used to join a group call, presenting yourself as a specific user/channel.
+       * Get a list of peers that can be used to join a video chat or livestream » , presenting yourself as a specific user/channel. This method cannot be used for live stories or conference calls. To comment or react in a live story as another peer, use channels.getSendAs with for_live_stories set and pass one of the returned peers to phone.sendGroupCallMessage . send_as .
        * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/phone.getGroupCallJoinAs
        * @throws {PhoneGetGroupCallJoinAsErrors}
        */
       getGroupCallJoinAs(params: PhoneGetGroupCallJoinAsParams, opts?: ApiCallOptions): Promise<phone.TypeJoinAsPeers>;
       /**
-       * Get an invite link for a group call or livestream
+       * Get an invite link for a public video chat/livestream » . Non-admin members or subscribers may export a link with can_self_unmute omitted. Only group call admins may set can_self_unmute to export a link that allows users to speak. Cannot be used for video chats/livestreams associated with private groups/channels, conference calls » or live stories » .
        * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/phone.exportGroupCallInvite
        * @throws {PhoneExportGroupCallInviteErrors}
        */
       exportGroupCallInvite(params: PhoneExportGroupCallInviteParams, opts?: ApiCallOptions): Promise<phone.TypeExportedGroupCallInvite>;
       /**
-       * Subscribe or unsubscribe to a scheduled group call
+       * Subscribe or unsubscribe to a scheduled group call .
        * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/phone.toggleGroupCallStartSubscription
        * @throws {PhoneToggleGroupCallStartSubscriptionErrors}
        */
       toggleGroupCallStartSubscription(params: PhoneToggleGroupCallStartSubscriptionParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
       /**
-       * Start a scheduled group call.
+       * Start a scheduled group call .
        * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/phone.startScheduledGroupCall
        * @throws {PhoneStartScheduledGroupCallErrors}
        */
       startScheduledGroupCall(params: PhoneStartScheduledGroupCallParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
       /**
-       * Set the default peer that will be used to join a group call in a specific dialog.
+       * Set the default peer used to join a video chat/livestream » associated with a specific dialog.
        * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/phone.saveDefaultGroupCallJoinAs
        * @throws {PhoneSaveDefaultGroupCallJoinAsErrors}
        */
       saveDefaultGroupCallJoinAs(params: PhoneSaveDefaultGroupCallJoinAsParams, opts?: ApiCallOptions): Promise<Bool>;
       /**
-       * Start screen sharing in a call
+       * Start screen sharing in a non-RTMP video chat/livestream or conference. Presentations are not supported in live stories or RTMP-mode video chats/livestreams, see here » for more info.
        * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/phone.joinGroupCallPresentation
        * @throws {PhoneJoinGroupCallPresentationErrors}
        */
       joinGroupCallPresentation(params: PhoneJoinGroupCallPresentationParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
       /**
-       * Stop screen sharing in a group call
+       * Stop screen sharing in a non-RTMP video chat/livestream or conference. Presentations are not supported in live stories or RTMP-mode video chats/livestreams, see here » for more info.
        * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/phone.leaveGroupCallPresentation
        * @throws {PhoneLeaveGroupCallPresentationErrors}
        */
       leaveGroupCallPresentation(params: PhoneLeaveGroupCallPresentationParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
       /**
-       * Get info about RTMP streams in a group call or livestream. This method should be invoked to the same group/channel-related DC used for downloading livestream chunks . As usual, the media DC is preferred, if available.
+       * Get the available stream channels and current playback timestamp of an RTMP-mode video chat, livestream or live story, see here » for the full flow. The group call must be joined before invoking this method. Send the request to the media DC specified by groupCall . stream_dc_id .
        * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/phone.getGroupCallStreamChannels
        * @throws {PhoneGetGroupCallStreamChannelsErrors}
        */
       getGroupCallStreamChannels(params: PhoneGetGroupCallStreamChannelsParams, opts?: ApiCallOptions): Promise<phone.TypeGroupCallStreamChannels>;
       /**
-       * Get RTMP URL and stream key for RTMP livestreams. Can be used even before creating the actual RTMP livestream with phone.createGroupCall (the rtmp_stream flag must be set).
+       * Get the RTMP URL and stream key used by the single external streamer that publishes all audio and video for an RTMP-mode video chat, livestream or live story. See here » for the full flow.
        * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/phone.getGroupCallStreamRtmpUrl
        * @throws {PhoneGetGroupCallStreamRtmpUrlErrors}
        */
       getGroupCallStreamRtmpUrl(params: PhoneGetGroupCallStreamRtmpUrlParams, opts?: ApiCallOptions): Promise<phone.TypeGroupCallStreamRtmpUrl>;
       /**
-       * Save phone call debug information
+       * Deprecated: send libtgvoip phone call debug information
        * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/phone.saveCallLog
        * @throws {PhoneSaveCallLogErrors}
        */
       saveCallLog(params: PhoneSaveCallLogParams, opts?: ApiCallOptions): Promise<Bool>;
       /**
-       * Create and optionally join a new conference call.
+       * Create and optionally join a new conference call » .
        * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/phone.createConferenceCall
        * @throws {PhoneCreateConferenceCallErrors}
        */
       createConferenceCall(params: PhoneCreateConferenceCallParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
       /**
-       * Remove participants from a conference call. Exactly one of the only_left and kick flags must be set.
+       * Remove participants from a conference call » . Exactly one of the only_left and kick flags must be set.
        * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/phone.deleteConferenceCallParticipants
        * @throws {PhoneDeleteConferenceCallParticipantsErrors}
        */
       deleteConferenceCallParticipants(params: PhoneDeleteConferenceCallParticipantsParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
       /**
-       * Broadcast a blockchain block to all members of a conference call, see here » for more info.
+       * Submit a verification message to conference call subchain 1 , see subchains » .
        * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/phone.sendConferenceCallBroadcast
        * @throws {PhoneSendConferenceCallBroadcastErrors}
        */
       sendConferenceCallBroadcast(params: PhoneSendConferenceCallBroadcastParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
       /**
-       * Invite a user to a conference call.
+       * Invite a user to a conference call .
        * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/phone.inviteConferenceCallParticipant
        * @throws {PhoneInviteConferenceCallParticipantErrors}
        */
       inviteConferenceCallParticipant(params: PhoneInviteConferenceCallParticipantParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
       /**
-       * Declines a conference call invite.
+       * Decline a conference call invite.
        * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/phone.declineConferenceCallInvite
        * @throws {PhoneDeclineConferenceCallInviteErrors}
        */
       declineConferenceCallInvite(params: PhoneDeclineConferenceCallInviteParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
       /**
-       * Fetch the blocks of a conference blockchain » .
+       * Fetch blocks from a conference call subchain » ; handle the returned updateGroupCallChainBlocks as specified here » . If the number of blocks returned by any call to this method is equal to limit , this method must be re-invoked immediately after processing the returned updateGroupCallChainBlocks , with the newly committed offset (usually equal to the returned next_offset ).
        * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/phone.getGroupCallChainBlocks
        * @throws {PhoneGetGroupCallChainBlocksErrors}
        */
       getGroupCallChainBlocks(params: PhoneGetGroupCallChainBlocksParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
       /**
+       * Send an in-call message to all participants of a video chat/livestream or live story, including in RTMP mode, see here » for more info. The send_as field can only be populated for live stories, where it optionally selects the displayed author. If omitted, the server automatically selects the appropriate author. Do not populate it for video chats/livestreams. Video chats/livestreams and live stories support animated emoji reactions » , encoded as messages containing only a standard available reaction emoji or a single custom emoji entity. For a paid live story comment, pass the user-confirmed donation amount in allow_paid_stars . For commenters other than the live story owner, this amount must be at least the current groupCall . send_paid_messages_stars minimum. A higher amount may be donated to highlight the comment. The live story owner may comment without populating allow_paid_stars . To send a standalone paid live story donation, pass a positive allow_paid_stars value and an empty message , see here » for the full flow.
+       * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/phone.sendGroupCallMessage
+       * @throws {PhoneSendGroupCallMessageErrors}
        */
       sendGroupCallMessage(params: PhoneSendGroupCallMessageParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
       /**
+       * Send an E2E-encrypted message or emoji reaction to all participants of a conference call. This method can only be used with conferences; see here » for the serialization and encryption process.
+       * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/phone.sendGroupCallEncryptedMessage
+       * @throws {PhoneSendGroupCallEncryptedMessageErrors}
        */
       sendGroupCallEncryptedMessage(params: PhoneSendGroupCallEncryptedMessageParams, opts?: ApiCallOptions): Promise<Bool>;
       /**
+       * Delete specific messages from the in-call message overlay » of a video chat/livestream or live story, including in RTMP mode. Non-admin participants may delete messages they sent; admins may delete any message.
+       * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/phone.deleteGroupCallMessages
+       * @throws {PhoneDeleteGroupCallMessagesErrors}
        */
       deleteGroupCallMessages(params: PhoneDeleteGroupCallMessagesParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
       /**
+       * As an admin, delete all messages from a specific participant in the in-call message overlay » of a video chat/livestream or live story, including in RTMP mode.
+       * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/phone.deleteGroupCallParticipantMessages
+       * @throws {PhoneDeleteGroupCallParticipantMessagesErrors}
        */
       deleteGroupCallParticipantMessages(params: PhoneDeleteGroupCallParticipantMessagesParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
       /**
+       * Fetch a live story's total donations and top donors, see paid live story donations » .
+       * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/phone.getGroupCallStars
+       * @throws {PhoneGetGroupCallStarsErrors}
        */
       getGroupCallStars(params: PhoneGetGroupCallStarsParams, opts?: ApiCallOptions): Promise<phone.TypeGroupCallStars>;
       /**
+       * Save the default peer displayed as the author of live story comments and reactions, see in-call messages » . It cannot be used for normal video chats/livestreams, where in-call messages are sent as the peer used to join the call ( join_as ).
+       * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/phone.saveDefaultSendAs
+       * @throws {PhoneSaveDefaultSendAsErrors}
        */
       saveDefaultSendAs(params: PhoneSaveDefaultSendAsParams, opts?: ApiCallOptions): Promise<Bool>;
     };
@@ -51318,7 +51753,10 @@ export namespace Api {
        */
       getStoryPublicForwards(params: StatsGetStoryPublicForwardsParams, opts?: ApiCallOptions): Promise<stats.TypePublicForwards>;
       /**
+       * Get statistics for a poll sent in a message.
+       * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/stats.getPollStats
+       * @throws {StatsGetPollStatsErrors}
        */
       getPollStats(params: StatsGetPollStatsParams, opts?: ApiCallOptions): Promise<stats.TypePollStats>;
     };
@@ -51541,7 +51979,7 @@ export namespace Api {
        */
       getAllReadPeerStories(opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
       /**
-       * Get the IDs of the maximum read stories for a set of peers.
+       * Get compact active story summaries » for a set of peers.
        * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/stories.getPeerMaxIDs
        * @throws {StoriesGetPeerMaxIDsErrors}
@@ -51625,7 +52063,10 @@ export namespace Api {
        */
       getAlbumStories(params: StoriesGetAlbumStoriesParams, opts?: ApiCallOptions): Promise<stories.TypeStories>;
       /**
+       * Start a live story, optionally using RTMP livestream mode, see here » for the full flow.
+       * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/stories.startLive
+       * @throws {StoriesStartLiveErrors}
        */
       startLive(params: StoriesStartLiveParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
     };
@@ -51727,31 +52168,52 @@ export namespace Api {
     };
     aicompose: {
       /**
+       * Create a new custom AI composer tone » .
+       * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/aicompose.createTone
+       * @throws {AicomposeCreateToneErrors}
        */
       createTone(params: AicomposeCreateToneParams, opts?: ApiCallOptions): Promise<Api.TypeAiComposeTone>;
       /**
+       * Edit a custom AI composer tone » previously created by the current user. Only the fields whose flag is set will be modified.
+       * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/aicompose.updateTone
+       * @throws {AicomposeUpdateToneErrors}
        */
       updateTone(params: AicomposeUpdateToneParams, opts?: ApiCallOptions): Promise<Api.TypeAiComposeTone>;
       /**
+       * Install or uninstall an AI composer tone » , adding it to or removing it from the list of saved tones of the current user. Non- Premium users may install up to aicompose_tone_saved_limit_default » tones, Premium users up to aicompose_tone_saved_limit_premium » tones.
+       * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/aicompose.saveTone
+       * @throws {AicomposeSaveToneErrors}
        */
       saveTone(params: AicomposeSaveToneParams, opts?: ApiCallOptions): Promise<Bool>;
       /**
+       * Permanently delete a custom AI composer tone » created by the current user.
+       * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/aicompose.deleteTone
+       * @throws {AicomposeDeleteToneErrors}
        */
       deleteTone(params: AicomposeDeleteToneParams, opts?: ApiCallOptions): Promise<Bool>;
       /**
+       * Fetch information about a single AI composer tone » , for example to resolve a shared tone deep link.
+       * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/aicompose.getTone
+       * @throws {AicomposeGetToneErrors}
        */
       getTone(params: AicomposeGetToneParams, opts?: ApiCallOptions): Promise<aicompose.TypeTones>;
       /**
+       * Fetch the list of saved AI composer tones » of the current user.
+       * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/aicompose.getTones
+       * @throws {AicomposeGetTonesErrors}
        */
       getTones(params: AicomposeGetTonesParams, opts?: ApiCallOptions): Promise<aicompose.TypeTones>;
       /**
+       * Fetch an example showing how an AI composer tone » rephrases a sample message, used as a preview in the tone picker.
+       * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/aicompose.getToneExample
+       * @throws {AicomposeGetToneExampleErrors}
        */
       getToneExample(params: AicomposeGetToneExampleParams, opts?: ApiCallOptions): Promise<Api.TypeAiComposeToneExample>;
     };

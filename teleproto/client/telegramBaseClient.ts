@@ -33,10 +33,14 @@ import {
 import { LogLevel } from "../extensions/Logger";
 import Deferred from "../extensions/Deferred";
 import { UpdateManager } from "./updates/manager";
+import type { ClientUpdates } from "./updates/composer";
 import { installMessageBehaviour } from "../tl/custom/message";
 
 const SESSION_IDLE_TIMEOUT_MS = 60_000;
 const SESSION_STARTUP_DELAY_MS = 800;
+
+type LifecycleEvent = "connecting" | "connect" | "disconnect" | "reconnecting" | "reconnect" | "destroy";
+type LifecycleHandler = () => void | Promise<void>;
 
 const PROD_DEFAULT_DC_ID = 2;
 const TEST_DEFAULT_DC_ID = 2;
@@ -359,6 +363,10 @@ export abstract class TelegramBaseClient<S extends Session = Session> {
     _reconnecting: boolean;
     /** @hidden */
     _destroyed: boolean;
+    protected _updates?: ClientUpdates;
+    private readonly _lifecycleHandlers = new Map<LifecycleEvent, Set<LifecycleHandler>>();
+    private _connectionEvent: LifecycleEvent = "disconnect";
+    private _destroyTask?: Promise<void>;
     /** @hidden */
     _isSwitchingDc: boolean;
     /** @hidden */
@@ -561,6 +569,71 @@ export abstract class TelegramBaseClient<S extends Session = Session> {
         return this._sender && this._sender.isConnected();
     }
 
+    /** Runs when the main sender starts connecting, including reconnections. */
+    onConnecting(handler: LifecycleHandler): () => void {
+        return this._subscribeLifecycle("connecting", handler);
+    }
+
+    /** Runs when the main transport connects; account sign-in may still be required. */
+    onConnect(handler: LifecycleHandler): () => void {
+        return this._subscribeLifecycle("connect", handler);
+    }
+
+    /** Runs when the main transport disconnects, manually or during recovery. */
+    onDisconnect(handler: LifecycleHandler): () => void {
+        return this._subscribeLifecycle("disconnect", handler);
+    }
+
+    /** Runs once when an automatic reconnect cycle starts. */
+    onReconnecting(handler: LifecycleHandler): () => void {
+        return this._subscribeLifecycle("reconnecting", handler);
+    }
+
+    /** Runs after automatic reconnection and the client probe; returns an unsubscribe function. */
+    onReconnect(handler: LifecycleHandler): () => void {
+        return this._subscribeLifecycle("reconnect", handler);
+    }
+
+    /** Runs once after client resources and subscriptions have been released. */
+    onDestroy(handler: LifecycleHandler): () => void {
+        return this._subscribeLifecycle("destroy", handler);
+    }
+
+    private _subscribeLifecycle(event: LifecycleEvent, handler: LifecycleHandler): () => void {
+        if (typeof handler !== "function") throw new TypeError("Lifecycle handler must be a function");
+        if (this._destroyed) throw new Error("Cannot subscribe to a destroyed client");
+        let handlers = this._lifecycleHandlers.get(event);
+        if (!handlers) this._lifecycleHandlers.set(event, handlers = new Set());
+        handlers.add(handler);
+        return () => { handlers!.delete(handler); };
+    }
+
+    /** @hidden */
+    _handleConnectionLifecycle(event: "connecting" | "connect" | "disconnect" | "reconnecting"): void {
+        if (this._destroyed && event !== "disconnect") return;
+        if (event === this._connectionEvent) return;
+        this._connectionEvent = event;
+        this._emitLifecycle(event);
+    }
+
+    protected _emitLifecycle(event: LifecycleEvent): void {
+        for (const handler of this._lifecycleHandlers.get(event) ?? []) {
+            void Promise.resolve().then(() => {
+                if (this._destroyed && event !== "destroy" && event !== "disconnect") return;
+                return handler();
+            }).catch(async (error) => {
+                this._log.error(`${event} handler failed`, error);
+                if (this._errorHandler) {
+                    try {
+                        await this._errorHandler(error);
+                    } catch (handlerError) {
+                        this._log.error("Lifecycle error handler failed", handlerError);
+                    }
+                }
+            });
+        }
+    }
+
     async disconnect() {
         await this._disconnect();
         await this._media.purge();
@@ -595,12 +668,19 @@ export abstract class TelegramBaseClient<S extends Session = Session> {
      * Disconnects all senders and removes all handlers
      * Disconnect is safer as it will not remove your event handlers
      */
-    async destroy() {
+    destroy(): Promise<void> {
+        if (this._destroyTask) return this._destroyTask;
         this._destroyed = true;
-        await this.disconnect();
-        await this._media.close();
-        await this._network.close();
-        this._eventBuilders = [];
+        this._destroyTask = (async () => {
+            await this.disconnect();
+            await this._media.close();
+            await this._network.close();
+            this._eventBuilders = [];
+            this._updates?._destroy();
+            this._emitLifecycle("destroy");
+            this._lifecycleHandlers.clear();
+        })();
+        return this._destroyTask;
     }
 
     /** @hidden */

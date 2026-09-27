@@ -71,14 +71,7 @@ import { DeletedMessage, DeletedMessageEvent } from "../events/DeletedMessage";
 export class TelegramClient<
     S extends Session = Session
 > extends TelegramBaseClient<S> {
-    private _updates?: ClientUpdates;
-    private readonly _reconnectHandlers = new Set<() => void | Promise<void>>();
-
-    onReconnect(handler: () => void | Promise<void>): () => void {
-        this._reconnectHandlers.add(handler);
-        return () => { this._reconnectHandlers.delete(handler); };
-    }
-
+    private _connectTask?: Promise<boolean>;
     /**
      * The update pipeline: middleware, typed subscriptions and live
      * subscriptions to chats. See {@link ClientUpdates}.
@@ -3251,25 +3244,26 @@ export class TelegramClient<
             this._loopStarted = true;
         }
         if (!this._destroyed && !this._sender?.userDisconnected) {
-            for (const handler of this._reconnectHandlers) {
-                void Promise.resolve().then(handler).catch(async (error) => {
-                    this._log.error("Reconnect handler failed", error);
-                    if (this._errorHandler) {
-                        try {
-                            await this._errorHandler(error);
-                        } catch (handlerError) {
-                            this._log.error("Reconnect error handler failed", handlerError);
-                        }
-                    }
-                });
-            }
+            this._emitLifecycle("reconnect");
         }
     }
 
     //region base methods
 
-    async connect() {
+    connect(): Promise<boolean> {
+        if (this._destroyed) return Promise.reject(new Error("Cannot connect a destroyed client"));
+        if (this._connectTask) return this._connectTask;
+        const task = this._connectOnce();
+        this._connectTask = task;
+        void task.finally(() => {
+            if (this._connectTask === task) this._connectTask = undefined;
+        }).catch(() => {});
+        return task;
+    }
+
+    private async _connectOnce(): Promise<boolean> {
         await this._initSession();
+        if (this._destroyed) throw new Error("Cannot connect a destroyed client");
         if (this._sender === undefined) {
             const dcId = this.session.dcId || 4;
             const sessionKey = this.session.getAuthKey(dcId);
@@ -3296,6 +3290,7 @@ export class TelegramClient<
                 client: this,
                 securityChecks: this._securityChecks,
                 autoReconnectCallback: this._handleReconnect.bind(this),
+                lifecycleCallback: this._handleConnectionLifecycle.bind(this),
                 reconnectRetries: this._reconnectRetries,
                 dcenter,
             });
@@ -3321,6 +3316,9 @@ export class TelegramClient<
         });
         this._log.info(`Using LAYER ${LAYER} for initial connect`);
         await this._connectSender(this._sender, this.session.dcId, connection);
+        if (this._destroyed || this._sender.userDisconnected) {
+            throw new Error("Connection attempt cancelled");
+        }
         this.session.setAuthKey(this._sender.authKey);
         this.session.save();
 

@@ -435,6 +435,20 @@ export class ClientUpdates {
         return [...this.chain];
     }
 
+    /** @hidden */
+    _destroy(): void {
+        for (const entry of this.watches) {
+            entry.stopped = true;
+            for (const channelId of entry.channels) {
+                this.client.updateManager.releaseChannel(channelId);
+            }
+            entry.channels.clear();
+        }
+        this.watches.clear();
+        this.chain.length = 0;
+        this.onError = undefined;
+    }
+
     /** A copy of the local update state: `pts`, `qts`, `date` and `seq`. */
     get state(): UpdateState | undefined {
         const state = this.client.updateManager.state;

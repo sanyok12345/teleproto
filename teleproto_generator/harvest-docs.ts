@@ -76,9 +76,13 @@ function parse(html: string): Doc {
         .join(" ")
         .trim();
 
-    // Parameters: the first table.table (Name | Type | Description).
     const params: Record<string, string> = {};
-    const table = content.match(/<table class="table">([\s\S]*?)<\/table>/);
+    const table = [...content.matchAll(/<table class="table">([\s\S]*?)<\/table>/g)]
+        .find((match) => {
+            const headings = [...match[1].matchAll(/<th[^>]*>([\s\S]*?)<\/th>/g)]
+                .map((heading) => stripHtml(heading[1]));
+            return headings[0] === "Name" && headings[1] === "Type";
+        });
     if (table) {
         for (const row of table[1].matchAll(/<tr>([\s\S]*?)<\/tr>/g)) {
             const tds = [...row[1].matchAll(/<td[^>]*>([\s\S]*?)<\/td>/g)].map((x) =>
@@ -98,7 +102,8 @@ async function run(): Promise<void> {
     const cache: Record<string, Doc> = fs.existsSync(OUT)
         ? JSON.parse(fs.readFileSync(OUT, "utf8"))
         : {};
-    const queue = methods.filter((k) => !cache[k]);
+    const refresh = process.argv.includes("--refresh");
+    const queue = methods.filter((k) => refresh || !cache[k]);
     console.log(
         `methods: ${methods.length}, cached: ${methods.length - queue.length}, to fetch: ${queue.length}`
     );

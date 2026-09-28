@@ -321,6 +321,7 @@ export class ClientUpdates {
      * before `start()`. A reconnect re-subscribes on its own. The poll runs at
      * the interval Telegram names in the difference, falling back to the
      * client's `channelPollInterval`.
+     * At most ten distinct channels are polled; excess subscriptions report an error to {@link catch}.
      *
      * @param chats - Chats to listen to: usernames, ids or entities.
      * @param handler - Optional handler; without it only the subscription is kept.

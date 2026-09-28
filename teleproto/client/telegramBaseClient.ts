@@ -233,6 +233,7 @@ export interface TelegramClientParams {
         idleTimeoutMs?: number;
         sessionStartupDelayMs?: number;
     };
+    /** Channel polling fallback in milliseconds when Telegram omits timeout. Defaults to 1000. */
     channelPollInterval?: number;
     /**
      * Bounds the in-memory entity cache (the hot working set of resolved
@@ -264,7 +265,7 @@ const clientParamsDefault = {
     appVersion: "",
     langCode: "en",
     systemLangCode: "en",
-    channelPollInterval: 5000,
+    channelPollInterval: 1000,
     _securityChecks: true,
 };
 

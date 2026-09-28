@@ -10,6 +10,7 @@ const NO_UPDATES_TIMEOUT_MS = 15 * 60 * 1000;
 const FAIL_DIFFERENCE_INITIAL_S = 1;
 const FAIL_DIFFERENCE_CAP_S = 64;
 const CHANNEL_DIFFERENCE_LIMIT = 100;
+const MAX_WATCHED_CHANNELS = 10;
 const RECENT_MESSAGE_BUFFER_SIZE = 1000;
 
 export interface UpdateState {
@@ -262,6 +263,9 @@ export class UpdateManager {
         const generation = this.generation;
         if (!this.isCurrent(generation)) throw new Error("Update manager is stopped");
         const watching = this.watchedChannels.get(channelId) ?? 0;
+        if (watching === 0 && this.watchedChannels.size >= MAX_WATCHED_CHANNELS) {
+            throw new RangeError(`Cannot watch more than ${MAX_WATCHED_CHANNELS} channels at once`);
+        }
         this.watchedChannels.set(channelId, watching + 1);
         const tracker = this.getOrCreateChannel(channelId);
         tracker.inputChannel = inputChannel;
@@ -319,6 +323,10 @@ export class UpdateManager {
             return;
         }
         this.watchedChannels.delete(channelId);
+        const retry = this.channelFailRetryTimers.get(channelId);
+        if (retry) clearTimeout(retry);
+        this.channelFailRetryTimers.delete(channelId);
+        this.channelFailTimeoutS.delete(channelId);
         const tracker = this.channels.get(channelId);
         if (tracker?.pollTimer) {
             clearTimeout(tracker.pollTimer);
@@ -818,7 +826,7 @@ export class UpdateManager {
 
                 if (diff instanceof Api.updates.ChannelDifferenceEmpty) {
                     if (diff.pts) tracker.pts.init(diff.pts);
-                    fetching = false;
+                    fetching = !diff.final;
                 } else if (diff instanceof Api.updates.ChannelDifference) {
                     const entities = this.collectEntities(diff.users, diff.chats);
                     this.client._entityCache.add(diff);
@@ -858,7 +866,7 @@ export class UpdateManager {
                             { others: null, entities },
                         );
                     }
-                    fetching = false;
+                    fetching = !diff.final;
                 }
             }
             this.channelFailTimeoutS.delete(channelId);
@@ -884,13 +892,13 @@ export class UpdateManager {
         }
         if (!active()) return;
         if (!failed) this.scheduleChannelPoll(channelId, serverTimeoutS);
-        if (failed && this.running) {
+        if (failed && this.running && (!opts.keepAlive || this.watchedChannels.has(channelId))) {
             const delayMs = (this.channelFailTimeoutS.get(channelId) ?? FAIL_DIFFERENCE_INITIAL_S) * 1000;
             this.bumpChannelFailTimeout(channelId);
             this.client._log.debug(`Retry channel ${channelId} difference in ${delayMs}ms`);
             const timer = setTimeout(() => {
                 this.channelFailRetryTimers.delete(channelId);
-                void this.fetchChannelDifference(channelId);
+                void this.fetchChannelDifference(channelId, opts);
             }, delayMs);
             this.channelFailRetryTimers.set(channelId, timer);
         }

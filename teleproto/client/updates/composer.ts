@@ -9,6 +9,7 @@ import { getPeerId } from "../../Utils";
 import { isArrayLike } from "../../Helpers";
 import type { UpdateState, ChannelPollingState } from "./manager";
 import { UpdateConnectionState } from "../../network";
+import { UpdateContext, type WithUpdateContext } from "./context";
 
 /** Passes the update on. A handler that never calls it consumes the update. */
 export type NextFn = () => Promise<void>;
@@ -20,7 +21,7 @@ export type NextFn = () => Promise<void>;
  * before and after; returning without it ends the chain for that update.
  */
 export type UpdateMiddleware<T = any> = (
-    update: T,
+    update: WithUpdateContext<T>,
     next: NextFn,
 ) => unknown | Promise<unknown>;
 
@@ -62,9 +63,9 @@ type UpdateFields = {
 const fieldsOf = (update: unknown): UpdateFields => (update ?? {}) as UpdateFields;
 
 /** The update a handler subscribed to `Name` receives. */
-export type UpdateOf<Name extends UpdateName> = Name extends keyof UpdateByName
-    ? UpdateByName[Name]
-    : UpdateConnectionState;
+export type UpdateOf<Name extends UpdateName> = WithUpdateContext<
+    Name extends keyof UpdateByName ? UpdateByName[Name] : UpdateConnectionState
+>;
 
 interface WatchEntry {
     chats: EntityLike[];
@@ -84,7 +85,7 @@ export interface WatchOptions {
      */
     events?: UpdateName | UpdateName[] | EventBuilder;
     /** Extra predicate; the handler runs only when it returns a truthy value. */
-    func?: (update: AnyUpdate) => unknown | Promise<unknown>;
+    func?: (update: WithUpdateContext<AnyUpdate>) => unknown | Promise<unknown>;
 }
 
 /** Filters accepted by {@link ClientUpdates.on}, mirroring the event builders. */
@@ -98,7 +99,7 @@ export interface OnOptions {
     /** Treat `chats` as a blacklist instead of a whitelist. */
     blacklistChats?: boolean;
     /** Extra predicate; the handler runs only when it returns a truthy value. */
-    func?: (update: AnyUpdate) => unknown | Promise<unknown>;
+    func?: (update: WithUpdateContext<AnyUpdate>) => unknown | Promise<unknown>;
 }
 
 function nameOf(update: unknown): UpdateName | undefined {
@@ -162,6 +163,8 @@ function peerOf(update: unknown): string | undefined {
     }
     const peer =
         fields.message?.peerId ??
+        (fields.peer instanceof Api.DialogPeer || fields.peer instanceof Api.NotifyPeer
+            ? fields.peer.peer : undefined) ??
         (fields.peer instanceof Api.PeerUser ||
             fields.peer instanceof Api.PeerChat ||
             fields.peer instanceof Api.PeerChannel
@@ -188,12 +191,15 @@ function peerOf(update: unknown): string | undefined {
  * event builder; {@link watch} also polls channel differences for the chats
  * it is given.
  *
- * A raw name gives the untouched `Api.TypeUpdate`, a builder gives its event
+ * A raw name gives the original `Api.TypeUpdate`, a builder gives its event
  * object. Direct and small-group messages arrive as the `updateShortMessage`
  * containers, which are not part of the `Update` union; the chain expands them,
  * so `"newMessage"` sees them too.
  *
  * Each update carries a `state` object for middleware to leave things in.
+ * `context` exposes `chatId`, `chat`, `getChat()`, `inputChat` and `client`
+ * without changing TL fields or the second argument, `next()`.
+ * `chat` uses attached entities; only `getChat()` may fetch a missing chat.
  * Throws go to {@link catch}, or to the client's error handler.
  *
  * `client.addEventHandler` keeps working and runs before this chain; a
@@ -255,7 +261,7 @@ export class ClientUpdates {
     /**
      * Handles updates of the given raw names, or the events of a builder.
      *
-     * A raw name gives the untouched update typed as its schema class; a
+     * A raw name gives the original update typed as its schema class; a
      * builder gives that builder's event object, as `addEventHandler` does. An
      * array of handlers runs in order, each deciding with `next()` whether the
      * rest of them run.
@@ -322,6 +328,9 @@ export class ClientUpdates {
      * Delayed polling may interrupt passive delivery from channels you have not joined;
      * differences resume while server history is available. No channel-count cap is imposed.
      *
+     * Read `update.context.chat` or await `update.context.getChat()` for the source chat.
+     * Chat information is absent for updates without a peer.
+     *
      * @param chats - Chats to listen to: usernames, ids or entities.
      * @param handler - Optional handler; without it only the subscription is kept.
      * @param options - Which updates to handle, see {@link WatchOptions}.
@@ -335,6 +344,21 @@ export class ClientUpdates {
      * stop();
      * ```
      */
+    watch(
+        chats: EntityLike | EntityLike[],
+        handler?: UpdateMiddleware<UpdateOf<"newMessage" | "newChannelMessage">> | UpdateMiddleware<UpdateOf<"newMessage" | "newChannelMessage">>[],
+        options?: WatchOptions & { events?: undefined },
+    ): Unsubscribe;
+    watch<Name extends UpdateName>(
+        chats: EntityLike | EntityLike[],
+        handler: UpdateMiddleware<UpdateOf<Name>> | UpdateMiddleware<UpdateOf<Name>>[],
+        options: WatchOptions & { events: Name | Name[] },
+    ): Unsubscribe;
+    watch<T = any>(
+        chats: EntityLike | EntityLike[],
+        handler?: UpdateMiddleware<T> | UpdateMiddleware<T>[],
+        options?: WatchOptions,
+    ): Unsubscribe;
     watch(
         chats: EntityLike | EntityLike[],
         handler?: UpdateMiddleware | UpdateMiddleware[],
@@ -545,12 +569,24 @@ export class ClientUpdates {
                 writable: true,
             });
         }
+        this.attachContext(update);
         const chain = [...this.chain];
         try {
             await runChain(chain, update, async () => {});
         } catch (e) {
             await this.reportError(e as Error, update);
         }
+    }
+
+    private attachContext(event: object, update: AnyUpdate = event as AnyUpdate): void {
+        if ("context" in event) return;
+        let context: UpdateContext | undefined;
+        Object.defineProperty(event, "context", {
+            get: () => context ??= new UpdateContext(
+                this.client, peerOf(update), fieldsOf(update)._entities,
+            ),
+            enumerable: false,
+        });
     }
 
     private register(
@@ -628,6 +664,7 @@ export class ClientUpdates {
                 event._entities = update._entities ?? new Map();
                 event._setClient(this.client);
             }
+            this.attachContext(event, update);
             if (!(await builder.filter(event))) return next();
             if (!(await matchesChat(update))) return next();
             if (options.func && !(await options.func(update))) return next();

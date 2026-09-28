@@ -7,5 +7,10 @@ export {
     type OnOptions,
     type UpdateMiddleware,
     type UpdateName,
+    type UpdateOf,
+    type AnyUpdate,
+    type WatchOptions,
     type Unsubscribe,
 } from "./composer";
+
+export { UpdateContext, type WithUpdateContext } from "./context";

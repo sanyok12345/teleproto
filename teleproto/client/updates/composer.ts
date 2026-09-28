@@ -221,6 +221,7 @@ function peerOf(update: unknown): string | undefined {
 export class ClientUpdates {
     private readonly client: TelegramClient;
     private readonly chain: UpdateMiddleware[] = [];
+    private readonly registrations = new Map<UpdateMiddleware, UpdateMiddleware[]>();
     private readonly watches = new Set<WatchEntry>();
     private onError?: (error: Error, update?: AnyUpdate) => unknown;
 
@@ -281,6 +282,7 @@ export class ClientUpdates {
     on<T = any>(
         builder: EventBuilder,
         handler: UpdateMiddleware<T> | UpdateMiddleware<T>[],
+        options?: OnOptions,
     ): Unsubscribe;
     on(
         target: UpdateName | UpdateName[] | EventBuilder,
@@ -289,7 +291,7 @@ export class ClientUpdates {
     ): Unsubscribe {
         const run = compose(handler);
         if (typeof target !== "string" && !Array.isArray(target)) {
-            return this.use(this.builderMiddleware(target, run));
+            return this.register(this.builderMiddleware(target, run, options), handler);
         }
         const names = new Set(
             (Array.isArray(target) ? target : [target]).map((name) =>
@@ -297,13 +299,13 @@ export class ClientUpdates {
             ),
         );
         const matchesChat = this.chatMatcher(options);
-        return this.use(async (update, next) => {
+        return this.register(async (update, next) => {
             const name = nameOf(update);
             if (!name || !names.has(name)) return next();
             if (!(await matchesChat(update))) return next();
             if (options.func && !(await options.func(update))) return next();
             await run(update, next);
-        });
+        }, handler);
     }
 
     /**
@@ -350,7 +352,10 @@ export class ClientUpdates {
                         chats: wanted,
                         func: options.func,
                     })
-                    : this.on(events, handler as UpdateMiddleware);
+                    : this.on(events, handler as UpdateMiddleware, {
+                        chats: wanted,
+                        func: options.func,
+                    });
         }
 
         const entry: WatchEntry = {
@@ -463,6 +468,9 @@ export class ClientUpdates {
     /** Removes a middleware or handler from the chain. */
     off(middleware: UpdateMiddleware): void {
         this.remove(middleware);
+        for (const [registered, handlers] of this.registrations) {
+            if (handlers.includes(middleware)) this.remove(registered);
+        }
     }
 
     /** Installs the handler for anything thrown inside the chain. */
@@ -486,6 +494,7 @@ export class ClientUpdates {
         }
         this.watches.clear();
         this.chain.length = 0;
+        this.registrations.clear();
         this.onError = undefined;
     }
 
@@ -524,18 +533,23 @@ export class ClientUpdates {
             });
         }
         const chain = [...this.chain];
-        const run = async (index: number): Promise<void> => {
-            if (index >= chain.length) return;
-            await chain[index]!(update, () => run(index + 1));
-        };
         try {
-            await run(0);
+            await runChain(chain, update, async () => {});
         } catch (e) {
             await this.reportError(e as Error, update);
         }
     }
 
+    private register(
+        middleware: UpdateMiddleware,
+        handler: UpdateMiddleware | UpdateMiddleware[],
+    ): Unsubscribe {
+        this.registrations.set(middleware, Array.isArray(handler) ? handler.slice() : [handler]);
+        return this.use(middleware);
+    }
+
     private remove(middleware: UpdateMiddleware): void {
+        this.registrations.delete(middleware);
         const index = this.chain.indexOf(middleware);
         if (index >= 0) this.chain.splice(index, 1);
     }
@@ -581,7 +595,9 @@ export class ClientUpdates {
     private builderMiddleware(
         builder: EventBuilder,
         run: UpdateMiddleware,
+        options: OnOptions,
     ): UpdateMiddleware {
+        const matchesChat = this.chatMatcher(options);
         builder.client = this.client;
         return async (update, next) => {
             if (!builder.resolved) await builder.resolve(this.client);
@@ -600,6 +616,8 @@ export class ClientUpdates {
                 event._entities = update._entities;
             }
             if (!(await builder.filter(event))) return next();
+            if (!(await matchesChat(update))) return next();
+            if (options.func && !(await options.func(update))) return next();
             await run(event, next);
         };
     }
@@ -618,11 +636,20 @@ function compose(handler: UpdateMiddleware | UpdateMiddleware[]): UpdateMiddlewa
             throw new TypeError("Update handler must be a function");
         }
     }
-    return async (update, next) => {
-        const run = async (index: number): Promise<void> => {
-            if (index >= handlers.length) return next();
-            await handlers[index]!(update, () => run(index + 1));
-        };
-        await run(0);
+    return (update, next) => runChain(handlers, update, next);
+}
+
+async function runChain(
+    handlers: readonly UpdateMiddleware[],
+    update: AnyUpdate,
+    next: NextFn,
+): Promise<void> {
+    let last = -1;
+    const run = async (index: number): Promise<void> => {
+        if (index <= last) throw new Error("next() called multiple times");
+        last = index;
+        if (index >= handlers.length) return next();
+        await handlers[index]!(update, () => run(index + 1));
     };
+    await run(0);
 }

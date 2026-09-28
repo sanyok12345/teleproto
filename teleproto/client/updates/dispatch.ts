@@ -125,9 +125,9 @@ export async function _dispatchUpdate(
             if (event) {
                 event._client = client;
                 if ("_eventName" in event) {
-                    event._setClient(client);
                     event.originalUpdate = args.update;
-                    event._entities = args.update._entities;
+                    event._entities = args.update._entities ?? new Map();
+                    event._setClient(client);
                 }
                 let filter;
                 try {

@@ -36,9 +36,10 @@ export class ChatGetter {
     async getChat() {
         if (
             !this._chat ||
-            ("min" in this._chat && (await this.getInputChat()))
+            ("min" in this._chat && this._chat.min)
         ) {
             try {
+                await this.getInputChat();
                 if (this._inputChat) {
                     this._chat = await this._client?.getEntity(this._inputChat);
                 }

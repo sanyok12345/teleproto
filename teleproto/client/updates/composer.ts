@@ -624,9 +624,9 @@ export class ClientUpdates {
             if (!event) return next();
             event._client = this.client;
             if ("_eventName" in event) {
-                event._setClient(this.client);
                 event.originalUpdate = update;
-                event._entities = update._entities;
+                event._entities = update._entities ?? new Map();
+                event._setClient(this.client);
             }
             if (!(await builder.filter(event))) return next();
             if (!(await matchesChat(update))) return next();

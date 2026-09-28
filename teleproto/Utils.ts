@@ -253,7 +253,7 @@ export function _getEntityPair(
         inputEntity = cache.get(entityId);
     } catch (e: any) {
         try {
-            inputEntity = getInputPeerFunction(inputEntity);
+            inputEntity = getInputPeerFunction(entity);
         } catch (e) {}
     }
     return [entity, inputEntity];

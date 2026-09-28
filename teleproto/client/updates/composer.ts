@@ -70,6 +70,9 @@ interface WatchEntry {
     channels: Set<string>;
     stopped: boolean;
     arming?: Promise<void>;
+    controller: AbortController;
+    retryTimer?: ReturnType<typeof setTimeout>;
+    retryDelay: number;
 }
 
 /** Options of {@link ClientUpdates.watch}. */
@@ -354,6 +357,8 @@ export class ClientUpdates {
             chats: wanted,
             channels: new Set(),
             stopped: false,
+            controller: new AbortController(),
+            retryDelay: 1000,
         };
         this.watches.add(entry);
         void this.arm(entry);
@@ -363,53 +368,89 @@ export class ClientUpdates {
             entry.stopped = true;
             this.watches.delete(entry);
             offHandler?.();
-            for (const channelId of entry.channels) {
-                this.client.updateManager.releaseChannel(channelId);
-            }
+            entry.controller.abort();
+            if (entry.retryTimer) clearTimeout(entry.retryTimer);
             entry.channels.clear();
         };
     }
 
     private async arm(entry: WatchEntry): Promise<void> {
-        if (entry.stopped || entry.arming) return;
-        entry.arming = (async () => {
+        if (entry.stopped || entry.arming || !this.client.updateManager.isRunning) return;
+        const controller = entry.controller;
+        const active = () => !controller.signal.aborted && !entry.stopped;
+        const task = (async () => {
             await this.client._connectedDeferred.promise;
+            if (!active() || !this.client.updateManager.isRunning) return;
+            let retry = false;
             for (const chat of entry.chats) {
-                if (entry.stopped) return;
-                const input = await this.client.getInputEntity(chat);
-                if (!(input instanceof Api.InputPeerChannel)) continue;
-                const channelId = input.channelId.toString();
-                if (entry.channels.has(channelId)) continue;
-                await this.client.updateManager.watchChannel(
-                    channelId,
-                    new Api.InputChannel({
-                        channelId: input.channelId,
-                        accessHash: input.accessHash,
-                    }),
-                );
-                if (entry.stopped) {
-                    this.client.updateManager.releaseChannel(channelId);
-                    return;
+                if (!active()) return;
+                try {
+                    const input = await this.client.getInputEntity(chat);
+                    if (!active()) return;
+                    if (!(input instanceof Api.InputPeerChannel)) continue;
+                    const channelId = input.channelId.toString();
+                    if (entry.channels.has(channelId)) continue;
+                    await this.client.updateManager.watchChannel(
+                        channelId,
+                        new Api.InputChannel({
+                            channelId: input.channelId,
+                            accessHash: input.accessHash,
+                        }),
+                        controller.signal,
+                    );
+                    if (!active()) return;
+                    entry.channels.add(channelId);
+                } catch (error) {
+                    if (!active()) return;
+                    const code = (error as { errorMessage?: string }).errorMessage;
+                    retry ||= !(error instanceof TypeError || error instanceof RangeError) &&
+                        !["CHANNEL_PRIVATE", "CHANNEL_INVALID", "USERNAME_INVALID", "USERNAME_NOT_OCCUPIED", "PEER_ID_INVALID"].includes(code ?? "");
+                    await this.reportError(error as Error, undefined);
                 }
-                entry.channels.add(channelId);
+            }
+            if (retry && active()) {
+                entry.retryTimer = setTimeout(() => {
+                    entry.retryTimer = undefined;
+                    void this.arm(entry);
+                }, entry.retryDelay);
+                entry.retryTimer.unref?.();
+                entry.retryDelay = Math.min(entry.retryDelay * 2, 64000);
+            } else {
+                entry.retryDelay = 1000;
             }
         })();
+        entry.arming = task;
         try {
-            await entry.arming;
-        } catch (e) {
-            await this.reportError(e as Error, undefined);
+            await task;
+        } catch (error) {
+            this.client._log.error(`Error arming channel watch: ${error}`);
         } finally {
-            entry.arming = undefined;
+            if (entry.arming === task) entry.arming = undefined;
         }
     }
 
-    private rearmWatches(): void {
+    /** @hidden */
+    _pause(): void {
+        for (const entry of this.watches) {
+            entry.controller.abort();
+            entry.controller = new AbortController();
+            entry.channels.clear();
+            entry.arming = undefined;
+            if (entry.retryTimer) clearTimeout(entry.retryTimer);
+            entry.retryTimer = undefined;
+        }
+    }
+
+    /** @hidden */
+    _resume(): void {
         const alive = new Set(this.client.updateManager.watchedChannelIds());
         for (const entry of this.watches) {
             if (entry.stopped) continue;
             for (const channelId of [...entry.channels]) {
                 if (!alive.has(channelId)) entry.channels.delete(channelId);
             }
+            if (entry.retryTimer) clearTimeout(entry.retryTimer);
+            entry.retryTimer = undefined;
             if (entry.channels.size < entry.chats.length) void this.arm(entry);
         }
     }
@@ -439,9 +480,8 @@ export class ClientUpdates {
     _destroy(): void {
         for (const entry of this.watches) {
             entry.stopped = true;
-            for (const channelId of entry.channels) {
-                this.client.updateManager.releaseChannel(channelId);
-            }
+            entry.controller.abort();
+            if (entry.retryTimer) clearTimeout(entry.retryTimer);
             entry.channels.clear();
         }
         this.watches.clear();
@@ -465,7 +505,7 @@ export class ClientUpdates {
             update instanceof UpdateConnectionState &&
             update.state === UpdateConnectionState.connected
         ) {
-            this.rearmWatches();
+            this._resume();
         }
         if (!this.chain.length) return;
         const expanded = expandShortMessage(
@@ -510,8 +550,12 @@ export class ClientUpdates {
             }
         }
         if (this.client._errorHandler) {
-            await this.client._errorHandler(error);
-            return;
+            try {
+                await this.client._errorHandler(error);
+                return;
+            } catch (handlerError) {
+                error = handlerError as Error;
+            }
         }
         this.client._log.error(`Error in the update chain: ${error}`);
     }

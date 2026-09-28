@@ -26,6 +26,7 @@ interface PendingSeqUpdate {
 }
 
 interface ChannelTracker {
+    initializing?: Promise<void>;
     pts: PtsWaiter;
     timer?: NodeJS.Timeout;
     inputChannel?: Api.TypeInputChannel;
@@ -103,11 +104,17 @@ export class UpdateManager {
 
     start(): void {
         this.running = true;
+        this.client.updates._resume();
+    }
+
+    get isRunning(): boolean {
+        return this.running;
     }
 
     stop(): void {
         this.running = false;
         this.generation++;
+        this.client.updates._pause();
         this.globalPts.clearSkippedUpdates();
         this.globalPts.setRequesting(false);
         if (this.globalPtsTimer) {
@@ -129,6 +136,7 @@ export class UpdateManager {
             if (tracker.pollTimer) clearTimeout(tracker.pollTimer);
             tracker.timer = undefined;
             tracker.pollTimer = undefined;
+            tracker.initializing = undefined;
             tracker.pts.clearSkippedUpdates();
             tracker.pts.setRequesting(false);
         }
@@ -245,22 +253,62 @@ export class UpdateManager {
         }
     }
 
-    async watchChannel(channelId: string, inputChannel: Api.TypeInputChannel): Promise<void> {
+    async watchChannel(
+        channelId: string,
+        inputChannel: Api.TypeInputChannel,
+        signal?: AbortSignal,
+    ): Promise<void> {
+        if (signal?.aborted) return;
+        const generation = this.generation;
+        if (!this.isCurrent(generation)) throw new Error("Update manager is stopped");
         const watching = this.watchedChannels.get(channelId) ?? 0;
         this.watchedChannels.set(channelId, watching + 1);
-        if (watching > 0) return;
-
         const tracker = this.getOrCreateChannel(channelId);
         tracker.inputChannel = inputChannel;
-        if (!tracker.pts.inited()) {
-            try {
-                tracker.pts.init(await this.readChannelPts(inputChannel));
-            } catch (e) {
+        let released = false;
+        const release = () => {
+            if (released) return;
+            released = true;
+            if (this.isCurrent(generation) && this.channels.get(channelId) === tracker) {
                 this.releaseChannel(channelId);
-                throw e;
             }
+        };
+        if (!tracker.initializing && (watching === 0 || !tracker.pts.inited())) {
+            const task = (async () => {
+                if (!tracker.pts.inited()) {
+                    const pts = await this.readChannelPts(inputChannel);
+                    if (!this.isCurrent(generation) || !this.watchedChannels.has(channelId)) return;
+                    tracker.pts.init(pts);
+                }
+                await this.fetchChannelDifference(channelId, { keepAlive: true });
+            })();
+            tracker.initializing = task;
+            void task.finally(() => {
+                if (tracker.initializing === task) tracker.initializing = undefined;
+            }).catch(() => {});
         }
-        await this.fetchChannelDifference(channelId, { keepAlive: true });
+        let onAbort: (() => void) | undefined;
+        try {
+            const task = tracker.initializing ?? Promise.resolve();
+            if (signal) {
+                await new Promise<void>((resolve, reject) => {
+                    onAbort = () => {
+                        release();
+                        signal.removeEventListener("abort", onAbort!);
+                        resolve();
+                    };
+                    signal.addEventListener("abort", onAbort, { once: true });
+                    if (signal.aborted) onAbort();
+                    task.then(resolve, reject);
+                });
+            } else {
+                await task;
+            }
+        } catch (error) {
+            release();
+            if (onAbort) signal?.removeEventListener("abort", onAbort);
+            throw error;
+        }
     }
 
     releaseChannel(channelId: string): void {

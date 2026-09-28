@@ -204,6 +204,7 @@ export async function invoke<R extends Api.AnyRequest>(
         throw new Error("You can only invoke MTProtoRequests");
     }
     const control = new RpcCallControl(options);
+    const authorizationError = client.updates.authorizationError;
     const ctx: InvokeAttempt = {
         client, request, state: undefined!, dcId, sender: client._sender!, control, options,
     };
@@ -246,6 +247,11 @@ export async function invoke<R extends Api.AnyRequest>(
                 client._entityCache.add(result);
 
                 if (!dcId && !otherSender) {
+                    if (result instanceof Api.auth.Authorization || result instanceof Api.auth.LoginTokenSuccess ||
+                        (result instanceof Api.updates.State && authorizationError !== undefined &&
+                            authorizationError === client.updates.authorizationError)) {
+                        client.updates._resumeAuthorization();
+                    }
                     const sub = (result as { SUBCLASS_OF_ID?: number })
                         ?.SUBCLASS_OF_ID;
                     if (sub === unionId("Updates")) {

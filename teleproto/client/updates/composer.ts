@@ -231,6 +231,7 @@ export class ClientUpdates {
     private readonly registrations = new Map<UpdateMiddleware, UpdateMiddleware[]>();
     private readonly watches = new Set<WatchEntry>();
     private onError?: (error: Error, update?: AnyUpdate) => unknown;
+    private blockedAuthorization?: Error;
 
     constructor(client: TelegramClient) {
         this.client = client;
@@ -327,9 +328,13 @@ export class ClientUpdates {
      * Flood waits pause the shared budget. Inspect {@link polling} for queue delays.
      * Delayed polling may interrupt passive delivery from channels you have not joined;
      * differences resume while server history is available. No channel-count cap is imposed.
+     * Expired history yields a recent snapshot, not every missed event.
+     * Messages recovered from differences use synthetic updates with `pts = ptsCount = 0`.
      *
      * Read `update.context.chat` or await `update.context.getChat()` for the source chat.
      * Chat information is absent for updates without a peer.
+     * Permanent authorization failures suspend polling and reach `catch` once.
+     * Polling resumes after login or a successful `updates.getState` call; see {@link authorizationError}.
      *
      * @param chats - Chats to listen to: usernames, ids or entities.
      * @param handler - Optional handler; without it only the subscription is kept.
@@ -404,7 +409,7 @@ export class ClientUpdates {
     }
 
     private async arm(entry: WatchEntry): Promise<void> {
-        if (entry.stopped || entry.arming || !this.client.updateManager.isRunning) return;
+        if (entry.stopped || entry.arming || this.blockedAuthorization || !this.client.updateManager.isRunning) return;
         const controller = entry.controller;
         const active = () => !controller.signal.aborted && !entry.stopped;
         const task = (async () => {
@@ -415,6 +420,7 @@ export class ClientUpdates {
             const pendingChannels = new Set<string>();
             const failed = async (error: unknown) => {
                 if (!active()) return;
+                if (this._suspendAuthorization(error)) return;
                 const code = (error as { errorMessage?: string }).errorMessage;
                 retry ||= !(error instanceof TypeError || error instanceof RangeError) &&
                     !["CHANNEL_PRIVATE", "CHANNEL_INVALID", "USERNAME_INVALID", "USERNAME_NOT_OCCUPIED", "PEER_ID_INVALID"].includes(code ?? "");
@@ -480,6 +486,7 @@ export class ClientUpdates {
 
     /** @hidden */
     _resume(): void {
+        if (this.blockedAuthorization) return;
         const alive = new Set(this.client.updateManager.watchedChannelIds());
         for (const entry of this.watches) {
             if (entry.stopped) continue;
@@ -490,6 +497,34 @@ export class ClientUpdates {
             entry.retryTimer = undefined;
             if (entry.channels.size < entry.chats.length) void this.arm(entry);
         }
+    }
+
+    /** Permanent authorization error that suspended polling; cleared after successful authorization. */
+    get authorizationError(): Error | undefined {
+        return this.blockedAuthorization;
+    }
+
+    /** @hidden */
+    _suspendAuthorization(error: unknown): boolean {
+        const code = (error as { errorMessage?: string })?.errorMessage;
+        if (![
+            "AUTH_KEY_UNREGISTERED", "AUTH_KEY_INVALID", "AUTH_KEY_DUPLICATED",
+            "SESSION_REVOKED", "SESSION_EXPIRED", "USER_DEACTIVATED", "USER_DEACTIVATED_BAN",
+        ].includes(code ?? "")) return false;
+        if (!this.blockedAuthorization) {
+            this.blockedAuthorization = error as Error;
+            this._pause();
+            void this.reportError(error as Error);
+        }
+        return true;
+    }
+
+    /** @hidden */
+    _resumeAuthorization(): void {
+        if (!this.blockedAuthorization || this.client._destroyed) return;
+        this.blockedAuthorization = undefined;
+        this._resume();
+        void this.client.updateManager.catchUp();
     }
 
     /** Ids of channels registered for polling by {@link watch}, including pending initialization. */
@@ -533,6 +568,7 @@ export class ClientUpdates {
         this.chain.length = 0;
         this.registrations.clear();
         this.onError = undefined;
+        this.blockedAuthorization = undefined;
     }
 
     /** A copy of the local update state: `pts`, `qts`, `date` and `seq`. */

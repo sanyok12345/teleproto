@@ -264,7 +264,7 @@ export class UpdateManager {
 
     async catchUp(): Promise<void> {
         const generation = this.generation;
-        if (!this.isCurrent(generation)) return;
+        if (!this.isCurrent(generation) || this.client.updates.authorizationError) return;
         try {
             if (!this.state) {
                 const s = await this.client.api.updates.getState();
@@ -278,6 +278,8 @@ export class UpdateManager {
             await this.fetchCommonDifference();
             this.client._log.debug("Catch up complete");
         } catch (e) {
+            if (!this.isCurrent(generation)) return;
+            if (this.client.updates._suspendAuthorization(e)) return;
             this.client._log.error(`Error during catch up: ${e}`);
         }
     }
@@ -394,6 +396,7 @@ export class UpdateManager {
         const queuedAt = Date.now();
         return this.channelScheduler.schedule(channelId, async () => {
             if (!this.isCurrent(generation)) throw new ChannelPollCancelledError();
+            if (this.client.updates.authorizationError) throw this.client.updates.authorizationError;
             const request = create();
             this.channelRequests.add(request);
             const tracker = this.channels.get(channelId);
@@ -406,6 +409,7 @@ export class UpdateManager {
                 return await this.client.invoke(request);
             } catch (error) {
                 if (this.isCurrent(generation)) {
+                    this.client.updates._suspendAuthorization(error);
                     const flood = error as { errorMessage?: string; seconds?: number };
                     if (/^FLOOD_(?:PREMIUM_)?WAIT(?:_|$)/.test(flood.errorMessage ?? "")) {
                         this.handleChannelFloodWait(request, flood.seconds ?? 0);
@@ -432,14 +436,15 @@ export class UpdateManager {
 
     async ensureState(): Promise<void> {
         const generation = this.generation;
-        if (this.state || !this.isCurrent(generation)) return;
+        if (this.state || !this.isCurrent(generation) || this.client.updates.authorizationError) return;
         try {
             const s = await this.client.api.updates.getState();
             if (!this.isCurrent(generation)) return;
             this.state = { pts: s.pts, qts: s.qts, date: s.date, seq: s.seq };
             this.globalPts.init(s.pts);
             this.lastUpdateTime = Date.now();
-        } catch {
+        } catch (error) {
+            if (this.isCurrent(generation)) this.client.updates._suspendAuthorization(error);
         }
     }
 
@@ -739,7 +744,7 @@ export class UpdateManager {
 
     private async fetchCommonDifference(): Promise<void> {
         const generation = this.generation;
-        if (!this.isCurrent(generation) || this.fetchingDifference || this.failRetryTimer || !this.state) return;
+        if (!this.isCurrent(generation) || this.client.updates.authorizationError || this.fetchingDifference || this.failRetryTimer || !this.state) return;
         this.fetchingDifference = true;
         this.globalPts.setRequesting(true);
         let failed = false;
@@ -749,6 +754,7 @@ export class UpdateManager {
             this.failTimeoutS = FAIL_DIFFERENCE_INITIAL_S;
         } catch (e) {
             if (!this.isCurrent(generation)) return;
+            if (this.client.updates._suspendAuthorization(e)) return;
             const msg = (e as { errorMessage?: string })?.errorMessage;
             if (msg === "PERSISTENT_TIMESTAMP_INVALID") {
                 this.client._log.warn("Common pts is invalid; reinitializing update state");
@@ -883,7 +889,7 @@ export class UpdateManager {
         opts: { keepAlive?: boolean } = {},
     ): Promise<void> {
         const generation = this.generation;
-        if (!this.isCurrent(generation)) return;
+        if (!this.isCurrent(generation) || this.client.updates.authorizationError) return;
         const tracker = this.channels.get(channelId);
         if (!tracker || tracker.pts.requesting()) return;
         if (!tracker.pts.inited()) return;
@@ -969,6 +975,7 @@ export class UpdateManager {
             this.channelFailTimeoutS.delete(channelId);
         } catch (e) {
             if (!active() || e instanceof ChannelPollCancelledError) return;
+            if (this.client.updates._suspendAuthorization(e)) return;
             const msg = (e as { errorMessage?: string })?.errorMessage;
             if (msg === "CHANNEL_PRIVATE" || msg === "CHANNEL_INVALID") {
                 this.client._log.info(

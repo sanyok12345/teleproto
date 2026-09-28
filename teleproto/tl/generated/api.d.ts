@@ -36202,23 +36202,30 @@ export namespace Api {
   export interface ApiCallOptions {
     /** Route this single call to a specific DC. */
     dcId?: number;
-    /** Abort the in-flight request (reserved). */
+    /** Stops waiting and retrying; an already sent request may still execute. */
     abortSignal?: AbortSignal;
-    /** Auto-sleep & retry on FLOOD_WAIT up to this many seconds (reserved). */
+    /** Per-call FLOOD_WAIT threshold in seconds; does not change client defaults. */
     floodSleepThreshold?: number;
+    /** Total call deadline in milliseconds, including resolution and retries. */
+    timeout?: number;
+    /** Retries after the initial attempt; defaults to the client retry policy. */
+    maxRetryCount?: number;
   }
+
+  /** Integer inputs; numbers must be safe integers. */
+  export type LongInput = BigInteger | bigint | number;
 
   export interface InvokeAfterMsgParams {
     /** Message identifier on which a current query depends */
-    msgId: long;
+    msgId: LongInput;
     /** The query itself */
-    query: X;
+    query: RawRequest | AnyRequest;
   }
   export interface InvokeAfterMsgsParams {
     /** List of messages on which a current query depends */
-    msgIds: long[];
+    msgIds: LongInput[];
     /** The query itself */
-    query: X;
+    query: RawRequest | AnyRequest;
   }
   export interface InitConnectionParams {
     /** Application identifier (see. App configuration ) */
@@ -36240,35 +36247,35 @@ export namespace Api {
     /** Additional initConnection parameters. For now, only the tz_offset field is supported, for specifying the timezone offset in seconds. */
     params?: TypeJSONValueIn;
     /** The query itself */
-    query: X;
+    query: RawRequest | AnyRequest;
   }
   export interface InvokeWithLayerParams {
     /** The layer to use */
     layer: int;
     /** The query */
-    query: X;
+    query: RawRequest | AnyRequest;
   }
   export interface InvokeWithoutUpdatesParams {
     /** The query */
-    query: X;
+    query: RawRequest | AnyRequest;
   }
   export interface InvokeWithMessagesRangeParams {
     /** Message range */
     range: TypeMessageRangeIn;
     /** Query */
-    query: X;
+    query: RawRequest | AnyRequest;
   }
   export interface InvokeWithTakeoutParams {
     /** Takeout session ID » */
-    takeoutId: long;
+    takeoutId: LongInput;
     /** Query */
-    query: X;
+    query: RawRequest | AnyRequest;
   }
   export interface InvokeWithBusinessConnectionParams {
     /** Business connection ID. */
     connectionId: string;
     /** The actual query. */
-    query: X;
+    query: RawRequest | AnyRequest;
   }
   export interface InvokeWithGooglePlayIntegrityParams {
     /** Nonce. */
@@ -36276,7 +36283,7 @@ export namespace Api {
     /** Token. */
     token: string;
     /** Query. */
-    query: X;
+    query: RawRequest | AnyRequest;
   }
   export interface InvokeWithApnsSecretParams {
     /** Nonce. */
@@ -36284,13 +36291,13 @@ export namespace Api {
     /** Secret. */
     secret: string;
     /** Query. */
-    query: X;
+    query: RawRequest | AnyRequest;
   }
   export interface InvokeWithReCaptchaParams {
     /** reCAPTCHA token received after verification. */
     token: string;
     /** The original method call. */
-    query: X;
+    query: RawRequest | AnyRequest;
   }
   export interface AuthSendCodeParams {
     /** Phone number in international format */
@@ -36330,15 +36337,15 @@ export namespace Api {
   }
   export interface AuthImportAuthorizationParams {
     /** User ID */
-    id: long;
+    id: LongInput;
     /** Authorization key */
     bytes: bytes;
   }
   export interface AuthBindTempAuthKeyParams {
     /** Permanent auth_key_id to bind to */
-    permAuthKeyId: long;
+    permAuthKeyId: LongInput;
     /** Random long from Binding message contents */
-    nonce: long;
+    nonce: LongInput;
     /** Unix timestamp to invalidate temporary key, see Binding message contents */
     expiresAt: int;
     /** See Generating encrypted_message */
@@ -36379,7 +36386,7 @@ export namespace Api {
   }
   export interface AuthDropTempAuthKeysParams {
     /** The auth keys that shouldn't be dropped. */
-    exceptAuthKeys: long[];
+    exceptAuthKeys: LongInput[];
   }
   export interface AuthExportLoginTokenParams {
     /** Application identifier (see. App configuration ) */
@@ -36387,7 +36394,7 @@ export namespace Api {
     /** Application identifier hash (see. App configuration ) */
     apiHash: string;
     /** List of already logged-in user IDs, to prevent logging in twice with the same user */
-    exceptIds: long[];
+    exceptIds: LongInput[];
   }
   export interface AuthImportLoginTokenParams {
     /** Login token */
@@ -36441,7 +36448,7 @@ export namespace Api {
     /** The phone code hash obtained from auth.sendCode */
     phoneCodeHash: string;
     /** The payment form ID passed to payments.sendPaymentForm . */
-    formId: long;
+    formId: LongInput;
   }
   export interface AuthInitPasskeyLoginParams {
     /** Application identifier (see App configuration ) */
@@ -36455,7 +36462,7 @@ export namespace Api {
     /** DC ID used for the initial auth.initPasskeyLogin request; set only if the user's DC is different from the DC used for the initial auth.initPasskeyLogin . */
     fromDcId?: int;
     /** Auth key ID for the connection to from_dc_id (use the permanent auth key ID if PFS is enabled); set only if the user's DC is different from the DC used for the initial auth.initPasskeyLogin . */
-    fromAuthKeyId?: long;
+    fromAuthKeyId?: LongInput;
   }
   export interface AuthInitFirebasePnvLoginParams {
     apiId: int;
@@ -36481,7 +36488,7 @@ export namespace Api {
     /** For FCM and APNS VoIP, optional encryption key used to encrypt push notifications */
     secret: bytes;
     /** List of user identifiers of other users currently using the client */
-    otherUids: long[];
+    otherUids: LongInput[];
   }
   export interface AccountUnregisterDeviceParams {
     /** Device token type, see PUSH updates for the possible values. */
@@ -36489,17 +36496,17 @@ export namespace Api {
     /** Device token, see PUSH updates for the possible values. */
     token: string;
     /** List of user identifiers of other users currently using the client */
-    otherUids: long[];
+    otherUids: LongInput[];
   }
   export interface AccountUpdateNotifySettingsParams {
     /** Notification source */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputNotifyPeerIn;
     /** Notification settings */
     settings: TypeInputPeerNotifySettingsIn;
   }
   export interface AccountGetNotifySettingsParams {
     /** Notification source */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputNotifyPeerIn;
   }
   export interface AccountUpdateProfileParams {
     /** New user first name */
@@ -36515,11 +36522,11 @@ export namespace Api {
   }
   export interface AccountGetWallPapersParams {
     /** Hash used for caching, for more info click here . */
-    hash: long;
+    hash: LongInput;
   }
   export interface AccountReportPeerParams {
     /** The peer to report */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** The reason why this peer is being reported */
     reason: TypeReportReasonIn;
     /** Comment for report moderation */
@@ -36573,7 +36580,7 @@ export namespace Api {
   }
   export interface AccountResetAuthorizationParams {
     /** Session hash */
-    hash: long;
+    hash: LongInput;
   }
   export interface AccountGetPasswordSettingsParams {
     /** The password (see SRP ) */
@@ -36605,7 +36612,7 @@ export namespace Api {
   }
   export interface AccountResetWebAuthorizationParams {
     /** Session hash */
-    hash: long;
+    hash: LongInput;
   }
   export interface AccountGetSecureValueParams {
     /** Requested value types */
@@ -36615,7 +36622,7 @@ export namespace Api {
     /** Secure value, for more info see the passport docs » */
     value: TypeInputSecureValueIn;
     /** Passport secret hash, for more info see the passport docs » */
-    secureSecretId: long;
+    secureSecretId: LongInput;
   }
   export interface AccountDeleteSecureValueParams {
     /** Document types to delete */
@@ -36623,7 +36630,7 @@ export namespace Api {
   }
   export interface AccountGetAuthorizationFormParams {
     /** User identifier of the service's bot */
-    botId: long;
+    botId: LongInput;
     /** Telegram Passport element types requested by the service */
     scope: string;
     /** Service's public key */
@@ -36631,7 +36638,7 @@ export namespace Api {
   }
   export interface AccountAcceptAuthorizationParams {
     /** Bot ID */
-    botId: long;
+    botId: LongInput;
     /** Telegram Passport element types requested by the service */
     scope: string;
     /** Service's public key */
@@ -36681,7 +36688,7 @@ export namespace Api {
     /** Whether to export files */
     files?: boolean;
     /** Maximum size of files to export */
-    fileMaxSize?: long;
+    fileMaxSize?: LongInput;
   }
   export interface AccountFinishTakeoutSessionParams {
     /** Data exported successfully */
@@ -36701,7 +36708,7 @@ export namespace Api {
     /** If set, chats with non-default notification settings for stories will be returned */
     compareStories?: boolean;
     /** If specified, only chats of the specified category will be returned */
-    peer?: Api.TypeEntityLike;
+    peer?: TypeInputNotifyPeerIn;
   }
   export interface AccountGetWallPaperParams {
     /** The wallpaper to get info about */
@@ -36799,7 +36806,7 @@ export namespace Api {
     /** Theme format, a string that identifies the theming engines supported by the client */
     format: string;
     /** Hash used for caching, for more info click here . */
-    hash: long;
+    hash: LongInput;
   }
   export interface AccountSetContentSettingsParams {
     /** Enable NSFW content */
@@ -36815,7 +36822,7 @@ export namespace Api {
   }
   export interface AccountReportProfilePhotoParams {
     /** The dialog */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** Dialog photo ID */
     photoId: TypeInputPhotoIn;
     /** Report reason */
@@ -36825,7 +36832,7 @@ export namespace Api {
   }
   export interface AccountGetChatThemesParams {
     /** Hash used for caching, for more info click here . */
-    hash: long;
+    hash: LongInput;
   }
   export interface AccountSetAuthorizationTTLParams {
     /** Time-to-live of current session in days */
@@ -36835,7 +36842,7 @@ export namespace Api {
     /** If set, confirms a newly logged in session » . */
     confirmed?: boolean;
     /** Session ID from the authorization constructor, fetchable using account.getAuthorizations */
-    hash: long;
+    hash: LongInput;
     /** Whether to enable or disable receiving encrypted chats: if the flag is not set, the previous setting is not changed */
     encryptedRequestsDisabled?: Bool;
     /** Whether to enable or disable receiving calls: if the flag is not set, the previous setting is not changed */
@@ -36843,7 +36850,7 @@ export namespace Api {
   }
   export interface AccountGetSavedRingtonesParams {
     /** Hash used for caching, for more info click here . */
-    hash: long;
+    hash: LongInput;
   }
   export interface AccountSaveRingtoneParams {
     /** Notification sound uploaded using account.uploadRingtone */
@@ -36865,11 +36872,11 @@ export namespace Api {
   }
   export interface AccountGetDefaultEmojiStatusesParams {
     /** Hash used for caching, for more info click here . */
-    hash: long;
+    hash: LongInput;
   }
   export interface AccountGetRecentEmojiStatusesParams {
     /** Hash used for caching, for more info click here . */
-    hash: long;
+    hash: LongInput;
   }
   export interface AccountReorderUsernamesParams {
     /** The new order for active usernames. All active usernames must be specified. */
@@ -36883,11 +36890,11 @@ export namespace Api {
   }
   export interface AccountGetDefaultProfilePhotoEmojisParams {
     /** Hash used for caching, for more info click here . */
-    hash: long;
+    hash: LongInput;
   }
   export interface AccountGetDefaultGroupPhotoEmojisParams {
     /** Hash used for caching, for more info click here . */
-    hash: long;
+    hash: LongInput;
   }
   export interface AccountSaveAutoSaveSettingsParams {
     /** Whether the new settings should affect all private chats */
@@ -36897,7 +36904,7 @@ export namespace Api {
     /** Whether the new settings should affect all channels */
     broadcasts?: boolean;
     /** Whether the new settings should affect a specific peer */
-    peer?: Api.TypeEntityLike;
+    peer?: TypeInputPeerIn;
     /** The new autosave settings */
     settings: TypeAutoSaveSettingsIn;
   }
@@ -36913,15 +36920,15 @@ export namespace Api {
   }
   export interface AccountGetDefaultBackgroundEmojisParams {
     /** Hash used for caching, for more info click here . */
-    hash: long;
+    hash: LongInput;
   }
   export interface AccountGetChannelDefaultEmojiStatusesParams {
     /** Hash used for caching, for more info click here . */
-    hash: long;
+    hash: LongInput;
   }
   export interface AccountGetChannelRestrictedStatusEmojisParams {
     /** Hash used for caching, for more info click here . */
-    hash: long;
+    hash: LongInput;
   }
   export interface AccountUpdateBusinessWorkHoursParams {
     /** Opening hours (optional, if not set removes all opening hours). */
@@ -36947,7 +36954,7 @@ export namespace Api {
     /** Business bot rights. */
     rights?: TypeBusinessBotRightsIn;
     /** The bot to connect or disconnect */
-    bot: Api.TypeEntityLike;
+    bot: TypeInputUserIn;
     /** Configuration for the business connection */
     recipients: TypeInputBusinessBotRecipientsIn;
   }
@@ -36961,13 +36968,13 @@ export namespace Api {
   }
   export interface AccountToggleConnectedBotPausedParams {
     /** The chat to pause */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** Whether to pause or unpause the chat */
     paused: Bool;
   }
   export interface AccountDisablePeerConnectedBotParams {
     /** The chat to disconnect */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
   }
   export interface AccountUpdateBirthdayParams {
     /** Birthday. */
@@ -36993,7 +37000,7 @@ export namespace Api {
   }
   export interface AccountUpdatePersonalChannelParams {
     /** The channel, pass inputChannelEmpty to remove it. */
-    channel: Api.TypeEntityLike;
+    channel: TypeInputChannelIn;
   }
   export interface AccountToggleSponsoredMessagesParams {
     /** Enable or disable ads. */
@@ -37005,13 +37012,13 @@ export namespace Api {
   }
   export interface AccountGetCollectibleEmojiStatusesParams {
     /** Hash for pagination */
-    hash: long;
+    hash: LongInput;
   }
   export interface AccountGetPaidMessagesRevenueParams {
     /** If set, can contain the ID of a monoforum (channel direct messages) to obtain the number of stars the user has spent to send us direct messages via the channel. */
-    parentPeer?: Api.TypeEntityLike;
+    parentPeer?: TypeInputPeerIn;
     /** The user that paid to send us messages. */
-    userId: Api.TypeEntityLike;
+    userId: TypeInputUserIn;
   }
   export interface AccountToggleNoPaidMessagesExceptionParams {
     /** If set and require_payment is not set, refunds the amounts the user has already paid us to send us messages (directly or via a monoforum). */
@@ -37019,9 +37026,9 @@ export namespace Api {
     /** If set, requires the user to pay in order to send us messages. Can only be set by monoforums, not users, i.e. parent_peer must be set if this flag is set; users must instead use the inputPrivacyKeyNoPaidMessages privacy setting to remove a previously added exemption. If not set, allows the user to send us messages without paying (can be unset by both monoforums and users). */
     requirePayment?: boolean;
     /** If set, applies the setting within the monoforum aka direct messages » (pass the ID of the monoforum, not the ID of the associated channel). */
-    parentPeer?: Api.TypeEntityLike;
+    parentPeer?: TypeInputPeerIn;
     /** The user to exempt or unexempt. */
-    userId: Api.TypeEntityLike;
+    userId: TypeInputUserIn;
   }
   export interface AccountSetMainProfileTabParams {
     /** The tab to set as main tab. */
@@ -37037,7 +37044,7 @@ export namespace Api {
   }
   export interface AccountGetSavedMusicIdsParams {
     /** Hash generated » from the previously returned list of IDs. */
-    hash: long;
+    hash: LongInput;
   }
   export interface AccountGetUniqueGiftChatThemesParams {
     /** Offset for pagination , intially an empty string, then equal the value of the last returned account.chatThemes . next_offset (if set). */
@@ -37045,7 +37052,7 @@ export namespace Api {
     /** Maximum number of results to return, see pagination . Note that the server may return less than limit results, even if the actual number of remaining results is >= limit , paginate to fetch them all. */
     limit: int;
     /** Hash from a previously returned account.chatThemes constructor, to avoid returning any result if the theme list hasn't changed. */
-    hash: long;
+    hash: LongInput;
   }
   export interface AccountRegisterPasskeyParams {
     /** Registration result. */
@@ -37056,10 +37063,10 @@ export namespace Api {
     id: string;
   }
   export interface AccountConfirmBotConnectionParams {
-    botId: Api.TypeEntityLike;
+    botId: TypeInputUserIn;
   }
   export interface AccountGetWebBrowserSettingsParams {
-    hash: long;
+    hash: LongInput;
   }
   export interface AccountUpdateWebBrowserSettingsParams {
     openExternalBrowser?: boolean;
@@ -37072,51 +37079,51 @@ export namespace Api {
   }
   export interface UsersGetUsersParams {
     /** List of user identifiers */
-    id: Api.TypeEntityLike[];
+    id: TypeInputUserIn[];
   }
   export interface UsersGetFullUserParams {
     /** User ID */
-    id: Api.TypeEntityLike;
+    id: TypeInputUserIn;
   }
   export interface UsersSetSecureValueErrorsParams {
     /** The user */
-    id: Api.TypeEntityLike;
+    id: TypeInputUserIn;
     /** Errors */
     errors: TypeSecureValueErrorIn[];
   }
   export interface UsersGetRequirementsToContactParams {
     /** Users to check. */
-    id: Api.TypeEntityLike[];
+    id: TypeInputUserIn[];
   }
   export interface UsersGetSavedMusicParams {
     /** The ID of the user. */
-    id: Api.TypeEntityLike;
+    id: TypeInputUserIn;
     /** Offset for pagination. */
     offset: int;
     /** Maximum number of results to return, see pagination */
     limit: int;
     /** Hash » of the IDs of previously added songs, to avoid returning any result if there was no change. */
-    hash: long;
+    hash: LongInput;
   }
   export interface UsersGetSavedMusicByIDParams {
     /** The ID of the user. */
-    id: Api.TypeEntityLike;
+    id: TypeInputUserIn;
     /** The songs (here, file_reference can be empty to refresh file references). */
     documents: TypeInputDocumentIn[];
   }
   export interface UsersSuggestBirthdayParams {
     /** The user that will receive the suggested birthday date. */
-    id: Api.TypeEntityLike;
+    id: TypeInputUserIn;
     /** The birthday to suggest. */
     birthday: TypeBirthdayIn;
   }
   export interface ContactsGetContactIDsParams {
     /** Hash used for caching, for more info click here */
-    hash: long;
+    hash: LongInput;
   }
   export interface ContactsGetContactsParams {
     /** Hash used for caching, for more info click here . Note that the hash is computed using the usual algorithm , passing to the algorithm first the previously returned contacts.contacts . saved_count field, then max 100000 sorted user IDs from the contact list, including the ID of the currently logged in user if it is saved as a contact. Example: tdlib implementation . */
-    hash: long;
+    hash: LongInput;
   }
   export interface ContactsImportContactsParams {
     /** List of contacts to import */
@@ -37124,7 +37131,7 @@ export namespace Api {
   }
   export interface ContactsDeleteContactsParams {
     /** User ID list */
-    id: Api.TypeEntityLike[];
+    id: TypeInputUserIn[];
   }
   export interface ContactsDeleteByPhonesParams {
     /** Phone numbers */
@@ -37134,13 +37141,13 @@ export namespace Api {
     /** Whether the peer should be added to the story blocklist; if not set, the peer will be added to the main blocklist, see here » for more info. */
     myStoriesFrom?: boolean;
     /** Peer */
-    id: Api.TypeEntityLike;
+    id: TypeInputPeerIn;
   }
   export interface ContactsUnblockParams {
     /** Whether the peer should be removed from the story blocklist; if not set, the peer will be removed from the main blocklist, see here » for more info. */
     myStoriesFrom?: boolean;
     /** Peer */
-    id: Api.TypeEntityLike;
+    id: TypeInputPeerIn;
   }
   export interface ContactsGetBlockedParams {
     /** Whether to fetch the story blocklist; if not set, will fetch the main blocklist. See here » for differences between the two. */
@@ -37190,13 +37197,13 @@ export namespace Api {
     /** Maximum number of results to return, see pagination */
     limit: int;
     /** Hash used for caching, for more info click here */
-    hash: long;
+    hash: LongInput;
   }
   export interface ContactsResetTopPeerRatingParams {
     /** Top peer category */
     category: TypeTopPeerCategoryIn;
     /** Peer whose rating should be reset */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
   }
   export interface ContactsToggleTopPeersParams {
     /** Enable/disable */
@@ -37206,7 +37213,7 @@ export namespace Api {
     /** Allow the other user to see our phone number? */
     addPhonePrivacyException?: boolean;
     /** Telegram ID of the other user */
-    id: Api.TypeEntityLike;
+    id: TypeInputUserIn;
     /** First name */
     firstName: string;
     /** Last name */
@@ -37218,7 +37225,7 @@ export namespace Api {
   }
   export interface ContactsAcceptContactParams {
     /** The user to add as contact */
-    id: Api.TypeEntityLike;
+    id: TypeInputUserIn;
   }
   export interface ContactsGetLocatedParams {
     /** While the geolocation of the current user is public, clients should update it in the background every half-an-hour or so, while setting this flag. Do this only if the new location is more than 1 KM away from the previous one, or if the previous location is unknown. */
@@ -37236,7 +37243,7 @@ export namespace Api {
     /** Whether to also report this user for spam */
     reportSpam?: boolean;
     /** ID of the message in the @replies chat */
-    msgId: MessageIDLike;
+    msgId: int;
   }
   export interface ContactsResolvePhoneParams {
     /** Phone number in international format, possibly obtained from a phone number deep link . */
@@ -37248,13 +37255,13 @@ export namespace Api {
   }
   export interface ContactsEditCloseFriendsParams {
     /** Full list of user IDs of close friends, see here for more info. */
-    id: long[];
+    id: LongInput[];
   }
   export interface ContactsSetBlockedParams {
     /** Whether to edit the story blocklist; if not set, will edit the main blocklist. See here » for differences between the two. */
     myStoriesFrom?: boolean;
     /** Full content of the blocklist. */
-    id: Api.TypeEntityLike[];
+    id: TypeInputPeerIn[];
     /** Maximum number of results to return, see pagination */
     limit: int;
   }
@@ -37264,7 +37271,7 @@ export namespace Api {
   }
   export interface ContactsUpdateContactNoteParams {
     /** The contact. */
-    id: Api.TypeEntityLike;
+    id: TypeInputUserIn;
     /** The note. */
     note: TypeTextWithEntitiesIn;
   }
@@ -37282,15 +37289,15 @@ export namespace Api {
     /** Offsets for pagination, for more info click here ( top_message ID used for pagination) */
     offsetId: int;
     /** Offset peer for pagination */
-    offsetPeer: Api.TypeEntityLike;
+    offsetPeer: TypeInputPeerIn;
     /** Number of list elements to be returned */
     limit: int;
     /** Hash used for caching, for more info click here */
-    hash: long;
+    hash: LongInput;
   }
   export interface MessagesGetHistoryParams {
     /** Target peer */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** Only return messages starting from the specified message ID */
     offsetId: int;
     /** Only return messages sent before the specified date */
@@ -37304,21 +37311,21 @@ export namespace Api {
     /** If a positive value was transferred, the method will return only messages with IDs more than min_id */
     minId: int;
     /** Result hash */
-    hash: long;
+    hash: LongInput;
   }
   export interface MessagesSearchParams {
     /** User or chat, histories with which are searched, or (inputPeerEmpty) constructor to search in all private chats and normal groups (not channels) » . Use messages.searchGlobal to search globally in all chats, groups, supergroups and channels. */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** Text search request */
     q: string;
     /** Only return messages sent by the specified user ID */
-    fromId?: Api.TypeEntityLike;
+    fromId?: TypeInputPeerIn;
     /** Search within the saved message dialog » with this ID. */
-    savedPeerId?: Api.TypeEntityLike;
+    savedPeerId?: TypeInputPeerIn;
     /** You may search for saved messages tagged » with one or more reactions using this flag. */
     savedReaction?: TypeReactionIn[];
     /** Thread ID */
-    topMsgId?: MessageIDLike;
+    topMsgId?: int;
     /** Filter to return only specified message types */
     filter: TypeMessagesFilterIn;
     /** If a positive value was transferred, only messages with a sending date bigger than the transferred one will be returned */
@@ -37336,11 +37343,11 @@ export namespace Api {
     /** Minimum message ID to return */
     minId: int;
     /** Hash */
-    hash: long;
+    hash: LongInput;
   }
   export interface MessagesReadHistoryParams {
     /** Target user or group */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** If a positive value is passed, only messages with identifiers less than or equal to the given one will be read */
     maxId: int;
   }
@@ -37350,7 +37357,7 @@ export namespace Api {
     /** Whether to delete the message history for all chat participants */
     revoke?: boolean;
     /** User or chat, communication history of which will be deleted */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** Maximum ID of message to delete */
     maxId: int;
     /** Delete all messages newer than this UNIX timestamp */
@@ -37370,9 +37377,9 @@ export namespace Api {
   }
   export interface MessagesSetTypingParams {
     /** Target user or group */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** Topic ID */
-    topMsgId?: MessageIDLike;
+    topMsgId?: int;
     /** Type of action */
     action: TypeSendMessageActionIn;
   }
@@ -37394,13 +37401,13 @@ export namespace Api {
     /** Bots only: if set, allows sending up to 1000 messages per second, ignoring broadcasting limits for a fee of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance. */
     allowPaidFloodskip?: boolean;
     /** The destination where the message will be sent */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** If set, indicates that the message should be sent in reply to the specified message or story. Also used to quote other messages. */
     replyTo?: TypeInputReplyToIn;
     /** The message */
     message: string;
     /** Unique client message ID required to prevent message resending. See here » for more info on random ID deduplication and updateMessageID mapping. */
-    randomId?: long;
+    randomId?: LongInput;
     /** Reply markup for sending bot buttons */
     replyMarkup?: TypeReplyMarkupIn;
     /** Message entities for sending styled text */
@@ -37410,13 +37417,13 @@ export namespace Api {
     /** Once sent, this message will be automatically re-scheduled to be re-sent again this many seconds in the future, see here » for more info on repeating scheduled messages. */
     scheduleRepeatPeriod?: int;
     /** Send this message as the specified peer */
-    sendAs?: Api.TypeEntityLike;
+    sendAs?: TypeInputPeerIn;
     /** Add the message to the specified quick reply shortcut » , instead. */
     quickReplyShortcut?: TypeInputQuickReplyShortcutIn;
     /** Specifies a message effect » to use for the message. */
-    effect?: long;
+    effect?: LongInput;
     /** For paid messages » , specifies the amount of Telegram Stars the user has agreed to pay in order to send the message. */
-    allowPaidStars?: long;
+    allowPaidStars?: LongInput;
     /** Used to suggest a post to a channel, see here » for more info on the full flow. */
     suggestedPost?: TypeSuggestedPostIn;
     richMessage?: TypeInputRichMessageIn;
@@ -37437,7 +37444,7 @@ export namespace Api {
     /** Bots only: if set, allows sending up to 1000 messages per second, ignoring broadcasting limits for a fee of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance. */
     allowPaidFloodskip?: boolean;
     /** Destination */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** If set, indicates that the message should be sent in reply to the specified message or story. */
     replyTo?: TypeInputReplyToIn;
     /** Attached media */
@@ -37445,7 +37452,7 @@ export namespace Api {
     /** Caption */
     message: string;
     /** Random ID to avoid resending the same message. See here » for more info on random ID deduplication and updateMessageID mapping. */
-    randomId?: long;
+    randomId?: LongInput;
     /** Reply markup for bot keyboards */
     replyMarkup?: TypeReplyMarkupIn;
     /** Message entities for styled text */
@@ -37455,13 +37462,13 @@ export namespace Api {
     /** Once sent, this message will be automatically re-scheduled to be re-sent again this many seconds in the future, see here » for more info on repeating scheduled messages. */
     scheduleRepeatPeriod?: int;
     /** Send this message as the specified peer */
-    sendAs?: Api.TypeEntityLike;
+    sendAs?: TypeInputPeerIn;
     /** Add the message to the specified quick reply shortcut » , instead. */
     quickReplyShortcut?: TypeInputQuickReplyShortcutIn;
     /** Specifies a message effect » to use for the message. */
-    effect?: long;
+    effect?: LongInput;
     /** For paid messages » , specifies the amount of Telegram Stars the user has agreed to pay in order to send the message. */
-    allowPaidStars?: long;
+    allowPaidStars?: LongInput;
     /** Used to suggest a post to a channel, see here » for more info on the full flow. */
     suggestedPost?: TypeSuggestedPostIn;
   }
@@ -37482,15 +37489,15 @@ export namespace Api {
     allowPaidFloodskip?: boolean;
     fromEphemeral?: boolean;
     /** Source of messages */
-    fromPeer: Api.TypeEntityLike;
+    fromPeer: TypeInputPeerIn;
     /** IDs of messages */
     id: int[];
     /** Random ID to prevent resending of messages. See here » for more info on random ID deduplication and updateMessageID mapping. */
-    randomId: long[];
+    randomId: LongInput[];
     /** Destination peer */
-    toPeer: Api.TypeEntityLike;
+    toPeer: TypeInputPeerIn;
     /** Destination forum topic */
-    topMsgId?: MessageIDLike;
+    topMsgId?: int;
     /** Can only contain an inputReplyToMonoForum , to forward messages to a monoforum topic (mutually exclusive with top_msg_id ). */
     replyTo?: TypeInputReplyToIn;
     /** Scheduled message date for scheduled messages */
@@ -37498,29 +37505,29 @@ export namespace Api {
     /** Once sent, this message will be automatically re-scheduled to be re-sent again this many seconds in the future, see here » for more info on repeating scheduled messages. */
     scheduleRepeatPeriod?: int;
     /** Forward the messages as the specified peer */
-    sendAs?: Api.TypeEntityLike;
+    sendAs?: TypeInputPeerIn;
     /** Add the messages to the specified quick reply shortcut » , instead. */
     quickReplyShortcut?: TypeInputQuickReplyShortcutIn;
     /** Specifies a message effect » to use for the message. */
-    effect?: long;
+    effect?: LongInput;
     /** Start playing the video at the specified timestamp (seconds). */
     videoTimestamp?: int;
     /** For paid messages » , specifies the amount of Telegram Stars the user has agreed to pay in order to send the message. */
-    allowPaidStars?: long;
+    allowPaidStars?: LongInput;
     /** Used to suggest a post to a channel, see here » for more info on the full flow. */
     suggestedPost?: TypeSuggestedPostIn;
   }
   export interface MessagesReportSpamParams {
     /** Peer to report */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
   }
   export interface MessagesGetPeerSettingsParams {
     /** The peer */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
   }
   export interface MessagesReportParams {
     /** Peer */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** IDs of messages to report */
     id: int[];
     /** Menu option, intially empty */
@@ -37530,29 +37537,29 @@ export namespace Api {
   }
   export interface MessagesGetChatsParams {
     /** List of chat IDs */
-    id: long[];
+    id: LongInput[];
   }
   export interface MessagesGetFullChatParams {
     /** Basic group ID. */
-    chatId: long;
+    chatId: LongInput;
   }
   export interface MessagesEditChatTitleParams {
     /** Chat ID */
-    chatId: long;
+    chatId: LongInput;
     /** New chat name, different from the old one */
     title: string;
   }
   export interface MessagesEditChatPhotoParams {
     /** Chat ID */
-    chatId: long;
+    chatId: LongInput;
     /** Photo to be set */
     photo: TypeInputChatPhotoIn;
   }
   export interface MessagesAddChatUserParams {
     /** Chat ID */
-    chatId: long;
+    chatId: LongInput;
     /** User ID to be added */
-    userId: Api.TypeEntityLike;
+    userId: TypeInputUserIn;
     /** Number of last messages to be forwarded */
     fwdLimit: int;
   }
@@ -37560,13 +37567,13 @@ export namespace Api {
     /** Remove the entire chat history of the specified user in this chat. */
     revokeHistory?: boolean;
     /** Chat ID */
-    chatId: long;
+    chatId: LongInput;
     /** User ID to be deleted */
-    userId: Api.TypeEntityLike;
+    userId: TypeInputUserIn;
   }
   export interface MessagesCreateChatParams {
     /** List of user IDs to be invited */
-    users: Api.TypeEntityLike[];
+    users: TypeInputUserIn[];
     /** Chat name */
     title: string;
     /** Time-to-live of all messages that will be sent in the chat: once message.date+message.ttl_period === time(), the message will be deleted on the server, and must be deleted locally as well. You can use messages.setDefaultHistoryTTL to edit this value later. */
@@ -37580,7 +37587,7 @@ export namespace Api {
   }
   export interface MessagesRequestEncryptionParams {
     /** User ID */
-    userId: Api.TypeEntityLike;
+    userId: TypeInputUserIn;
     /** Unique client request ID required to prevent resending. This also doubles as the chat ID. See here » for more info on random ID deduplication and updateMessageID mapping. */
     randomId: int;
     /** A = g ^ a mod p , see Wikipedia */
@@ -37592,7 +37599,7 @@ export namespace Api {
     /** B = g ^ b mod p , see Wikipedia */
     gB: bytes;
     /** 64-bit fingerprint of the received key */
-    keyFingerprint: long;
+    keyFingerprint: LongInput;
   }
   export interface MessagesDiscardEncryptionParams {
     /** Whether to delete the entire chat history for the other user as well */
@@ -37618,7 +37625,7 @@ export namespace Api {
     /** Secret chat ID */
     peer: TypeInputEncryptedChatIn;
     /** Unique client message ID, necessary to avoid message resending. See here » for more info on random ID deduplication and updateMessageID mapping. */
-    randomId?: long;
+    randomId?: LongInput;
     /** TL-serialization of DecryptedMessage type, encrypted with a key that was created during chat initialization */
     data: bytes;
   }
@@ -37628,7 +37635,7 @@ export namespace Api {
     /** Secret chat ID */
     peer: TypeInputEncryptedChatIn;
     /** Unique client message ID necessary to prevent message resending. See here » for more info on random ID deduplication and updateMessageID mapping. */
-    randomId?: long;
+    randomId?: LongInput;
     /** TL-serialization of DecryptedMessage type, encrypted with a key generated during chat initialization */
     data: bytes;
     /** File attachment for the secret chat */
@@ -37638,7 +37645,7 @@ export namespace Api {
     /** Secret chat ID */
     peer: TypeInputEncryptedChatIn;
     /** Unique client message ID required to prevent message resending. See here » for more info on random ID deduplication and updateMessageID mapping. */
-    randomId?: long;
+    randomId?: LongInput;
     /** TL-serialization of DecryptedMessage type, encrypted with a key generated during chat initialization */
     data: bytes;
   }
@@ -37658,11 +37665,11 @@ export namespace Api {
     /** The emoji */
     emoticon: string;
     /** Hash used for caching, for more info click here . */
-    hash: long;
+    hash: LongInput;
   }
   export interface MessagesGetAllStickersParams {
     /** Hash used for caching, for more info click here . */
-    hash: long;
+    hash: LongInput;
   }
   export interface MessagesGetWebPagePreviewParams {
     /** Message from which to extract the preview */
@@ -37676,7 +37683,7 @@ export namespace Api {
     /** Whether admin confirmation is required before admitting each separate user into the chat */
     requestNeeded?: boolean;
     /** Chat */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** Expiration date */
     expireDate?: int;
     /** Maximum number of users that can join using this link */
@@ -37712,17 +37719,17 @@ export namespace Api {
   }
   export interface MessagesStartBotParams {
     /** The bot */
-    bot: Api.TypeEntityLike;
+    bot: TypeInputUserIn;
     /** The chat where to start the bot, can be the bot's private chat or a group */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** Random ID to avoid resending the same message. See here » for more info on random ID deduplication and updateMessageID mapping. */
-    randomId?: long;
+    randomId?: LongInput;
     /** Deep linking parameter */
     startParam: string;
   }
   export interface MessagesGetMessagesViewsParams {
     /** Peer where the message was found */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** ID of message */
     id: int[];
     /** Whether to mark the message as viewed and increment the view counter */
@@ -37730,15 +37737,15 @@ export namespace Api {
   }
   export interface MessagesEditChatAdminParams {
     /** The ID of the group */
-    chatId: long;
+    chatId: LongInput;
     /** The user to make admin */
-    userId: Api.TypeEntityLike;
+    userId: TypeInputUserIn;
     /** Whether to make them admin */
     isAdmin: Bool;
   }
   export interface MessagesMigrateChatParams {
     /** Basic group to migrate */
-    chatId: long;
+    chatId: LongInput;
   }
   export interface MessagesSearchGlobalParams {
     /** If set, only returns results from channels (used in the global channel search tab » ). */
@@ -37749,7 +37756,7 @@ export namespace Api {
     usersOnly?: boolean;
     /** Peer folder ID, for more info click here */
     folderId?: int;
-    community?: Api.TypeEntityLike;
+    community?: TypeInputChannelIn;
     /** Query */
     q: string;
     /** Global search filter */
@@ -37761,7 +37768,7 @@ export namespace Api {
     /** Initially 0, then set to the next_rate parameter of messages.messagesSlice , or if that is absent, the date of the last returned message. */
     offsetRate: int;
     /** Offsets for pagination, for more info click here */
-    offsetPeer: Api.TypeEntityLike;
+    offsetPeer: TypeInputPeerIn;
     /** Offsets for pagination, for more info click here */
     offsetId: int;
     /** Offsets for pagination, for more info click here */
@@ -37773,19 +37780,19 @@ export namespace Api {
     /** Reorder custom emoji stickersets */
     emojis?: boolean;
     /** New stickerset order by stickerset IDs */
-    order: long[];
+    order: LongInput[];
   }
   export interface MessagesGetDocumentByHashParams {
     /** SHA256 of file */
     sha256: bytes;
     /** Size of the file in bytes */
-    size: long;
+    size: LongInput;
     /** Mime type */
     mimeType: string;
   }
   export interface MessagesGetSavedGifsParams {
     /** Hash used for caching, for more info click here . */
-    hash: long;
+    hash: LongInput;
   }
   export interface MessagesSaveGifParams {
     /** GIF to save */
@@ -37795,9 +37802,9 @@ export namespace Api {
   }
   export interface MessagesGetInlineBotResultsParams {
     /** The bot to query */
-    bot: Api.TypeEntityLike;
+    bot: TypeInputUserIn;
     /** The currently opened chat */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** The geolocation, if requested */
     geoPoint?: TypeInputGeoPointIn;
     /** The query */
@@ -37811,7 +37818,7 @@ export namespace Api {
     /** Set this flag if results may be cached on the server side only for the user that sent the query. By default, results may be returned to any user who sends the same query */
     private?: boolean;
     /** Unique identifier for the answered query */
-    queryId: long;
+    queryId: LongInput;
     /** Vector of results for the inline query */
     results: TypeInputBotInlineResultIn[];
     /** The maximum amount of time in seconds that the result of the inline query may be cached on the server. Defaults to 300. */
@@ -37833,27 +37840,27 @@ export namespace Api {
     /** Whether to hide the via @botname in the resulting message (only for bot usernames encountered in the config ) */
     hideVia?: boolean;
     /** Destination */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** If set, indicates that the message should be sent in reply to the specified message or story. */
     replyTo?: TypeInputReplyToIn;
     /** Random ID to avoid resending the same query. See here » for more info on random ID deduplication and updateMessageID mapping. */
-    randomId?: long;
+    randomId?: LongInput;
     /** Query ID from messages.getInlineBotResults */
-    queryId: long;
+    queryId: LongInput;
     /** Result ID from messages.getInlineBotResults */
     id: string;
     /** Scheduled message date for scheduled messages */
     scheduleDate?: int;
     /** Send this message as the specified peer */
-    sendAs?: Api.TypeEntityLike;
+    sendAs?: TypeInputPeerIn;
     /** Add the message to the specified quick reply shortcut » , instead. */
     quickReplyShortcut?: TypeInputQuickReplyShortcutIn;
     /** For paid messages » , specifies the amount of Telegram Stars the user has agreed to pay in order to send the message. */
-    allowPaidStars?: long;
+    allowPaidStars?: LongInput;
   }
   export interface MessagesGetMessageEditDataParams {
     /** Peer where the media was sent */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** ID of message */
     id: int;
   }
@@ -37863,7 +37870,7 @@ export namespace Api {
     /** If set, any eventual webpage preview will be shown on top of the message instead of at the bottom. */
     invertMedia?: boolean;
     /** Where was the message sent */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** ID of the message to edit */
     id: int;
     /** New message */
@@ -37903,9 +37910,9 @@ export namespace Api {
     /** Whether this is a "play game" button */
     game?: boolean;
     /** Where was the inline keyboard sent */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** ID of the Message with the inline keyboard */
-    msgId: MessageIDLike;
+    msgId: int;
     /** Callback data */
     data?: bytes;
     /** For buttons requiring you to verify your identity with your 2FA password , the SRP payload generated using SRP . */
@@ -37915,7 +37922,7 @@ export namespace Api {
     /** Whether to show the message as a popup instead of a toast notification */
     alert?: boolean;
     /** Query ID */
-    queryId: long;
+    queryId: LongInput;
     /** Popup to show */
     message?: string;
     /** URL to open */
@@ -37925,7 +37932,7 @@ export namespace Api {
   }
   export interface MessagesGetPeerDialogsParams {
     /** Peers */
-    peers: Api.TypeEntityLike[];
+    peers: TypeInputDialogPeerIn[];
   }
   export interface MessagesSaveDraftParams {
     /** Disable generation of the webpage preview */
@@ -37935,7 +37942,7 @@ export namespace Api {
     /** If set, indicates that the message should be sent in reply to the specified message or story. */
     replyTo?: TypeInputReplyToIn;
     /** Destination of the message that should be sent */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** The draft */
     message: string;
     /** Message entities for styled text */
@@ -37943,24 +37950,24 @@ export namespace Api {
     /** Attached media */
     media?: TypeInputMediaIn;
     /** Specifies a message effect » to use for the message. */
-    effect?: long;
+    effect?: LongInput;
     /** Used to suggest a post to a channel, see here » for more info on the full flow. */
     suggestedPost?: TypeSuggestedPostIn;
     richMessage?: TypeInputRichMessageIn;
   }
   export interface MessagesGetFeaturedStickersParams {
     /** Hash used for caching, for more info click here . */
-    hash: long;
+    hash: LongInput;
   }
   export interface MessagesReadFeaturedStickersParams {
     /** IDs of stickersets to mark as read */
-    id: long[];
+    id: LongInput[];
   }
   export interface MessagesGetRecentStickersParams {
     /** Get stickers recently attached to photo or video files */
     attached?: boolean;
     /** Hash used for caching, for more info click here . */
-    hash: long;
+    hash: LongInput;
   }
   export interface MessagesSaveRecentStickerParams {
     /** Whether to add/remove stickers recently attached to photo or video files */
@@ -37980,13 +37987,13 @@ export namespace Api {
     /** Get custom emoji stickers */
     emojis?: boolean;
     /** Offsets for pagination, for more info click here */
-    offsetId: long;
+    offsetId: LongInput;
     /** Maximum number of results to return, see pagination */
     limit: int;
   }
   export interface MessagesGetMaskStickersParams {
     /** Hash used for caching, for more info click here . */
-    hash: long;
+    hash: LongInput;
   }
   export interface MessagesGetAttachedStickersParams {
     /** Stickered media */
@@ -37998,11 +38005,11 @@ export namespace Api {
     /** Set this flag if the high score is allowed to decrease. This can be useful when fixing mistakes or banning cheaters */
     force?: boolean;
     /** Unique identifier of target chat */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** Identifier of the sent message */
     id: int;
     /** User identifier */
-    userId: Api.TypeEntityLike;
+    userId: TypeInputUserIn;
     /** New score */
     score: int;
   }
@@ -38014,29 +38021,29 @@ export namespace Api {
     /** ID of the inline message */
     id: TypeInputBotInlineMessageIDIn;
     /** User identifier */
-    userId: Api.TypeEntityLike;
+    userId: TypeInputUserIn;
     /** New score */
     score: int;
   }
   export interface MessagesGetGameHighScoresParams {
     /** Where was the game sent */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** ID of message with game media attachment */
     id: int;
     /** Get high scores made by a certain user */
-    userId: Api.TypeEntityLike;
+    userId: TypeInputUserIn;
   }
   export interface MessagesGetInlineGameHighScoresParams {
     /** ID of inline message */
     id: TypeInputBotInlineMessageIDIn;
     /** Get high scores of a certain user */
-    userId: Api.TypeEntityLike;
+    userId: TypeInputUserIn;
   }
   export interface MessagesGetCommonChatsParams {
     /** User ID */
-    userId: Api.TypeEntityLike;
+    userId: TypeInputUserIn;
     /** Maximum ID of chat to return (see pagination ) */
-    maxId: long;
+    maxId: LongInput;
     /** Maximum number of results to return, see pagination */
     limit: int;
   }
@@ -38050,7 +38057,7 @@ export namespace Api {
     /** Whether to pin or unpin the dialog */
     pinned?: boolean;
     /** The dialog to pin */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputDialogPeerIn;
   }
   export interface MessagesReorderPinnedDialogsParams {
     /** If set, dialogs pinned server-side but not present in the order field will be unpinned. */
@@ -38058,7 +38065,7 @@ export namespace Api {
     /** Peer folder ID, for more info click here */
     folderId: int;
     /** New dialog order */
-    order: Api.TypeEntityLike[];
+    order: TypeInputDialogPeerIn[];
   }
   export interface MessagesGetPinnedDialogsParams {
     /** Peer folder ID, for more info click here */
@@ -38066,7 +38073,7 @@ export namespace Api {
   }
   export interface MessagesSetBotShippingResultsParams {
     /** Unique identifier for the query to be answered */
-    queryId: long;
+    queryId: LongInput;
     /** Error message in human readable form that explains why it is impossible to complete the order (e.g. "Sorry, delivery to your desired address is unavailable"). Telegram will display this message to the user. */
     error?: string;
     /** A vector of available shipping options. */
@@ -38076,7 +38083,7 @@ export namespace Api {
     /** Set this flag if everything is alright (goods are available, etc.) and the bot is ready to proceed with the order, otherwise do not set it, and set the error field, instead */
     success?: boolean;
     /** Unique identifier for the query to be answered */
-    queryId: long;
+    queryId: LongInput;
     /** Required if the success isn't set. Error message in human readable form that explains the reason for failure to proceed with the checkout (e.g. "Sorry, somebody just bought the last of our amazing black T-shirts while you were busy filling out your payment details. Please choose a different color or garment!"). Telegram will display this message to the user. */
     error?: string;
   }
@@ -38084,21 +38091,21 @@ export namespace Api {
     /** Whether the media will be used only in the specified business connection » , and not directly by the bot. */
     businessConnectionId?: string;
     /** The chat, can be inputPeerEmpty for bots and inputPeerSelf for users. */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** File uploaded in chunks as described in files » */
     media: TypeInputMediaIn;
   }
   export interface MessagesSendScreenshotNotificationParams {
     /** Other user */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** Indicates the message that was screenshotted (the specified message ID can also be 0 to avoid indicating any specific message). */
     replyTo: TypeInputReplyToIn;
     /** Random ID to avoid message resending. See here » for more info on random ID deduplication and updateMessageID mapping. */
-    randomId?: long;
+    randomId?: LongInput;
   }
   export interface MessagesGetFavedStickersParams {
     /** Hash used for caching, for more info click here . */
-    hash: long;
+    hash: LongInput;
   }
   export interface MessagesFaveStickerParams {
     /** Sticker in question */
@@ -38108,9 +38115,9 @@ export namespace Api {
   }
   export interface MessagesGetUnreadMentionsParams {
     /** Peer where to look for mentions */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** If set, considers only messages within the specified forum topic */
-    topMsgId?: MessageIDLike;
+    topMsgId?: int;
     /** Offsets for pagination, for more info click here */
     offsetId: int;
     /** Offsets for pagination, for more info click here */
@@ -38124,17 +38131,17 @@ export namespace Api {
   }
   export interface MessagesReadMentionsParams {
     /** Dialog */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** Mark as read only mentions within the specified forum topic (except for monoforums). */
-    topMsgId?: MessageIDLike;
+    topMsgId?: int;
   }
   export interface MessagesGetRecentLocationsParams {
     /** Target group or private chat. */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** Maximum number of results to return, see pagination */
     limit: int;
     /** Hash used for caching, for more info click here */
-    hash: long;
+    hash: LongInput;
   }
   export interface MessagesSendMultiMediaParams {
     /** Whether to send the album silently (no notification triggered) */
@@ -38152,7 +38159,7 @@ export namespace Api {
     /** Bots only: if set, allows sending up to 1000 messages per second, ignoring broadcasting limits for a fee of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance. */
     allowPaidFloodskip?: boolean;
     /** The destination chat */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** If set, indicates that the message should be sent in reply to the specified message or story. */
     replyTo?: TypeInputReplyToIn;
     /** The medias to send: note that they must be separately uploaded using messages.uploadMedia first, using raw inputMediaUploaded* constructors is not supported. */
@@ -38160,13 +38167,13 @@ export namespace Api {
     /** Scheduled message date for scheduled messages */
     scheduleDate?: int;
     /** Send this message as the specified peer */
-    sendAs?: Api.TypeEntityLike;
+    sendAs?: TypeInputPeerIn;
     /** Add the message to the specified quick reply shortcut » , instead. */
     quickReplyShortcut?: TypeInputQuickReplyShortcutIn;
     /** Specifies a message effect » to use for the message. */
-    effect?: long;
+    effect?: LongInput;
     /** For paid messages » , specifies the amount of Telegram Stars the user has agreed to pay in order to send the message. */
-    allowPaidStars?: long;
+    allowPaidStars?: LongInput;
   }
   export interface MessagesUploadEncryptedFileParams {
     /** The secret chat to associate the file to */
@@ -38180,19 +38187,19 @@ export namespace Api {
     /** Query string */
     q: string;
     /** Hash used for caching, for more info click here . */
-    hash: long;
+    hash: LongInput;
   }
   export interface MessagesMarkDialogUnreadParams {
     /** Mark as unread/read */
     unread?: boolean;
     /** If set, must be equal to the ID of a monoforum , and will affect the monoforum topic passed in peer . */
-    parentPeer?: Api.TypeEntityLike;
+    parentPeer?: TypeInputPeerIn;
     /** Dialog */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputDialogPeerIn;
   }
   export interface MessagesGetDialogUnreadMarksParams {
     /** Can be equal to the ID of a monoforum, to fetch monoforum topics manually marked as unread. */
-    parentPeer?: Api.TypeEntityLike;
+    parentPeer?: TypeInputPeerIn;
   }
   export interface MessagesUpdatePinnedMessageParams {
     /** Pin the message silently, without triggering a notification */
@@ -38202,39 +38209,39 @@ export namespace Api {
     /** Whether the message should only be pinned on the local side of a one-to-one chat */
     pmOneside?: boolean;
     /** The peer where to pin the message */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** The message to pin or unpin */
     id: int;
   }
   export interface MessagesSendVoteParams {
     /** The chat where the poll was sent */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** The message ID of the poll */
-    msgId: MessageIDLike;
+    msgId: int;
     /** The options that were chosen */
     options: bytes[];
   }
   export interface MessagesGetPollResultsParams {
     /** Peer where the poll was found */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** Message ID of poll message */
-    msgId: MessageIDLike;
+    msgId: int;
     /** Pass the poll.hash from the last received poll state; the server skips returning unchanged data */
-    pollHash: long;
+    pollHash: LongInput;
   }
   export interface MessagesGetOnlinesParams {
     /** The chat */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
   }
   export interface MessagesEditChatAboutParams {
     /** The group/supergroup/channel . */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** The new description */
     about: string;
   }
   export interface MessagesEditChatDefaultBannedRightsParams {
     /** The peer */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** The new global rights */
     bannedRights: TypeChatBannedRightsIn;
   }
@@ -38258,19 +38265,19 @@ export namespace Api {
   }
   export interface MessagesGetSearchCountersParams {
     /** Peer where to search */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** Search within the saved message dialog » with this ID. */
-    savedPeerId?: Api.TypeEntityLike;
+    savedPeerId?: TypeInputPeerIn;
     /** If set, consider only messages within the specified forum topic */
-    topMsgId?: MessageIDLike;
+    topMsgId?: int;
     /** Search filters */
     filters: TypeMessagesFilterIn[];
   }
   export interface MessagesRequestUrlAuthParams {
     /** Peer where the message is located */
-    peer?: Api.TypeEntityLike;
+    peer?: TypeInputPeerIn;
     /** The message */
-    msgId?: MessageIDLike;
+    msgId?: int;
     /** The ID of the button with the authorization request */
     buttonId?: int;
     /** URL used for link URL authorization, click here for more info » */
@@ -38284,9 +38291,9 @@ export namespace Api {
     /** Set this flag to share the user's phone number with the bot (if requested via urlAuthResultRequest . request_phone_number and consented to by the user) */
     sharePhoneNumber?: boolean;
     /** The location of the message */
-    peer?: Api.TypeEntityLike;
+    peer?: TypeInputPeerIn;
     /** Message ID of the message with the login button */
-    msgId?: MessageIDLike;
+    msgId?: int;
     /** ID of the login button */
     buttonId?: int;
     /** URL used for link URL authorization, click here for more info » */
@@ -38296,35 +38303,35 @@ export namespace Api {
   }
   export interface MessagesHidePeerSettingsBarParams {
     /** Peer */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
   }
   export interface MessagesGetScheduledHistoryParams {
     /** Peer */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** Hash used for caching, for more info click here . To generate the hash, populate the ids array with the id , edit_date (0 if unedited) and date (in this order) of the previously returned messages (in order, i.e. ids = [id1, (edit_date1 ?? 0), date1, id2, (edit_date2 ?? 0), date2, ...] ). */
-    hash: long;
+    hash: LongInput;
   }
   export interface MessagesGetScheduledMessagesParams {
     /** Peer */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** IDs of scheduled messages */
     id: int[];
   }
   export interface MessagesSendScheduledMessagesParams {
     /** Peer */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** Scheduled message IDs */
     id: int[];
   }
   export interface MessagesDeleteScheduledMessagesParams {
     /** Peer */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** Scheduled message IDs */
     id: int[];
   }
   export interface MessagesGetPollVotesParams {
     /** Chat where the poll was sent */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** Message ID */
     id: int;
     /** Get only results for the specified poll option */
@@ -38360,13 +38367,13 @@ export namespace Api {
     /** Maximum number of results to return, see pagination */
     limit: int;
     /** Hash used for caching, for more info click here . */
-    hash: long;
+    hash: LongInput;
   }
   export interface MessagesGetRepliesParams {
     /** Peer */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** Message ID */
-    msgId: MessageIDLike;
+    msgId: int;
     /** Offsets for pagination, for more info click here */
     offsetId: int;
     /** Offsets for pagination, for more info click here */
@@ -38380,33 +38387,33 @@ export namespace Api {
     /** If a positive value was transferred, the method will return only messages with ID bigger than min_id */
     minId: int;
     /** Hash used for caching, for more info click here */
-    hash: long;
+    hash: LongInput;
   }
   export interface MessagesGetDiscussionMessageParams {
     /** Channel ID */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** Message ID */
-    msgId: MessageIDLike;
+    msgId: int;
   }
   export interface MessagesReadDiscussionParams {
     /** Group ID */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** ID of message that started the thread */
-    msgId: MessageIDLike;
+    msgId: int;
     /** ID up to which thread messages were read */
     readMaxId: int;
   }
   export interface MessagesUnpinAllMessagesParams {
     /** Chat where to unpin */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** Forum topic where to unpin */
-    topMsgId?: MessageIDLike;
+    topMsgId?: int;
     /** If set, must be equal to the ID of a monoforum topic , and will unpin all messages pinned in the passed monoforum topic. */
-    savedPeerId?: Api.TypeEntityLike;
+    savedPeerId?: TypeInputPeerIn;
   }
   export interface MessagesDeleteChatParams {
     /** Chat ID */
-    chatId: long;
+    chatId: LongInput;
   }
   export interface MessagesDeletePhoneCallHistoryParams {
     /** Whether to remove phone call history for participants as well */
@@ -38418,7 +38425,7 @@ export namespace Api {
   }
   export interface MessagesInitHistoryImportParams {
     /** The Telegram chat where the history should be imported . */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** File with messages to import. */
     file: TypeInputFileIn;
     /** Number of media files associated with the chat that will be uploaded using messages.uploadImportedMedia . */
@@ -38426,9 +38433,9 @@ export namespace Api {
   }
   export interface MessagesUploadImportedMediaParams {
     /** The Telegram chat where the media will be imported */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** Identifier of a history import session , returned by messages.initHistoryImport */
-    importId: long;
+    importId: LongInput;
     /** File name */
     fileName: string;
     /** Media metadata */
@@ -38436,17 +38443,17 @@ export namespace Api {
   }
   export interface MessagesStartHistoryImportParams {
     /** The Telegram chat where the messages should be imported, click here for more info » */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** Identifier of a history import session, returned by messages.initHistoryImport . */
-    importId: long;
+    importId: LongInput;
   }
   export interface MessagesGetExportedChatInvitesParams {
     /** Whether to fetch revoked chat invites */
     revoked?: boolean;
     /** Chat */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** Whether to only fetch chat invites from this admin */
-    adminId: Api.TypeEntityLike;
+    adminId: TypeInputUserIn;
     /** Offsets for pagination, for more info click here */
     offsetDate?: int;
     /** Offsets for pagination, for more info click here */
@@ -38456,7 +38463,7 @@ export namespace Api {
   }
   export interface MessagesGetExportedChatInviteParams {
     /** Chat */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** Invite link */
     link: string;
   }
@@ -38464,7 +38471,7 @@ export namespace Api {
     /** Whether to revoke the chat invite */
     revoked?: boolean;
     /** Chat */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** Invite link */
     link: string;
     /** New expiration date */
@@ -38478,19 +38485,19 @@ export namespace Api {
   }
   export interface MessagesDeleteRevokedExportedChatInvitesParams {
     /** Chat */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** ID of the admin that originally generated the revoked chat invites */
-    adminId: Api.TypeEntityLike;
+    adminId: TypeInputUserIn;
   }
   export interface MessagesDeleteExportedChatInviteParams {
     /** Peer */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** Invite link */
     link: string;
   }
   export interface MessagesGetAdminsWithInvitesParams {
     /** Chat */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
   }
   export interface MessagesGetChatInviteImportersParams {
     /** If set, only returns info about users with pending join requests » */
@@ -38498,7 +38505,7 @@ export namespace Api {
     /** Set this flag if the link is a Telegram Star subscription link » and only members with already expired subscription must be returned. */
     subscriptionExpired?: boolean;
     /** Chat */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** Invite link */
     link?: string;
     /** Search for a user in the pending join requests » list: only available when the requested flag is set, cannot be used together with a specific link . */
@@ -38506,37 +38513,37 @@ export namespace Api {
     /** Offsets for pagination, for more info click here */
     offsetDate: int;
     /** User ID for pagination : if set, offset_date must also be set. */
-    offsetUser: Api.TypeEntityLike;
+    offsetUser: TypeInputUserIn;
     /** Maximum number of results to return, see pagination */
     limit: int;
   }
   export interface MessagesSetHistoryTTLParams {
     /** The dialog */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** Automatically delete all messages sent in the chat after this many seconds */
     period: int;
   }
   export interface MessagesCheckHistoryImportPeerParams {
     /** The chat where we want to import history » . */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
   }
   export interface MessagesSetChatThemeParams {
     /** Private chat where to change theme */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** The theme to set. */
     theme: TypeInputChatThemeIn;
   }
   export interface MessagesGetMessageReadParticipantsParams {
     /** Dialog */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** Message ID */
-    msgId: MessageIDLike;
+    msgId: int;
   }
   export interface MessagesGetSearchResultsCalendarParams {
     /** Peer where to search */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** Search within the saved message dialog » with this ID. */
-    savedPeerId?: Api.TypeEntityLike;
+    savedPeerId?: TypeInputPeerIn;
     /** Message filter, inputMessagesFilterEmpty , inputMessagesFilterMyMentions filters are not supported by this method. */
     filter: TypeMessagesFilterIn;
     /** Offsets for pagination, for more info click here */
@@ -38546,9 +38553,9 @@ export namespace Api {
   }
   export interface MessagesGetSearchResultsPositionsParams {
     /** Peer where to search */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** Search within the saved message dialog » with this ID. */
-    savedPeerId?: Api.TypeEntityLike;
+    savedPeerId?: TypeInputPeerIn;
     /** Message filter, inputMessagesFilterEmpty , inputMessagesFilterMyMentions filters are not supported by this method. */
     filter: TypeMessagesFilterIn;
     /** Offsets for pagination, for more info click here */
@@ -38560,31 +38567,31 @@ export namespace Api {
     /** Whether to dismiss or approve the chat join request » */
     approved?: boolean;
     /** The chat or channel */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** The user whose join request » should be dismissed or approved */
-    userId: Api.TypeEntityLike;
+    userId: TypeInputUserIn;
   }
   export interface MessagesHideAllChatJoinRequestsParams {
     /** Whether to dismiss or approve all chat join requests » */
     approved?: boolean;
     /** The chat or channel */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** Only dismiss or approve join requests » initiated using this invite link */
     link?: string;
   }
   export interface MessagesToggleNoForwardsParams {
     /** The chat or channel */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** Enable or disable content protection */
     enabled: Bool;
     /** Used only inside private chats to accept or refuse a request to disable content protection, see here » for more info on the full flow. */
-    requestMsgId?: MessageIDLike;
+    requestMsgId?: int;
   }
   export interface MessagesSaveDefaultSendAsParams {
     /** Group */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** The default peer that should be used when sending messages to the group */
-    sendAs: Api.TypeEntityLike;
+    sendAs: TypeInputPeerIn;
   }
   export interface MessagesSendReactionParams {
     /** Whether a bigger and longer reaction should be shown */
@@ -38592,21 +38599,21 @@ export namespace Api {
     /** Whether to add this reaction to the recent reactions list » . */
     addToRecent?: boolean;
     /** Peer */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** Message ID to react to */
-    msgId: MessageIDLike;
+    msgId: int;
     /** A list of reactions (doesn't accept reactionPaid constructors, use messages.sendPaidReaction to send paid reactions, instead). */
     reaction?: TypeReactionIn[];
   }
   export interface MessagesGetMessagesReactionsParams {
     /** Peer */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** Message IDs */
     id: int[];
   }
   export interface MessagesGetMessageReactionsListParams {
     /** Peer */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** Message ID */
     id: int;
     /** Get only reactions of this type */
@@ -38618,7 +38625,7 @@ export namespace Api {
   }
   export interface MessagesSetChatAvailableReactionsParams {
     /** Group where to apply changes */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** Allowed reaction emojis */
     availableReactions: TypeChatReactionsIn;
     /** This flag may be used to impose a custom limit of unique reactions (i.e. a customizable version of appConfig.reactions_uniq_max ); this field and the other info set by the method will then be available to users in channelFull and chatFull . If this flag is not set, the previously configured reactions_limit will not be altered. */
@@ -38636,7 +38643,7 @@ export namespace Api {
   }
   export interface MessagesTranslateTextParams {
     /** If the text is a chat message, the peer ID */
-    peer?: Api.TypeEntityLike;
+    peer?: TypeInputPeerIn;
     /** A list of message IDs to translate */
     id?: int[];
     /** A list of styled messages to translate */
@@ -38648,11 +38655,11 @@ export namespace Api {
   }
   export interface MessagesGetUnreadReactionsParams {
     /** Peer */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** If set, considers only reactions to messages within the specified forum topic */
-    topMsgId?: MessageIDLike;
+    topMsgId?: int;
     /** If set, must be equal to the ID of a monoforum topic : will affect that topic in the monoforum passed in peer . */
-    savedPeerId?: Api.TypeEntityLike;
+    savedPeerId?: TypeInputPeerIn;
     /** Offsets for pagination, for more info click here */
     offsetId: int;
     /** Offsets for pagination, for more info click here */
@@ -38666,11 +38673,11 @@ export namespace Api {
   }
   export interface MessagesReadReactionsParams {
     /** Peer */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** Mark as read only reactions to messages within the specified forum topic */
-    topMsgId?: MessageIDLike;
+    topMsgId?: int;
     /** If set, must be equal to the ID of a monoforum topic : will affect that topic in the monoforum passed in peer . */
-    savedPeerId?: Api.TypeEntityLike;
+    savedPeerId?: TypeInputPeerIn;
   }
   export interface MessagesSearchSentMediaParams {
     /** Optional search query */
@@ -38682,17 +38689,17 @@ export namespace Api {
   }
   export interface MessagesGetAttachMenuBotsParams {
     /** Hash used for caching, for more info click here . */
-    hash: long;
+    hash: LongInput;
   }
   export interface MessagesGetAttachMenuBotParams {
     /** Bot ID */
-    bot: Api.TypeEntityLike;
+    bot: TypeInputUserIn;
   }
   export interface MessagesToggleBotInAttachMenuParams {
     /** Whether the user authorizes the bot to write messages to them, if requested by attachMenuBot . request_write_access */
     writeAllowed?: boolean;
     /** Bot ID */
-    bot: Api.TypeEntityLike;
+    bot: TypeInputUserIn;
     /** Toggle */
     enabled: Bool;
   }
@@ -38706,9 +38713,9 @@ export namespace Api {
     /** If set, requests to open the mini app in fullscreen mode (as opposed to normal or compact mode). Must be set if the mode parameter of the attachment menu deep link is equal to fullscreen . */
     fullscreen?: boolean;
     /** Dialog where the web app is being opened, and where the resulting message will be sent (see the docs for more info » ). */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** Bot that owns the web app */
-    bot: Api.TypeEntityLike;
+    bot: TypeInputUserIn;
     /** Web app URL */
     url?: string;
     /** If the web app was opened from the attachment menu using a attachment menu deep link , start_param should contain the data from the startattach parameter. */
@@ -38720,21 +38727,21 @@ export namespace Api {
     /** If set, indicates that the inline message that will be sent by the bot on behalf of the user once the web app interaction is terminated should be sent in reply to the specified message or story. */
     replyTo?: TypeInputReplyToIn;
     /** Open the web app as the specified peer, sending the resulting the message as the specified peer. */
-    sendAs?: Api.TypeEntityLike;
+    sendAs?: TypeInputPeerIn;
   }
   export interface MessagesProlongWebViewParams {
     /** Whether the inline message that will be sent by the bot on behalf of the user once the web app interaction is terminated should be sent silently (no notifications for the receivers). */
     silent?: boolean;
     /** Dialog where the web app was opened. */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** Bot that owns the web app */
-    bot: Api.TypeEntityLike;
+    bot: TypeInputUserIn;
     /** Web app interaction ID obtained from messages.requestWebView */
-    queryId: long;
+    queryId: LongInput;
     /** If set, indicates that the inline message that will be sent by the bot on behalf of the user once the web app interaction is terminated should be sent in reply to the specified message or story. */
     replyTo?: TypeInputReplyToIn;
     /** Open the web app as the specified peer */
-    sendAs?: Api.TypeEntityLike;
+    sendAs?: TypeInputPeerIn;
   }
   export interface MessagesRequestSimpleWebViewParams {
     /** Whether the webapp was opened by clicking on the switch_webview button shown on top of the inline results list returned by messages.getInlineBotResults . */
@@ -38746,7 +38753,7 @@ export namespace Api {
     /** Requests to open the app in fullscreen mode. */
     fullscreen?: boolean;
     /** Bot that owns the mini app */
-    bot: Api.TypeEntityLike;
+    bot: TypeInputUserIn;
     /** Web app URL, if opening from a keyboard button or inline result */
     url?: string;
     /** Deprecated. */
@@ -38764,9 +38771,9 @@ export namespace Api {
   }
   export interface MessagesSendWebViewDataParams {
     /** Bot that owns the web app */
-    bot: Api.TypeEntityLike;
+    bot: TypeInputUserIn;
     /** Unique client message ID to prevent duplicate sending of the same event. See here » for more info on random ID deduplication and updateMessageID mapping. */
-    randomId?: long;
+    randomId?: LongInput;
     /** Text of the keyboardButtonSimpleWebView that was pressed to open the web app. */
     buttonText: string;
     /** Data to relay to the bot, obtained from a web_app_data_send JS event . */
@@ -38774,55 +38781,55 @@ export namespace Api {
   }
   export interface MessagesTranscribeAudioParams {
     /** Peer ID where the voice message was sent */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** Voice message ID */
-    msgId: MessageIDLike;
+    msgId: int;
   }
   export interface MessagesRateTranscribedAudioParams {
     /** Peer where the voice message was sent */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** Message ID */
-    msgId: MessageIDLike;
+    msgId: int;
     /** Transcription ID */
-    transcriptionId: long;
+    transcriptionId: LongInput;
     /** Whether the transcription was correct */
     good: Bool;
   }
   export interface MessagesGetCustomEmojiDocumentsParams {
     /** Custom emoji IDs from a messageEntityCustomEmoji . */
-    documentId: long[];
+    documentId: LongInput[];
   }
   export interface MessagesGetEmojiStickersParams {
     /** Hash used for caching, for more info click here . */
-    hash: long;
+    hash: LongInput;
   }
   export interface MessagesGetFeaturedEmojiStickersParams {
     /** Hash used for caching, for more info click here . */
-    hash: long;
+    hash: LongInput;
   }
   export interface MessagesReportReactionParams {
     /** Peer where the message was sent */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** Message ID */
     id: int;
     /** Peer that sent the reaction */
-    reactionPeer: Api.TypeEntityLike;
+    reactionPeer: TypeInputPeerIn;
   }
   export interface MessagesGetTopReactionsParams {
     /** Maximum number of results to return, see pagination */
     limit: int;
     /** Hash used for caching, for more info click here . */
-    hash: long;
+    hash: LongInput;
   }
   export interface MessagesGetRecentReactionsParams {
     /** Maximum number of results to return, see pagination */
     limit: int;
     /** Hash used for caching, for more info click here . */
-    hash: long;
+    hash: LongInput;
   }
   export interface MessagesGetExtendedMediaParams {
     /** Peer with visible paid media messages. */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** IDs of currently visible messages containing paid media. */
     id: int[];
   }
@@ -38832,15 +38839,15 @@ export namespace Api {
   }
   export interface MessagesSendBotRequestedPeerParams {
     /** The bot that sent the keyboardButtonRequestPeer button. */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** ID of the message that contained the reply keyboard with the keyboardButtonRequestPeer button. */
-    msgId?: MessageIDLike;
+    msgId?: int;
     /** If the button was prepared for a Mini App » , the Mini App request ID returned by bots.requestWebViewButton . */
     webappReqId?: string;
     /** The button_id field from the keyboardButtonRequestPeer constructor. */
     buttonId: int;
     /** The chosen peers. */
-    requestedPeers: Api.TypeEntityLike[];
+    requestedPeers: TypeInputPeerIn[];
   }
   export interface MessagesGetEmojiGroupsParams {
     /** Hash used for caching, for more info click here . */
@@ -38858,19 +38865,19 @@ export namespace Api {
     /** The emoji */
     emoticon: string;
     /** Hash used for caching, for more info click here . */
-    hash: long;
+    hash: LongInput;
   }
   export interface MessagesTogglePeerTranslationsParams {
     /** Whether to disable or enable the real-time chat translation popup */
     disabled?: boolean;
     /** The peer */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
   }
   export interface MessagesGetBotAppParams {
     /** Bot app information obtained from a Direct Mini App deep link » . */
     app: TypeInputBotAppIn;
     /** Hash used for caching, for more info click here */
-    hash: long;
+    hash: LongInput;
   }
   export interface MessagesRequestAppWebViewParams {
     /** Set this flag if the bot is asking permission to send messages to the user as specified in the direct Mini App deep link docs, and the user agreed. */
@@ -38880,7 +38887,7 @@ export namespace Api {
     /** If set, requests to open the mini app in fullscreen mode (as opposed to compact or normal mode). Must be set if the mode parameter of the direct Mini App deep link is equal to fullscreen . */
     fullscreen?: boolean;
     /** If the client has clicked on the link in a Telegram chat, pass the chat's peer information; otherwise pass the bot's peer information, instead. */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** The app obtained by invoking messages.getBotApp as specified in the direct Mini App deep link docs. */
     app: TypeInputBotAppIn;
     /** If the startapp query string parameter is present in the direct Mini App deep link , pass it to start_param . */
@@ -38896,7 +38903,7 @@ export namespace Api {
     /** If we don't like the new wallpaper the other user of the chat has chosen for us using the for_both flag, we can re-set our previous wallpaper just on our side using this flag. */
     revert?: boolean;
     /** The private chat where the wallpaper will be set */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** The wallpaper » , obtained as described in the wallpaper documentation » ; must not be provided when installing a wallpaper obtained from a messageActionSetChatWallPaper service message ( id must be provided, instead). */
     wallpaper?: TypeInputWallPaperIn;
     /** Wallpaper settings, obtained as described in the wallpaper documentation » or from messageActionSetChatWallPaper . wallpaper . settings . */
@@ -38910,29 +38917,29 @@ export namespace Api {
     /** Query string */
     q: string;
     /** Hash used for caching, for more info click here . */
-    hash: long;
+    hash: LongInput;
   }
   export interface MessagesGetSavedDialogsParams {
     /** Exclude pinned dialogs */
     excludePinned?: boolean;
     /** If set, fetches the topic list of the passed monoforum, otherwise fetches the saved dialog list. */
-    parentPeer?: Api.TypeEntityLike;
+    parentPeer?: TypeInputPeerIn;
     /** Offsets for pagination, for more info click here */
     offsetDate: int;
     /** Offsets for pagination, for more info click here ( top_message ID used for pagination) */
     offsetId: int;
     /** Offset peer for pagination */
-    offsetPeer: Api.TypeEntityLike;
+    offsetPeer: TypeInputPeerIn;
     /** Number of list elements to be returned */
     limit: int;
     /** Hash used for caching, for more info click here */
-    hash: long;
+    hash: LongInput;
   }
   export interface MessagesGetSavedHistoryParams {
     /** If set, fetches messages from the specified monoforum, otherwise fetches from saved messages. */
-    parentPeer?: Api.TypeEntityLike;
+    parentPeer?: TypeInputPeerIn;
     /** Target peer (or topic) */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** Only return messages starting from the specified message ID */
     offsetId: int;
     /** Only return messages sent before the specified date */
@@ -38946,13 +38953,13 @@ export namespace Api {
     /** If a positive value was transferred, the method will return only messages with IDs more than min_id */
     minId: int;
     /** Result hash */
-    hash: long;
+    hash: LongInput;
   }
   export interface MessagesDeleteSavedHistoryParams {
     /** If set, affects the messages of the passed monoforum topic » , otherwise affects saved messages » . */
-    parentPeer?: Api.TypeEntityLike;
+    parentPeer?: TypeInputPeerIn;
     /** Peer, whose messages will be deleted from saved messages » , or the ID of the topic. */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** Maximum ID of message to delete */
     maxId: int;
     /** Delete all messages newer than this UNIX timestamp */
@@ -38964,19 +38971,19 @@ export namespace Api {
     /** Whether to pin or unpin the dialog */
     pinned?: boolean;
     /** The dialog to pin */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputDialogPeerIn;
   }
   export interface MessagesReorderPinnedSavedDialogsParams {
     /** If set, dialogs pinned server-side but not present in the order field will be unpinned. */
     force?: boolean;
     /** New dialog order */
-    order: Api.TypeEntityLike[];
+    order: TypeInputDialogPeerIn[];
   }
   export interface MessagesGetSavedReactionTagsParams {
     /** If set, returns tags only used in the specified saved message dialog . */
-    peer?: Api.TypeEntityLike;
+    peer?: TypeInputPeerIn;
     /** Hash used for caching, for more info click here . */
-    hash: long;
+    hash: LongInput;
   }
   export interface MessagesUpdateSavedReactionTagParams {
     /** Reaction associated to the tag */
@@ -38986,17 +38993,17 @@ export namespace Api {
   }
   export interface MessagesGetDefaultTagReactionsParams {
     /** Hash used for caching, for more info click here . */
-    hash: long;
+    hash: LongInput;
   }
   export interface MessagesGetOutboxReadDateParams {
     /** The user to whom we sent the message. */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** The message ID. */
-    msgId: MessageIDLike;
+    msgId: int;
   }
   export interface MessagesGetQuickRepliesParams {
     /** Hash for pagination, generated as specified here » (not the usual algorithm used for hash generation.) */
-    hash: long;
+    hash: LongInput;
   }
   export interface MessagesReorderQuickRepliesParams {
     /** IDs of all created quick reply shortcuts , in the desired order. */
@@ -39022,17 +39029,17 @@ export namespace Api {
     /** IDs of the messages to fetch, if empty fetches all of them. */
     id?: int[];
     /** Hash for pagination, generated as specified here » (not the usual algorithm used for hash generation). */
-    hash: long;
+    hash: LongInput;
   }
   export interface MessagesSendQuickReplyMessagesParams {
     /** The peer where to send the shortcut (users only, for now). */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** The ID of the quick reply shortcut to send. */
     shortcutId: int;
     /** Specify a subset of messages from the shortcut to send; if empty, defaults to all of them. */
     id: int[];
     /** Unique client IDs required to prevent message resending, one for each message we're sending, may be empty (but not recommended). See here » for more info on random ID deduplication and updateMessageID mapping. */
-    randomId: long[];
+    randomId: LongInput[];
   }
   export interface MessagesDeleteQuickReplyMessagesParams {
     /** Shortcut ID . */
@@ -39046,7 +39053,7 @@ export namespace Api {
   }
   export interface MessagesGetMyStickersParams {
     /** Offsets for pagination, for more info click here */
-    offsetId: long;
+    offsetId: LongInput;
     /** Maximum number of results to return, see pagination */
     limit: int;
   }
@@ -39060,23 +39067,23 @@ export namespace Api {
   }
   export interface MessagesEditFactCheckParams {
     /** Peer where the message was sent */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** Message ID */
-    msgId: MessageIDLike;
+    msgId: int;
     /** Fact-check (maximum UTF-8 length specified in appConfig.factcheck_length_limit ). */
     text: TypeTextWithEntitiesIn;
   }
   export interface MessagesDeleteFactCheckParams {
     /** Peer where the message was sent. */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** Message ID */
-    msgId: MessageIDLike;
+    msgId: int;
   }
   export interface MessagesGetFactCheckParams {
     /** Peer where the messages were sent. */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** Messages that have associated factCheck constructors with the need_check flag set. */
-    msgId: MessageIDLike[];
+    msgId: int[];
   }
   export interface MessagesRequestMainWebViewParams {
     /** If set, requests to open the mini app in compact mode (as opposed to normal or fullscreen mode). Must be set if the mode parameter of the Main Mini App link is equal to compact . */
@@ -39084,9 +39091,9 @@ export namespace Api {
     /** If set, requests to open the mini app in fullscreen mode (as opposed to compact or normal mode). Must be set if the mode parameter of the Main Mini App link is equal to fullscreen . */
     fullscreen?: boolean;
     /** Currently open chat, may be inputPeerEmpty if no chat is currently open. */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** Bot that owns the main mini app. */
-    bot: Api.TypeEntityLike;
+    bot: TypeInputUserIn;
     /** Start parameter, if opening from a Main Mini App link » . */
     startParam?: string;
     /** Theme parameters » */
@@ -39096,21 +39103,21 @@ export namespace Api {
   }
   export interface MessagesSendPaidReactionParams {
     /** The channel */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** The message to react to */
-    msgId: MessageIDLike;
+    msgId: int;
     /** The number of stars to send (each will increment the reaction counter by one). */
     count: int;
     /** Unique client message ID required to prevent message resending. Note : this argument must be composed of a 64-bit integer where the lower 32 bits are random, and the higher 32 bits are equal to the current unixtime , i.e. `uint64_t random_id = (time() << 32). See here » for more info on random ID deduplication and updateMessageID mapping. */
-    randomId?: long;
+    randomId?: LongInput;
     /** Each post with star reactions has a leaderboard with the top senders, but users can opt out of appearing there if they prefer more privacy. Not populating this field will use the default reaction privacy, stored on the server and synced to clients using updatePaidReactionPrivacy (see here for more info). */
     private?: TypePaidReactionPrivacyIn;
   }
   export interface MessagesTogglePaidReactionPrivacyParams {
     /** The channel */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** The ID of the message to which we sent the paid reactions */
-    msgId: MessageIDLike;
+    msgId: int;
     /** If true, makes the current anonymous in the top sender leaderboard for this message; otherwise, does the opposite. */
     private: TypePaidReactionPrivacyIn;
   }
@@ -39134,21 +39141,21 @@ export namespace Api {
   }
   export interface MessagesGetSponsoredMessagesParams {
     /** The currently open channel/bot. */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** Must be set when fetching sponsored messages to show on channel videos » . */
-    msgId?: MessageIDLike;
+    msgId?: int;
   }
   export interface MessagesSavePreparedInlineMessageParams {
     /** The message */
     result: TypeInputBotInlineResultIn;
     /** The user to whom the web_app_send_prepared_message event event will be sent */
-    userId: Api.TypeEntityLike;
+    userId: TypeInputUserIn;
     /** Types of chats where this message can be sent */
     peerTypes?: TypeInlineQueryPeerTypeIn[];
   }
   export interface MessagesGetPreparedInlineMessageParams {
     /** The bot that owns the mini app that emitted the web_app_send_prepared_message event */
-    bot: Api.TypeEntityLike;
+    bot: TypeInputUserIn;
     /** The id from the web_app_send_prepared_message event */
     id: string;
   }
@@ -39166,35 +39173,35 @@ export namespace Api {
     /** Maximum number of results to return, see pagination */
     limit: int;
     /** Hash used for caching, for more info click here . The hash may be generated locally by using the id s of the returned or stored sticker document s. */
-    hash: long;
+    hash: LongInput;
   }
   export interface MessagesReportMessagesDeliveryParams {
     /** Must be set if the messages were received from a push notification . */
     push?: boolean;
     /** The peer where the messages were received. */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** The IDs of the received messages. */
     id: int[];
   }
   export interface MessagesGetSavedDialogsByIDParams {
     /** If set, fetches monoforum topics » , otherwise fetches saved message dialogs » . */
-    parentPeer?: Api.TypeEntityLike;
+    parentPeer?: TypeInputPeerIn;
     /** IDs of dialogs (topics) to fetch. */
-    ids: Api.TypeEntityLike[];
+    ids: TypeInputPeerIn[];
   }
   export interface MessagesReadSavedHistoryParams {
     /** ID of the monoforum group. */
-    parentPeer: Api.TypeEntityLike;
+    parentPeer: TypeInputPeerIn;
     /** ID of the topic. */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** If a positive value is passed, only messages with identifiers less than or equal to the given one will be read. */
     maxId: int;
   }
   export interface MessagesToggleTodoCompletedParams {
     /** Peer where the todo list was posted. */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** ID of the message with the todo list. */
-    msgId: MessageIDLike;
+    msgId: int;
     /** Items to mark as completed. */
     completed: int[];
     /** Items to mark as not completed. */
@@ -39202,9 +39209,9 @@ export namespace Api {
   }
   export interface MessagesAppendTodoListParams {
     /** Peer where the todo list was posted. */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** ID of the message with the todo list. */
-    msgId: MessageIDLike;
+    msgId: int;
     /** Items to append. */
     list: TypeTodoItemIn[];
   }
@@ -39212,9 +39219,9 @@ export namespace Api {
     /** Reject the suggested post. */
     reject?: boolean;
     /** Both for users and channels, must contain the ID of the direct messages monoforum » (for channels, the topic ID is extracted automatically from the msg_id ). */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** ID of the suggestion message. */
-    msgId: MessageIDLike;
+    msgId: int;
     /** Custom scheduling date. */
     scheduleDate?: int;
     /** Optional comment for rejections (can only be used if reject is set). */
@@ -39222,7 +39229,7 @@ export namespace Api {
   }
   export interface MessagesGetForumTopicsParams {
     /** The supergroup forum, private chat (for forum-enabled bots) or bot forum (for users) where the topic is located. */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** Search query */
     q?: string;
     /** Offsets for pagination, for more info click here , date of the last message of the last found topic. Use 0 or any date in the future to get results from the last topic. */
@@ -39236,19 +39243,19 @@ export namespace Api {
   }
   export interface MessagesGetForumTopicsByIDParams {
     /** The supergroup forum, private chat (for forum-enabled bots) or bot forum (for users) where the topic is located. */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** Topic IDs */
     topics: int[];
   }
   export interface MessagesEditForumTopicParams {
     /** The supergroup forum, private chat (for forum-enabled bots) or bot forum (for users) where the topic is located. */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** Topic ID */
     topicId: int;
     /** If present, will update the topic title (maximum UTF-8 length: 128). */
     title?: string;
     /** If present, updates the custom emoji used as topic icon. Telegram Premium users can use any custom emoji, other users can only use the custom emojis contained in the inputStickerSetEmojiDefaultTopicIcons emoji pack. Pass 0 to switch to the fallback topic icon. */
-    iconEmojiId?: long;
+    iconEmojiId?: LongInput;
     /** If present, will update the open/closed status of the topic. */
     closed?: Bool;
     /** If present, will hide/unhide the topic (only valid for the "General" topic, id=1 ). */
@@ -39256,7 +39263,7 @@ export namespace Api {
   }
   export interface MessagesUpdatePinnedForumTopicParams {
     /** The supergroup forum, private chat (for forum-enabled bots) or bot forum (for users) where the topic is located. */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** Forum topic ID */
     topicId: int;
     /** Whether to pin or unpin the topic */
@@ -39266,7 +39273,7 @@ export namespace Api {
     /** If not set, the order of only the topics present both server-side and in order will be changed (i.e. mentioning topics not pinned server-side in order will not pin them, and not mentioning topics pinned server-side will not unpin them). If set, the entire server-side pinned topic list will be replaced with order (i.e. mentioning topics not pinned server-side in order will pin them, and not mentioning topics pinned server-side will unpin them) */
     force?: boolean;
     /** The supergroup forum, private chat (for forum-enabled bots) or bot forum (for users) where the topic is located. */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** Topic IDs » */
     order: int[];
   }
@@ -39274,27 +39281,27 @@ export namespace Api {
     /** If set, the topic has no user-defined title, can only be set for the per-user topics of bot forums ; if this field is set, the topic title likely needs to be changed by the bot. */
     titleMissing?: boolean;
     /** The supergroup, private chat (for forum-enabled bots) or forum bot (for users) where to create the topic. */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** Topic title (maximum UTF-8 length: 128) */
     title: string;
     /** If no custom emoji icon is specified, specifies the color of the fallback topic icon (RGB), one of 0x6FB9F0 , 0xFFD67E , 0xCB86DB , 0x8EEE98 , 0xFF93B2 , or 0xFB6F5F . */
     iconColor?: int;
     /** ID of the custom emoji used as topic icon. Telegram Premium users can use any custom emoji, other users can only use the custom emojis contained in the inputStickerSetEmojiDefaultTopicIcons emoji pack. */
-    iconEmojiId?: long;
+    iconEmojiId?: LongInput;
     /** Unique client message ID to prevent duplicate sending of the same event. See here » for more info on random ID deduplication and updateMessageID mapping. */
-    randomId?: long;
+    randomId?: LongInput;
     /** Create the topic as the specified peer */
-    sendAs?: Api.TypeEntityLike;
+    sendAs?: TypeInputPeerIn;
   }
   export interface MessagesDeleteTopicHistoryParams {
     /** The supergroup forum, private chat (for forum-enabled bots) or bot forum (for users) where the topic is located. */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** Topic ID */
-    topMsgId: MessageIDLike;
+    topMsgId: int;
   }
   export interface MessagesSummarizeTextParams {
     /** The peer where the message is located. */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** Message ID. */
     id: int;
     /** If set, generates the summary in the specified target language (two-letter ISO 639-1 language code) instead of the message's language. */
@@ -39304,21 +39311,21 @@ export namespace Api {
   }
   export interface MessagesEditChatCreatorParams {
     /** Owned group/supergroup/channel. */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** ID of the new owner. */
-    userId: Api.TypeEntityLike;
+    userId: TypeInputUserIn;
     /** The current account's 2FA password . */
     password: TypeInputCheckPasswordSRPIn;
   }
   export interface MessagesGetFutureChatCreatorAfterLeaveParams {
     /** The basic group/supergroup/channel we're about to leave. */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
   }
   export interface MessagesEditChatParticipantRankParams {
     /** The basic group/supergroup. */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** The participant. */
-    participant: Api.TypeEntityLike;
+    participant: TypeInputPeerIn;
     /** The new tag. */
     rank: string;
   }
@@ -39346,7 +39353,7 @@ export namespace Api {
   }
   export interface MessagesReportReadMetricsParams {
     /** Peer where the messages are located */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** List of read metrics for individual messages */
     metrics: TypeInputMessageReadMetricIn[];
   }
@@ -39358,25 +39365,25 @@ export namespace Api {
   }
   export interface MessagesAddPollAnswerParams {
     /** Peer where the poll is located */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** Message ID of the poll */
-    msgId: MessageIDLike;
+    msgId: int;
     /** The new answer option to add, use inputPollAnswer */
     answer: TypePollAnswerIn;
   }
   export interface MessagesDeletePollAnswerParams {
     /** Peer where the poll is located */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** Message ID of the poll */
-    msgId: MessageIDLike;
+    msgId: int;
     /** The option identifier of the answer to remove */
     option: bytes;
   }
   export interface MessagesGetUnreadPollVotesParams {
     /** The chat to fetch unread poll votes from */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** If the chat is a forum, restrict results to this topic */
-    topMsgId?: MessageIDLike;
+    topMsgId?: int;
     /** Offsets for pagination, for more info click here */
     offsetId: int;
     /** Offsets for pagination, for more info click here */
@@ -39390,33 +39397,33 @@ export namespace Api {
   }
   export interface MessagesReadPollVotesParams {
     /** The chat to mark poll votes as read in */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** If the chat is a forum, restrict to this topic */
-    topMsgId?: MessageIDLike;
+    topMsgId?: int;
   }
   export interface MessagesSetBotGuestChatResultParams {
     /** Query identifier from the updateBotGuestChatQuery . query_id field */
-    queryId: long;
+    queryId: LongInput;
     /** The result to send as the answer to the query */
     result: TypeInputBotInlineResultIn;
   }
   export interface MessagesDeleteParticipantReactionsParams {
     /** The group or channel where the participant's reactions should be removed */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** The participant whose reactions should be removed */
-    participant: Api.TypeEntityLike;
+    participant: TypeInputPeerIn;
   }
   export interface MessagesDeleteParticipantReactionParams {
     /** The group or channel where the message is located */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** ID of the message whose reactions should be removed */
-    msgId: MessageIDLike;
+    msgId: int;
     /** The participant whose reactions should be removed from the message */
-    participant: Api.TypeEntityLike;
+    participant: TypeInputPeerIn;
   }
   export interface MessagesGetPersonalChannelHistoryParams {
     /** The user whose personal channel history to fetch */
-    userId: Api.TypeEntityLike;
+    userId: TypeInputUserIn;
     /** Maximum number of results to return, see pagination */
     limit: int;
     /** If a positive value was transferred, the method will return only messages with IDs less than max_id */
@@ -39424,14 +39431,14 @@ export namespace Api {
     /** If a positive value was transferred, the method will return only messages with IDs more than min_id */
     minId: int;
     /** Result hash */
-    hash: long;
+    hash: LongInput;
   }
   export interface MessagesGetRichMessageParams {
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     id: int;
   }
   export interface MessagesTranslateRichMessageParams {
-    peer?: Api.TypeEntityLike;
+    peer?: TypeInputPeerIn;
     id?: int[];
     text?: TypeInputRichMessageIn[];
     toLang: string;
@@ -39445,7 +39452,7 @@ export namespace Api {
     tone?: TypeInputAiComposeToneIn;
   }
   export interface MessagesRequestChatJoinWebViewParams {
-    queryId: long;
+    queryId: LongInput;
     themeParams?: TypeDataJSONIn;
     platform: string;
   }
@@ -39467,7 +39474,7 @@ export namespace Api {
     /** Set to true to skip some possibly unneeded updates and reduce server-side load */
     force?: boolean;
     /** The channel */
-    channel: Api.TypeEntityLike;
+    channel: TypeInputChannelIn;
     /** Messsage filter */
     filter: TypeChannelMessagesFilterIn;
     /** Persistent timestamp (see updates ) */
@@ -39479,7 +39486,7 @@ export namespace Api {
     /** If set, the chosen profile photo will be shown to users that can't display your main profile photo due to your privacy settings. */
     fallback?: boolean;
     /** Can contain info of a bot we own, to change the profile photo of that bot, instead of the current user. */
-    bot?: Api.TypeEntityLike;
+    bot?: TypeInputUserIn;
     /** Input photo */
     id: TypeInputPhotoIn;
   }
@@ -39487,7 +39494,7 @@ export namespace Api {
     /** If set, the chosen profile photo will be shown to users that can't display your main profile photo due to your privacy settings. */
     fallback?: boolean;
     /** Can contain info of a bot we own, to change the profile photo of that bot, instead of the current user. */
-    bot?: Api.TypeEntityLike;
+    bot?: TypeInputUserIn;
     /** Profile photo */
     file?: TypeInputFileIn;
     /** Animated profile picture video */
@@ -39503,11 +39510,11 @@ export namespace Api {
   }
   export interface PhotosGetUserPhotosParams {
     /** User ID */
-    userId: Api.TypeEntityLike;
+    userId: TypeInputUserIn;
     /** Number of list elements to be skipped */
     offset: int;
     /** If a positive value was transferred, the method will return only photos with IDs less than the set one. This parameter is often useful when refetching file references » , as in conjuction with limit=1 and offset=-1 the photo object with the id specified in max_id can be fetched. */
-    maxId: long;
+    maxId: LongInput;
     /** Number of list elements to be returned */
     limit: int;
   }
@@ -39517,7 +39524,7 @@ export namespace Api {
     /** If set, removes a previously set personal profile picture (does not affect suggested profile pictures, to remove them simply delete the messageActionSuggestProfilePhoto service message with messages.deleteMessages ). */
     save?: boolean;
     /** The contact */
-    userId: Api.TypeEntityLike;
+    userId: TypeInputUserIn;
     /** Profile photo */
     file?: TypeInputFileIn;
     /** Animated profile picture video */
@@ -39529,7 +39536,7 @@ export namespace Api {
   }
   export interface UploadSaveFilePartParams {
     /** Random file identifier created by the client */
-    fileId: long;
+    fileId: LongInput;
     /** Numerical order of a part */
     filePart: int;
     /** Binary data, content of a part */
@@ -39543,13 +39550,13 @@ export namespace Api {
     /** File location */
     location: TypeInputFileLocationIn;
     /** Number of bytes to be skipped */
-    offset: long;
+    offset: LongInput;
     /** Number of bytes to be returned */
     limit: int;
   }
   export interface UploadSaveBigFilePartParams {
     /** Random file id, created by the client */
-    fileId: long;
+    fileId: LongInput;
     /** Part sequence number */
     filePart: int;
     /** Total number of parts */
@@ -39569,7 +39576,7 @@ export namespace Api {
     /** File token */
     fileToken: bytes;
     /** Offset of chunk to download */
-    offset: long;
+    offset: LongInput;
     /** Length of chunk to download */
     limit: int;
   }
@@ -39583,13 +39590,13 @@ export namespace Api {
     /** File */
     fileToken: bytes;
     /** Offset from which to start getting hashes */
-    offset: long;
+    offset: LongInput;
   }
   export interface UploadGetFileHashesParams {
     /** File */
     location: TypeInputFileLocationIn;
     /** Offset from which to get file hashes */
-    offset: long;
+    offset: LongInput;
   }
   export interface HelpGetAppUpdateParams {
     /** Source */
@@ -39627,11 +39634,11 @@ export namespace Api {
   }
   export interface HelpGetUserInfoParams {
     /** User ID */
-    userId: Api.TypeEntityLike;
+    userId: TypeInputUserIn;
   }
   export interface HelpEditUserInfoParams {
     /** User */
-    userId: Api.TypeEntityLike;
+    userId: TypeInputUserIn;
     /** Message */
     message: string;
     /** Message entities for styled text */
@@ -39639,11 +39646,11 @@ export namespace Api {
   }
   export interface HelpHidePromoDataParams {
     /** Peer to hide */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
   }
   export interface HelpDismissSuggestionParams {
     /** In the case of pending suggestions in channels , the channel ID. */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** Suggestion, see here for more info » . */
     suggestion: string;
   }
@@ -39667,33 +39674,33 @@ export namespace Api {
   }
   export interface ChannelsReadHistoryParams {
     /** Channel/supergroup */
-    channel: Api.TypeEntityLike;
+    channel: TypeInputChannelIn;
     /** ID of message up to which messages should be marked as read */
     maxId: int;
   }
   export interface ChannelsDeleteMessagesParams {
     /** Channel/supergroup */
-    channel: Api.TypeEntityLike;
+    channel: TypeInputChannelIn;
     /** IDs of messages to delete */
     id: int[];
   }
   export interface ChannelsReportSpamParams {
     /** Supergroup */
-    channel: Api.TypeEntityLike;
+    channel: TypeInputChannelIn;
     /** Participant whose messages should be reported */
-    participant: Api.TypeEntityLike;
+    participant: TypeInputPeerIn;
     /** IDs of spam messages */
     id: int[];
   }
   export interface ChannelsGetMessagesParams {
     /** Channel/supergroup */
-    channel: Api.TypeEntityLike;
+    channel: TypeInputChannelIn;
     /** IDs of messages to get */
     id: TypeInputMessageIn[];
   }
   export interface ChannelsGetParticipantsParams {
     /** Channel */
-    channel: Api.TypeEntityLike;
+    channel: TypeInputChannelIn;
     /** Which participant types to fetch */
     filter: TypeChannelParticipantsFilterIn;
     /** Offset */
@@ -39701,21 +39708,21 @@ export namespace Api {
     /** Limit */
     limit: int;
     /** Hash */
-    hash: long;
+    hash: LongInput;
   }
   export interface ChannelsGetParticipantParams {
     /** Channel/supergroup */
-    channel: Api.TypeEntityLike;
+    channel: TypeInputChannelIn;
     /** Participant to get info about */
-    participant: Api.TypeEntityLike;
+    participant: TypeInputPeerIn;
   }
   export interface ChannelsGetChannelsParams {
     /** IDs of channels/supergroups to get info about */
-    id: Api.TypeEntityLike[];
+    id: TypeInputChannelIn[];
   }
   export interface ChannelsGetFullChannelParams {
     /** The channel , supergroup or gigagroup to get info about */
-    channel: Api.TypeEntityLike;
+    channel: TypeInputChannelIn;
   }
   export interface ChannelsCreateChannelParams {
     /** Whether to create a channel */
@@ -39739,9 +39746,9 @@ export namespace Api {
   }
   export interface ChannelsEditAdminParams {
     /** The supergroup/channel . */
-    channel: Api.TypeEntityLike;
+    channel: TypeInputChannelIn;
     /** The ID of the user whose admin rights should be modified */
-    userId: Api.TypeEntityLike;
+    userId: TypeInputUserIn;
     /** The admin rights */
     adminRights: TypeChatAdminRightsIn;
     /** Indicates the role (rank) of the admin in the group: just an arbitrary string. If the flag is not set, the rank is left unchanged. */
@@ -39749,45 +39756,45 @@ export namespace Api {
   }
   export interface ChannelsEditTitleParams {
     /** Channel/supergroup */
-    channel: Api.TypeEntityLike;
+    channel: TypeInputChannelIn;
     /** New name */
     title: string;
   }
   export interface ChannelsEditPhotoParams {
     /** Channel/supergroup whose photo should be edited */
-    channel: Api.TypeEntityLike;
+    channel: TypeInputChannelIn;
     /** New photo */
     photo: TypeInputChatPhotoIn;
   }
   export interface ChannelsCheckUsernameParams {
     /** The channel/supergroup that will assigned the specified username */
-    channel: Api.TypeEntityLike;
+    channel: TypeInputChannelIn;
     /** The username to check */
     username: string;
   }
   export interface ChannelsUpdateUsernameParams {
     /** Channel */
-    channel: Api.TypeEntityLike;
+    channel: TypeInputChannelIn;
     /** New username, pass an empty string to remove the username */
     username: string;
   }
   export interface ChannelsJoinChannelParams {
     /** Channel/supergroup to join */
-    channel: Api.TypeEntityLike;
+    channel: TypeInputChannelIn;
   }
   export interface ChannelsLeaveChannelParams {
     /** Channel/supergroup to leave */
-    channel: Api.TypeEntityLike;
+    channel: TypeInputChannelIn;
   }
   export interface ChannelsInviteToChannelParams {
     /** Channel/supergroup */
-    channel: Api.TypeEntityLike;
+    channel: TypeInputChannelIn;
     /** Users to invite */
-    users: Api.TypeEntityLike[];
+    users: TypeInputUserIn[];
   }
   export interface ChannelsDeleteChannelParams {
     /** Channel/supergroup to delete */
-    channel: Api.TypeEntityLike;
+    channel: TypeInputChannelIn;
   }
   export interface ChannelsExportMessageLinkParams {
     /** Whether to include other grouped media (for albums) */
@@ -39795,7 +39802,7 @@ export namespace Api {
     /** Whether to also include a thread ID, if available, inside of the link */
     thread?: boolean;
     /** Channel */
-    channel: Api.TypeEntityLike;
+    channel: TypeInputChannelIn;
     /** Message ID */
     id: int;
   }
@@ -39805,7 +39812,7 @@ export namespace Api {
     /** If set, messages from channel admins will link to their profiles, just like for group messages: can only be set if the signatures_enabled flag is set. */
     profilesEnabled?: boolean;
     /** Channel */
-    channel: Api.TypeEntityLike;
+    channel: TypeInputChannelIn;
   }
   export interface ChannelsGetAdminedPublicChannelsParams {
     /** Get geogroups */
@@ -39818,37 +39825,37 @@ export namespace Api {
   }
   export interface ChannelsEditBannedParams {
     /** The supergroup/channel . */
-    channel: Api.TypeEntityLike;
+    channel: TypeInputChannelIn;
     /** Participant to ban */
-    participant: Api.TypeEntityLike;
+    participant: TypeInputPeerIn;
     /** The banned rights */
     bannedRights: TypeChatBannedRightsIn;
   }
   export interface ChannelsGetAdminLogParams {
     /** Channel */
-    channel: Api.TypeEntityLike;
+    channel: TypeInputChannelIn;
     /** Search query, can be empty */
     q: string;
     /** Event filter */
     eventsFilter?: TypeChannelAdminLogEventsFilterIn;
     /** Only show events from these admins */
-    admins?: Api.TypeEntityLike[];
+    admins?: TypeInputUserIn[];
     /** Maximum ID of message to return (see pagination ) */
-    maxId: long;
+    maxId: LongInput;
     /** Minimum ID of message to return (see pagination ) */
-    minId: long;
+    minId: LongInput;
     /** Maximum number of results to return, see pagination */
     limit: int;
   }
   export interface ChannelsSetStickersParams {
     /** Supergroup */
-    channel: Api.TypeEntityLike;
+    channel: TypeInputChannelIn;
     /** The stickerset to associate */
     stickerset: TypeInputStickerSetIn;
   }
   export interface ChannelsReadMessageContentsParams {
     /** Channel/supergroup */
-    channel: Api.TypeEntityLike;
+    channel: TypeInputChannelIn;
     /** IDs of messages whose contents should be marked as read */
     id: int[];
   }
@@ -39856,13 +39863,13 @@ export namespace Api {
     /** Whether the history should be deleted for everyone */
     forEveryone?: boolean;
     /** Supergroup whose history must be deleted */
-    channel: Api.TypeEntityLike;
+    channel: TypeInputChannelIn;
     /** ID of message up to which the history must be deleted */
     maxId: int;
   }
   export interface ChannelsTogglePreHistoryHiddenParams {
     /** Channel/supergroup */
-    channel: Api.TypeEntityLike;
+    channel: TypeInputChannelIn;
     /** Hide/unhide */
     enabled: Bool;
   }
@@ -39872,13 +39879,13 @@ export namespace Api {
   }
   export interface ChannelsSetDiscussionGroupParams {
     /** Channel */
-    broadcast: Api.TypeEntityLike;
+    broadcast: TypeInputChannelIn;
     /** Discussion group to associate to the channel */
-    group: Api.TypeEntityLike;
+    group: TypeInputChannelIn;
   }
   export interface ChannelsEditLocationParams {
     /** Geogroup */
-    channel: Api.TypeEntityLike;
+    channel: TypeInputChannelIn;
     /** New geolocation */
     geoPoint: TypeInputGeoPointIn;
     /** Address string */
@@ -39886,13 +39893,13 @@ export namespace Api {
   }
   export interface ChannelsToggleSlowModeParams {
     /** The supergroup */
-    channel: Api.TypeEntityLike;
+    channel: TypeInputChannelIn;
     /** Users will only be able to send one message every seconds seconds, 0 to disable the limitation */
     seconds: int;
   }
   export interface ChannelsConvertToGigagroupParams {
     /** The supergroup to convert */
-    channel: Api.TypeEntityLike;
+    channel: TypeInputChannelIn;
   }
   export interface ChannelsGetSendAsParams {
     /** If set, fetches the list of peers that can be used to send paid reactions to messages of a specific peer. */
@@ -39900,37 +39907,37 @@ export namespace Api {
     /** Fetch the peers that may be passed to phone.sendGroupCallMessage . send_as to comment or react in a live story » . */
     forLiveStories?: boolean;
     /** The target peer; when for_live_stories is set, the peer that owns the live story. */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
   }
   export interface ChannelsDeleteParticipantHistoryParams {
     /** Supergroup */
-    channel: Api.TypeEntityLike;
+    channel: TypeInputChannelIn;
     /** The participant whose messages should be deleted */
-    participant: Api.TypeEntityLike;
+    participant: TypeInputPeerIn;
   }
   export interface ChannelsToggleJoinToSendParams {
     /** Discussion group */
-    channel: Api.TypeEntityLike;
+    channel: TypeInputChannelIn;
     /** Toggle */
     enabled: Bool;
   }
   export interface ChannelsToggleJoinRequestParams {
     applyToInvites?: boolean;
     /** Group */
-    channel: Api.TypeEntityLike;
+    channel: TypeInputChannelIn;
     /** Toggle */
     enabled: Bool;
-    guardBot?: Api.TypeEntityLike;
+    guardBot?: TypeInputUserIn;
   }
   export interface ChannelsReorderUsernamesParams {
     /** The supergroup or channel */
-    channel: Api.TypeEntityLike;
+    channel: TypeInputChannelIn;
     /** The new order for active usernames. All active usernames must be specified. */
     order: string[];
   }
   export interface ChannelsToggleUsernameParams {
     /** Supergroup or channel */
-    channel: Api.TypeEntityLike;
+    channel: TypeInputChannelIn;
     /** Username */
     username: string;
     /** Whether to activate or deactivate the username */
@@ -39938,11 +39945,11 @@ export namespace Api {
   }
   export interface ChannelsDeactivateAllUsernamesParams {
     /** Supergroup or channel */
-    channel: Api.TypeEntityLike;
+    channel: TypeInputChannelIn;
   }
   export interface ChannelsToggleForumParams {
     /** Supergroup ID */
-    channel: Api.TypeEntityLike;
+    channel: TypeInputChannelIn;
     /** Enable or disable forum functionality */
     enabled: Bool;
     /** If true enables the tabbed forum UI, otherwise enables the list-based forum UI. */
@@ -39950,19 +39957,19 @@ export namespace Api {
   }
   export interface ChannelsToggleAntiSpamParams {
     /** Supergroup ID. The specified supergroup must have at least telegram_antispam_group_size_min members to enable antispam functionality, as specified by the client configuration parameters . */
-    channel: Api.TypeEntityLike;
+    channel: TypeInputChannelIn;
     /** Enable or disable the native antispam system. */
     enabled: Bool;
   }
   export interface ChannelsReportAntiSpamFalsePositiveParams {
     /** Supergroup ID */
-    channel: Api.TypeEntityLike;
+    channel: TypeInputChannelIn;
     /** Message ID that was mistakenly deleted by the native antispam system, taken from the admin log */
-    msgId: MessageIDLike;
+    msgId: int;
   }
   export interface ChannelsToggleParticipantsHiddenParams {
     /** Supergroup ID */
-    channel: Api.TypeEntityLike;
+    channel: TypeInputChannelIn;
     /** If true, will hide the participants list; otherwise will unhide it. */
     enabled: Bool;
   }
@@ -39970,43 +39977,43 @@ export namespace Api {
     /** Whether to change the accent color emoji pattern of the profile page; otherwise, the accent color and emoji pattern of messages will be changed. Channels can change both message and profile palettes; supergroups can only change the profile palette, of course after reaching the appropriate boost level . */
     forProfile?: boolean;
     /** Channel whose accent color should be changed. */
-    channel: Api.TypeEntityLike;
+    channel: TypeInputChannelIn;
     /** ID of the accent color palette » to use (not RGB24, see here » for more info); if not set, the default palette is used. */
     color?: int;
     /** Custom emoji ID used in the accent color pattern. */
-    backgroundEmojiId?: long;
+    backgroundEmojiId?: LongInput;
   }
   export interface ChannelsToggleViewForumAsMessagesParams {
     /** The forum */
-    channel: Api.TypeEntityLike;
+    channel: TypeInputChannelIn;
     /** The new value of the view_forum_as_messages flag. */
     enabled: Bool;
   }
   export interface ChannelsGetChannelRecommendationsParams {
     /** The method will return channels related to the passed channel . If not set, the method will returns channels related to channels the user has joined. */
-    channel?: Api.TypeEntityLike;
+    channel?: TypeInputChannelIn;
   }
   export interface ChannelsUpdateEmojiStatusParams {
     /** The channel/supergroup, must have at least channel_emoji_status_level_min / group_emoji_status_level_min boosts. */
-    channel: Api.TypeEntityLike;
+    channel: TypeInputChannelIn;
     /** Emoji status to set */
     emojiStatus: TypeEmojiStatusIn;
   }
   export interface ChannelsSetBoostsToUnblockRestrictionsParams {
     /** The supergroup. */
-    channel: Api.TypeEntityLike;
+    channel: TypeInputChannelIn;
     /** The number of required boosts (1-8, 0 to disable). */
     boosts: int;
   }
   export interface ChannelsSetEmojiStickersParams {
     /** The supergroup */
-    channel: Api.TypeEntityLike;
+    channel: TypeInputChannelIn;
     /** The custom emoji stickerset to associate to the supergroup */
     stickerset: TypeInputStickerSetIn;
   }
   export interface ChannelsRestrictSponsoredMessagesParams {
     /** The channel. */
-    channel: Api.TypeEntityLike;
+    channel: TypeInputChannelIn;
     /** Whether to disable or re-enable ads. */
     restricted: Bool;
   }
@@ -40018,31 +40025,31 @@ export namespace Api {
     /** Initially 0, then set to the next_rate parameter of messages.messagesSlice , or if that is absent, the date of the last returned message. */
     offsetRate: int;
     /** Offsets for pagination, for more info click here */
-    offsetPeer: Api.TypeEntityLike;
+    offsetPeer: TypeInputPeerIn;
     /** Offsets for pagination, for more info click here */
     offsetId: int;
     /** Maximum number of results to return, see pagination */
     limit: int;
     /** For full text post searches ( query ), allows payment of the specified amount of Stars for the search, see here » for more info on the full flow. */
-    allowPaidStars?: long;
+    allowPaidStars?: LongInput;
   }
   export interface ChannelsUpdatePaidMessagesPriceParams {
     /** Only usable for channels, enables or disables the associated monoforum aka direct messages . */
     broadcastMessagesAllowed?: boolean;
     /** Pass the supergroup ID for supergroups and the ID of the channel to modify the setting in the associated monoforum. */
-    channel: Api.TypeEntityLike;
+    channel: TypeInputChannelIn;
     /** Specifies the required amount of Telegram Stars users must pay to send messages to the supergroup or monoforum. */
-    sendPaidMessagesStars: long;
+    sendPaidMessagesStars: LongInput;
   }
   export interface ChannelsToggleAutotranslationParams {
     /** The channel where to toggle autotranslation. */
-    channel: Api.TypeEntityLike;
+    channel: TypeInputChannelIn;
     /** Whether to enable or disable autotranslation. */
     enabled: Bool;
   }
   export interface ChannelsGetMessageAuthorParams {
     /** ID of the monoforum. */
-    channel: Api.TypeEntityLike;
+    channel: TypeInputChannelIn;
     /** ID of the message sent by a monoforum admin. */
     id: int;
   }
@@ -40052,7 +40059,7 @@ export namespace Api {
   }
   export interface ChannelsSetMainProfileTabParams {
     /** The channel. */
-    channel: Api.TypeEntityLike;
+    channel: TypeInputChannelIn;
     /** The tab to set as main tab. */
     tab: TypeProfileTabIn;
   }
@@ -40064,7 +40071,7 @@ export namespace Api {
   }
   export interface BotsAnswerWebhookJSONQueryParams {
     /** Identifier of a custom query */
-    queryId: long;
+    queryId: LongInput;
     /** JSON-serialized answer to the query */
     data: TypeDataJSONIn;
   }
@@ -40090,13 +40097,13 @@ export namespace Api {
   }
   export interface BotsSetBotMenuButtonParams {
     /** User ID */
-    userId: Api.TypeEntityLike;
+    userId: TypeInputUserIn;
     /** Bot menu button action */
     button: TypeBotMenuButtonIn;
   }
   export interface BotsGetBotMenuButtonParams {
     /** User ID or empty for the default menu button. */
-    userId: Api.TypeEntityLike;
+    userId: TypeInputUserIn;
   }
   export interface BotsSetBotBroadcastDefaultAdminRightsParams {
     /** Admin rights */
@@ -40108,7 +40115,7 @@ export namespace Api {
   }
   export interface BotsSetBotInfoParams {
     /** If called by a user, must contain the peer of a bot we own. */
-    bot?: Api.TypeEntityLike;
+    bot?: TypeInputUserIn;
     /** Language code, if left empty update the fallback about text and description */
     langCode: string;
     /** New bot name */
@@ -40120,19 +40127,19 @@ export namespace Api {
   }
   export interface BotsGetBotInfoParams {
     /** If called by a user, must contain the peer of a bot we own. */
-    bot?: Api.TypeEntityLike;
+    bot?: TypeInputUserIn;
     /** Language code, if left empty this method will return the fallback about text and description. */
     langCode: string;
   }
   export interface BotsReorderUsernamesParams {
     /** The bot */
-    bot: Api.TypeEntityLike;
+    bot: TypeInputUserIn;
     /** The new order for active usernames. All active usernames must be specified. */
     order: string[];
   }
   export interface BotsToggleUsernameParams {
     /** The bot */
-    bot: Api.TypeEntityLike;
+    bot: TypeInputUserIn;
     /** Username */
     username: string;
     /** Whether to activate or deactivate it */
@@ -40140,15 +40147,15 @@ export namespace Api {
   }
   export interface BotsCanSendMessageParams {
     /** The bot */
-    bot: Api.TypeEntityLike;
+    bot: TypeInputUserIn;
   }
   export interface BotsAllowSendMessageParams {
     /** The bot */
-    bot: Api.TypeEntityLike;
+    bot: TypeInputUserIn;
   }
   export interface BotsInvokeWebViewCustomMethodParams {
     /** Identifier of the bot associated to the mini bot app */
-    bot: Api.TypeEntityLike;
+    bot: TypeInputUserIn;
     /** Identifier of the custom method to invoke */
     customMethod: string;
     /** Method parameters */
@@ -40162,7 +40169,7 @@ export namespace Api {
   }
   export interface BotsAddPreviewMediaParams {
     /** The bot that owns the Main Mini App. */
-    bot: Api.TypeEntityLike;
+    bot: TypeInputUserIn;
     /** ISO 639-1 language code, indicating the localization of the preview to add. */
     langCode: string;
     /** The photo/video preview, uploaded using messages.uploadMedia . */
@@ -40170,7 +40177,7 @@ export namespace Api {
   }
   export interface BotsEditPreviewMediaParams {
     /** The bot that owns the Main Mini App. */
-    bot: Api.TypeEntityLike;
+    bot: TypeInputUserIn;
     /** ISO 639-1 language code, indicating the localization of the preview to edit. */
     langCode: string;
     /** The photo/video preview to replace, previously fetched as specified here » . */
@@ -40180,7 +40187,7 @@ export namespace Api {
   }
   export interface BotsDeletePreviewMediaParams {
     /** The bot that owns the Main Mini App. */
-    bot: Api.TypeEntityLike;
+    bot: TypeInputUserIn;
     /** ISO 639-1 language code, indicating the localization of the preview to delete. */
     langCode: string;
     /** The photo/video preview to delete, previously fetched as specified here » . */
@@ -40188,7 +40195,7 @@ export namespace Api {
   }
   export interface BotsReorderPreviewMediasParams {
     /** The bot that owns the Main Mini App. */
-    bot: Api.TypeEntityLike;
+    bot: TypeInputUserIn;
     /** ISO 639-1 language code, indicating the localization of the previews to reorder. */
     langCode: string;
     /** New order of the previews. */
@@ -40196,29 +40203,29 @@ export namespace Api {
   }
   export interface BotsGetPreviewInfoParams {
     /** The bot that owns the Main Mini App. */
-    bot: Api.TypeEntityLike;
+    bot: TypeInputUserIn;
     /** Fetch previews for the specified ISO 639-1 language code. */
     langCode: string;
   }
   export interface BotsGetPreviewMediasParams {
     /** The bot that owns the Main Mini App. */
-    bot: Api.TypeEntityLike;
+    bot: TypeInputUserIn;
   }
   export interface BotsUpdateUserEmojiStatusParams {
     /** The user whose emoji status should be changed */
-    userId: Api.TypeEntityLike;
+    userId: TypeInputUserIn;
     /** The emoji status */
     emojiStatus: TypeEmojiStatusIn;
   }
   export interface BotsToggleUserEmojiStatusPermissionParams {
     /** The bot */
-    bot: Api.TypeEntityLike;
+    bot: TypeInputUserIn;
     /** Whether to allow or prevent the bot from changing our emoji status */
     enabled: Bool;
   }
   export interface BotsCheckDownloadFileParamsParams {
     /** The bot that owns the mini app that requested the download */
-    bot: Api.TypeEntityLike;
+    bot: TypeInputUserIn;
     /** The filename from the web_app_request_file_download event » */
     fileName: string;
     /** The url from the web_app_request_file_download event » */
@@ -40226,7 +40233,7 @@ export namespace Api {
   }
   export interface BotsUpdateStarRefProgramParams {
     /** The bot */
-    bot: Api.TypeEntityLike;
+    bot: TypeInputUserIn;
     /** The permille commission rate: it indicates the share of Telegram Stars received by affiliates for every transaction made by users they referred inside of the bot. The minimum and maximum values for this parameter are contained in the starref_min_commission_permille and starref_max_commission_permille client configuration parameters. Can be 0 to terminate the affiliate program. Both the duration and the commission may only be raised after creation of the program: to lower them, the program must first be terminated and a new one created. */
     commissionPermille: int;
     /** Indicates the duration of the affiliate program; if not set, there is no expiration date. */
@@ -40236,15 +40243,15 @@ export namespace Api {
     /** If set, adds the verification; otherwise removes verification. */
     enabled?: boolean;
     /** Must not be set if invoked by a bot, must be set to the ID of an owned bot if invoked by a user. */
-    bot?: Api.TypeEntityLike;
+    bot?: TypeInputUserIn;
     /** The peer to verify */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** Custom description for the verification, the UTF-8 length limit for this field is contained in bot_verification_description_length_limit » . If not set, Was verified by organization "organization_name" will be used as description. */
     customDescription?: string;
   }
   export interface BotsGetBotRecommendationsParams {
     /** The method will return bots related to the passed bot. */
-    bot: Api.TypeEntityLike;
+    bot: TypeInputUserIn;
   }
   export interface BotsCheckUsernameParams {
     /** Username to check; only letters, digits and underscores are allowed, must end in bot , and the full username must be 5–32 characters long */
@@ -40258,40 +40265,40 @@ export namespace Api {
     /** Username for the bot, as validated by bots.checkUsername */
     username: string;
     /** The manager bot that will control the created bot; must have the user . bot_can_manage_bots flag set */
-    managerId: Api.TypeEntityLike;
+    managerId: TypeInputUserIn;
   }
   export interface BotsExportBotTokenParams {
     /** The managed bot to export the token for */
-    bot: Api.TypeEntityLike;
+    bot: TypeInputUserIn;
     /** If boolTrue , revoke the current token and generate a new one */
     revoke: Bool;
   }
   export interface BotsRequestWebViewButtonParams {
     /** The user that will use the prepared button in the Mini App */
-    userId: Api.TypeEntityLike;
+    userId: TypeInputUserIn;
     /** The button to prepare, an inputKeyboardButtonRequestPeer of any RequestPeerType */
     button: TypeKeyboardButtonIn;
   }
   export interface BotsGetRequestedWebViewButtonParams {
     /** The bot that owns the Mini App */
-    bot: Api.TypeEntityLike;
+    bot: TypeInputUserIn;
     /** The Mini App request ID, taken from the web_app_request_chat event's req_id */
     webappReqId: string;
   }
   export interface BotsGetAccessSettingsParams {
     /** The managed bot whose access settings to retrieve */
-    bot: Api.TypeEntityLike;
+    bot: TypeInputUserIn;
   }
   export interface BotsEditAccessSettingsParams {
     /** If set, restricts access to the managed bot to only the owner and the users in add_users */
     restricted?: boolean;
     /** The managed bot whose access settings to edit */
-    bot: Api.TypeEntityLike;
+    bot: TypeInputUserIn;
     /** Additional users (max 10, excluding the owner) allowed to access the managed bot when restricted is set */
-    addUsers?: Api.TypeEntityLike[];
+    addUsers?: TypeInputUserIn[];
   }
   export interface BotsSetJoinChatResultsParams {
-    queryId: long;
+    queryId: LongInput;
     result: TypeJoinChatBotResultIn;
   }
   export interface PaymentsGetPaymentFormParams {
@@ -40302,9 +40309,9 @@ export namespace Api {
   }
   export interface PaymentsGetPaymentReceiptParams {
     /** The peer where the payment receipt was sent */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** Message ID of receipt */
-    msgId: MessageIDLike;
+    msgId: int;
   }
   export interface PaymentsValidateRequestedInfoParams {
     /** Save order information to re-use it for future orders */
@@ -40316,7 +40323,7 @@ export namespace Api {
   }
   export interface PaymentsSendPaymentFormParams {
     /** Form ID */
-    formId: long;
+    formId: LongInput;
     /** Invoice */
     invoice: TypeInputInvoiceIn;
     /** ID of saved and validated order info */
@@ -40326,7 +40333,7 @@ export namespace Api {
     /** Payment credentials */
     credentials: TypeInputPaymentCredentialsIn;
     /** Tip, in the smallest units of the currency (integer, not float/double). For example, for a price of US$ 1.45 pass amount = 145 . See the exp parameter in currencies.json , it shows the number of digits past the decimal point for each currency (2 for the majority of currencies). */
-    tipAmount?: long;
+    tipAmount?: LongInput;
   }
   export interface PaymentsClearSavedInfoParams {
     /** Remove saved payment credentials */
@@ -40356,7 +40363,7 @@ export namespace Api {
   }
   export interface PaymentsGetPremiumGiftCodeOptionsParams {
     /** The channel that will start the giveaway */
-    boostPeer?: Api.TypeEntityLike;
+    boostPeer?: TypeInputPeerIn;
   }
   export interface PaymentsCheckGiftCodeParams {
     /** The giftcode to check */
@@ -40368,15 +40375,15 @@ export namespace Api {
   }
   export interface PaymentsGetGiveawayInfoParams {
     /** The peer where the giveaway was posted. */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** Message ID of the messageActionGiveawayLaunch service message */
-    msgId: MessageIDLike;
+    msgId: int;
   }
   export interface PaymentsLaunchPrepaidGiveawayParams {
     /** The peer where to launch the giveaway. */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** The prepaid giveaway ID. */
-    giveawayId: long;
+    giveawayId: LongInput;
     /** Giveway parameters */
     purpose: TypeInputStorePaymentPurposeIn;
   }
@@ -40384,7 +40391,7 @@ export namespace Api {
     /** If set, returns the channel/ad revenue balance in nanograms. */
     ton?: boolean;
     /** Peer of which to get the balance. */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
   }
   export interface PaymentsGetStarsTransactionsParams {
     /** If set, fetches only incoming transactions. */
@@ -40398,7 +40405,7 @@ export namespace Api {
     /** If set, fetches only transactions for the specified Telegram Star subscription » . */
     subscriptionId?: string;
     /** Fetch the transaction history of the peer ( inputPeerSelf or a bot we own). */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** Offset for pagination, obtained from the returned next_offset , initially an empty string » . */
     offset: string;
     /** Maximum number of results to return, see pagination */
@@ -40406,13 +40413,13 @@ export namespace Api {
   }
   export interface PaymentsSendStarsFormParams {
     /** Payment form ID */
-    formId: long;
+    formId: LongInput;
     /** Invoice */
     invoice: TypeInputInvoiceIn;
   }
   export interface PaymentsRefundStarsChargeParams {
     /** User to refund. */
-    userId: Api.TypeEntityLike;
+    userId: TypeInputUserIn;
     /** Transaction ID. */
     chargeId: string;
   }
@@ -40422,45 +40429,45 @@ export namespace Api {
     /** If set, fetches channel/bot ad revenue statistics in TON. */
     ton?: boolean;
     /** Get statistics for the specified bot, channel or ourselves ( inputPeerSelf ). */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
   }
   export interface PaymentsGetStarsRevenueWithdrawalUrlParams {
     /** If set, withdraws channel/ad revenue in TON. */
     ton?: boolean;
     /** Channel or bot from which to withdraw funds. */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** The amount of stars or nanograms to withdraw. */
-    amount?: long;
+    amount?: LongInput;
     /** 2FA password, see here » for more info. */
     password: TypeInputCheckPasswordSRPIn;
   }
   export interface PaymentsGetStarsRevenueAdsAccountUrlParams {
     /** Channel or bot that owns the stars. */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
   }
   export interface PaymentsGetStarsTransactionsByIDParams {
     /** If set, returns channel/bot ad revenue transactions in nanograms. */
     ton?: boolean;
     /** Channel or bot. */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** Transaction IDs. */
     id: TypeInputStarsTransactionIn[];
   }
   export interface PaymentsGetStarsGiftOptionsParams {
     /** Receiver of the gift (optional). */
-    userId?: Api.TypeEntityLike;
+    userId?: TypeInputUserIn;
   }
   export interface PaymentsGetStarsSubscriptionsParams {
     /** Whether to return only subscriptions expired due to an excessively low Telegram Star balance. */
     missingBalance?: boolean;
     /** Always pass inputPeerSelf . */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** Offset for pagination, taken from payments.starsStatus . subscriptions_next_offset . */
     offset: string;
   }
   export interface PaymentsChangeStarsSubscriptionParams {
     /** Always pass inputPeerSelf . */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** ID of the subscription. */
     subscriptionId: string;
     /** Whether to cancel or reactivate the subscription. */
@@ -40468,7 +40475,7 @@ export namespace Api {
   }
   export interface PaymentsFulfillStarsSubscriptionParams {
     /** Always pass inputPeerSelf . */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** ID of the subscription. */
     subscriptionId: string;
   }
@@ -40490,13 +40497,13 @@ export namespace Api {
     /** If not set, disables autorenewal of the subscriptions, and prevents the user from reactivating the subscription once the current period expires: a subscription cancelled by the bot will have the starsSubscription . bot_canceled flag set. The bot can can partially undo this operation by setting this flag: this will allow the user to reactivate the subscription. */
     restore?: boolean;
     /** The ID of the user whose subscription should be (un)cancelled */
-    userId: Api.TypeEntityLike;
+    userId: TypeInputUserIn;
     /** The provider_charge_id from the messageActionPaymentSentMe service message sent to the bot for the first subscription payment. */
     chargeId: string;
   }
   export interface PaymentsGetConnectedStarRefBotsParams {
     /** The affiliated peer */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** If set, returns only results older than the specified unixtime */
     offsetDate?: int;
     /** Offset for pagination , taken from the last returned connectedBotStarRef . url (initially empty) */
@@ -40506,9 +40513,9 @@ export namespace Api {
   }
   export interface PaymentsGetConnectedStarRefBotParams {
     /** The affiliated peer */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** The bot that offers the affiliate program */
-    bot: Api.TypeEntityLike;
+    bot: TypeInputUserIn;
   }
   export interface PaymentsGetSuggestedStarRefBotsParams {
     /** If set, orders results by the expected revenue */
@@ -40516,7 +40523,7 @@ export namespace Api {
     /** If set, orders results by the creation date of the affiliate program */
     orderByDate?: boolean;
     /** The peer that will become the affiliate: star commissions will be transferred to this peer's star balance. */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** Offset for pagination, taken from payments.suggestedStarRefBots . next_offset , initially empty. */
     offset: string;
     /** Maximum number of results to return, see pagination */
@@ -40524,21 +40531,21 @@ export namespace Api {
   }
   export interface PaymentsConnectStarRefBotParams {
     /** The peer that will become the affiliate: star commissions will be transferred to this peer's star balance. */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** The bot that offers the affiliate program */
-    bot: Api.TypeEntityLike;
+    bot: TypeInputUserIn;
   }
   export interface PaymentsEditConnectedStarRefBotParams {
     /** If set, leaves the bot's affiliate program */
     revoked?: boolean;
     /** The peer that was affiliated */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** The affiliate link to revoke */
     link: string;
   }
   export interface PaymentsGetStarGiftUpgradePreviewParams {
     /** The gift to upgrade. */
-    giftId: long;
+    giftId: LongInput;
   }
   export interface PaymentsUpgradeStarGiftParams {
     /** Set this flag to keep the original gift text, sender and receiver in the upgraded gift as a starGiftAttributeOriginalDetails attribute. */
@@ -40550,7 +40557,7 @@ export namespace Api {
     /** The gift to transfer. */
     stargift: TypeInputSavedStarGiftIn;
     /** Destination peer. */
-    toId: Api.TypeEntityLike;
+    toId: TypeInputPeerIn;
   }
   export interface PaymentsGetUniqueStarGiftParams {
     /** The slug. */
@@ -40576,7 +40583,7 @@ export namespace Api {
     /** If set, excludes hosted collectible gifts » , returning only gifts owned or received by peer . */
     excludeHosted?: boolean;
     /** Fetch only gifts owned, received or hosted » by the specified peer, such as: a user, with peer= inputPeerUser ; a channel, with peer= inputPeerChannel ; a connected business user » (when executing the method as a bot, over the business connection), with peer= inputPeerUser . */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** Only returns gifts within the specified collection » . */
     collectionId?: int;
     /** Offset for pagination . */
@@ -40598,11 +40605,11 @@ export namespace Api {
     /** Whether to enable or disable reception of notifications in the form of messageActionStarGiftUnique and messageActionStarGift service messages from the channel. */
     enabled?: boolean;
     /** The channel for which to receive or not receive notifications. */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
   }
   export interface PaymentsToggleStarGiftsPinnedToTopParams {
     /** The peer where to pin the gift. */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** The gift to pin. */
     stargift: TypeInputSavedStarGiftIn[];
   }
@@ -40620,9 +40627,9 @@ export namespace Api {
     /** Only return gifts that can be bought using Stars . */
     starsOnly?: boolean;
     /** If a previous call to the method was made and payments.resaleStarGifts . attributes_hash was set, pass it here to avoid returning any results if they haven't changed. Otherwise, set this flag and pass 0 to return payments.resaleStarGifts . attributes_hash and payments.resaleStarGifts . attributes , these two fields will not be set if this flag is not set. */
-    attributesHash?: long;
+    attributesHash?: LongInput;
     /** Mandatory identifier of the base gift from which the collectible gift was upgraded. */
-    giftId: long;
+    giftId: LongInput;
     /** Optionally filter gifts with the specified attributes. If no attributes of a specific type are specified, all attributes of that type are allowed. */
     attributes?: TypeStarGiftAttributeIdIn[];
     /** Offset for pagination. If not equal to an empty string, payments.resaleStarGifts . counters will not be set to avoid returning the counters every time a new page is fetched. */
@@ -40638,7 +40645,7 @@ export namespace Api {
   }
   export interface PaymentsCreateStarGiftCollectionParams {
     /** Peer where to create the collection. */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** Title of the collection. */
     title: string;
     /** Gifts added to the collection. */
@@ -40646,7 +40653,7 @@ export namespace Api {
   }
   export interface PaymentsUpdateStarGiftCollectionParams {
     /** Peer that owns the collection. */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** Collection ID. */
     collectionId: int;
     /** Title of the collection, to rename the collection. */
@@ -40660,21 +40667,21 @@ export namespace Api {
   }
   export interface PaymentsReorderStarGiftCollectionsParams {
     /** The owned peer. */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** New collection order. */
     order: int[];
   }
   export interface PaymentsDeleteStarGiftCollectionParams {
     /** Peer that owns the collection. */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** ID of the collection. */
     collectionId: int;
   }
   export interface PaymentsGetStarGiftCollectionsParams {
     /** The peer. */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** Hash ( generated as specified here » ) using the starGiftCollection . hash field ( not the collection_id field) of all collections returned by a previous method call, to avoid refetching the result if it hasn't changed. */
-    hash: long;
+    hash: LongInput;
   }
   export interface PaymentsGetUniqueStarGiftValueInfoParams {
     /** slug from a starGiftUnique . */
@@ -40682,7 +40689,7 @@ export namespace Api {
   }
   export interface PaymentsCheckCanSendGiftParams {
     /** Gift ID. */
-    giftId: long;
+    giftId: LongInput;
   }
   export interface PaymentsGetStarGiftAuctionStateParams {
     /** Either the ID of the gift linked to the auction, or an auction deep link slug » . */
@@ -40692,21 +40699,21 @@ export namespace Api {
   }
   export interface PaymentsGetStarGiftAuctionAcquiredGiftsParams {
     /** The gift ID linked to the auction. */
-    giftId: long;
+    giftId: LongInput;
   }
   export interface PaymentsGetStarGiftActiveAuctionsParams {
     /** Hash generated as specified here » */
-    hash: long;
+    hash: LongInput;
   }
   export interface PaymentsResolveStarGiftOfferParams {
     /** If set, declines the offer; otherwise, accepts it. */
     decline?: boolean;
     /** Identifier of the messageActionStarGiftPurchaseOffer service message describing the offer to act upon. */
-    offerMsgId: MessageIDLike;
+    offerMsgId: int;
   }
   export interface PaymentsSendStarGiftOfferParams {
     /** Owner of the collectible gift: equal to starGiftUnique . owner_id . */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** Identifier of the collectible gift: equal to starGiftUnique . slug . */
     slug: string;
     /** Offer price, in stars or TON. */
@@ -40714,17 +40721,17 @@ export namespace Api {
     /** Duration of the offer, in seconds: must be one of 21600 , 43200 , 86400 , 129600 , 172800 , or 259200 ; can also be 120 in test mode. */
     duration: int;
     /** Random 64-bit identifier used to avoid sending the same offer twice in case of network issues. See here » for more info on random ID deduplication and updateMessageID mapping. */
-    randomId?: long;
+    randomId?: LongInput;
     /** If the destination peer has paid messages » enabled, specifies the amount of Telegram Stars the sending user has agreed to pay in order to send the offer (in addition to the amount for the offer itself, contained in price ). */
-    allowPaidStars?: long;
+    allowPaidStars?: LongInput;
   }
   export interface PaymentsGetStarGiftUpgradeAttributesParams {
     /** Non-collectible base gift ID, from starGift . id */
-    giftId: long;
+    giftId: LongInput;
   }
   export interface PaymentsGetCraftStarGiftsParams {
     /** Identifier of the base gift type, equal to starGiftUnique . gift_id of the first selected gift. */
-    giftId: long;
+    giftId: LongInput;
     /** Offset for pagination. */
     offset: string;
     /** Maximum number of results to return, see pagination */
@@ -40742,7 +40749,7 @@ export namespace Api {
     /** Whether the color of TGS custom emojis contained in this set should be changed to the text color when used in messages, the accent color if used as emoji status, white on chat photos, or another appropriate color based on context. For custom emoji stickersets only. */
     textColor?: boolean;
     /** Stickerset owner */
-    userId: Api.TypeEntityLike;
+    userId: TypeInputUserIn;
     /** Stickerset name, 1-64 chars */
     title: string;
     /** Short name of sticker set, to be used in sticker deep links » . Can contain only english letters, digits and underscores. Must begin with a letter, can't contain consecutive underscores and, if called by a bot , must end in "_by_<bot_username>" . <bot_username> is case insensitive. 1-64 characters. */
@@ -40776,7 +40783,7 @@ export namespace Api {
     /** Thumbnail (only for normal stickersets, not custom emoji stickersets). */
     thumb?: TypeInputDocumentIn;
     /** Only for custom emoji stickersets , ID of a custom emoji present in the set to use as thumbnail; pass 0 to fallback to the first custom emoji of the set. */
-    thumbDocumentId?: long;
+    thumbDocumentId?: LongInput;
   }
   export interface StickersCheckShortNameParams {
     /** Short name */
@@ -40816,7 +40823,7 @@ export namespace Api {
     /** Whether to start a video call */
     video?: boolean;
     /** Destination of the phone call */
-    userId: Api.TypeEntityLike;
+    userId: TypeInputUserIn;
     /** Random ID to avoid resending the same object. See here » for more info on random ID deduplication and updateMessageID mapping. */
     randomId: int;
     /** Parameter for E2E encryption key exchange » */
@@ -40838,7 +40845,7 @@ export namespace Api {
     /** Parameter for E2E encryption key exchange » */
     gA: bytes;
     /** Key fingerprint */
-    keyFingerprint: long;
+    keyFingerprint: LongInput;
     /** Phone call settings */
     protocol: TypePhoneCallProtocolIn;
   }
@@ -40856,7 +40863,7 @@ export namespace Api {
     /** Why was the call discarded */
     reason: TypePhoneCallDiscardReasonIn;
     /** Preferred libtgvoip relay ID */
-    connectionId: long;
+    connectionId: LongInput;
   }
   export interface PhoneSetCallRatingParams {
     /** Whether the user decided on their own initiative to rate the call, must NOT be set if rating was requested by the server with phoneCallDiscarded . need_rating . */
@@ -40884,7 +40891,7 @@ export namespace Api {
     /** Create the call in RTMP livestream mode » , where one external streamer publishes all audio and video */
     rtmpStream?: boolean;
     /** Associate the group call or livestream to the provided group/supergroup/channel */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** Unique client message ID required to prevent creation of duplicate group calls. See here » for more info on random ID deduplication and updateMessageID mapping. */
     randomId: int;
     /** Call title, if not set defaults to the group/channel's name. */
@@ -40900,11 +40907,11 @@ export namespace Api {
     /** Group call to join */
     call: TypeInputGroupCallIn;
     /** Join the group call, presenting yourself as the specified user/channel; this peer is also used as the author of in-call messages in normal video chats/livestreams. Only video chats/livestreams may use another peer; this field must be equal to inputPeerSelf when joining live stories » or conference calls » . */
-    joinAs: Api.TypeEntityLike;
+    joinAs: TypeInputPeerIn;
     /** The invitation hash from the invite link » , if provided allows speaking in a livestream or muted group call ( video chats/livestreams » only, cannot be used by live stories » or conference calls » ). */
     inviteHash?: string;
     /** For conference calls » only, your public key. */
-    publicKey?: int256;
+    publicKey?: LongInput;
     /** The main-chain block that adds the joining user » , only for conference calls » . */
     block?: bytes;
     /** Join payload generated by the local tgcalls group-call engine, as described above */
@@ -40920,7 +40927,7 @@ export namespace Api {
     /** The video chat/livestream » */
     call: TypeInputGroupCallIn;
     /** The users to invite. */
-    users: Api.TypeEntityLike[];
+    users: TypeInputUserIn[];
   }
   export interface PhoneDiscardGroupCallParams {
     /** The group call to terminate */
@@ -40936,7 +40943,7 @@ export namespace Api {
     /** Enable or disable the in-call message overlay in video chats/livestreams, conferences and live stories, including in RTMP mode */
     messagesEnabled?: Bool;
     /** Set the minimum Telegram Stars donation required from users other than the live story owner for each comment; the owner may always comment without donating, and 0 allows free comments for everyone */
-    sendPaidMessagesStars?: long;
+    sendPaidMessagesStars?: LongInput;
   }
   export interface PhoneGetGroupCallParams {
     /** Group call of any type to fetch */
@@ -40948,7 +40955,7 @@ export namespace Api {
     /** Group call whose participants should be fetched */
     call: TypeInputGroupCallIn;
     /** If specified, will fetch group participant info about the specified peers */
-    ids: Api.TypeEntityLike[];
+    ids: TypeInputPeerIn[];
     /** If specified, will fetch group participant info about the specified WebRTC source IDs */
     sources: int[];
     /** Offset for results, taken from the next_offset field of phone.groupParticipants or the participants_next_offset field of phone.groupCall , initially an empty string. Note: if no more results are available, the method call will return an empty next_offset ; thus, avoid providing the next_offset returned in phone.groupParticipants if it is empty, to avoid an infinite loop. */
@@ -40978,7 +40985,7 @@ export namespace Api {
     /** Non-RTMP video chat/livestream or conference */
     call: TypeInputGroupCallIn;
     /** The group call participant (can also be the user itself) */
-    participant: Api.TypeEntityLike;
+    participant: TypeInputPeerIn;
     /** Change the participant's mute state; allowing a forcibly muted participant to self-unmute does not immediately unmute them */
     muted?: Bool;
     /** New volume, between 1 and 20000 ; 10000 represents 100%. Without moderation rights, changing another participant's volume affects only local playback */
@@ -41000,7 +41007,7 @@ export namespace Api {
   }
   export interface PhoneGetGroupCallJoinAsParams {
     /** The basic group, supergroup or channel whose video chat/livestream we're trying to join; cannot target a live story. */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
   }
   export interface PhoneExportGroupCallInviteParams {
     /** For public video chats/livestreams, group call admins only: allow users that join using this link to speak without explicitly requesting permission, for example by raising their hand. */
@@ -41020,9 +41027,9 @@ export namespace Api {
   }
   export interface PhoneSaveDefaultGroupCallJoinAsParams {
     /** Basic group, supergroup or channel whose video chat/livestream default should be changed */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** Eligible peer to use by default when joining the dialog's video chats/livestreams, selected from phone.getGroupCallJoinAs */
-    joinAs: Api.TypeEntityLike;
+    joinAs: TypeInputPeerIn;
   }
   export interface PhoneJoinGroupCallPresentationParams {
     /** Joined non-RTMP video chat/livestream or conference in which to start presenting */
@@ -41042,7 +41049,7 @@ export namespace Api {
     /** Obtain credentials for an RTMP live story instead of a video chat/livestream */
     liveStory?: boolean;
     /** Peer that will host the RTMP video chat, livestream or live story */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** Whether to invalidate the previous stream key and generate a new one, instead of returning the existing key */
     revoke: Bool;
   }
@@ -41062,7 +41069,7 @@ export namespace Api {
     /** Unique client message ID required to prevent creation of duplicate group calls. See here » for more info on random ID deduplication and updateMessageID mapping. */
     randomId: int;
     /** Fresh E2E public key for the creator (can only be used if join is set). */
-    publicKey?: int256;
+    publicKey?: LongInput;
     /** Initial main-chain block for subchain 0 (can only be used if join is set). */
     block?: bytes;
     /** Join payload generated by the local call engine (can only be used if join is set). */
@@ -41076,7 +41083,7 @@ export namespace Api {
     /** Conference from which to remove participants */
     call: TypeInputGroupCallIn;
     /** User IDs to remove from the conference and E2E blockchain */
-    ids: long[];
+    ids: LongInput[];
     /** Main-chain block removing the specified users and establishing a new shared key, see removing a participant » */
     block: bytes;
   }
@@ -41092,11 +41099,11 @@ export namespace Api {
     /** The conference call. */
     call: TypeInputGroupCallIn;
     /** The user to invite. */
-    userId: Api.TypeEntityLike;
+    userId: TypeInputUserIn;
   }
   export interface PhoneDeclineConferenceCallInviteParams {
     /** The ID of the messageActionConferenceCall to decline. */
-    msgId: MessageIDLike;
+    msgId: int;
   }
   export interface PhoneGetGroupCallChainBlocksParams {
     /** Conference whose subchain blocks should be fetched */
@@ -41112,13 +41119,13 @@ export namespace Api {
     /** Video chat/livestream or live story that should receive the message, reaction or donation */
     call: TypeInputGroupCallIn;
     /** Fresh client-generated random ID used to deduplicate the message or donation. See here » for more info on random ID deduplication and updateMessageID mapping. */
-    randomId?: long;
+    randomId?: LongInput;
     /** Message text or emoji reaction; pass an empty value when sending a standalone paid live story donation */
     message: TypeTextWithEntitiesIn;
     /** User-confirmed number of Telegram Stars to donate with a live story comment or standalone donation */
-    allowPaidStars?: long;
+    allowPaidStars?: LongInput;
     /** Optional peer to display as the author of a live story message or reaction; can only be used for live stories */
-    sendAs?: Api.TypeEntityLike;
+    sendAs?: TypeInputPeerIn;
   }
   export interface PhoneSendGroupCallEncryptedMessageParams {
     /** Conference call that should receive the encrypted message or reaction */
@@ -41140,7 +41147,7 @@ export namespace Api {
     /** Video chat/livestream or live story containing the messages */
     call: TypeInputGroupCallIn;
     /** The participant whose messages should be deleted */
-    participant: Api.TypeEntityLike;
+    participant: TypeInputPeerIn;
   }
   export interface PhoneGetGroupCallStarsParams {
     /** Live story group call */
@@ -41150,7 +41157,7 @@ export namespace Api {
     /** Live story group call */
     call: TypeInputGroupCallIn;
     /** Peer to display as the author of subsequent comments and reactions */
-    sendAs: Api.TypeEntityLike;
+    sendAs: TypeInputPeerIn;
   }
   export interface LangpackGetLangPackParams {
     /** Platform identifier (i.e. android , tdesktop , etc). */
@@ -41192,25 +41199,25 @@ export namespace Api {
     /** Whether to enable dark theme for graph colors */
     dark?: boolean;
     /** The channel */
-    channel: Api.TypeEntityLike;
+    channel: TypeInputChannelIn;
   }
   export interface StatsLoadAsyncGraphParams {
     /** Graph token from statsGraphAsync constructor */
     token: string;
     /** Zoom value, if required */
-    x?: long;
+    x?: LongInput;
   }
   export interface StatsGetMegagroupStatsParams {
     /** Whether to enable dark theme for graph colors */
     dark?: boolean;
     /** Supergroup ID */
-    channel: Api.TypeEntityLike;
+    channel: TypeInputChannelIn;
   }
   export interface StatsGetMessagePublicForwardsParams {
     /** Source channel */
-    channel: Api.TypeEntityLike;
+    channel: TypeInputChannelIn;
     /** Source message ID */
-    msgId: MessageIDLike;
+    msgId: int;
     /** Offset for pagination , empty string on first call, then use the next_offset field of the returned constructor (if present, otherwise no more results are available). */
     offset: string;
     /** Maximum number of results to return, see pagination */
@@ -41220,21 +41227,21 @@ export namespace Api {
     /** Whether to enable dark theme for graph colors */
     dark?: boolean;
     /** Channel ID */
-    channel: Api.TypeEntityLike;
+    channel: TypeInputChannelIn;
     /** Message ID */
-    msgId: MessageIDLike;
+    msgId: int;
   }
   export interface StatsGetStoryStatsParams {
     /** Whether to enable the dark theme for graph colors */
     dark?: boolean;
     /** The peer that posted the story */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** Story ID */
     id: int;
   }
   export interface StatsGetStoryPublicForwardsParams {
     /** Peer where the story was originally posted */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** Story ID */
     id: int;
     /** Offset for pagination, from stats.PublicForwards . next_offset . */
@@ -41246,9 +41253,9 @@ export namespace Api {
     /** Whether to enable dark theme for graph colors */
     dark?: boolean;
     /** The peer where the poll was sent */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** ID of the message containing the poll */
-    msgId: MessageIDLike;
+    msgId: int;
   }
   export interface ChatlistsExportChatlistInviteParams {
     /** The folder to export */
@@ -41256,7 +41263,7 @@ export namespace Api {
     /** An optional name for the link */
     title: string;
     /** The list of channels, group and supergroups to share with the link. Basic groups will automatically be converted to supergroups when invoking the method. */
-    peers: Api.TypeEntityLike[];
+    peers: TypeInputPeerIn[];
   }
   export interface ChatlistsDeleteExportedInviteParams {
     /** The related folder */
@@ -41272,7 +41279,7 @@ export namespace Api {
     /** If set, sets a new name for the link */
     title?: string;
     /** If set, changes the list of peers shared with the link */
-    peers?: Api.TypeEntityLike[];
+    peers?: TypeInputPeerIn[];
   }
   export interface ChatlistsGetExportedInvitesParams {
     /** The folder */
@@ -41286,7 +41293,7 @@ export namespace Api {
     /** slug obtained from a chat folder deep link » . */
     slug: string;
     /** List of new chats to join, fetched using chatlists.checkChatlistInvite and filtered as specified in the documentation » . */
-    peers: Api.TypeEntityLike[];
+    peers: TypeInputPeerIn[];
   }
   export interface ChatlistsGetChatlistUpdatesParams {
     /** The folder */
@@ -41296,7 +41303,7 @@ export namespace Api {
     /** The folder */
     chatlist: TypeInputChatlistIn;
     /** List of new chats to join, fetched using chatlists.getChatlistUpdates and filtered as specified in the documentation » . */
-    peers: Api.TypeEntityLike[];
+    peers: TypeInputPeerIn[];
   }
   export interface ChatlistsHideChatlistUpdatesParams {
     /** The folder */
@@ -41310,11 +41317,11 @@ export namespace Api {
     /** Folder ID */
     chatlist: TypeInputChatlistIn;
     /** Also leave the specified channels and groups */
-    peers: Api.TypeEntityLike[];
+    peers: TypeInputPeerIn[];
   }
   export interface StoriesCanSendStoryParams {
     /** The peer from which we wish to post stories. */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
   }
   export interface StoriesSendStoryParams {
     /** Whether to add the story to the profile automatically upon expiration. If not set, the story will only be added to the archive, see here » for more info. */
@@ -41324,7 +41331,7 @@ export namespace Api {
     /** Set this flag when reposting stories with fwd_from_id + fwd_from_story , if the media was modified before reposting. */
     fwdModified?: boolean;
     /** The peer to send the story as. */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** The story media. */
     media: TypeInputMediaIn;
     /** Media areas associated to the story, see here » for more info. */
@@ -41336,11 +41343,11 @@ export namespace Api {
     /** Privacy rules for the story, indicating who can or can't view the story. */
     privacyRules: TypeInputPrivacyRuleIn[];
     /** Unique client message ID required to prevent message resending. See here » for more info on random ID deduplication and updateMessageID mapping. */
-    randomId?: long;
+    randomId?: LongInput;
     /** Period after which the story is moved to archive (and to the profile if pinned is set), in seconds; must be one of 6 * 3600 , 12 * 3600 , 86400 , or 2 * 86400 for Telegram Premium users, and 86400 otherwise. */
     period?: int;
     /** If set, indicates that this story is a repost of story with ID fwd_from_story posted by the peer in fwd_from_id . */
-    fwdFromId?: Api.TypeEntityLike;
+    fwdFromId?: TypeInputPeerIn;
     /** If set, indicates that this story is a repost of story with ID fwd_from_story posted by the peer in fwd_from_id . */
     fwdFromStory?: int;
     /** If set, adds the story to the specified albums. */
@@ -41350,7 +41357,7 @@ export namespace Api {
   }
   export interface StoriesEditStoryParams {
     /** Peer where the story was posted. */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** ID of story to edit. */
     id: int;
     /** If specified, replaces the story media. */
@@ -41368,13 +41375,13 @@ export namespace Api {
   }
   export interface StoriesDeleteStoriesParams {
     /** Channel/user from where to delete stories. */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** IDs of stories to delete. */
     id: int[];
   }
   export interface StoriesTogglePinnedParams {
     /** Peer where to pin or unpin stories */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** IDs of stories to pin or unpin */
     id: int[];
     /** Whether to pin or unpin the stories */
@@ -41390,7 +41397,7 @@ export namespace Api {
   }
   export interface StoriesGetPinnedStoriesParams {
     /** Peer whose pinned stories should be fetched */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** Offsets for pagination, for more info click here */
     offsetId: int;
     /** Maximum number of results to return, see pagination */
@@ -41398,7 +41405,7 @@ export namespace Api {
   }
   export interface StoriesGetStoriesArchiveParams {
     /** Peer whose archived stories should be fetched */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** Offsets for pagination, for more info click here */
     offsetId: int;
     /** Maximum number of results to return, see pagination */
@@ -41406,7 +41413,7 @@ export namespace Api {
   }
   export interface StoriesGetStoriesByIDParams {
     /** Peer where the stories were posted */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** Story IDs */
     id: int[];
   }
@@ -41416,13 +41423,13 @@ export namespace Api {
   }
   export interface StoriesReadStoriesParams {
     /** The peer whose stories should be marked as read. */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** Mark all stories up to and including this ID as read */
     maxId: int;
   }
   export interface StoriesIncrementStoryViewsParams {
     /** Peer where the stories were posted. */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** IDs of the stories (maximum 200 at a time). */
     id: int[];
   }
@@ -41434,7 +41441,7 @@ export namespace Api {
     /** If set, returns forwards and reposts first, then reactions, then other views; otherwise returns interactions sorted just by interaction date. */
     forwardsFirst?: boolean;
     /** Peer where the story was posted */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** Search for specific peers */
     q?: string;
     /** Story ID */
@@ -41446,19 +41453,19 @@ export namespace Api {
   }
   export interface StoriesGetStoriesViewsParams {
     /** Peer whose stories should be fetched */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** Story IDs */
     id: int[];
   }
   export interface StoriesExportStoryLinkParams {
     /** Peer where the story was posted */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** Story ID */
     id: int;
   }
   export interface StoriesReportParams {
     /** The peer that uploaded the story. */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** IDs of the stories to report. */
     id: int[];
     /** Menu option, intially empty */
@@ -41476,7 +41483,7 @@ export namespace Api {
     /** Whether to add this reaction to the recent reactions list » . */
     addToRecent?: boolean;
     /** The peer that sent the story */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** ID of the story to react to */
     storyId: int;
     /** Reaction */
@@ -41484,15 +41491,15 @@ export namespace Api {
   }
   export interface StoriesGetPeerStoriesParams {
     /** Peer whose stories should be fetched */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
   }
   export interface StoriesGetPeerMaxIDsParams {
     /** Peers whose active story summaries » should be fetched. */
-    id: Api.TypeEntityLike[];
+    id: TypeInputPeerIn[];
   }
   export interface StoriesTogglePeerStoriesHiddenParams {
     /** Peer whose stories should be (un)hidden. */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** Whether to hide or unhide stories. */
     hidden: Bool;
   }
@@ -41500,7 +41507,7 @@ export namespace Api {
     /** If set, returns forwards and reposts first, then reactions, then other views; otherwise returns interactions sorted just by interaction date. */
     forwardsFirst?: boolean;
     /** Channel */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** Story ID */
     id: int;
     /** Get only reactions of this type */
@@ -41512,7 +41519,7 @@ export namespace Api {
   }
   export interface StoriesTogglePinnedToTopParams {
     /** Peer where to pin stories. */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** IDs of the stories to pin (max stories_pinned_to_top_count_max ). */
     id: int[];
   }
@@ -41522,7 +41529,7 @@ export namespace Api {
     /** A mediaAreaGeoPoint or a mediaAreaVenue . Note mediaAreaGeoPoint areas may be searched only if they have an associated address . */
     area?: TypeMediaAreaIn;
     /** If set, returns only stories posted by this peer. */
-    peer?: Api.TypeEntityLike;
+    peer?: TypeInputPeerIn;
     /** Offset for pagination : initially an empty string, then the next_offset from the previously returned stories.foundStories . */
     offset: string;
     /** Maximum number of results to return, see pagination */
@@ -41530,7 +41537,7 @@ export namespace Api {
   }
   export interface StoriesCreateAlbumParams {
     /** The owned peer where to create the album. */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** Album name. */
     title: string;
     /** Stories to add to the album. */
@@ -41538,7 +41545,7 @@ export namespace Api {
   }
   export interface StoriesUpdateAlbumParams {
     /** Peer where the album is posted. */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** Album ID. */
     albumId: int;
     /** New album title. */
@@ -41552,25 +41559,25 @@ export namespace Api {
   }
   export interface StoriesReorderAlbumsParams {
     /** Peer where the albums are located. */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** New order of the albums. */
     order: int[];
   }
   export interface StoriesDeleteAlbumParams {
     /** Owned peer where the album is located. */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** ID of the album to delete. */
     albumId: int;
   }
   export interface StoriesGetAlbumsParams {
     /** The peer. */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** The hash from a previously returned stories.albums , to avoid returning any results if they haven't changed. */
-    hash: long;
+    hash: LongInput;
   }
   export interface StoriesGetAlbumStoriesParams {
     /** Peer where the album is posted. */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** ID of the album. */
     albumId: int;
     /** Offset for pagination . */
@@ -41586,7 +41593,7 @@ export namespace Api {
     /** Create the live story in RTMP livestream mode » , where one external streamer publishes all audio and video */
     rtmpStream?: boolean;
     /** User, supergroup or channel that will own the live story; basic groups cannot post live stories */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** Live story caption */
     caption?: string;
     /** Message entities for styled text */
@@ -41594,17 +41601,17 @@ export namespace Api {
     /** Privacy rules defining who can view the live story */
     privacyRules: TypeInputPrivacyRuleIn[];
     /** Client-generated random ID used to prevent duplicate live stories. See here » for more info on random ID deduplication and updateMessageID mapping. */
-    randomId?: long;
+    randomId?: LongInput;
     /** Whether the in-call message overlay » should be enabled */
     messagesEnabled?: Bool;
     /** Minimum Telegram Stars donation required from users other than the live story owner for each comment; the owner may always comment without donating, and 0 allows free comments for everyone */
-    sendPaidMessagesStars?: long;
+    sendPaidMessagesStars?: LongInput;
   }
   export interface PremiumGetBoostsListParams {
     /** Whether to return only info about boosts received from gift codes and giveaways created by the channel/supergroup » */
     gifts?: boolean;
     /** The channel/supergroup */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** Offset for pagination, obtained from premium.boostsList . next_offset */
     offset: string;
     /** Maximum number of results to return, see pagination */
@@ -41614,17 +41621,17 @@ export namespace Api {
     /** Which boost slots to assign to this peer. */
     slots?: int[];
     /** The peer to boost. */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
   }
   export interface PremiumGetBoostsStatusParams {
     /** The peer. */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
   }
   export interface PremiumGetUserBoostsParams {
     /** The channel/supergroup */
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     /** The user */
-    userId: Api.TypeEntityLike;
+    userId: TypeInputUserIn;
   }
   export interface SmsjobsUpdateSettingsParams {
     /** Allow international numbers? */
@@ -41648,7 +41655,7 @@ export namespace Api {
     /** If set, the current user will be publicly credited as the author of the tone */
     displayAuthor?: boolean;
     /** Custom emoji ID of the tone's icon */
-    emojiId: long;
+    emojiId: LongInput;
     /** Human-readable tone name, up to aicompose_tone_title_length_max » UTF-8 characters long */
     title: string;
     /** The prompt that describes how the AI should rephrase messages using this tone, up to aicompose_tone_prompt_length_max » UTF-8 characters long */
@@ -41660,7 +41667,7 @@ export namespace Api {
     /** If set, changes whether the current user is publicly credited as the author of the tone (ternary value, can be not set, set and true, set and false). */
     displayAuthor?: Bool;
     /** If set, the new custom emoji ID of the tone's icon */
-    emojiId?: long;
+    emojiId?: LongInput;
     /** If set, the new human-readable tone name, up to aicompose_tone_title_length_max » UTF-8 characters long */
     title?: string;
     /** If set, the new prompt that describes how the AI should rephrase messages using this tone, up to aicompose_tone_prompt_length_max » UTF-8 characters long */
@@ -41682,7 +41689,7 @@ export namespace Api {
   }
   export interface AicomposeGetTonesParams {
     /** Hash from a previously cached aicompose.tones . hash to avoid refetching the list if it hasn't changed; initially 0. */
-    hash: long;
+    hash: LongInput;
   }
   export interface AicomposeGetToneExampleParams {
     /** The tone to preview */
@@ -41694,79 +41701,79 @@ export namespace Api {
     hidden?: boolean;
     title: string;
     about?: string;
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
   }
   export interface CommunitiesTogglePeerLinkParams {
     visible?: boolean;
     hidden?: boolean;
     deleted?: boolean;
-    community: Api.TypeEntityLike;
-    peer: Api.TypeEntityLike;
+    community: TypeInputChannelIn;
+    peer: TypeInputPeerIn;
   }
   export interface CommunitiesToggleCommunityCollapsedInDialogsParams {
     collapsed?: boolean;
-    community: Api.TypeEntityLike;
+    community: TypeInputChannelIn;
   }
   export interface CommunitiesGetPeerLinkRequestsParams {
-    community: Api.TypeEntityLike;
+    community: TypeInputChannelIn;
     offset: string;
     limit: int;
   }
   export interface CommunitiesTogglePeerLinkRequestApprovalParams {
     reject?: boolean;
-    community: Api.TypeEntityLike;
-    peer: Api.TypeEntityLike;
+    community: TypeInputChannelIn;
+    peer: TypeInputPeerIn;
   }
   export interface CommunitiesToggleAllPeerLinkRequestApprovalParams {
     reject?: boolean;
-    community: Api.TypeEntityLike;
+    community: TypeInputChannelIn;
   }
   export interface CommunitiesToggleParticipantBannedParams {
     unban?: boolean;
-    community: Api.TypeEntityLike;
-    participant: Api.TypeEntityLike;
+    community: TypeInputChannelIn;
+    participant: TypeInputPeerIn;
   }
   export interface CommunitiesGetParticipantJoinedChatsParams {
-    community: Api.TypeEntityLike;
-    participant: Api.TypeEntityLike;
+    community: TypeInputChannelIn;
+    participant: TypeInputPeerIn;
   }
   export interface EphemeralSendMessageParams {
     invertMedia?: boolean;
     welcome?: boolean;
     anchor?: boolean;
     noforwards?: boolean;
-    peer?: Api.TypeEntityLike;
-    receiverId: Api.TypeEntityLike;
-    queryId?: long;
+    peer?: TypeInputPeerIn;
+    receiverId: TypeInputUserIn;
+    queryId?: LongInput;
     message: string;
     entities?: TypeMessageEntityIn[];
     media?: TypeInputMediaIn;
     replyMarkup?: TypeReplyMarkupIn;
     richMessage?: TypeInputRichMessageIn;
-    randomId?: long;
+    randomId?: LongInput;
     replyTo?: TypeInputReplyToIn;
   }
   export interface EphemeralDeleteMessageParams {
-    peer?: Api.TypeEntityLike;
-    receiverId: Api.TypeEntityLike;
+    peer?: TypeInputPeerIn;
+    receiverId: TypeInputUserIn;
     id: int;
   }
   export interface EphemeralReportMessageParams {
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     id: int;
     option: bytes;
     message: string;
   }
   export interface EphemeralGetCallbackAnswerParams {
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     id: int;
     data?: bytes;
   }
   export interface EphemeralEditMessageParams {
     invertMedia?: boolean;
     welcome?: boolean;
-    peer?: Api.TypeEntityLike;
-    receiverId: Api.TypeEntityLike;
+    peer?: TypeInputPeerIn;
+    receiverId: TypeInputUserIn;
     id: int;
     message?: string;
     media?: TypeInputMediaIn;
@@ -41775,51 +41782,1708 @@ export namespace Api {
     richMessage?: TypeInputRichMessageIn;
   }
   export interface EphemeralDeleteWelcomeMessageParams {
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
     id: int;
   }
   export interface EphemeralDeleteAllWelcomeMessagesParams {
-    peer: Api.TypeEntityLike;
+    peer: TypeInputPeerIn;
   }
   export interface EphemeralGetWelcomeMessagesParams {
-    peer: Api.TypeEntityLike;
-    hash: long;
+    peer: TypeInputPeerIn;
+    hash: LongInput;
   }
   export interface ReqPqParams {
-    nonce: int128;
+    nonce: LongInput;
   }
   export interface ReqPqMultiParams {
-    nonce: int128;
+    nonce: LongInput;
   }
   export interface ReqDHParamsParams {
-    nonce: int128;
-    serverNonce: int128;
+    nonce: LongInput;
+    serverNonce: LongInput;
     p: bytes;
     q: bytes;
-    publicKeyFingerprint: long;
+    publicKeyFingerprint: LongInput;
     encryptedData: bytes;
   }
   export interface SetClientDHParamsParams {
-    nonce: int128;
-    serverNonce: int128;
+    nonce: LongInput;
+    serverNonce: LongInput;
     encryptedData: bytes;
   }
   export interface RpcDropAnswerParams {
-    reqMsgId: long;
+    reqMsgId: LongInput;
   }
   export interface GetFutureSaltsParams {
     num: int;
   }
   export interface PingParams {
-    pingId: long;
+    pingId: LongInput;
   }
   export interface PingDelayDisconnectParams {
-    pingId: long;
+    pingId: LongInput;
     disconnectDelay: int;
   }
   export interface DestroySessionParams {
-    sessionId: long;
+    sessionId: LongInput;
   }
+
+  export interface RawRequestMap {
+    "invokeAfterMsg": { _: "invokeAfterMsg" } & InvokeAfterMsgParams;
+    "invokeAfterMsgs": { _: "invokeAfterMsgs" } & InvokeAfterMsgsParams;
+    "initConnection": { _: "initConnection" } & InitConnectionParams;
+    "invokeWithLayer": { _: "invokeWithLayer" } & InvokeWithLayerParams;
+    "invokeWithoutUpdates": { _: "invokeWithoutUpdates" } & InvokeWithoutUpdatesParams;
+    "invokeWithMessagesRange": { _: "invokeWithMessagesRange" } & InvokeWithMessagesRangeParams;
+    "invokeWithTakeout": { _: "invokeWithTakeout" } & InvokeWithTakeoutParams;
+    "invokeWithBusinessConnection": { _: "invokeWithBusinessConnection" } & InvokeWithBusinessConnectionParams;
+    "invokeWithGooglePlayIntegrity": { _: "invokeWithGooglePlayIntegrity" } & InvokeWithGooglePlayIntegrityParams;
+    "invokeWithApnsSecret": { _: "invokeWithApnsSecret" } & InvokeWithApnsSecretParams;
+    "invokeWithReCaptcha": { _: "invokeWithReCaptcha" } & InvokeWithReCaptchaParams;
+    "auth.sendCode": { _: "auth.sendCode" } & AuthSendCodeParams;
+    "auth.signUp": { _: "auth.signUp" } & AuthSignUpParams;
+    "auth.signIn": { _: "auth.signIn" } & AuthSignInParams;
+    "auth.logOut": { _: "auth.logOut" };
+    "auth.resetAuthorizations": { _: "auth.resetAuthorizations" };
+    "auth.exportAuthorization": { _: "auth.exportAuthorization" } & AuthExportAuthorizationParams;
+    "auth.importAuthorization": { _: "auth.importAuthorization" } & AuthImportAuthorizationParams;
+    "auth.bindTempAuthKey": { _: "auth.bindTempAuthKey" } & AuthBindTempAuthKeyParams;
+    "auth.importBotAuthorization": { _: "auth.importBotAuthorization" } & AuthImportBotAuthorizationParams;
+    "auth.checkPassword": { _: "auth.checkPassword" } & AuthCheckPasswordParams;
+    "auth.requestPasswordRecovery": { _: "auth.requestPasswordRecovery" };
+    "auth.recoverPassword": { _: "auth.recoverPassword" } & AuthRecoverPasswordParams;
+    "auth.resendCode": { _: "auth.resendCode" } & AuthResendCodeParams;
+    "auth.cancelCode": { _: "auth.cancelCode" } & AuthCancelCodeParams;
+    "auth.dropTempAuthKeys": { _: "auth.dropTempAuthKeys" } & AuthDropTempAuthKeysParams;
+    "auth.exportLoginToken": { _: "auth.exportLoginToken" } & AuthExportLoginTokenParams;
+    "auth.importLoginToken": { _: "auth.importLoginToken" } & AuthImportLoginTokenParams;
+    "auth.acceptLoginToken": { _: "auth.acceptLoginToken" } & AuthAcceptLoginTokenParams;
+    "auth.checkRecoveryPassword": { _: "auth.checkRecoveryPassword" } & AuthCheckRecoveryPasswordParams;
+    "auth.importWebTokenAuthorization": { _: "auth.importWebTokenAuthorization" } & AuthImportWebTokenAuthorizationParams;
+    "auth.requestFirebaseSms": { _: "auth.requestFirebaseSms" } & AuthRequestFirebaseSmsParams;
+    "auth.resetLoginEmail": { _: "auth.resetLoginEmail" } & AuthResetLoginEmailParams;
+    "auth.reportMissingCode": { _: "auth.reportMissingCode" } & AuthReportMissingCodeParams;
+    "auth.checkPaidAuth": { _: "auth.checkPaidAuth" } & AuthCheckPaidAuthParams;
+    "auth.initPasskeyLogin": { _: "auth.initPasskeyLogin" } & AuthInitPasskeyLoginParams;
+    "auth.finishPasskeyLogin": { _: "auth.finishPasskeyLogin" } & AuthFinishPasskeyLoginParams;
+    "auth.initFirebasePnvLogin": { _: "auth.initFirebasePnvLogin" } & AuthInitFirebasePnvLoginParams;
+    "auth.finishFirebasePnvLogin": { _: "auth.finishFirebasePnvLogin" } & AuthFinishFirebasePnvLoginParams;
+    "auth.firebasePnvSignUp": { _: "auth.firebasePnvSignUp" } & AuthFirebasePnvSignUpParams;
+    "account.registerDevice": { _: "account.registerDevice" } & AccountRegisterDeviceParams;
+    "account.unregisterDevice": { _: "account.unregisterDevice" } & AccountUnregisterDeviceParams;
+    "account.updateNotifySettings": { _: "account.updateNotifySettings" } & AccountUpdateNotifySettingsParams;
+    "account.getNotifySettings": { _: "account.getNotifySettings" } & AccountGetNotifySettingsParams;
+    "account.resetNotifySettings": { _: "account.resetNotifySettings" };
+    "account.updateProfile": { _: "account.updateProfile" } & AccountUpdateProfileParams;
+    "account.updateStatus": { _: "account.updateStatus" } & AccountUpdateStatusParams;
+    "account.getWallPapers": { _: "account.getWallPapers" } & AccountGetWallPapersParams;
+    "account.reportPeer": { _: "account.reportPeer" } & AccountReportPeerParams;
+    "account.checkUsername": { _: "account.checkUsername" } & AccountCheckUsernameParams;
+    "account.updateUsername": { _: "account.updateUsername" } & AccountUpdateUsernameParams;
+    "account.getPrivacy": { _: "account.getPrivacy" } & AccountGetPrivacyParams;
+    "account.setPrivacy": { _: "account.setPrivacy" } & AccountSetPrivacyParams;
+    "account.deleteAccount": { _: "account.deleteAccount" } & AccountDeleteAccountParams;
+    "account.getAccountTTL": { _: "account.getAccountTTL" };
+    "account.setAccountTTL": { _: "account.setAccountTTL" } & AccountSetAccountTTLParams;
+    "account.sendChangePhoneCode": { _: "account.sendChangePhoneCode" } & AccountSendChangePhoneCodeParams;
+    "account.changePhone": { _: "account.changePhone" } & AccountChangePhoneParams;
+    "account.updateDeviceLocked": { _: "account.updateDeviceLocked" } & AccountUpdateDeviceLockedParams;
+    "account.getAuthorizations": { _: "account.getAuthorizations" };
+    "account.resetAuthorization": { _: "account.resetAuthorization" } & AccountResetAuthorizationParams;
+    "account.getPassword": { _: "account.getPassword" };
+    "account.getPasswordSettings": { _: "account.getPasswordSettings" } & AccountGetPasswordSettingsParams;
+    "account.updatePasswordSettings": { _: "account.updatePasswordSettings" } & AccountUpdatePasswordSettingsParams;
+    "account.sendConfirmPhoneCode": { _: "account.sendConfirmPhoneCode" } & AccountSendConfirmPhoneCodeParams;
+    "account.confirmPhone": { _: "account.confirmPhone" } & AccountConfirmPhoneParams;
+    "account.getTmpPassword": { _: "account.getTmpPassword" } & AccountGetTmpPasswordParams;
+    "account.getWebAuthorizations": { _: "account.getWebAuthorizations" };
+    "account.resetWebAuthorization": { _: "account.resetWebAuthorization" } & AccountResetWebAuthorizationParams;
+    "account.resetWebAuthorizations": { _: "account.resetWebAuthorizations" };
+    "account.getAllSecureValues": { _: "account.getAllSecureValues" };
+    "account.getSecureValue": { _: "account.getSecureValue" } & AccountGetSecureValueParams;
+    "account.saveSecureValue": { _: "account.saveSecureValue" } & AccountSaveSecureValueParams;
+    "account.deleteSecureValue": { _: "account.deleteSecureValue" } & AccountDeleteSecureValueParams;
+    "account.getAuthorizationForm": { _: "account.getAuthorizationForm" } & AccountGetAuthorizationFormParams;
+    "account.acceptAuthorization": { _: "account.acceptAuthorization" } & AccountAcceptAuthorizationParams;
+    "account.sendVerifyPhoneCode": { _: "account.sendVerifyPhoneCode" } & AccountSendVerifyPhoneCodeParams;
+    "account.verifyPhone": { _: "account.verifyPhone" } & AccountVerifyPhoneParams;
+    "account.sendVerifyEmailCode": { _: "account.sendVerifyEmailCode" } & AccountSendVerifyEmailCodeParams;
+    "account.verifyEmail": { _: "account.verifyEmail" } & AccountVerifyEmailParams;
+    "account.initTakeoutSession": { _: "account.initTakeoutSession" } & AccountInitTakeoutSessionParams;
+    "account.finishTakeoutSession": { _: "account.finishTakeoutSession" } & AccountFinishTakeoutSessionParams;
+    "account.confirmPasswordEmail": { _: "account.confirmPasswordEmail" } & AccountConfirmPasswordEmailParams;
+    "account.resendPasswordEmail": { _: "account.resendPasswordEmail" };
+    "account.cancelPasswordEmail": { _: "account.cancelPasswordEmail" };
+    "account.getContactSignUpNotification": { _: "account.getContactSignUpNotification" };
+    "account.setContactSignUpNotification": { _: "account.setContactSignUpNotification" } & AccountSetContactSignUpNotificationParams;
+    "account.getNotifyExceptions": { _: "account.getNotifyExceptions" } & AccountGetNotifyExceptionsParams;
+    "account.getWallPaper": { _: "account.getWallPaper" } & AccountGetWallPaperParams;
+    "account.uploadWallPaper": { _: "account.uploadWallPaper" } & AccountUploadWallPaperParams;
+    "account.saveWallPaper": { _: "account.saveWallPaper" } & AccountSaveWallPaperParams;
+    "account.installWallPaper": { _: "account.installWallPaper" } & AccountInstallWallPaperParams;
+    "account.resetWallPapers": { _: "account.resetWallPapers" };
+    "account.getAutoDownloadSettings": { _: "account.getAutoDownloadSettings" };
+    "account.saveAutoDownloadSettings": { _: "account.saveAutoDownloadSettings" } & AccountSaveAutoDownloadSettingsParams;
+    "account.uploadTheme": { _: "account.uploadTheme" } & AccountUploadThemeParams;
+    "account.createTheme": { _: "account.createTheme" } & AccountCreateThemeParams;
+    "account.updateTheme": { _: "account.updateTheme" } & AccountUpdateThemeParams;
+    "account.saveTheme": { _: "account.saveTheme" } & AccountSaveThemeParams;
+    "account.installTheme": { _: "account.installTheme" } & AccountInstallThemeParams;
+    "account.getTheme": { _: "account.getTheme" } & AccountGetThemeParams;
+    "account.getThemes": { _: "account.getThemes" } & AccountGetThemesParams;
+    "account.setContentSettings": { _: "account.setContentSettings" } & AccountSetContentSettingsParams;
+    "account.getContentSettings": { _: "account.getContentSettings" };
+    "account.getMultiWallPapers": { _: "account.getMultiWallPapers" } & AccountGetMultiWallPapersParams;
+    "account.getGlobalPrivacySettings": { _: "account.getGlobalPrivacySettings" };
+    "account.setGlobalPrivacySettings": { _: "account.setGlobalPrivacySettings" } & AccountSetGlobalPrivacySettingsParams;
+    "account.reportProfilePhoto": { _: "account.reportProfilePhoto" } & AccountReportProfilePhotoParams;
+    "account.resetPassword": { _: "account.resetPassword" };
+    "account.declinePasswordReset": { _: "account.declinePasswordReset" };
+    "account.getChatThemes": { _: "account.getChatThemes" } & AccountGetChatThemesParams;
+    "account.setAuthorizationTTL": { _: "account.setAuthorizationTTL" } & AccountSetAuthorizationTTLParams;
+    "account.changeAuthorizationSettings": { _: "account.changeAuthorizationSettings" } & AccountChangeAuthorizationSettingsParams;
+    "account.getSavedRingtones": { _: "account.getSavedRingtones" } & AccountGetSavedRingtonesParams;
+    "account.saveRingtone": { _: "account.saveRingtone" } & AccountSaveRingtoneParams;
+    "account.uploadRingtone": { _: "account.uploadRingtone" } & AccountUploadRingtoneParams;
+    "account.updateEmojiStatus": { _: "account.updateEmojiStatus" } & AccountUpdateEmojiStatusParams;
+    "account.getDefaultEmojiStatuses": { _: "account.getDefaultEmojiStatuses" } & AccountGetDefaultEmojiStatusesParams;
+    "account.getRecentEmojiStatuses": { _: "account.getRecentEmojiStatuses" } & AccountGetRecentEmojiStatusesParams;
+    "account.clearRecentEmojiStatuses": { _: "account.clearRecentEmojiStatuses" };
+    "account.reorderUsernames": { _: "account.reorderUsernames" } & AccountReorderUsernamesParams;
+    "account.toggleUsername": { _: "account.toggleUsername" } & AccountToggleUsernameParams;
+    "account.getDefaultProfilePhotoEmojis": { _: "account.getDefaultProfilePhotoEmojis" } & AccountGetDefaultProfilePhotoEmojisParams;
+    "account.getDefaultGroupPhotoEmojis": { _: "account.getDefaultGroupPhotoEmojis" } & AccountGetDefaultGroupPhotoEmojisParams;
+    "account.getAutoSaveSettings": { _: "account.getAutoSaveSettings" };
+    "account.saveAutoSaveSettings": { _: "account.saveAutoSaveSettings" } & AccountSaveAutoSaveSettingsParams;
+    "account.deleteAutoSaveExceptions": { _: "account.deleteAutoSaveExceptions" };
+    "account.invalidateSignInCodes": { _: "account.invalidateSignInCodes" } & AccountInvalidateSignInCodesParams;
+    "account.updateColor": { _: "account.updateColor" } & AccountUpdateColorParams;
+    "account.getDefaultBackgroundEmojis": { _: "account.getDefaultBackgroundEmojis" } & AccountGetDefaultBackgroundEmojisParams;
+    "account.getChannelDefaultEmojiStatuses": { _: "account.getChannelDefaultEmojiStatuses" } & AccountGetChannelDefaultEmojiStatusesParams;
+    "account.getChannelRestrictedStatusEmojis": { _: "account.getChannelRestrictedStatusEmojis" } & AccountGetChannelRestrictedStatusEmojisParams;
+    "account.updateBusinessWorkHours": { _: "account.updateBusinessWorkHours" } & AccountUpdateBusinessWorkHoursParams;
+    "account.updateBusinessLocation": { _: "account.updateBusinessLocation" } & AccountUpdateBusinessLocationParams;
+    "account.updateBusinessGreetingMessage": { _: "account.updateBusinessGreetingMessage" } & AccountUpdateBusinessGreetingMessageParams;
+    "account.updateBusinessAwayMessage": { _: "account.updateBusinessAwayMessage" } & AccountUpdateBusinessAwayMessageParams;
+    "account.updateConnectedBot": { _: "account.updateConnectedBot" } & AccountUpdateConnectedBotParams;
+    "account.getConnectedBots": { _: "account.getConnectedBots" };
+    "account.getBotBusinessConnection": { _: "account.getBotBusinessConnection" } & AccountGetBotBusinessConnectionParams;
+    "account.updateBusinessIntro": { _: "account.updateBusinessIntro" } & AccountUpdateBusinessIntroParams;
+    "account.toggleConnectedBotPaused": { _: "account.toggleConnectedBotPaused" } & AccountToggleConnectedBotPausedParams;
+    "account.disablePeerConnectedBot": { _: "account.disablePeerConnectedBot" } & AccountDisablePeerConnectedBotParams;
+    "account.updateBirthday": { _: "account.updateBirthday" } & AccountUpdateBirthdayParams;
+    "account.createBusinessChatLink": { _: "account.createBusinessChatLink" } & AccountCreateBusinessChatLinkParams;
+    "account.editBusinessChatLink": { _: "account.editBusinessChatLink" } & AccountEditBusinessChatLinkParams;
+    "account.deleteBusinessChatLink": { _: "account.deleteBusinessChatLink" } & AccountDeleteBusinessChatLinkParams;
+    "account.getBusinessChatLinks": { _: "account.getBusinessChatLinks" };
+    "account.resolveBusinessChatLink": { _: "account.resolveBusinessChatLink" } & AccountResolveBusinessChatLinkParams;
+    "account.updatePersonalChannel": { _: "account.updatePersonalChannel" } & AccountUpdatePersonalChannelParams;
+    "account.toggleSponsoredMessages": { _: "account.toggleSponsoredMessages" } & AccountToggleSponsoredMessagesParams;
+    "account.getReactionsNotifySettings": { _: "account.getReactionsNotifySettings" };
+    "account.setReactionsNotifySettings": { _: "account.setReactionsNotifySettings" } & AccountSetReactionsNotifySettingsParams;
+    "account.getCollectibleEmojiStatuses": { _: "account.getCollectibleEmojiStatuses" } & AccountGetCollectibleEmojiStatusesParams;
+    "account.getPaidMessagesRevenue": { _: "account.getPaidMessagesRevenue" } & AccountGetPaidMessagesRevenueParams;
+    "account.toggleNoPaidMessagesException": { _: "account.toggleNoPaidMessagesException" } & AccountToggleNoPaidMessagesExceptionParams;
+    "account.setMainProfileTab": { _: "account.setMainProfileTab" } & AccountSetMainProfileTabParams;
+    "account.saveMusic": { _: "account.saveMusic" } & AccountSaveMusicParams;
+    "account.getSavedMusicIds": { _: "account.getSavedMusicIds" } & AccountGetSavedMusicIdsParams;
+    "account.getUniqueGiftChatThemes": { _: "account.getUniqueGiftChatThemes" } & AccountGetUniqueGiftChatThemesParams;
+    "account.initPasskeyRegistration": { _: "account.initPasskeyRegistration" };
+    "account.registerPasskey": { _: "account.registerPasskey" } & AccountRegisterPasskeyParams;
+    "account.getPasskeys": { _: "account.getPasskeys" };
+    "account.deletePasskey": { _: "account.deletePasskey" } & AccountDeletePasskeyParams;
+    "account.confirmBotConnection": { _: "account.confirmBotConnection" } & AccountConfirmBotConnectionParams;
+    "account.getWebBrowserSettings": { _: "account.getWebBrowserSettings" } & AccountGetWebBrowserSettingsParams;
+    "account.updateWebBrowserSettings": { _: "account.updateWebBrowserSettings" } & AccountUpdateWebBrowserSettingsParams;
+    "account.toggleWebBrowserSettingsException": { _: "account.toggleWebBrowserSettingsException" } & AccountToggleWebBrowserSettingsExceptionParams;
+    "account.deleteWebBrowserSettingsExceptions": { _: "account.deleteWebBrowserSettingsExceptions" };
+    "users.getUsers": { _: "users.getUsers" } & UsersGetUsersParams;
+    "users.getFullUser": { _: "users.getFullUser" } & UsersGetFullUserParams;
+    "users.setSecureValueErrors": { _: "users.setSecureValueErrors" } & UsersSetSecureValueErrorsParams;
+    "users.getRequirementsToContact": { _: "users.getRequirementsToContact" } & UsersGetRequirementsToContactParams;
+    "users.getSavedMusic": { _: "users.getSavedMusic" } & UsersGetSavedMusicParams;
+    "users.getSavedMusicByID": { _: "users.getSavedMusicByID" } & UsersGetSavedMusicByIDParams;
+    "users.suggestBirthday": { _: "users.suggestBirthday" } & UsersSuggestBirthdayParams;
+    "contacts.getContactIDs": { _: "contacts.getContactIDs" } & ContactsGetContactIDsParams;
+    "contacts.getStatuses": { _: "contacts.getStatuses" };
+    "contacts.getContacts": { _: "contacts.getContacts" } & ContactsGetContactsParams;
+    "contacts.importContacts": { _: "contacts.importContacts" } & ContactsImportContactsParams;
+    "contacts.deleteContacts": { _: "contacts.deleteContacts" } & ContactsDeleteContactsParams;
+    "contacts.deleteByPhones": { _: "contacts.deleteByPhones" } & ContactsDeleteByPhonesParams;
+    "contacts.block": { _: "contacts.block" } & ContactsBlockParams;
+    "contacts.unblock": { _: "contacts.unblock" } & ContactsUnblockParams;
+    "contacts.getBlocked": { _: "contacts.getBlocked" } & ContactsGetBlockedParams;
+    "contacts.search": { _: "contacts.search" } & ContactsSearchParams;
+    "contacts.resolveUsername": { _: "contacts.resolveUsername" } & ContactsResolveUsernameParams;
+    "contacts.getTopPeers": { _: "contacts.getTopPeers" } & ContactsGetTopPeersParams;
+    "contacts.resetTopPeerRating": { _: "contacts.resetTopPeerRating" } & ContactsResetTopPeerRatingParams;
+    "contacts.resetSaved": { _: "contacts.resetSaved" };
+    "contacts.getSaved": { _: "contacts.getSaved" };
+    "contacts.toggleTopPeers": { _: "contacts.toggleTopPeers" } & ContactsToggleTopPeersParams;
+    "contacts.addContact": { _: "contacts.addContact" } & ContactsAddContactParams;
+    "contacts.acceptContact": { _: "contacts.acceptContact" } & ContactsAcceptContactParams;
+    "contacts.getLocated": { _: "contacts.getLocated" } & ContactsGetLocatedParams;
+    "contacts.blockFromReplies": { _: "contacts.blockFromReplies" } & ContactsBlockFromRepliesParams;
+    "contacts.resolvePhone": { _: "contacts.resolvePhone" } & ContactsResolvePhoneParams;
+    "contacts.exportContactToken": { _: "contacts.exportContactToken" };
+    "contacts.importContactToken": { _: "contacts.importContactToken" } & ContactsImportContactTokenParams;
+    "contacts.editCloseFriends": { _: "contacts.editCloseFriends" } & ContactsEditCloseFriendsParams;
+    "contacts.setBlocked": { _: "contacts.setBlocked" } & ContactsSetBlockedParams;
+    "contacts.getBirthdays": { _: "contacts.getBirthdays" };
+    "contacts.getSponsoredPeers": { _: "contacts.getSponsoredPeers" } & ContactsGetSponsoredPeersParams;
+    "contacts.updateContactNote": { _: "contacts.updateContactNote" } & ContactsUpdateContactNoteParams;
+    "messages.getMessages": { _: "messages.getMessages" } & MessagesGetMessagesParams;
+    "messages.getDialogs": { _: "messages.getDialogs" } & MessagesGetDialogsParams;
+    "messages.getHistory": { _: "messages.getHistory" } & MessagesGetHistoryParams;
+    "messages.search": { _: "messages.search" } & MessagesSearchParams;
+    "messages.readHistory": { _: "messages.readHistory" } & MessagesReadHistoryParams;
+    "messages.deleteHistory": { _: "messages.deleteHistory" } & MessagesDeleteHistoryParams;
+    "messages.deleteMessages": { _: "messages.deleteMessages" } & MessagesDeleteMessagesParams;
+    "messages.receivedMessages": { _: "messages.receivedMessages" } & MessagesReceivedMessagesParams;
+    "messages.setTyping": { _: "messages.setTyping" } & MessagesSetTypingParams;
+    "messages.sendMessage": { _: "messages.sendMessage" } & MessagesSendMessageParams;
+    "messages.sendMedia": { _: "messages.sendMedia" } & MessagesSendMediaParams;
+    "messages.forwardMessages": { _: "messages.forwardMessages" } & MessagesForwardMessagesParams;
+    "messages.reportSpam": { _: "messages.reportSpam" } & MessagesReportSpamParams;
+    "messages.getPeerSettings": { _: "messages.getPeerSettings" } & MessagesGetPeerSettingsParams;
+    "messages.report": { _: "messages.report" } & MessagesReportParams;
+    "messages.getChats": { _: "messages.getChats" } & MessagesGetChatsParams;
+    "messages.getFullChat": { _: "messages.getFullChat" } & MessagesGetFullChatParams;
+    "messages.editChatTitle": { _: "messages.editChatTitle" } & MessagesEditChatTitleParams;
+    "messages.editChatPhoto": { _: "messages.editChatPhoto" } & MessagesEditChatPhotoParams;
+    "messages.addChatUser": { _: "messages.addChatUser" } & MessagesAddChatUserParams;
+    "messages.deleteChatUser": { _: "messages.deleteChatUser" } & MessagesDeleteChatUserParams;
+    "messages.createChat": { _: "messages.createChat" } & MessagesCreateChatParams;
+    "messages.getDhConfig": { _: "messages.getDhConfig" } & MessagesGetDhConfigParams;
+    "messages.requestEncryption": { _: "messages.requestEncryption" } & MessagesRequestEncryptionParams;
+    "messages.acceptEncryption": { _: "messages.acceptEncryption" } & MessagesAcceptEncryptionParams;
+    "messages.discardEncryption": { _: "messages.discardEncryption" } & MessagesDiscardEncryptionParams;
+    "messages.setEncryptedTyping": { _: "messages.setEncryptedTyping" } & MessagesSetEncryptedTypingParams;
+    "messages.readEncryptedHistory": { _: "messages.readEncryptedHistory" } & MessagesReadEncryptedHistoryParams;
+    "messages.sendEncrypted": { _: "messages.sendEncrypted" } & MessagesSendEncryptedParams;
+    "messages.sendEncryptedFile": { _: "messages.sendEncryptedFile" } & MessagesSendEncryptedFileParams;
+    "messages.sendEncryptedService": { _: "messages.sendEncryptedService" } & MessagesSendEncryptedServiceParams;
+    "messages.receivedQueue": { _: "messages.receivedQueue" } & MessagesReceivedQueueParams;
+    "messages.reportEncryptedSpam": { _: "messages.reportEncryptedSpam" } & MessagesReportEncryptedSpamParams;
+    "messages.readMessageContents": { _: "messages.readMessageContents" } & MessagesReadMessageContentsParams;
+    "messages.getStickers": { _: "messages.getStickers" } & MessagesGetStickersParams;
+    "messages.getAllStickers": { _: "messages.getAllStickers" } & MessagesGetAllStickersParams;
+    "messages.getWebPagePreview": { _: "messages.getWebPagePreview" } & MessagesGetWebPagePreviewParams;
+    "messages.exportChatInvite": { _: "messages.exportChatInvite" } & MessagesExportChatInviteParams;
+    "messages.checkChatInvite": { _: "messages.checkChatInvite" } & MessagesCheckChatInviteParams;
+    "messages.importChatInvite": { _: "messages.importChatInvite" } & MessagesImportChatInviteParams;
+    "messages.getStickerSet": { _: "messages.getStickerSet" } & MessagesGetStickerSetParams;
+    "messages.installStickerSet": { _: "messages.installStickerSet" } & MessagesInstallStickerSetParams;
+    "messages.uninstallStickerSet": { _: "messages.uninstallStickerSet" } & MessagesUninstallStickerSetParams;
+    "messages.startBot": { _: "messages.startBot" } & MessagesStartBotParams;
+    "messages.getMessagesViews": { _: "messages.getMessagesViews" } & MessagesGetMessagesViewsParams;
+    "messages.editChatAdmin": { _: "messages.editChatAdmin" } & MessagesEditChatAdminParams;
+    "messages.migrateChat": { _: "messages.migrateChat" } & MessagesMigrateChatParams;
+    "messages.searchGlobal": { _: "messages.searchGlobal" } & MessagesSearchGlobalParams;
+    "messages.reorderStickerSets": { _: "messages.reorderStickerSets" } & MessagesReorderStickerSetsParams;
+    "messages.getDocumentByHash": { _: "messages.getDocumentByHash" } & MessagesGetDocumentByHashParams;
+    "messages.getSavedGifs": { _: "messages.getSavedGifs" } & MessagesGetSavedGifsParams;
+    "messages.saveGif": { _: "messages.saveGif" } & MessagesSaveGifParams;
+    "messages.getInlineBotResults": { _: "messages.getInlineBotResults" } & MessagesGetInlineBotResultsParams;
+    "messages.setInlineBotResults": { _: "messages.setInlineBotResults" } & MessagesSetInlineBotResultsParams;
+    "messages.sendInlineBotResult": { _: "messages.sendInlineBotResult" } & MessagesSendInlineBotResultParams;
+    "messages.getMessageEditData": { _: "messages.getMessageEditData" } & MessagesGetMessageEditDataParams;
+    "messages.editMessage": { _: "messages.editMessage" } & MessagesEditMessageParams;
+    "messages.editInlineBotMessage": { _: "messages.editInlineBotMessage" } & MessagesEditInlineBotMessageParams;
+    "messages.getBotCallbackAnswer": { _: "messages.getBotCallbackAnswer" } & MessagesGetBotCallbackAnswerParams;
+    "messages.setBotCallbackAnswer": { _: "messages.setBotCallbackAnswer" } & MessagesSetBotCallbackAnswerParams;
+    "messages.getPeerDialogs": { _: "messages.getPeerDialogs" } & MessagesGetPeerDialogsParams;
+    "messages.saveDraft": { _: "messages.saveDraft" } & MessagesSaveDraftParams;
+    "messages.getAllDrafts": { _: "messages.getAllDrafts" };
+    "messages.getFeaturedStickers": { _: "messages.getFeaturedStickers" } & MessagesGetFeaturedStickersParams;
+    "messages.readFeaturedStickers": { _: "messages.readFeaturedStickers" } & MessagesReadFeaturedStickersParams;
+    "messages.getRecentStickers": { _: "messages.getRecentStickers" } & MessagesGetRecentStickersParams;
+    "messages.saveRecentSticker": { _: "messages.saveRecentSticker" } & MessagesSaveRecentStickerParams;
+    "messages.clearRecentStickers": { _: "messages.clearRecentStickers" } & MessagesClearRecentStickersParams;
+    "messages.getArchivedStickers": { _: "messages.getArchivedStickers" } & MessagesGetArchivedStickersParams;
+    "messages.getMaskStickers": { _: "messages.getMaskStickers" } & MessagesGetMaskStickersParams;
+    "messages.getAttachedStickers": { _: "messages.getAttachedStickers" } & MessagesGetAttachedStickersParams;
+    "messages.setGameScore": { _: "messages.setGameScore" } & MessagesSetGameScoreParams;
+    "messages.setInlineGameScore": { _: "messages.setInlineGameScore" } & MessagesSetInlineGameScoreParams;
+    "messages.getGameHighScores": { _: "messages.getGameHighScores" } & MessagesGetGameHighScoresParams;
+    "messages.getInlineGameHighScores": { _: "messages.getInlineGameHighScores" } & MessagesGetInlineGameHighScoresParams;
+    "messages.getCommonChats": { _: "messages.getCommonChats" } & MessagesGetCommonChatsParams;
+    "messages.getWebPage": { _: "messages.getWebPage" } & MessagesGetWebPageParams;
+    "messages.toggleDialogPin": { _: "messages.toggleDialogPin" } & MessagesToggleDialogPinParams;
+    "messages.reorderPinnedDialogs": { _: "messages.reorderPinnedDialogs" } & MessagesReorderPinnedDialogsParams;
+    "messages.getPinnedDialogs": { _: "messages.getPinnedDialogs" } & MessagesGetPinnedDialogsParams;
+    "messages.setBotShippingResults": { _: "messages.setBotShippingResults" } & MessagesSetBotShippingResultsParams;
+    "messages.setBotPrecheckoutResults": { _: "messages.setBotPrecheckoutResults" } & MessagesSetBotPrecheckoutResultsParams;
+    "messages.uploadMedia": { _: "messages.uploadMedia" } & MessagesUploadMediaParams;
+    "messages.sendScreenshotNotification": { _: "messages.sendScreenshotNotification" } & MessagesSendScreenshotNotificationParams;
+    "messages.getFavedStickers": { _: "messages.getFavedStickers" } & MessagesGetFavedStickersParams;
+    "messages.faveSticker": { _: "messages.faveSticker" } & MessagesFaveStickerParams;
+    "messages.getUnreadMentions": { _: "messages.getUnreadMentions" } & MessagesGetUnreadMentionsParams;
+    "messages.readMentions": { _: "messages.readMentions" } & MessagesReadMentionsParams;
+    "messages.getRecentLocations": { _: "messages.getRecentLocations" } & MessagesGetRecentLocationsParams;
+    "messages.sendMultiMedia": { _: "messages.sendMultiMedia" } & MessagesSendMultiMediaParams;
+    "messages.uploadEncryptedFile": { _: "messages.uploadEncryptedFile" } & MessagesUploadEncryptedFileParams;
+    "messages.searchStickerSets": { _: "messages.searchStickerSets" } & MessagesSearchStickerSetsParams;
+    "messages.getSplitRanges": { _: "messages.getSplitRanges" };
+    "messages.markDialogUnread": { _: "messages.markDialogUnread" } & MessagesMarkDialogUnreadParams;
+    "messages.getDialogUnreadMarks": { _: "messages.getDialogUnreadMarks" } & MessagesGetDialogUnreadMarksParams;
+    "messages.clearAllDrafts": { _: "messages.clearAllDrafts" };
+    "messages.updatePinnedMessage": { _: "messages.updatePinnedMessage" } & MessagesUpdatePinnedMessageParams;
+    "messages.sendVote": { _: "messages.sendVote" } & MessagesSendVoteParams;
+    "messages.getPollResults": { _: "messages.getPollResults" } & MessagesGetPollResultsParams;
+    "messages.getOnlines": { _: "messages.getOnlines" } & MessagesGetOnlinesParams;
+    "messages.editChatAbout": { _: "messages.editChatAbout" } & MessagesEditChatAboutParams;
+    "messages.editChatDefaultBannedRights": { _: "messages.editChatDefaultBannedRights" } & MessagesEditChatDefaultBannedRightsParams;
+    "messages.getEmojiKeywords": { _: "messages.getEmojiKeywords" } & MessagesGetEmojiKeywordsParams;
+    "messages.getEmojiKeywordsDifference": { _: "messages.getEmojiKeywordsDifference" } & MessagesGetEmojiKeywordsDifferenceParams;
+    "messages.getEmojiKeywordsLanguages": { _: "messages.getEmojiKeywordsLanguages" } & MessagesGetEmojiKeywordsLanguagesParams;
+    "messages.getEmojiURL": { _: "messages.getEmojiURL" } & MessagesGetEmojiURLParams;
+    "messages.getSearchCounters": { _: "messages.getSearchCounters" } & MessagesGetSearchCountersParams;
+    "messages.requestUrlAuth": { _: "messages.requestUrlAuth" } & MessagesRequestUrlAuthParams;
+    "messages.acceptUrlAuth": { _: "messages.acceptUrlAuth" } & MessagesAcceptUrlAuthParams;
+    "messages.hidePeerSettingsBar": { _: "messages.hidePeerSettingsBar" } & MessagesHidePeerSettingsBarParams;
+    "messages.getScheduledHistory": { _: "messages.getScheduledHistory" } & MessagesGetScheduledHistoryParams;
+    "messages.getScheduledMessages": { _: "messages.getScheduledMessages" } & MessagesGetScheduledMessagesParams;
+    "messages.sendScheduledMessages": { _: "messages.sendScheduledMessages" } & MessagesSendScheduledMessagesParams;
+    "messages.deleteScheduledMessages": { _: "messages.deleteScheduledMessages" } & MessagesDeleteScheduledMessagesParams;
+    "messages.getPollVotes": { _: "messages.getPollVotes" } & MessagesGetPollVotesParams;
+    "messages.toggleStickerSets": { _: "messages.toggleStickerSets" } & MessagesToggleStickerSetsParams;
+    "messages.getDialogFilters": { _: "messages.getDialogFilters" };
+    "messages.getSuggestedDialogFilters": { _: "messages.getSuggestedDialogFilters" };
+    "messages.updateDialogFilter": { _: "messages.updateDialogFilter" } & MessagesUpdateDialogFilterParams;
+    "messages.updateDialogFiltersOrder": { _: "messages.updateDialogFiltersOrder" } & MessagesUpdateDialogFiltersOrderParams;
+    "messages.getOldFeaturedStickers": { _: "messages.getOldFeaturedStickers" } & MessagesGetOldFeaturedStickersParams;
+    "messages.getReplies": { _: "messages.getReplies" } & MessagesGetRepliesParams;
+    "messages.getDiscussionMessage": { _: "messages.getDiscussionMessage" } & MessagesGetDiscussionMessageParams;
+    "messages.readDiscussion": { _: "messages.readDiscussion" } & MessagesReadDiscussionParams;
+    "messages.unpinAllMessages": { _: "messages.unpinAllMessages" } & MessagesUnpinAllMessagesParams;
+    "messages.deleteChat": { _: "messages.deleteChat" } & MessagesDeleteChatParams;
+    "messages.deletePhoneCallHistory": { _: "messages.deletePhoneCallHistory" } & MessagesDeletePhoneCallHistoryParams;
+    "messages.checkHistoryImport": { _: "messages.checkHistoryImport" } & MessagesCheckHistoryImportParams;
+    "messages.initHistoryImport": { _: "messages.initHistoryImport" } & MessagesInitHistoryImportParams;
+    "messages.uploadImportedMedia": { _: "messages.uploadImportedMedia" } & MessagesUploadImportedMediaParams;
+    "messages.startHistoryImport": { _: "messages.startHistoryImport" } & MessagesStartHistoryImportParams;
+    "messages.getExportedChatInvites": { _: "messages.getExportedChatInvites" } & MessagesGetExportedChatInvitesParams;
+    "messages.getExportedChatInvite": { _: "messages.getExportedChatInvite" } & MessagesGetExportedChatInviteParams;
+    "messages.editExportedChatInvite": { _: "messages.editExportedChatInvite" } & MessagesEditExportedChatInviteParams;
+    "messages.deleteRevokedExportedChatInvites": { _: "messages.deleteRevokedExportedChatInvites" } & MessagesDeleteRevokedExportedChatInvitesParams;
+    "messages.deleteExportedChatInvite": { _: "messages.deleteExportedChatInvite" } & MessagesDeleteExportedChatInviteParams;
+    "messages.getAdminsWithInvites": { _: "messages.getAdminsWithInvites" } & MessagesGetAdminsWithInvitesParams;
+    "messages.getChatInviteImporters": { _: "messages.getChatInviteImporters" } & MessagesGetChatInviteImportersParams;
+    "messages.setHistoryTTL": { _: "messages.setHistoryTTL" } & MessagesSetHistoryTTLParams;
+    "messages.checkHistoryImportPeer": { _: "messages.checkHistoryImportPeer" } & MessagesCheckHistoryImportPeerParams;
+    "messages.setChatTheme": { _: "messages.setChatTheme" } & MessagesSetChatThemeParams;
+    "messages.getMessageReadParticipants": { _: "messages.getMessageReadParticipants" } & MessagesGetMessageReadParticipantsParams;
+    "messages.getSearchResultsCalendar": { _: "messages.getSearchResultsCalendar" } & MessagesGetSearchResultsCalendarParams;
+    "messages.getSearchResultsPositions": { _: "messages.getSearchResultsPositions" } & MessagesGetSearchResultsPositionsParams;
+    "messages.hideChatJoinRequest": { _: "messages.hideChatJoinRequest" } & MessagesHideChatJoinRequestParams;
+    "messages.hideAllChatJoinRequests": { _: "messages.hideAllChatJoinRequests" } & MessagesHideAllChatJoinRequestsParams;
+    "messages.toggleNoForwards": { _: "messages.toggleNoForwards" } & MessagesToggleNoForwardsParams;
+    "messages.saveDefaultSendAs": { _: "messages.saveDefaultSendAs" } & MessagesSaveDefaultSendAsParams;
+    "messages.sendReaction": { _: "messages.sendReaction" } & MessagesSendReactionParams;
+    "messages.getMessagesReactions": { _: "messages.getMessagesReactions" } & MessagesGetMessagesReactionsParams;
+    "messages.getMessageReactionsList": { _: "messages.getMessageReactionsList" } & MessagesGetMessageReactionsListParams;
+    "messages.setChatAvailableReactions": { _: "messages.setChatAvailableReactions" } & MessagesSetChatAvailableReactionsParams;
+    "messages.getAvailableReactions": { _: "messages.getAvailableReactions" } & MessagesGetAvailableReactionsParams;
+    "messages.setDefaultReaction": { _: "messages.setDefaultReaction" } & MessagesSetDefaultReactionParams;
+    "messages.translateText": { _: "messages.translateText" } & MessagesTranslateTextParams;
+    "messages.getUnreadReactions": { _: "messages.getUnreadReactions" } & MessagesGetUnreadReactionsParams;
+    "messages.readReactions": { _: "messages.readReactions" } & MessagesReadReactionsParams;
+    "messages.searchSentMedia": { _: "messages.searchSentMedia" } & MessagesSearchSentMediaParams;
+    "messages.getAttachMenuBots": { _: "messages.getAttachMenuBots" } & MessagesGetAttachMenuBotsParams;
+    "messages.getAttachMenuBot": { _: "messages.getAttachMenuBot" } & MessagesGetAttachMenuBotParams;
+    "messages.toggleBotInAttachMenu": { _: "messages.toggleBotInAttachMenu" } & MessagesToggleBotInAttachMenuParams;
+    "messages.requestWebView": { _: "messages.requestWebView" } & MessagesRequestWebViewParams;
+    "messages.prolongWebView": { _: "messages.prolongWebView" } & MessagesProlongWebViewParams;
+    "messages.requestSimpleWebView": { _: "messages.requestSimpleWebView" } & MessagesRequestSimpleWebViewParams;
+    "messages.sendWebViewResultMessage": { _: "messages.sendWebViewResultMessage" } & MessagesSendWebViewResultMessageParams;
+    "messages.sendWebViewData": { _: "messages.sendWebViewData" } & MessagesSendWebViewDataParams;
+    "messages.transcribeAudio": { _: "messages.transcribeAudio" } & MessagesTranscribeAudioParams;
+    "messages.rateTranscribedAudio": { _: "messages.rateTranscribedAudio" } & MessagesRateTranscribedAudioParams;
+    "messages.getCustomEmojiDocuments": { _: "messages.getCustomEmojiDocuments" } & MessagesGetCustomEmojiDocumentsParams;
+    "messages.getEmojiStickers": { _: "messages.getEmojiStickers" } & MessagesGetEmojiStickersParams;
+    "messages.getFeaturedEmojiStickers": { _: "messages.getFeaturedEmojiStickers" } & MessagesGetFeaturedEmojiStickersParams;
+    "messages.reportReaction": { _: "messages.reportReaction" } & MessagesReportReactionParams;
+    "messages.getTopReactions": { _: "messages.getTopReactions" } & MessagesGetTopReactionsParams;
+    "messages.getRecentReactions": { _: "messages.getRecentReactions" } & MessagesGetRecentReactionsParams;
+    "messages.clearRecentReactions": { _: "messages.clearRecentReactions" };
+    "messages.getExtendedMedia": { _: "messages.getExtendedMedia" } & MessagesGetExtendedMediaParams;
+    "messages.setDefaultHistoryTTL": { _: "messages.setDefaultHistoryTTL" } & MessagesSetDefaultHistoryTTLParams;
+    "messages.getDefaultHistoryTTL": { _: "messages.getDefaultHistoryTTL" };
+    "messages.sendBotRequestedPeer": { _: "messages.sendBotRequestedPeer" } & MessagesSendBotRequestedPeerParams;
+    "messages.getEmojiGroups": { _: "messages.getEmojiGroups" } & MessagesGetEmojiGroupsParams;
+    "messages.getEmojiStatusGroups": { _: "messages.getEmojiStatusGroups" } & MessagesGetEmojiStatusGroupsParams;
+    "messages.getEmojiProfilePhotoGroups": { _: "messages.getEmojiProfilePhotoGroups" } & MessagesGetEmojiProfilePhotoGroupsParams;
+    "messages.searchCustomEmoji": { _: "messages.searchCustomEmoji" } & MessagesSearchCustomEmojiParams;
+    "messages.togglePeerTranslations": { _: "messages.togglePeerTranslations" } & MessagesTogglePeerTranslationsParams;
+    "messages.getBotApp": { _: "messages.getBotApp" } & MessagesGetBotAppParams;
+    "messages.requestAppWebView": { _: "messages.requestAppWebView" } & MessagesRequestAppWebViewParams;
+    "messages.setChatWallPaper": { _: "messages.setChatWallPaper" } & MessagesSetChatWallPaperParams;
+    "messages.searchEmojiStickerSets": { _: "messages.searchEmojiStickerSets" } & MessagesSearchEmojiStickerSetsParams;
+    "messages.getSavedDialogs": { _: "messages.getSavedDialogs" } & MessagesGetSavedDialogsParams;
+    "messages.getSavedHistory": { _: "messages.getSavedHistory" } & MessagesGetSavedHistoryParams;
+    "messages.deleteSavedHistory": { _: "messages.deleteSavedHistory" } & MessagesDeleteSavedHistoryParams;
+    "messages.getPinnedSavedDialogs": { _: "messages.getPinnedSavedDialogs" };
+    "messages.toggleSavedDialogPin": { _: "messages.toggleSavedDialogPin" } & MessagesToggleSavedDialogPinParams;
+    "messages.reorderPinnedSavedDialogs": { _: "messages.reorderPinnedSavedDialogs" } & MessagesReorderPinnedSavedDialogsParams;
+    "messages.getSavedReactionTags": { _: "messages.getSavedReactionTags" } & MessagesGetSavedReactionTagsParams;
+    "messages.updateSavedReactionTag": { _: "messages.updateSavedReactionTag" } & MessagesUpdateSavedReactionTagParams;
+    "messages.getDefaultTagReactions": { _: "messages.getDefaultTagReactions" } & MessagesGetDefaultTagReactionsParams;
+    "messages.getOutboxReadDate": { _: "messages.getOutboxReadDate" } & MessagesGetOutboxReadDateParams;
+    "messages.getQuickReplies": { _: "messages.getQuickReplies" } & MessagesGetQuickRepliesParams;
+    "messages.reorderQuickReplies": { _: "messages.reorderQuickReplies" } & MessagesReorderQuickRepliesParams;
+    "messages.checkQuickReplyShortcut": { _: "messages.checkQuickReplyShortcut" } & MessagesCheckQuickReplyShortcutParams;
+    "messages.editQuickReplyShortcut": { _: "messages.editQuickReplyShortcut" } & MessagesEditQuickReplyShortcutParams;
+    "messages.deleteQuickReplyShortcut": { _: "messages.deleteQuickReplyShortcut" } & MessagesDeleteQuickReplyShortcutParams;
+    "messages.getQuickReplyMessages": { _: "messages.getQuickReplyMessages" } & MessagesGetQuickReplyMessagesParams;
+    "messages.sendQuickReplyMessages": { _: "messages.sendQuickReplyMessages" } & MessagesSendQuickReplyMessagesParams;
+    "messages.deleteQuickReplyMessages": { _: "messages.deleteQuickReplyMessages" } & MessagesDeleteQuickReplyMessagesParams;
+    "messages.toggleDialogFilterTags": { _: "messages.toggleDialogFilterTags" } & MessagesToggleDialogFilterTagsParams;
+    "messages.getMyStickers": { _: "messages.getMyStickers" } & MessagesGetMyStickersParams;
+    "messages.getEmojiStickerGroups": { _: "messages.getEmojiStickerGroups" } & MessagesGetEmojiStickerGroupsParams;
+    "messages.getAvailableEffects": { _: "messages.getAvailableEffects" } & MessagesGetAvailableEffectsParams;
+    "messages.editFactCheck": { _: "messages.editFactCheck" } & MessagesEditFactCheckParams;
+    "messages.deleteFactCheck": { _: "messages.deleteFactCheck" } & MessagesDeleteFactCheckParams;
+    "messages.getFactCheck": { _: "messages.getFactCheck" } & MessagesGetFactCheckParams;
+    "messages.requestMainWebView": { _: "messages.requestMainWebView" } & MessagesRequestMainWebViewParams;
+    "messages.sendPaidReaction": { _: "messages.sendPaidReaction" } & MessagesSendPaidReactionParams;
+    "messages.togglePaidReactionPrivacy": { _: "messages.togglePaidReactionPrivacy" } & MessagesTogglePaidReactionPrivacyParams;
+    "messages.getPaidReactionPrivacy": { _: "messages.getPaidReactionPrivacy" };
+    "messages.viewSponsoredMessage": { _: "messages.viewSponsoredMessage" } & MessagesViewSponsoredMessageParams;
+    "messages.clickSponsoredMessage": { _: "messages.clickSponsoredMessage" } & MessagesClickSponsoredMessageParams;
+    "messages.reportSponsoredMessage": { _: "messages.reportSponsoredMessage" } & MessagesReportSponsoredMessageParams;
+    "messages.getSponsoredMessages": { _: "messages.getSponsoredMessages" } & MessagesGetSponsoredMessagesParams;
+    "messages.savePreparedInlineMessage": { _: "messages.savePreparedInlineMessage" } & MessagesSavePreparedInlineMessageParams;
+    "messages.getPreparedInlineMessage": { _: "messages.getPreparedInlineMessage" } & MessagesGetPreparedInlineMessageParams;
+    "messages.searchStickers": { _: "messages.searchStickers" } & MessagesSearchStickersParams;
+    "messages.reportMessagesDelivery": { _: "messages.reportMessagesDelivery" } & MessagesReportMessagesDeliveryParams;
+    "messages.getSavedDialogsByID": { _: "messages.getSavedDialogsByID" } & MessagesGetSavedDialogsByIDParams;
+    "messages.readSavedHistory": { _: "messages.readSavedHistory" } & MessagesReadSavedHistoryParams;
+    "messages.toggleTodoCompleted": { _: "messages.toggleTodoCompleted" } & MessagesToggleTodoCompletedParams;
+    "messages.appendTodoList": { _: "messages.appendTodoList" } & MessagesAppendTodoListParams;
+    "messages.toggleSuggestedPostApproval": { _: "messages.toggleSuggestedPostApproval" } & MessagesToggleSuggestedPostApprovalParams;
+    "messages.getForumTopics": { _: "messages.getForumTopics" } & MessagesGetForumTopicsParams;
+    "messages.getForumTopicsByID": { _: "messages.getForumTopicsByID" } & MessagesGetForumTopicsByIDParams;
+    "messages.editForumTopic": { _: "messages.editForumTopic" } & MessagesEditForumTopicParams;
+    "messages.updatePinnedForumTopic": { _: "messages.updatePinnedForumTopic" } & MessagesUpdatePinnedForumTopicParams;
+    "messages.reorderPinnedForumTopics": { _: "messages.reorderPinnedForumTopics" } & MessagesReorderPinnedForumTopicsParams;
+    "messages.createForumTopic": { _: "messages.createForumTopic" } & MessagesCreateForumTopicParams;
+    "messages.deleteTopicHistory": { _: "messages.deleteTopicHistory" } & MessagesDeleteTopicHistoryParams;
+    "messages.getEmojiGameInfo": { _: "messages.getEmojiGameInfo" };
+    "messages.summarizeText": { _: "messages.summarizeText" } & MessagesSummarizeTextParams;
+    "messages.editChatCreator": { _: "messages.editChatCreator" } & MessagesEditChatCreatorParams;
+    "messages.getFutureChatCreatorAfterLeave": { _: "messages.getFutureChatCreatorAfterLeave" } & MessagesGetFutureChatCreatorAfterLeaveParams;
+    "messages.editChatParticipantRank": { _: "messages.editChatParticipantRank" } & MessagesEditChatParticipantRankParams;
+    "messages.declineUrlAuth": { _: "messages.declineUrlAuth" } & MessagesDeclineUrlAuthParams;
+    "messages.checkUrlAuthMatchCode": { _: "messages.checkUrlAuthMatchCode" } & MessagesCheckUrlAuthMatchCodeParams;
+    "messages.composeMessageWithAI": { _: "messages.composeMessageWithAI" } & MessagesComposeMessageWithAIParams;
+    "messages.reportReadMetrics": { _: "messages.reportReadMetrics" } & MessagesReportReadMetricsParams;
+    "messages.reportMusicListen": { _: "messages.reportMusicListen" } & MessagesReportMusicListenParams;
+    "messages.addPollAnswer": { _: "messages.addPollAnswer" } & MessagesAddPollAnswerParams;
+    "messages.deletePollAnswer": { _: "messages.deletePollAnswer" } & MessagesDeletePollAnswerParams;
+    "messages.getUnreadPollVotes": { _: "messages.getUnreadPollVotes" } & MessagesGetUnreadPollVotesParams;
+    "messages.readPollVotes": { _: "messages.readPollVotes" } & MessagesReadPollVotesParams;
+    "messages.setBotGuestChatResult": { _: "messages.setBotGuestChatResult" } & MessagesSetBotGuestChatResultParams;
+    "messages.deleteParticipantReactions": { _: "messages.deleteParticipantReactions" } & MessagesDeleteParticipantReactionsParams;
+    "messages.deleteParticipantReaction": { _: "messages.deleteParticipantReaction" } & MessagesDeleteParticipantReactionParams;
+    "messages.getPersonalChannelHistory": { _: "messages.getPersonalChannelHistory" } & MessagesGetPersonalChannelHistoryParams;
+    "messages.getRichMessage": { _: "messages.getRichMessage" } & MessagesGetRichMessageParams;
+    "messages.translateRichMessage": { _: "messages.translateRichMessage" } & MessagesTranslateRichMessageParams;
+    "messages.composeRichMessageWithAI": { _: "messages.composeRichMessageWithAI" } & MessagesComposeRichMessageWithAIParams;
+    "messages.requestChatJoinWebView": { _: "messages.requestChatJoinWebView" } & MessagesRequestChatJoinWebViewParams;
+    "updates.getState": { _: "updates.getState" };
+    "updates.getDifference": { _: "updates.getDifference" } & UpdatesGetDifferenceParams;
+    "updates.getChannelDifference": { _: "updates.getChannelDifference" } & UpdatesGetChannelDifferenceParams;
+    "photos.updateProfilePhoto": { _: "photos.updateProfilePhoto" } & PhotosUpdateProfilePhotoParams;
+    "photos.uploadProfilePhoto": { _: "photos.uploadProfilePhoto" } & PhotosUploadProfilePhotoParams;
+    "photos.deletePhotos": { _: "photos.deletePhotos" } & PhotosDeletePhotosParams;
+    "photos.getUserPhotos": { _: "photos.getUserPhotos" } & PhotosGetUserPhotosParams;
+    "photos.uploadContactProfilePhoto": { _: "photos.uploadContactProfilePhoto" } & PhotosUploadContactProfilePhotoParams;
+    "upload.saveFilePart": { _: "upload.saveFilePart" } & UploadSaveFilePartParams;
+    "upload.getFile": { _: "upload.getFile" } & UploadGetFileParams;
+    "upload.saveBigFilePart": { _: "upload.saveBigFilePart" } & UploadSaveBigFilePartParams;
+    "upload.getWebFile": { _: "upload.getWebFile" } & UploadGetWebFileParams;
+    "upload.getCdnFile": { _: "upload.getCdnFile" } & UploadGetCdnFileParams;
+    "upload.reuploadCdnFile": { _: "upload.reuploadCdnFile" } & UploadReuploadCdnFileParams;
+    "upload.getCdnFileHashes": { _: "upload.getCdnFileHashes" } & UploadGetCdnFileHashesParams;
+    "upload.getFileHashes": { _: "upload.getFileHashes" } & UploadGetFileHashesParams;
+    "help.getConfig": { _: "help.getConfig" };
+    "help.getNearestDc": { _: "help.getNearestDc" };
+    "help.getAppUpdate": { _: "help.getAppUpdate" } & HelpGetAppUpdateParams;
+    "help.getInviteText": { _: "help.getInviteText" };
+    "help.getSupport": { _: "help.getSupport" };
+    "help.setBotUpdatesStatus": { _: "help.setBotUpdatesStatus" } & HelpSetBotUpdatesStatusParams;
+    "help.getCdnConfig": { _: "help.getCdnConfig" };
+    "help.getRecentMeUrls": { _: "help.getRecentMeUrls" } & HelpGetRecentMeUrlsParams;
+    "help.getTermsOfServiceUpdate": { _: "help.getTermsOfServiceUpdate" };
+    "help.acceptTermsOfService": { _: "help.acceptTermsOfService" } & HelpAcceptTermsOfServiceParams;
+    "help.getDeepLinkInfo": { _: "help.getDeepLinkInfo" } & HelpGetDeepLinkInfoParams;
+    "help.getAppConfig": { _: "help.getAppConfig" } & HelpGetAppConfigParams;
+    "help.saveAppLog": { _: "help.saveAppLog" } & HelpSaveAppLogParams;
+    "help.getPassportConfig": { _: "help.getPassportConfig" } & HelpGetPassportConfigParams;
+    "help.getSupportName": { _: "help.getSupportName" };
+    "help.getUserInfo": { _: "help.getUserInfo" } & HelpGetUserInfoParams;
+    "help.editUserInfo": { _: "help.editUserInfo" } & HelpEditUserInfoParams;
+    "help.getPromoData": { _: "help.getPromoData" };
+    "help.hidePromoData": { _: "help.hidePromoData" } & HelpHidePromoDataParams;
+    "help.dismissSuggestion": { _: "help.dismissSuggestion" } & HelpDismissSuggestionParams;
+    "help.getCountriesList": { _: "help.getCountriesList" } & HelpGetCountriesListParams;
+    "help.getPremiumPromo": { _: "help.getPremiumPromo" };
+    "help.getPeerColors": { _: "help.getPeerColors" } & HelpGetPeerColorsParams;
+    "help.getPeerProfileColors": { _: "help.getPeerProfileColors" } & HelpGetPeerProfileColorsParams;
+    "help.getTimezonesList": { _: "help.getTimezonesList" } & HelpGetTimezonesListParams;
+    "channels.readHistory": { _: "channels.readHistory" } & ChannelsReadHistoryParams;
+    "channels.deleteMessages": { _: "channels.deleteMessages" } & ChannelsDeleteMessagesParams;
+    "channels.reportSpam": { _: "channels.reportSpam" } & ChannelsReportSpamParams;
+    "channels.getMessages": { _: "channels.getMessages" } & ChannelsGetMessagesParams;
+    "channels.getParticipants": { _: "channels.getParticipants" } & ChannelsGetParticipantsParams;
+    "channels.getParticipant": { _: "channels.getParticipant" } & ChannelsGetParticipantParams;
+    "channels.getChannels": { _: "channels.getChannels" } & ChannelsGetChannelsParams;
+    "channels.getFullChannel": { _: "channels.getFullChannel" } & ChannelsGetFullChannelParams;
+    "channels.createChannel": { _: "channels.createChannel" } & ChannelsCreateChannelParams;
+    "channels.editAdmin": { _: "channels.editAdmin" } & ChannelsEditAdminParams;
+    "channels.editTitle": { _: "channels.editTitle" } & ChannelsEditTitleParams;
+    "channels.editPhoto": { _: "channels.editPhoto" } & ChannelsEditPhotoParams;
+    "channels.checkUsername": { _: "channels.checkUsername" } & ChannelsCheckUsernameParams;
+    "channels.updateUsername": { _: "channels.updateUsername" } & ChannelsUpdateUsernameParams;
+    "channels.joinChannel": { _: "channels.joinChannel" } & ChannelsJoinChannelParams;
+    "channels.leaveChannel": { _: "channels.leaveChannel" } & ChannelsLeaveChannelParams;
+    "channels.inviteToChannel": { _: "channels.inviteToChannel" } & ChannelsInviteToChannelParams;
+    "channels.deleteChannel": { _: "channels.deleteChannel" } & ChannelsDeleteChannelParams;
+    "channels.exportMessageLink": { _: "channels.exportMessageLink" } & ChannelsExportMessageLinkParams;
+    "channels.toggleSignatures": { _: "channels.toggleSignatures" } & ChannelsToggleSignaturesParams;
+    "channels.getAdminedPublicChannels": { _: "channels.getAdminedPublicChannels" } & ChannelsGetAdminedPublicChannelsParams;
+    "channels.editBanned": { _: "channels.editBanned" } & ChannelsEditBannedParams;
+    "channels.getAdminLog": { _: "channels.getAdminLog" } & ChannelsGetAdminLogParams;
+    "channels.setStickers": { _: "channels.setStickers" } & ChannelsSetStickersParams;
+    "channels.readMessageContents": { _: "channels.readMessageContents" } & ChannelsReadMessageContentsParams;
+    "channels.deleteHistory": { _: "channels.deleteHistory" } & ChannelsDeleteHistoryParams;
+    "channels.togglePreHistoryHidden": { _: "channels.togglePreHistoryHidden" } & ChannelsTogglePreHistoryHiddenParams;
+    "channels.getLeftChannels": { _: "channels.getLeftChannels" } & ChannelsGetLeftChannelsParams;
+    "channels.getGroupsForDiscussion": { _: "channels.getGroupsForDiscussion" };
+    "channels.setDiscussionGroup": { _: "channels.setDiscussionGroup" } & ChannelsSetDiscussionGroupParams;
+    "channels.editLocation": { _: "channels.editLocation" } & ChannelsEditLocationParams;
+    "channels.toggleSlowMode": { _: "channels.toggleSlowMode" } & ChannelsToggleSlowModeParams;
+    "channels.getInactiveChannels": { _: "channels.getInactiveChannels" };
+    "channels.convertToGigagroup": { _: "channels.convertToGigagroup" } & ChannelsConvertToGigagroupParams;
+    "channels.getSendAs": { _: "channels.getSendAs" } & ChannelsGetSendAsParams;
+    "channels.deleteParticipantHistory": { _: "channels.deleteParticipantHistory" } & ChannelsDeleteParticipantHistoryParams;
+    "channels.toggleJoinToSend": { _: "channels.toggleJoinToSend" } & ChannelsToggleJoinToSendParams;
+    "channels.toggleJoinRequest": { _: "channels.toggleJoinRequest" } & ChannelsToggleJoinRequestParams;
+    "channels.reorderUsernames": { _: "channels.reorderUsernames" } & ChannelsReorderUsernamesParams;
+    "channels.toggleUsername": { _: "channels.toggleUsername" } & ChannelsToggleUsernameParams;
+    "channels.deactivateAllUsernames": { _: "channels.deactivateAllUsernames" } & ChannelsDeactivateAllUsernamesParams;
+    "channels.toggleForum": { _: "channels.toggleForum" } & ChannelsToggleForumParams;
+    "channels.toggleAntiSpam": { _: "channels.toggleAntiSpam" } & ChannelsToggleAntiSpamParams;
+    "channels.reportAntiSpamFalsePositive": { _: "channels.reportAntiSpamFalsePositive" } & ChannelsReportAntiSpamFalsePositiveParams;
+    "channels.toggleParticipantsHidden": { _: "channels.toggleParticipantsHidden" } & ChannelsToggleParticipantsHiddenParams;
+    "channels.updateColor": { _: "channels.updateColor" } & ChannelsUpdateColorParams;
+    "channels.toggleViewForumAsMessages": { _: "channels.toggleViewForumAsMessages" } & ChannelsToggleViewForumAsMessagesParams;
+    "channels.getChannelRecommendations": { _: "channels.getChannelRecommendations" } & ChannelsGetChannelRecommendationsParams;
+    "channels.updateEmojiStatus": { _: "channels.updateEmojiStatus" } & ChannelsUpdateEmojiStatusParams;
+    "channels.setBoostsToUnblockRestrictions": { _: "channels.setBoostsToUnblockRestrictions" } & ChannelsSetBoostsToUnblockRestrictionsParams;
+    "channels.setEmojiStickers": { _: "channels.setEmojiStickers" } & ChannelsSetEmojiStickersParams;
+    "channels.restrictSponsoredMessages": { _: "channels.restrictSponsoredMessages" } & ChannelsRestrictSponsoredMessagesParams;
+    "channels.searchPosts": { _: "channels.searchPosts" } & ChannelsSearchPostsParams;
+    "channels.updatePaidMessagesPrice": { _: "channels.updatePaidMessagesPrice" } & ChannelsUpdatePaidMessagesPriceParams;
+    "channels.toggleAutotranslation": { _: "channels.toggleAutotranslation" } & ChannelsToggleAutotranslationParams;
+    "channels.getMessageAuthor": { _: "channels.getMessageAuthor" } & ChannelsGetMessageAuthorParams;
+    "channels.checkSearchPostsFlood": { _: "channels.checkSearchPostsFlood" } & ChannelsCheckSearchPostsFloodParams;
+    "channels.setMainProfileTab": { _: "channels.setMainProfileTab" } & ChannelsSetMainProfileTabParams;
+    "bots.sendCustomRequest": { _: "bots.sendCustomRequest" } & BotsSendCustomRequestParams;
+    "bots.answerWebhookJSONQuery": { _: "bots.answerWebhookJSONQuery" } & BotsAnswerWebhookJSONQueryParams;
+    "bots.setBotCommands": { _: "bots.setBotCommands" } & BotsSetBotCommandsParams;
+    "bots.resetBotCommands": { _: "bots.resetBotCommands" } & BotsResetBotCommandsParams;
+    "bots.getBotCommands": { _: "bots.getBotCommands" } & BotsGetBotCommandsParams;
+    "bots.setBotMenuButton": { _: "bots.setBotMenuButton" } & BotsSetBotMenuButtonParams;
+    "bots.getBotMenuButton": { _: "bots.getBotMenuButton" } & BotsGetBotMenuButtonParams;
+    "bots.setBotBroadcastDefaultAdminRights": { _: "bots.setBotBroadcastDefaultAdminRights" } & BotsSetBotBroadcastDefaultAdminRightsParams;
+    "bots.setBotGroupDefaultAdminRights": { _: "bots.setBotGroupDefaultAdminRights" } & BotsSetBotGroupDefaultAdminRightsParams;
+    "bots.setBotInfo": { _: "bots.setBotInfo" } & BotsSetBotInfoParams;
+    "bots.getBotInfo": { _: "bots.getBotInfo" } & BotsGetBotInfoParams;
+    "bots.reorderUsernames": { _: "bots.reorderUsernames" } & BotsReorderUsernamesParams;
+    "bots.toggleUsername": { _: "bots.toggleUsername" } & BotsToggleUsernameParams;
+    "bots.canSendMessage": { _: "bots.canSendMessage" } & BotsCanSendMessageParams;
+    "bots.allowSendMessage": { _: "bots.allowSendMessage" } & BotsAllowSendMessageParams;
+    "bots.invokeWebViewCustomMethod": { _: "bots.invokeWebViewCustomMethod" } & BotsInvokeWebViewCustomMethodParams;
+    "bots.getPopularAppBots": { _: "bots.getPopularAppBots" } & BotsGetPopularAppBotsParams;
+    "bots.addPreviewMedia": { _: "bots.addPreviewMedia" } & BotsAddPreviewMediaParams;
+    "bots.editPreviewMedia": { _: "bots.editPreviewMedia" } & BotsEditPreviewMediaParams;
+    "bots.deletePreviewMedia": { _: "bots.deletePreviewMedia" } & BotsDeletePreviewMediaParams;
+    "bots.reorderPreviewMedias": { _: "bots.reorderPreviewMedias" } & BotsReorderPreviewMediasParams;
+    "bots.getPreviewInfo": { _: "bots.getPreviewInfo" } & BotsGetPreviewInfoParams;
+    "bots.getPreviewMedias": { _: "bots.getPreviewMedias" } & BotsGetPreviewMediasParams;
+    "bots.updateUserEmojiStatus": { _: "bots.updateUserEmojiStatus" } & BotsUpdateUserEmojiStatusParams;
+    "bots.toggleUserEmojiStatusPermission": { _: "bots.toggleUserEmojiStatusPermission" } & BotsToggleUserEmojiStatusPermissionParams;
+    "bots.checkDownloadFileParams": { _: "bots.checkDownloadFileParams" } & BotsCheckDownloadFileParamsParams;
+    "bots.getAdminedBots": { _: "bots.getAdminedBots" };
+    "bots.updateStarRefProgram": { _: "bots.updateStarRefProgram" } & BotsUpdateStarRefProgramParams;
+    "bots.setCustomVerification": { _: "bots.setCustomVerification" } & BotsSetCustomVerificationParams;
+    "bots.getBotRecommendations": { _: "bots.getBotRecommendations" } & BotsGetBotRecommendationsParams;
+    "bots.checkUsername": { _: "bots.checkUsername" } & BotsCheckUsernameParams;
+    "bots.createBot": { _: "bots.createBot" } & BotsCreateBotParams;
+    "bots.exportBotToken": { _: "bots.exportBotToken" } & BotsExportBotTokenParams;
+    "bots.requestWebViewButton": { _: "bots.requestWebViewButton" } & BotsRequestWebViewButtonParams;
+    "bots.getRequestedWebViewButton": { _: "bots.getRequestedWebViewButton" } & BotsGetRequestedWebViewButtonParams;
+    "bots.getAccessSettings": { _: "bots.getAccessSettings" } & BotsGetAccessSettingsParams;
+    "bots.editAccessSettings": { _: "bots.editAccessSettings" } & BotsEditAccessSettingsParams;
+    "bots.setJoinChatResults": { _: "bots.setJoinChatResults" } & BotsSetJoinChatResultsParams;
+    "payments.getPaymentForm": { _: "payments.getPaymentForm" } & PaymentsGetPaymentFormParams;
+    "payments.getPaymentReceipt": { _: "payments.getPaymentReceipt" } & PaymentsGetPaymentReceiptParams;
+    "payments.validateRequestedInfo": { _: "payments.validateRequestedInfo" } & PaymentsValidateRequestedInfoParams;
+    "payments.sendPaymentForm": { _: "payments.sendPaymentForm" } & PaymentsSendPaymentFormParams;
+    "payments.getSavedInfo": { _: "payments.getSavedInfo" };
+    "payments.clearSavedInfo": { _: "payments.clearSavedInfo" } & PaymentsClearSavedInfoParams;
+    "payments.getBankCardData": { _: "payments.getBankCardData" } & PaymentsGetBankCardDataParams;
+    "payments.exportInvoice": { _: "payments.exportInvoice" } & PaymentsExportInvoiceParams;
+    "payments.assignAppStoreTransaction": { _: "payments.assignAppStoreTransaction" } & PaymentsAssignAppStoreTransactionParams;
+    "payments.assignPlayMarketTransaction": { _: "payments.assignPlayMarketTransaction" } & PaymentsAssignPlayMarketTransactionParams;
+    "payments.getPremiumGiftCodeOptions": { _: "payments.getPremiumGiftCodeOptions" } & PaymentsGetPremiumGiftCodeOptionsParams;
+    "payments.checkGiftCode": { _: "payments.checkGiftCode" } & PaymentsCheckGiftCodeParams;
+    "payments.applyGiftCode": { _: "payments.applyGiftCode" } & PaymentsApplyGiftCodeParams;
+    "payments.getGiveawayInfo": { _: "payments.getGiveawayInfo" } & PaymentsGetGiveawayInfoParams;
+    "payments.launchPrepaidGiveaway": { _: "payments.launchPrepaidGiveaway" } & PaymentsLaunchPrepaidGiveawayParams;
+    "payments.getStarsTopupOptions": { _: "payments.getStarsTopupOptions" };
+    "payments.getStarsStatus": { _: "payments.getStarsStatus" } & PaymentsGetStarsStatusParams;
+    "payments.getStarsTransactions": { _: "payments.getStarsTransactions" } & PaymentsGetStarsTransactionsParams;
+    "payments.sendStarsForm": { _: "payments.sendStarsForm" } & PaymentsSendStarsFormParams;
+    "payments.refundStarsCharge": { _: "payments.refundStarsCharge" } & PaymentsRefundStarsChargeParams;
+    "payments.getStarsRevenueStats": { _: "payments.getStarsRevenueStats" } & PaymentsGetStarsRevenueStatsParams;
+    "payments.getStarsRevenueWithdrawalUrl": { _: "payments.getStarsRevenueWithdrawalUrl" } & PaymentsGetStarsRevenueWithdrawalUrlParams;
+    "payments.getStarsRevenueAdsAccountUrl": { _: "payments.getStarsRevenueAdsAccountUrl" } & PaymentsGetStarsRevenueAdsAccountUrlParams;
+    "payments.getStarsTransactionsByID": { _: "payments.getStarsTransactionsByID" } & PaymentsGetStarsTransactionsByIDParams;
+    "payments.getStarsGiftOptions": { _: "payments.getStarsGiftOptions" } & PaymentsGetStarsGiftOptionsParams;
+    "payments.getStarsSubscriptions": { _: "payments.getStarsSubscriptions" } & PaymentsGetStarsSubscriptionsParams;
+    "payments.changeStarsSubscription": { _: "payments.changeStarsSubscription" } & PaymentsChangeStarsSubscriptionParams;
+    "payments.fulfillStarsSubscription": { _: "payments.fulfillStarsSubscription" } & PaymentsFulfillStarsSubscriptionParams;
+    "payments.getStarsGiveawayOptions": { _: "payments.getStarsGiveawayOptions" };
+    "payments.getStarGifts": { _: "payments.getStarGifts" } & PaymentsGetStarGiftsParams;
+    "payments.saveStarGift": { _: "payments.saveStarGift" } & PaymentsSaveStarGiftParams;
+    "payments.convertStarGift": { _: "payments.convertStarGift" } & PaymentsConvertStarGiftParams;
+    "payments.botCancelStarsSubscription": { _: "payments.botCancelStarsSubscription" } & PaymentsBotCancelStarsSubscriptionParams;
+    "payments.getConnectedStarRefBots": { _: "payments.getConnectedStarRefBots" } & PaymentsGetConnectedStarRefBotsParams;
+    "payments.getConnectedStarRefBot": { _: "payments.getConnectedStarRefBot" } & PaymentsGetConnectedStarRefBotParams;
+    "payments.getSuggestedStarRefBots": { _: "payments.getSuggestedStarRefBots" } & PaymentsGetSuggestedStarRefBotsParams;
+    "payments.connectStarRefBot": { _: "payments.connectStarRefBot" } & PaymentsConnectStarRefBotParams;
+    "payments.editConnectedStarRefBot": { _: "payments.editConnectedStarRefBot" } & PaymentsEditConnectedStarRefBotParams;
+    "payments.getStarGiftUpgradePreview": { _: "payments.getStarGiftUpgradePreview" } & PaymentsGetStarGiftUpgradePreviewParams;
+    "payments.upgradeStarGift": { _: "payments.upgradeStarGift" } & PaymentsUpgradeStarGiftParams;
+    "payments.transferStarGift": { _: "payments.transferStarGift" } & PaymentsTransferStarGiftParams;
+    "payments.getUniqueStarGift": { _: "payments.getUniqueStarGift" } & PaymentsGetUniqueStarGiftParams;
+    "payments.getSavedStarGifts": { _: "payments.getSavedStarGifts" } & PaymentsGetSavedStarGiftsParams;
+    "payments.getSavedStarGift": { _: "payments.getSavedStarGift" } & PaymentsGetSavedStarGiftParams;
+    "payments.getStarGiftWithdrawalUrl": { _: "payments.getStarGiftWithdrawalUrl" } & PaymentsGetStarGiftWithdrawalUrlParams;
+    "payments.toggleChatStarGiftNotifications": { _: "payments.toggleChatStarGiftNotifications" } & PaymentsToggleChatStarGiftNotificationsParams;
+    "payments.toggleStarGiftsPinnedToTop": { _: "payments.toggleStarGiftsPinnedToTop" } & PaymentsToggleStarGiftsPinnedToTopParams;
+    "payments.canPurchaseStore": { _: "payments.canPurchaseStore" } & PaymentsCanPurchaseStoreParams;
+    "payments.getResaleStarGifts": { _: "payments.getResaleStarGifts" } & PaymentsGetResaleStarGiftsParams;
+    "payments.updateStarGiftPrice": { _: "payments.updateStarGiftPrice" } & PaymentsUpdateStarGiftPriceParams;
+    "payments.createStarGiftCollection": { _: "payments.createStarGiftCollection" } & PaymentsCreateStarGiftCollectionParams;
+    "payments.updateStarGiftCollection": { _: "payments.updateStarGiftCollection" } & PaymentsUpdateStarGiftCollectionParams;
+    "payments.reorderStarGiftCollections": { _: "payments.reorderStarGiftCollections" } & PaymentsReorderStarGiftCollectionsParams;
+    "payments.deleteStarGiftCollection": { _: "payments.deleteStarGiftCollection" } & PaymentsDeleteStarGiftCollectionParams;
+    "payments.getStarGiftCollections": { _: "payments.getStarGiftCollections" } & PaymentsGetStarGiftCollectionsParams;
+    "payments.getUniqueStarGiftValueInfo": { _: "payments.getUniqueStarGiftValueInfo" } & PaymentsGetUniqueStarGiftValueInfoParams;
+    "payments.checkCanSendGift": { _: "payments.checkCanSendGift" } & PaymentsCheckCanSendGiftParams;
+    "payments.getStarGiftAuctionState": { _: "payments.getStarGiftAuctionState" } & PaymentsGetStarGiftAuctionStateParams;
+    "payments.getStarGiftAuctionAcquiredGifts": { _: "payments.getStarGiftAuctionAcquiredGifts" } & PaymentsGetStarGiftAuctionAcquiredGiftsParams;
+    "payments.getStarGiftActiveAuctions": { _: "payments.getStarGiftActiveAuctions" } & PaymentsGetStarGiftActiveAuctionsParams;
+    "payments.resolveStarGiftOffer": { _: "payments.resolveStarGiftOffer" } & PaymentsResolveStarGiftOfferParams;
+    "payments.sendStarGiftOffer": { _: "payments.sendStarGiftOffer" } & PaymentsSendStarGiftOfferParams;
+    "payments.getStarGiftUpgradeAttributes": { _: "payments.getStarGiftUpgradeAttributes" } & PaymentsGetStarGiftUpgradeAttributesParams;
+    "payments.getCraftStarGifts": { _: "payments.getCraftStarGifts" } & PaymentsGetCraftStarGiftsParams;
+    "payments.craftStarGift": { _: "payments.craftStarGift" } & PaymentsCraftStarGiftParams;
+    "stickers.createStickerSet": { _: "stickers.createStickerSet" } & StickersCreateStickerSetParams;
+    "stickers.removeStickerFromSet": { _: "stickers.removeStickerFromSet" } & StickersRemoveStickerFromSetParams;
+    "stickers.changeStickerPosition": { _: "stickers.changeStickerPosition" } & StickersChangeStickerPositionParams;
+    "stickers.addStickerToSet": { _: "stickers.addStickerToSet" } & StickersAddStickerToSetParams;
+    "stickers.setStickerSetThumb": { _: "stickers.setStickerSetThumb" } & StickersSetStickerSetThumbParams;
+    "stickers.checkShortName": { _: "stickers.checkShortName" } & StickersCheckShortNameParams;
+    "stickers.suggestShortName": { _: "stickers.suggestShortName" } & StickersSuggestShortNameParams;
+    "stickers.changeSticker": { _: "stickers.changeSticker" } & StickersChangeStickerParams;
+    "stickers.renameStickerSet": { _: "stickers.renameStickerSet" } & StickersRenameStickerSetParams;
+    "stickers.deleteStickerSet": { _: "stickers.deleteStickerSet" } & StickersDeleteStickerSetParams;
+    "stickers.replaceSticker": { _: "stickers.replaceSticker" } & StickersReplaceStickerParams;
+    "phone.getCallConfig": { _: "phone.getCallConfig" };
+    "phone.requestCall": { _: "phone.requestCall" } & PhoneRequestCallParams;
+    "phone.acceptCall": { _: "phone.acceptCall" } & PhoneAcceptCallParams;
+    "phone.confirmCall": { _: "phone.confirmCall" } & PhoneConfirmCallParams;
+    "phone.receivedCall": { _: "phone.receivedCall" } & PhoneReceivedCallParams;
+    "phone.discardCall": { _: "phone.discardCall" } & PhoneDiscardCallParams;
+    "phone.setCallRating": { _: "phone.setCallRating" } & PhoneSetCallRatingParams;
+    "phone.saveCallDebug": { _: "phone.saveCallDebug" } & PhoneSaveCallDebugParams;
+    "phone.sendSignalingData": { _: "phone.sendSignalingData" } & PhoneSendSignalingDataParams;
+    "phone.createGroupCall": { _: "phone.createGroupCall" } & PhoneCreateGroupCallParams;
+    "phone.joinGroupCall": { _: "phone.joinGroupCall" } & PhoneJoinGroupCallParams;
+    "phone.leaveGroupCall": { _: "phone.leaveGroupCall" } & PhoneLeaveGroupCallParams;
+    "phone.inviteToGroupCall": { _: "phone.inviteToGroupCall" } & PhoneInviteToGroupCallParams;
+    "phone.discardGroupCall": { _: "phone.discardGroupCall" } & PhoneDiscardGroupCallParams;
+    "phone.toggleGroupCallSettings": { _: "phone.toggleGroupCallSettings" } & PhoneToggleGroupCallSettingsParams;
+    "phone.getGroupCall": { _: "phone.getGroupCall" } & PhoneGetGroupCallParams;
+    "phone.getGroupParticipants": { _: "phone.getGroupParticipants" } & PhoneGetGroupParticipantsParams;
+    "phone.checkGroupCall": { _: "phone.checkGroupCall" } & PhoneCheckGroupCallParams;
+    "phone.toggleGroupCallRecord": { _: "phone.toggleGroupCallRecord" } & PhoneToggleGroupCallRecordParams;
+    "phone.editGroupCallParticipant": { _: "phone.editGroupCallParticipant" } & PhoneEditGroupCallParticipantParams;
+    "phone.editGroupCallTitle": { _: "phone.editGroupCallTitle" } & PhoneEditGroupCallTitleParams;
+    "phone.getGroupCallJoinAs": { _: "phone.getGroupCallJoinAs" } & PhoneGetGroupCallJoinAsParams;
+    "phone.exportGroupCallInvite": { _: "phone.exportGroupCallInvite" } & PhoneExportGroupCallInviteParams;
+    "phone.toggleGroupCallStartSubscription": { _: "phone.toggleGroupCallStartSubscription" } & PhoneToggleGroupCallStartSubscriptionParams;
+    "phone.startScheduledGroupCall": { _: "phone.startScheduledGroupCall" } & PhoneStartScheduledGroupCallParams;
+    "phone.saveDefaultGroupCallJoinAs": { _: "phone.saveDefaultGroupCallJoinAs" } & PhoneSaveDefaultGroupCallJoinAsParams;
+    "phone.joinGroupCallPresentation": { _: "phone.joinGroupCallPresentation" } & PhoneJoinGroupCallPresentationParams;
+    "phone.leaveGroupCallPresentation": { _: "phone.leaveGroupCallPresentation" } & PhoneLeaveGroupCallPresentationParams;
+    "phone.getGroupCallStreamChannels": { _: "phone.getGroupCallStreamChannels" } & PhoneGetGroupCallStreamChannelsParams;
+    "phone.getGroupCallStreamRtmpUrl": { _: "phone.getGroupCallStreamRtmpUrl" } & PhoneGetGroupCallStreamRtmpUrlParams;
+    "phone.saveCallLog": { _: "phone.saveCallLog" } & PhoneSaveCallLogParams;
+    "phone.createConferenceCall": { _: "phone.createConferenceCall" } & PhoneCreateConferenceCallParams;
+    "phone.deleteConferenceCallParticipants": { _: "phone.deleteConferenceCallParticipants" } & PhoneDeleteConferenceCallParticipantsParams;
+    "phone.sendConferenceCallBroadcast": { _: "phone.sendConferenceCallBroadcast" } & PhoneSendConferenceCallBroadcastParams;
+    "phone.inviteConferenceCallParticipant": { _: "phone.inviteConferenceCallParticipant" } & PhoneInviteConferenceCallParticipantParams;
+    "phone.declineConferenceCallInvite": { _: "phone.declineConferenceCallInvite" } & PhoneDeclineConferenceCallInviteParams;
+    "phone.getGroupCallChainBlocks": { _: "phone.getGroupCallChainBlocks" } & PhoneGetGroupCallChainBlocksParams;
+    "phone.sendGroupCallMessage": { _: "phone.sendGroupCallMessage" } & PhoneSendGroupCallMessageParams;
+    "phone.sendGroupCallEncryptedMessage": { _: "phone.sendGroupCallEncryptedMessage" } & PhoneSendGroupCallEncryptedMessageParams;
+    "phone.deleteGroupCallMessages": { _: "phone.deleteGroupCallMessages" } & PhoneDeleteGroupCallMessagesParams;
+    "phone.deleteGroupCallParticipantMessages": { _: "phone.deleteGroupCallParticipantMessages" } & PhoneDeleteGroupCallParticipantMessagesParams;
+    "phone.getGroupCallStars": { _: "phone.getGroupCallStars" } & PhoneGetGroupCallStarsParams;
+    "phone.saveDefaultSendAs": { _: "phone.saveDefaultSendAs" } & PhoneSaveDefaultSendAsParams;
+    "langpack.getLangPack": { _: "langpack.getLangPack" } & LangpackGetLangPackParams;
+    "langpack.getStrings": { _: "langpack.getStrings" } & LangpackGetStringsParams;
+    "langpack.getDifference": { _: "langpack.getDifference" } & LangpackGetDifferenceParams;
+    "langpack.getLanguages": { _: "langpack.getLanguages" } & LangpackGetLanguagesParams;
+    "langpack.getLanguage": { _: "langpack.getLanguage" } & LangpackGetLanguageParams;
+    "folders.editPeerFolders": { _: "folders.editPeerFolders" } & FoldersEditPeerFoldersParams;
+    "stats.getBroadcastStats": { _: "stats.getBroadcastStats" } & StatsGetBroadcastStatsParams;
+    "stats.loadAsyncGraph": { _: "stats.loadAsyncGraph" } & StatsLoadAsyncGraphParams;
+    "stats.getMegagroupStats": { _: "stats.getMegagroupStats" } & StatsGetMegagroupStatsParams;
+    "stats.getMessagePublicForwards": { _: "stats.getMessagePublicForwards" } & StatsGetMessagePublicForwardsParams;
+    "stats.getMessageStats": { _: "stats.getMessageStats" } & StatsGetMessageStatsParams;
+    "stats.getStoryStats": { _: "stats.getStoryStats" } & StatsGetStoryStatsParams;
+    "stats.getStoryPublicForwards": { _: "stats.getStoryPublicForwards" } & StatsGetStoryPublicForwardsParams;
+    "stats.getPollStats": { _: "stats.getPollStats" } & StatsGetPollStatsParams;
+    "chatlists.exportChatlistInvite": { _: "chatlists.exportChatlistInvite" } & ChatlistsExportChatlistInviteParams;
+    "chatlists.deleteExportedInvite": { _: "chatlists.deleteExportedInvite" } & ChatlistsDeleteExportedInviteParams;
+    "chatlists.editExportedInvite": { _: "chatlists.editExportedInvite" } & ChatlistsEditExportedInviteParams;
+    "chatlists.getExportedInvites": { _: "chatlists.getExportedInvites" } & ChatlistsGetExportedInvitesParams;
+    "chatlists.checkChatlistInvite": { _: "chatlists.checkChatlistInvite" } & ChatlistsCheckChatlistInviteParams;
+    "chatlists.joinChatlistInvite": { _: "chatlists.joinChatlistInvite" } & ChatlistsJoinChatlistInviteParams;
+    "chatlists.getChatlistUpdates": { _: "chatlists.getChatlistUpdates" } & ChatlistsGetChatlistUpdatesParams;
+    "chatlists.joinChatlistUpdates": { _: "chatlists.joinChatlistUpdates" } & ChatlistsJoinChatlistUpdatesParams;
+    "chatlists.hideChatlistUpdates": { _: "chatlists.hideChatlistUpdates" } & ChatlistsHideChatlistUpdatesParams;
+    "chatlists.getLeaveChatlistSuggestions": { _: "chatlists.getLeaveChatlistSuggestions" } & ChatlistsGetLeaveChatlistSuggestionsParams;
+    "chatlists.leaveChatlist": { _: "chatlists.leaveChatlist" } & ChatlistsLeaveChatlistParams;
+    "stories.canSendStory": { _: "stories.canSendStory" } & StoriesCanSendStoryParams;
+    "stories.sendStory": { _: "stories.sendStory" } & StoriesSendStoryParams;
+    "stories.editStory": { _: "stories.editStory" } & StoriesEditStoryParams;
+    "stories.deleteStories": { _: "stories.deleteStories" } & StoriesDeleteStoriesParams;
+    "stories.togglePinned": { _: "stories.togglePinned" } & StoriesTogglePinnedParams;
+    "stories.getAllStories": { _: "stories.getAllStories" } & StoriesGetAllStoriesParams;
+    "stories.getPinnedStories": { _: "stories.getPinnedStories" } & StoriesGetPinnedStoriesParams;
+    "stories.getStoriesArchive": { _: "stories.getStoriesArchive" } & StoriesGetStoriesArchiveParams;
+    "stories.getStoriesByID": { _: "stories.getStoriesByID" } & StoriesGetStoriesByIDParams;
+    "stories.toggleAllStoriesHidden": { _: "stories.toggleAllStoriesHidden" } & StoriesToggleAllStoriesHiddenParams;
+    "stories.readStories": { _: "stories.readStories" } & StoriesReadStoriesParams;
+    "stories.incrementStoryViews": { _: "stories.incrementStoryViews" } & StoriesIncrementStoryViewsParams;
+    "stories.getStoryViewsList": { _: "stories.getStoryViewsList" } & StoriesGetStoryViewsListParams;
+    "stories.getStoriesViews": { _: "stories.getStoriesViews" } & StoriesGetStoriesViewsParams;
+    "stories.exportStoryLink": { _: "stories.exportStoryLink" } & StoriesExportStoryLinkParams;
+    "stories.report": { _: "stories.report" } & StoriesReportParams;
+    "stories.activateStealthMode": { _: "stories.activateStealthMode" } & StoriesActivateStealthModeParams;
+    "stories.sendReaction": { _: "stories.sendReaction" } & StoriesSendReactionParams;
+    "stories.getPeerStories": { _: "stories.getPeerStories" } & StoriesGetPeerStoriesParams;
+    "stories.getAllReadPeerStories": { _: "stories.getAllReadPeerStories" };
+    "stories.getPeerMaxIDs": { _: "stories.getPeerMaxIDs" } & StoriesGetPeerMaxIDsParams;
+    "stories.getChatsToSend": { _: "stories.getChatsToSend" };
+    "stories.togglePeerStoriesHidden": { _: "stories.togglePeerStoriesHidden" } & StoriesTogglePeerStoriesHiddenParams;
+    "stories.getStoryReactionsList": { _: "stories.getStoryReactionsList" } & StoriesGetStoryReactionsListParams;
+    "stories.togglePinnedToTop": { _: "stories.togglePinnedToTop" } & StoriesTogglePinnedToTopParams;
+    "stories.searchPosts": { _: "stories.searchPosts" } & StoriesSearchPostsParams;
+    "stories.createAlbum": { _: "stories.createAlbum" } & StoriesCreateAlbumParams;
+    "stories.updateAlbum": { _: "stories.updateAlbum" } & StoriesUpdateAlbumParams;
+    "stories.reorderAlbums": { _: "stories.reorderAlbums" } & StoriesReorderAlbumsParams;
+    "stories.deleteAlbum": { _: "stories.deleteAlbum" } & StoriesDeleteAlbumParams;
+    "stories.getAlbums": { _: "stories.getAlbums" } & StoriesGetAlbumsParams;
+    "stories.getAlbumStories": { _: "stories.getAlbumStories" } & StoriesGetAlbumStoriesParams;
+    "stories.startLive": { _: "stories.startLive" } & StoriesStartLiveParams;
+    "premium.getBoostsList": { _: "premium.getBoostsList" } & PremiumGetBoostsListParams;
+    "premium.getMyBoosts": { _: "premium.getMyBoosts" };
+    "premium.applyBoost": { _: "premium.applyBoost" } & PremiumApplyBoostParams;
+    "premium.getBoostsStatus": { _: "premium.getBoostsStatus" } & PremiumGetBoostsStatusParams;
+    "premium.getUserBoosts": { _: "premium.getUserBoosts" } & PremiumGetUserBoostsParams;
+    "smsjobs.isEligibleToJoin": { _: "smsjobs.isEligibleToJoin" };
+    "smsjobs.join": { _: "smsjobs.join" };
+    "smsjobs.leave": { _: "smsjobs.leave" };
+    "smsjobs.updateSettings": { _: "smsjobs.updateSettings" } & SmsjobsUpdateSettingsParams;
+    "smsjobs.getStatus": { _: "smsjobs.getStatus" };
+    "smsjobs.getSmsJob": { _: "smsjobs.getSmsJob" } & SmsjobsGetSmsJobParams;
+    "smsjobs.finishJob": { _: "smsjobs.finishJob" } & SmsjobsFinishJobParams;
+    "fragment.getCollectibleInfo": { _: "fragment.getCollectibleInfo" } & FragmentGetCollectibleInfoParams;
+    "aicompose.createTone": { _: "aicompose.createTone" } & AicomposeCreateToneParams;
+    "aicompose.updateTone": { _: "aicompose.updateTone" } & AicomposeUpdateToneParams;
+    "aicompose.saveTone": { _: "aicompose.saveTone" } & AicomposeSaveToneParams;
+    "aicompose.deleteTone": { _: "aicompose.deleteTone" } & AicomposeDeleteToneParams;
+    "aicompose.getTone": { _: "aicompose.getTone" } & AicomposeGetToneParams;
+    "aicompose.getTones": { _: "aicompose.getTones" } & AicomposeGetTonesParams;
+    "aicompose.getToneExample": { _: "aicompose.getToneExample" } & AicomposeGetToneExampleParams;
+    "communities.create": { _: "communities.create" } & CommunitiesCreateParams;
+    "communities.togglePeerLink": { _: "communities.togglePeerLink" } & CommunitiesTogglePeerLinkParams;
+    "communities.getJoinedCommunities": { _: "communities.getJoinedCommunities" };
+    "communities.toggleCommunityCollapsedInDialogs": { _: "communities.toggleCommunityCollapsedInDialogs" } & CommunitiesToggleCommunityCollapsedInDialogsParams;
+    "communities.getPeerLinkRequests": { _: "communities.getPeerLinkRequests" } & CommunitiesGetPeerLinkRequestsParams;
+    "communities.togglePeerLinkRequestApproval": { _: "communities.togglePeerLinkRequestApproval" } & CommunitiesTogglePeerLinkRequestApprovalParams;
+    "communities.toggleAllPeerLinkRequestApproval": { _: "communities.toggleAllPeerLinkRequestApproval" } & CommunitiesToggleAllPeerLinkRequestApprovalParams;
+    "communities.toggleParticipantBanned": { _: "communities.toggleParticipantBanned" } & CommunitiesToggleParticipantBannedParams;
+    "communities.getParticipantJoinedChats": { _: "communities.getParticipantJoinedChats" } & CommunitiesGetParticipantJoinedChatsParams;
+    "ephemeral.sendMessage": { _: "ephemeral.sendMessage" } & EphemeralSendMessageParams;
+    "ephemeral.deleteMessage": { _: "ephemeral.deleteMessage" } & EphemeralDeleteMessageParams;
+    "ephemeral.reportMessage": { _: "ephemeral.reportMessage" } & EphemeralReportMessageParams;
+    "ephemeral.getCallbackAnswer": { _: "ephemeral.getCallbackAnswer" } & EphemeralGetCallbackAnswerParams;
+    "ephemeral.editMessage": { _: "ephemeral.editMessage" } & EphemeralEditMessageParams;
+    "ephemeral.deleteWelcomeMessage": { _: "ephemeral.deleteWelcomeMessage" } & EphemeralDeleteWelcomeMessageParams;
+    "ephemeral.deleteAllWelcomeMessages": { _: "ephemeral.deleteAllWelcomeMessages" } & EphemeralDeleteAllWelcomeMessagesParams;
+    "ephemeral.getWelcomeMessages": { _: "ephemeral.getWelcomeMessages" } & EphemeralGetWelcomeMessagesParams;
+    "reqPq": { _: "reqPq" } & ReqPqParams;
+    "reqPqMulti": { _: "reqPqMulti" } & ReqPqMultiParams;
+    "reqDHParams": { _: "reqDHParams" } & ReqDHParamsParams;
+    "setClientDHParams": { _: "setClientDHParams" } & SetClientDHParamsParams;
+    "destroyAuthKey": { _: "destroyAuthKey" };
+    "rpcDropAnswer": { _: "rpcDropAnswer" } & RpcDropAnswerParams;
+    "getFutureSalts": { _: "getFutureSalts" } & GetFutureSaltsParams;
+    "ping": { _: "ping" } & PingParams;
+    "pingDelayDisconnect": { _: "pingDelayDisconnect" } & PingDelayDisconnectParams;
+    "destroySession": { _: "destroySession" } & DestroySessionParams;
+  }
+  export interface RawResultMap {
+    "invokeAfterMsg": X;
+    "invokeAfterMsgs": X;
+    "initConnection": X;
+    "invokeWithLayer": X;
+    "invokeWithoutUpdates": X;
+    "invokeWithMessagesRange": X;
+    "invokeWithTakeout": X;
+    "invokeWithBusinessConnection": X;
+    "invokeWithGooglePlayIntegrity": X;
+    "invokeWithApnsSecret": X;
+    "invokeWithReCaptcha": X;
+    "auth.sendCode": auth.TypeSentCode;
+    "auth.signUp": auth.TypeAuthorization;
+    "auth.signIn": auth.TypeAuthorization;
+    "auth.logOut": auth.TypeLoggedOut;
+    "auth.resetAuthorizations": Bool;
+    "auth.exportAuthorization": auth.TypeExportedAuthorization;
+    "auth.importAuthorization": auth.TypeAuthorization;
+    "auth.bindTempAuthKey": Bool;
+    "auth.importBotAuthorization": auth.TypeAuthorization;
+    "auth.checkPassword": auth.TypeAuthorization;
+    "auth.requestPasswordRecovery": auth.TypePasswordRecovery;
+    "auth.recoverPassword": auth.TypeAuthorization;
+    "auth.resendCode": auth.TypeSentCode;
+    "auth.cancelCode": Bool;
+    "auth.dropTempAuthKeys": Bool;
+    "auth.exportLoginToken": auth.TypeLoginToken;
+    "auth.importLoginToken": auth.TypeLoginToken;
+    "auth.acceptLoginToken": Api.TypeAuthorization;
+    "auth.checkRecoveryPassword": Bool;
+    "auth.importWebTokenAuthorization": auth.TypeAuthorization;
+    "auth.requestFirebaseSms": Bool;
+    "auth.resetLoginEmail": auth.TypeSentCode;
+    "auth.reportMissingCode": Bool;
+    "auth.checkPaidAuth": auth.TypeSentCode;
+    "auth.initPasskeyLogin": auth.TypePasskeyLoginOptions;
+    "auth.finishPasskeyLogin": auth.TypeAuthorization;
+    "auth.initFirebasePnvLogin": auth.TypeFirebasePnvIntent;
+    "auth.finishFirebasePnvLogin": auth.TypeAuthorization;
+    "auth.firebasePnvSignUp": auth.TypeAuthorization;
+    "account.registerDevice": Bool;
+    "account.unregisterDevice": Bool;
+    "account.updateNotifySettings": Bool;
+    "account.getNotifySettings": Api.TypePeerNotifySettings;
+    "account.resetNotifySettings": Bool;
+    "account.updateProfile": Api.TypeUser;
+    "account.updateStatus": Bool;
+    "account.getWallPapers": account.TypeWallPapers;
+    "account.reportPeer": Bool;
+    "account.checkUsername": Bool;
+    "account.updateUsername": Api.TypeUser;
+    "account.getPrivacy": account.TypePrivacyRules;
+    "account.setPrivacy": account.TypePrivacyRules;
+    "account.deleteAccount": Bool;
+    "account.getAccountTTL": Api.TypeAccountDaysTTL;
+    "account.setAccountTTL": Bool;
+    "account.sendChangePhoneCode": auth.TypeSentCode;
+    "account.changePhone": Api.TypeUser;
+    "account.updateDeviceLocked": Bool;
+    "account.getAuthorizations": account.TypeAuthorizations;
+    "account.resetAuthorization": Bool;
+    "account.getPassword": account.TypePassword;
+    "account.getPasswordSettings": account.TypePasswordSettings;
+    "account.updatePasswordSettings": Bool;
+    "account.sendConfirmPhoneCode": auth.TypeSentCode;
+    "account.confirmPhone": Bool;
+    "account.getTmpPassword": account.TypeTmpPassword;
+    "account.getWebAuthorizations": account.TypeWebAuthorizations;
+    "account.resetWebAuthorization": Bool;
+    "account.resetWebAuthorizations": Bool;
+    "account.getAllSecureValues": Api.TypeSecureValue[];
+    "account.getSecureValue": Api.TypeSecureValue[];
+    "account.saveSecureValue": Api.TypeSecureValue;
+    "account.deleteSecureValue": Bool;
+    "account.getAuthorizationForm": account.TypeAuthorizationForm;
+    "account.acceptAuthorization": Bool;
+    "account.sendVerifyPhoneCode": auth.TypeSentCode;
+    "account.verifyPhone": Bool;
+    "account.sendVerifyEmailCode": account.TypeSentEmailCode;
+    "account.verifyEmail": account.TypeEmailVerified;
+    "account.initTakeoutSession": account.TypeTakeout;
+    "account.finishTakeoutSession": Bool;
+    "account.confirmPasswordEmail": Bool;
+    "account.resendPasswordEmail": Bool;
+    "account.cancelPasswordEmail": Bool;
+    "account.getContactSignUpNotification": Bool;
+    "account.setContactSignUpNotification": Bool;
+    "account.getNotifyExceptions": Api.TypeUpdates;
+    "account.getWallPaper": Api.TypeWallPaper;
+    "account.uploadWallPaper": Api.TypeWallPaper;
+    "account.saveWallPaper": Bool;
+    "account.installWallPaper": Bool;
+    "account.resetWallPapers": Bool;
+    "account.getAutoDownloadSettings": account.TypeAutoDownloadSettings;
+    "account.saveAutoDownloadSettings": Bool;
+    "account.uploadTheme": Api.TypeDocument;
+    "account.createTheme": Api.TypeTheme;
+    "account.updateTheme": Api.TypeTheme;
+    "account.saveTheme": Bool;
+    "account.installTheme": Bool;
+    "account.getTheme": Api.TypeTheme;
+    "account.getThemes": account.TypeThemes;
+    "account.setContentSettings": Bool;
+    "account.getContentSettings": account.TypeContentSettings;
+    "account.getMultiWallPapers": Api.TypeWallPaper[];
+    "account.getGlobalPrivacySettings": Api.TypeGlobalPrivacySettings;
+    "account.setGlobalPrivacySettings": Api.TypeGlobalPrivacySettings;
+    "account.reportProfilePhoto": Bool;
+    "account.resetPassword": account.TypeResetPasswordResult;
+    "account.declinePasswordReset": Bool;
+    "account.getChatThemes": account.TypeThemes;
+    "account.setAuthorizationTTL": Bool;
+    "account.changeAuthorizationSettings": Bool;
+    "account.getSavedRingtones": account.TypeSavedRingtones;
+    "account.saveRingtone": account.TypeSavedRingtone;
+    "account.uploadRingtone": Api.TypeDocument;
+    "account.updateEmojiStatus": Bool;
+    "account.getDefaultEmojiStatuses": account.TypeEmojiStatuses;
+    "account.getRecentEmojiStatuses": account.TypeEmojiStatuses;
+    "account.clearRecentEmojiStatuses": Bool;
+    "account.reorderUsernames": Bool;
+    "account.toggleUsername": Bool;
+    "account.getDefaultProfilePhotoEmojis": Api.TypeEmojiList;
+    "account.getDefaultGroupPhotoEmojis": Api.TypeEmojiList;
+    "account.getAutoSaveSettings": account.TypeAutoSaveSettings;
+    "account.saveAutoSaveSettings": Bool;
+    "account.deleteAutoSaveExceptions": Bool;
+    "account.invalidateSignInCodes": Bool;
+    "account.updateColor": Bool;
+    "account.getDefaultBackgroundEmojis": Api.TypeEmojiList;
+    "account.getChannelDefaultEmojiStatuses": account.TypeEmojiStatuses;
+    "account.getChannelRestrictedStatusEmojis": Api.TypeEmojiList;
+    "account.updateBusinessWorkHours": Bool;
+    "account.updateBusinessLocation": Bool;
+    "account.updateBusinessGreetingMessage": Bool;
+    "account.updateBusinessAwayMessage": Bool;
+    "account.updateConnectedBot": Api.TypeUpdates;
+    "account.getConnectedBots": account.TypeConnectedBots;
+    "account.getBotBusinessConnection": Api.TypeUpdates;
+    "account.updateBusinessIntro": Bool;
+    "account.toggleConnectedBotPaused": Bool;
+    "account.disablePeerConnectedBot": Bool;
+    "account.updateBirthday": Bool;
+    "account.createBusinessChatLink": Api.TypeBusinessChatLink;
+    "account.editBusinessChatLink": Api.TypeBusinessChatLink;
+    "account.deleteBusinessChatLink": Bool;
+    "account.getBusinessChatLinks": account.TypeBusinessChatLinks;
+    "account.resolveBusinessChatLink": account.TypeResolvedBusinessChatLinks;
+    "account.updatePersonalChannel": Bool;
+    "account.toggleSponsoredMessages": Bool;
+    "account.getReactionsNotifySettings": Api.TypeReactionsNotifySettings;
+    "account.setReactionsNotifySettings": Api.TypeReactionsNotifySettings;
+    "account.getCollectibleEmojiStatuses": account.TypeEmojiStatuses;
+    "account.getPaidMessagesRevenue": account.TypePaidMessagesRevenue;
+    "account.toggleNoPaidMessagesException": Bool;
+    "account.setMainProfileTab": Bool;
+    "account.saveMusic": Bool;
+    "account.getSavedMusicIds": account.TypeSavedMusicIds;
+    "account.getUniqueGiftChatThemes": account.TypeChatThemes;
+    "account.initPasskeyRegistration": account.TypePasskeyRegistrationOptions;
+    "account.registerPasskey": Api.TypePasskey;
+    "account.getPasskeys": account.TypePasskeys;
+    "account.deletePasskey": Bool;
+    "account.confirmBotConnection": Bool;
+    "account.getWebBrowserSettings": account.TypeWebBrowserSettings;
+    "account.updateWebBrowserSettings": account.TypeWebBrowserSettings;
+    "account.toggleWebBrowserSettingsException": Api.TypeUpdates;
+    "account.deleteWebBrowserSettingsExceptions": account.TypeWebBrowserSettings;
+    "users.getUsers": Api.TypeUser[];
+    "users.getFullUser": users.TypeUserFull;
+    "users.setSecureValueErrors": Bool;
+    "users.getRequirementsToContact": Api.TypeRequirementToContact[];
+    "users.getSavedMusic": users.TypeSavedMusic;
+    "users.getSavedMusicByID": users.TypeSavedMusic;
+    "users.suggestBirthday": Api.TypeUpdates;
+    "contacts.getContactIDs": int[];
+    "contacts.getStatuses": Api.TypeContactStatus[];
+    "contacts.getContacts": contacts.TypeContacts;
+    "contacts.importContacts": contacts.TypeImportedContacts;
+    "contacts.deleteContacts": Api.TypeUpdates;
+    "contacts.deleteByPhones": Bool;
+    "contacts.block": Bool;
+    "contacts.unblock": Bool;
+    "contacts.getBlocked": contacts.TypeBlocked;
+    "contacts.search": contacts.TypeFound;
+    "contacts.resolveUsername": contacts.TypeResolvedPeer;
+    "contacts.getTopPeers": contacts.TypeTopPeers;
+    "contacts.resetTopPeerRating": Bool;
+    "contacts.resetSaved": Bool;
+    "contacts.getSaved": Api.TypeSavedContact[];
+    "contacts.toggleTopPeers": Bool;
+    "contacts.addContact": Api.TypeUpdates;
+    "contacts.acceptContact": Api.TypeUpdates;
+    "contacts.getLocated": Api.TypeUpdates;
+    "contacts.blockFromReplies": Api.TypeUpdates;
+    "contacts.resolvePhone": contacts.TypeResolvedPeer;
+    "contacts.exportContactToken": Api.TypeExportedContactToken;
+    "contacts.importContactToken": Api.TypeUser;
+    "contacts.editCloseFriends": Bool;
+    "contacts.setBlocked": Bool;
+    "contacts.getBirthdays": contacts.TypeContactBirthdays;
+    "contacts.getSponsoredPeers": contacts.TypeSponsoredPeers;
+    "contacts.updateContactNote": Bool;
+    "messages.getMessages": messages.TypeMessages;
+    "messages.getDialogs": messages.TypeDialogs;
+    "messages.getHistory": messages.TypeMessages;
+    "messages.search": messages.TypeMessages;
+    "messages.readHistory": messages.TypeAffectedMessages;
+    "messages.deleteHistory": messages.TypeAffectedHistory;
+    "messages.deleteMessages": messages.TypeAffectedMessages;
+    "messages.receivedMessages": Api.TypeReceivedNotifyMessage[];
+    "messages.setTyping": Bool;
+    "messages.sendMessage": Api.TypeUpdates;
+    "messages.sendMedia": Api.TypeUpdates;
+    "messages.forwardMessages": Api.TypeUpdates;
+    "messages.reportSpam": Bool;
+    "messages.getPeerSettings": messages.TypePeerSettings;
+    "messages.report": Api.TypeReportResult;
+    "messages.getChats": messages.TypeChats;
+    "messages.getFullChat": messages.TypeChatFull;
+    "messages.editChatTitle": Api.TypeUpdates;
+    "messages.editChatPhoto": Api.TypeUpdates;
+    "messages.addChatUser": messages.TypeInvitedUsers;
+    "messages.deleteChatUser": Api.TypeUpdates;
+    "messages.createChat": messages.TypeInvitedUsers;
+    "messages.getDhConfig": messages.TypeDhConfig;
+    "messages.requestEncryption": Api.TypeEncryptedChat;
+    "messages.acceptEncryption": Api.TypeEncryptedChat;
+    "messages.discardEncryption": Bool;
+    "messages.setEncryptedTyping": Bool;
+    "messages.readEncryptedHistory": Bool;
+    "messages.sendEncrypted": messages.TypeSentEncryptedMessage;
+    "messages.sendEncryptedFile": messages.TypeSentEncryptedMessage;
+    "messages.sendEncryptedService": messages.TypeSentEncryptedMessage;
+    "messages.receivedQueue": long[];
+    "messages.reportEncryptedSpam": Bool;
+    "messages.readMessageContents": messages.TypeAffectedMessages;
+    "messages.getStickers": messages.TypeStickers;
+    "messages.getAllStickers": messages.TypeAllStickers;
+    "messages.getWebPagePreview": messages.TypeWebPagePreview;
+    "messages.exportChatInvite": Api.TypeExportedChatInvite;
+    "messages.checkChatInvite": Api.TypeChatInvite;
+    "messages.importChatInvite": messages.TypeChatInviteJoinResult;
+    "messages.getStickerSet": messages.TypeStickerSet;
+    "messages.installStickerSet": messages.TypeStickerSetInstallResult;
+    "messages.uninstallStickerSet": Bool;
+    "messages.startBot": Api.TypeUpdates;
+    "messages.getMessagesViews": messages.TypeMessageViews;
+    "messages.editChatAdmin": Bool;
+    "messages.migrateChat": Api.TypeUpdates;
+    "messages.searchGlobal": messages.TypeMessages;
+    "messages.reorderStickerSets": Bool;
+    "messages.getDocumentByHash": Api.TypeDocument;
+    "messages.getSavedGifs": messages.TypeSavedGifs;
+    "messages.saveGif": Bool;
+    "messages.getInlineBotResults": messages.TypeBotResults;
+    "messages.setInlineBotResults": Bool;
+    "messages.sendInlineBotResult": Api.TypeUpdates;
+    "messages.getMessageEditData": messages.TypeMessageEditData;
+    "messages.editMessage": Api.TypeUpdates;
+    "messages.editInlineBotMessage": Bool;
+    "messages.getBotCallbackAnswer": messages.TypeBotCallbackAnswer;
+    "messages.setBotCallbackAnswer": Bool;
+    "messages.getPeerDialogs": messages.TypePeerDialogs;
+    "messages.saveDraft": Bool;
+    "messages.getAllDrafts": Api.TypeUpdates;
+    "messages.getFeaturedStickers": messages.TypeFeaturedStickers;
+    "messages.readFeaturedStickers": Bool;
+    "messages.getRecentStickers": messages.TypeRecentStickers;
+    "messages.saveRecentSticker": Bool;
+    "messages.clearRecentStickers": Bool;
+    "messages.getArchivedStickers": messages.TypeArchivedStickers;
+    "messages.getMaskStickers": messages.TypeAllStickers;
+    "messages.getAttachedStickers": Api.TypeStickerSetCovered[];
+    "messages.setGameScore": Api.TypeUpdates;
+    "messages.setInlineGameScore": Bool;
+    "messages.getGameHighScores": messages.TypeHighScores;
+    "messages.getInlineGameHighScores": messages.TypeHighScores;
+    "messages.getCommonChats": messages.TypeChats;
+    "messages.getWebPage": messages.TypeWebPage;
+    "messages.toggleDialogPin": Bool;
+    "messages.reorderPinnedDialogs": Bool;
+    "messages.getPinnedDialogs": messages.TypePeerDialogs;
+    "messages.setBotShippingResults": Bool;
+    "messages.setBotPrecheckoutResults": Bool;
+    "messages.uploadMedia": Api.TypeMessageMedia;
+    "messages.sendScreenshotNotification": Api.TypeUpdates;
+    "messages.getFavedStickers": messages.TypeFavedStickers;
+    "messages.faveSticker": Bool;
+    "messages.getUnreadMentions": messages.TypeMessages;
+    "messages.readMentions": messages.TypeAffectedHistory;
+    "messages.getRecentLocations": messages.TypeMessages;
+    "messages.sendMultiMedia": Api.TypeUpdates;
+    "messages.uploadEncryptedFile": Api.TypeEncryptedFile;
+    "messages.searchStickerSets": messages.TypeFoundStickerSets;
+    "messages.getSplitRanges": Api.TypeMessageRange[];
+    "messages.markDialogUnread": Bool;
+    "messages.getDialogUnreadMarks": Api.TypeDialogPeer[];
+    "messages.clearAllDrafts": Bool;
+    "messages.updatePinnedMessage": Api.TypeUpdates;
+    "messages.sendVote": Api.TypeUpdates;
+    "messages.getPollResults": Api.TypeUpdates;
+    "messages.getOnlines": Api.TypeChatOnlines;
+    "messages.editChatAbout": Bool;
+    "messages.editChatDefaultBannedRights": Api.TypeUpdates;
+    "messages.getEmojiKeywords": Api.TypeEmojiKeywordsDifference;
+    "messages.getEmojiKeywordsDifference": Api.TypeEmojiKeywordsDifference;
+    "messages.getEmojiKeywordsLanguages": Api.TypeEmojiLanguage[];
+    "messages.getEmojiURL": Api.TypeEmojiURL;
+    "messages.getSearchCounters": messages.TypeSearchCounter[];
+    "messages.requestUrlAuth": Api.TypeUrlAuthResult;
+    "messages.acceptUrlAuth": Api.TypeUrlAuthResult;
+    "messages.hidePeerSettingsBar": Bool;
+    "messages.getScheduledHistory": messages.TypeMessages;
+    "messages.getScheduledMessages": messages.TypeMessages;
+    "messages.sendScheduledMessages": Api.TypeUpdates;
+    "messages.deleteScheduledMessages": Api.TypeUpdates;
+    "messages.getPollVotes": messages.TypeVotesList;
+    "messages.toggleStickerSets": Bool;
+    "messages.getDialogFilters": messages.TypeDialogFilters;
+    "messages.getSuggestedDialogFilters": Api.TypeDialogFilterSuggested[];
+    "messages.updateDialogFilter": Bool;
+    "messages.updateDialogFiltersOrder": Bool;
+    "messages.getOldFeaturedStickers": messages.TypeFeaturedStickers;
+    "messages.getReplies": messages.TypeMessages;
+    "messages.getDiscussionMessage": messages.TypeDiscussionMessage;
+    "messages.readDiscussion": Bool;
+    "messages.unpinAllMessages": messages.TypeAffectedHistory;
+    "messages.deleteChat": Bool;
+    "messages.deletePhoneCallHistory": messages.TypeAffectedFoundMessages;
+    "messages.checkHistoryImport": messages.TypeHistoryImportParsed;
+    "messages.initHistoryImport": messages.TypeHistoryImport;
+    "messages.uploadImportedMedia": Api.TypeMessageMedia;
+    "messages.startHistoryImport": Bool;
+    "messages.getExportedChatInvites": messages.TypeExportedChatInvites;
+    "messages.getExportedChatInvite": messages.TypeExportedChatInvite;
+    "messages.editExportedChatInvite": messages.TypeExportedChatInvite;
+    "messages.deleteRevokedExportedChatInvites": Bool;
+    "messages.deleteExportedChatInvite": Bool;
+    "messages.getAdminsWithInvites": messages.TypeChatAdminsWithInvites;
+    "messages.getChatInviteImporters": messages.TypeChatInviteImporters;
+    "messages.setHistoryTTL": Api.TypeUpdates;
+    "messages.checkHistoryImportPeer": messages.TypeCheckedHistoryImportPeer;
+    "messages.setChatTheme": Api.TypeUpdates;
+    "messages.getMessageReadParticipants": Api.TypeReadParticipantDate[];
+    "messages.getSearchResultsCalendar": messages.TypeSearchResultsCalendar;
+    "messages.getSearchResultsPositions": messages.TypeSearchResultsPositions;
+    "messages.hideChatJoinRequest": Api.TypeUpdates;
+    "messages.hideAllChatJoinRequests": Api.TypeUpdates;
+    "messages.toggleNoForwards": Api.TypeUpdates;
+    "messages.saveDefaultSendAs": Bool;
+    "messages.sendReaction": Api.TypeUpdates;
+    "messages.getMessagesReactions": Api.TypeUpdates;
+    "messages.getMessageReactionsList": messages.TypeMessageReactionsList;
+    "messages.setChatAvailableReactions": Api.TypeUpdates;
+    "messages.getAvailableReactions": messages.TypeAvailableReactions;
+    "messages.setDefaultReaction": Bool;
+    "messages.translateText": messages.TypeTranslatedText;
+    "messages.getUnreadReactions": messages.TypeMessages;
+    "messages.readReactions": messages.TypeAffectedHistory;
+    "messages.searchSentMedia": messages.TypeMessages;
+    "messages.getAttachMenuBots": Api.TypeAttachMenuBots;
+    "messages.getAttachMenuBot": Api.TypeAttachMenuBotsBot;
+    "messages.toggleBotInAttachMenu": Bool;
+    "messages.requestWebView": Api.TypeWebViewResult;
+    "messages.prolongWebView": Bool;
+    "messages.requestSimpleWebView": Api.TypeWebViewResult;
+    "messages.sendWebViewResultMessage": Api.TypeWebViewMessageSent;
+    "messages.sendWebViewData": Api.TypeUpdates;
+    "messages.transcribeAudio": messages.TypeTranscribedAudio;
+    "messages.rateTranscribedAudio": Bool;
+    "messages.getCustomEmojiDocuments": Api.TypeDocument[];
+    "messages.getEmojiStickers": messages.TypeAllStickers;
+    "messages.getFeaturedEmojiStickers": messages.TypeFeaturedStickers;
+    "messages.reportReaction": Bool;
+    "messages.getTopReactions": messages.TypeReactions;
+    "messages.getRecentReactions": messages.TypeReactions;
+    "messages.clearRecentReactions": Bool;
+    "messages.getExtendedMedia": Api.TypeUpdates;
+    "messages.setDefaultHistoryTTL": Bool;
+    "messages.getDefaultHistoryTTL": Api.TypeDefaultHistoryTTL;
+    "messages.sendBotRequestedPeer": Api.TypeUpdates;
+    "messages.getEmojiGroups": messages.TypeEmojiGroups;
+    "messages.getEmojiStatusGroups": messages.TypeEmojiGroups;
+    "messages.getEmojiProfilePhotoGroups": messages.TypeEmojiGroups;
+    "messages.searchCustomEmoji": Api.TypeEmojiList;
+    "messages.togglePeerTranslations": Bool;
+    "messages.getBotApp": messages.TypeBotApp;
+    "messages.requestAppWebView": Api.TypeWebViewResult;
+    "messages.setChatWallPaper": Api.TypeUpdates;
+    "messages.searchEmojiStickerSets": messages.TypeFoundStickerSets;
+    "messages.getSavedDialogs": messages.TypeSavedDialogs;
+    "messages.getSavedHistory": messages.TypeMessages;
+    "messages.deleteSavedHistory": messages.TypeAffectedHistory;
+    "messages.getPinnedSavedDialogs": messages.TypeSavedDialogs;
+    "messages.toggleSavedDialogPin": Bool;
+    "messages.reorderPinnedSavedDialogs": Bool;
+    "messages.getSavedReactionTags": messages.TypeSavedReactionTags;
+    "messages.updateSavedReactionTag": Bool;
+    "messages.getDefaultTagReactions": messages.TypeReactions;
+    "messages.getOutboxReadDate": Api.TypeOutboxReadDate;
+    "messages.getQuickReplies": messages.TypeQuickReplies;
+    "messages.reorderQuickReplies": Bool;
+    "messages.checkQuickReplyShortcut": Bool;
+    "messages.editQuickReplyShortcut": Bool;
+    "messages.deleteQuickReplyShortcut": Bool;
+    "messages.getQuickReplyMessages": messages.TypeMessages;
+    "messages.sendQuickReplyMessages": Api.TypeUpdates;
+    "messages.deleteQuickReplyMessages": Api.TypeUpdates;
+    "messages.toggleDialogFilterTags": Bool;
+    "messages.getMyStickers": messages.TypeMyStickers;
+    "messages.getEmojiStickerGroups": messages.TypeEmojiGroups;
+    "messages.getAvailableEffects": messages.TypeAvailableEffects;
+    "messages.editFactCheck": Api.TypeUpdates;
+    "messages.deleteFactCheck": Api.TypeUpdates;
+    "messages.getFactCheck": Api.TypeFactCheck[];
+    "messages.requestMainWebView": Api.TypeWebViewResult;
+    "messages.sendPaidReaction": Api.TypeUpdates;
+    "messages.togglePaidReactionPrivacy": Bool;
+    "messages.getPaidReactionPrivacy": Api.TypeUpdates;
+    "messages.viewSponsoredMessage": Bool;
+    "messages.clickSponsoredMessage": Bool;
+    "messages.reportSponsoredMessage": channels.TypeSponsoredMessageReportResult;
+    "messages.getSponsoredMessages": messages.TypeSponsoredMessages;
+    "messages.savePreparedInlineMessage": messages.TypeBotPreparedInlineMessage;
+    "messages.getPreparedInlineMessage": messages.TypePreparedInlineMessage;
+    "messages.searchStickers": messages.TypeFoundStickers;
+    "messages.reportMessagesDelivery": Bool;
+    "messages.getSavedDialogsByID": messages.TypeSavedDialogs;
+    "messages.readSavedHistory": Bool;
+    "messages.toggleTodoCompleted": Api.TypeUpdates;
+    "messages.appendTodoList": Api.TypeUpdates;
+    "messages.toggleSuggestedPostApproval": Api.TypeUpdates;
+    "messages.getForumTopics": messages.TypeForumTopics;
+    "messages.getForumTopicsByID": messages.TypeForumTopics;
+    "messages.editForumTopic": Api.TypeUpdates;
+    "messages.updatePinnedForumTopic": Api.TypeUpdates;
+    "messages.reorderPinnedForumTopics": Api.TypeUpdates;
+    "messages.createForumTopic": Api.TypeUpdates;
+    "messages.deleteTopicHistory": messages.TypeAffectedHistory;
+    "messages.getEmojiGameInfo": messages.TypeEmojiGameInfo;
+    "messages.summarizeText": Api.TypeTextWithEntities;
+    "messages.editChatCreator": Api.TypeUpdates;
+    "messages.getFutureChatCreatorAfterLeave": Api.TypeUser;
+    "messages.editChatParticipantRank": Api.TypeUpdates;
+    "messages.declineUrlAuth": Bool;
+    "messages.checkUrlAuthMatchCode": Bool;
+    "messages.composeMessageWithAI": messages.TypeComposedMessageWithAI;
+    "messages.reportReadMetrics": Bool;
+    "messages.reportMusicListen": Bool;
+    "messages.addPollAnswer": Api.TypeUpdates;
+    "messages.deletePollAnswer": Api.TypeUpdates;
+    "messages.getUnreadPollVotes": messages.TypeMessages;
+    "messages.readPollVotes": messages.TypeAffectedHistory;
+    "messages.setBotGuestChatResult": Api.TypeInputBotInlineMessageID;
+    "messages.deleteParticipantReactions": Bool;
+    "messages.deleteParticipantReaction": Api.TypeUpdates;
+    "messages.getPersonalChannelHistory": messages.TypeMessages;
+    "messages.getRichMessage": messages.TypeMessages;
+    "messages.translateRichMessage": messages.TypeTranslatedRichMessage;
+    "messages.composeRichMessageWithAI": messages.TypeComposedRichMessageWithAI;
+    "messages.requestChatJoinWebView": Api.TypeWebViewResult;
+    "updates.getState": updates.TypeState;
+    "updates.getDifference": updates.TypeDifference;
+    "updates.getChannelDifference": updates.TypeChannelDifference;
+    "photos.updateProfilePhoto": photos.TypePhoto;
+    "photos.uploadProfilePhoto": photos.TypePhoto;
+    "photos.deletePhotos": long[];
+    "photos.getUserPhotos": photos.TypePhotos;
+    "photos.uploadContactProfilePhoto": photos.TypePhoto;
+    "upload.saveFilePart": Bool;
+    "upload.getFile": upload.TypeFile;
+    "upload.saveBigFilePart": Bool;
+    "upload.getWebFile": upload.TypeWebFile;
+    "upload.getCdnFile": upload.TypeCdnFile;
+    "upload.reuploadCdnFile": Api.TypeFileHash[];
+    "upload.getCdnFileHashes": Api.TypeFileHash[];
+    "upload.getFileHashes": Api.TypeFileHash[];
+    "help.getConfig": Api.TypeConfig;
+    "help.getNearestDc": Api.TypeNearestDc;
+    "help.getAppUpdate": help.TypeAppUpdate;
+    "help.getInviteText": help.TypeInviteText;
+    "help.getSupport": help.TypeSupport;
+    "help.setBotUpdatesStatus": Bool;
+    "help.getCdnConfig": Api.TypeCdnConfig;
+    "help.getRecentMeUrls": help.TypeRecentMeUrls;
+    "help.getTermsOfServiceUpdate": help.TypeTermsOfServiceUpdate;
+    "help.acceptTermsOfService": Bool;
+    "help.getDeepLinkInfo": help.TypeDeepLinkInfo;
+    "help.getAppConfig": help.TypeAppConfig;
+    "help.saveAppLog": Bool;
+    "help.getPassportConfig": help.TypePassportConfig;
+    "help.getSupportName": help.TypeSupportName;
+    "help.getUserInfo": help.TypeUserInfo;
+    "help.editUserInfo": help.TypeUserInfo;
+    "help.getPromoData": help.TypePromoData;
+    "help.hidePromoData": Bool;
+    "help.dismissSuggestion": Bool;
+    "help.getCountriesList": help.TypeCountriesList;
+    "help.getPremiumPromo": help.TypePremiumPromo;
+    "help.getPeerColors": help.TypePeerColors;
+    "help.getPeerProfileColors": help.TypePeerColors;
+    "help.getTimezonesList": help.TypeTimezonesList;
+    "channels.readHistory": Bool;
+    "channels.deleteMessages": messages.TypeAffectedMessages;
+    "channels.reportSpam": Bool;
+    "channels.getMessages": messages.TypeMessages;
+    "channels.getParticipants": channels.TypeChannelParticipants;
+    "channels.getParticipant": channels.TypeChannelParticipant;
+    "channels.getChannels": messages.TypeChats;
+    "channels.getFullChannel": messages.TypeChatFull;
+    "channels.createChannel": Api.TypeUpdates;
+    "channels.editAdmin": Api.TypeUpdates;
+    "channels.editTitle": Api.TypeUpdates;
+    "channels.editPhoto": Api.TypeUpdates;
+    "channels.checkUsername": Bool;
+    "channels.updateUsername": Bool;
+    "channels.joinChannel": messages.TypeChatInviteJoinResult;
+    "channels.leaveChannel": Api.TypeUpdates;
+    "channels.inviteToChannel": messages.TypeInvitedUsers;
+    "channels.deleteChannel": Api.TypeUpdates;
+    "channels.exportMessageLink": Api.TypeExportedMessageLink;
+    "channels.toggleSignatures": Api.TypeUpdates;
+    "channels.getAdminedPublicChannels": messages.TypeChats;
+    "channels.editBanned": Api.TypeUpdates;
+    "channels.getAdminLog": channels.TypeAdminLogResults;
+    "channels.setStickers": Bool;
+    "channels.readMessageContents": Bool;
+    "channels.deleteHistory": Api.TypeUpdates;
+    "channels.togglePreHistoryHidden": Api.TypeUpdates;
+    "channels.getLeftChannels": messages.TypeChats;
+    "channels.getGroupsForDiscussion": messages.TypeChats;
+    "channels.setDiscussionGroup": Bool;
+    "channels.editLocation": Bool;
+    "channels.toggleSlowMode": Api.TypeUpdates;
+    "channels.getInactiveChannels": messages.TypeInactiveChats;
+    "channels.convertToGigagroup": Api.TypeUpdates;
+    "channels.getSendAs": channels.TypeSendAsPeers;
+    "channels.deleteParticipantHistory": messages.TypeAffectedHistory;
+    "channels.toggleJoinToSend": Api.TypeUpdates;
+    "channels.toggleJoinRequest": Api.TypeUpdates;
+    "channels.reorderUsernames": Bool;
+    "channels.toggleUsername": Bool;
+    "channels.deactivateAllUsernames": Bool;
+    "channels.toggleForum": Api.TypeUpdates;
+    "channels.toggleAntiSpam": Api.TypeUpdates;
+    "channels.reportAntiSpamFalsePositive": Bool;
+    "channels.toggleParticipantsHidden": Api.TypeUpdates;
+    "channels.updateColor": Api.TypeUpdates;
+    "channels.toggleViewForumAsMessages": Api.TypeUpdates;
+    "channels.getChannelRecommendations": messages.TypeChats;
+    "channels.updateEmojiStatus": Api.TypeUpdates;
+    "channels.setBoostsToUnblockRestrictions": Api.TypeUpdates;
+    "channels.setEmojiStickers": Bool;
+    "channels.restrictSponsoredMessages": Api.TypeUpdates;
+    "channels.searchPosts": messages.TypeMessages;
+    "channels.updatePaidMessagesPrice": Api.TypeUpdates;
+    "channels.toggleAutotranslation": Api.TypeUpdates;
+    "channels.getMessageAuthor": Api.TypeUser;
+    "channels.checkSearchPostsFlood": Api.TypeSearchPostsFlood;
+    "channels.setMainProfileTab": Bool;
+    "bots.sendCustomRequest": Api.TypeDataJSON;
+    "bots.answerWebhookJSONQuery": Bool;
+    "bots.setBotCommands": Bool;
+    "bots.resetBotCommands": Bool;
+    "bots.getBotCommands": Api.TypeBotCommand[];
+    "bots.setBotMenuButton": Bool;
+    "bots.getBotMenuButton": Api.TypeBotMenuButton;
+    "bots.setBotBroadcastDefaultAdminRights": Bool;
+    "bots.setBotGroupDefaultAdminRights": Bool;
+    "bots.setBotInfo": Bool;
+    "bots.getBotInfo": bots.TypeBotInfo;
+    "bots.reorderUsernames": Bool;
+    "bots.toggleUsername": Bool;
+    "bots.canSendMessage": Bool;
+    "bots.allowSendMessage": Api.TypeUpdates;
+    "bots.invokeWebViewCustomMethod": Api.TypeDataJSON;
+    "bots.getPopularAppBots": bots.TypePopularAppBots;
+    "bots.addPreviewMedia": Api.TypeBotPreviewMedia;
+    "bots.editPreviewMedia": Api.TypeBotPreviewMedia;
+    "bots.deletePreviewMedia": Bool;
+    "bots.reorderPreviewMedias": Bool;
+    "bots.getPreviewInfo": bots.TypePreviewInfo;
+    "bots.getPreviewMedias": Api.TypeBotPreviewMedia[];
+    "bots.updateUserEmojiStatus": Bool;
+    "bots.toggleUserEmojiStatusPermission": Bool;
+    "bots.checkDownloadFileParams": Bool;
+    "bots.getAdminedBots": Api.TypeUser[];
+    "bots.updateStarRefProgram": Api.TypeStarRefProgram;
+    "bots.setCustomVerification": Bool;
+    "bots.getBotRecommendations": users.TypeUsers;
+    "bots.checkUsername": Bool;
+    "bots.createBot": Api.TypeUser;
+    "bots.exportBotToken": bots.TypeExportedBotToken;
+    "bots.requestWebViewButton": bots.TypeRequestedButton;
+    "bots.getRequestedWebViewButton": Api.TypeKeyboardButton;
+    "bots.getAccessSettings": bots.TypeAccessSettings;
+    "bots.editAccessSettings": Bool;
+    "bots.setJoinChatResults": Bool;
+    "payments.getPaymentForm": payments.TypePaymentForm;
+    "payments.getPaymentReceipt": payments.TypePaymentReceipt;
+    "payments.validateRequestedInfo": payments.TypeValidatedRequestedInfo;
+    "payments.sendPaymentForm": payments.TypePaymentResult;
+    "payments.getSavedInfo": payments.TypeSavedInfo;
+    "payments.clearSavedInfo": Bool;
+    "payments.getBankCardData": payments.TypeBankCardData;
+    "payments.exportInvoice": payments.TypeExportedInvoice;
+    "payments.assignAppStoreTransaction": Api.TypeUpdates;
+    "payments.assignPlayMarketTransaction": Api.TypeUpdates;
+    "payments.getPremiumGiftCodeOptions": Api.TypePremiumGiftCodeOption[];
+    "payments.checkGiftCode": payments.TypeCheckedGiftCode;
+    "payments.applyGiftCode": Api.TypeUpdates;
+    "payments.getGiveawayInfo": payments.TypeGiveawayInfo;
+    "payments.launchPrepaidGiveaway": Api.TypeUpdates;
+    "payments.getStarsTopupOptions": Api.TypeStarsTopupOption[];
+    "payments.getStarsStatus": payments.TypeStarsStatus;
+    "payments.getStarsTransactions": payments.TypeStarsStatus;
+    "payments.sendStarsForm": payments.TypePaymentResult;
+    "payments.refundStarsCharge": Api.TypeUpdates;
+    "payments.getStarsRevenueStats": payments.TypeStarsRevenueStats;
+    "payments.getStarsRevenueWithdrawalUrl": payments.TypeStarsRevenueWithdrawalUrl;
+    "payments.getStarsRevenueAdsAccountUrl": payments.TypeStarsRevenueAdsAccountUrl;
+    "payments.getStarsTransactionsByID": payments.TypeStarsStatus;
+    "payments.getStarsGiftOptions": Api.TypeStarsGiftOption[];
+    "payments.getStarsSubscriptions": payments.TypeStarsStatus;
+    "payments.changeStarsSubscription": Bool;
+    "payments.fulfillStarsSubscription": Bool;
+    "payments.getStarsGiveawayOptions": Api.TypeStarsGiveawayOption[];
+    "payments.getStarGifts": payments.TypeStarGifts;
+    "payments.saveStarGift": Bool;
+    "payments.convertStarGift": Bool;
+    "payments.botCancelStarsSubscription": Bool;
+    "payments.getConnectedStarRefBots": payments.TypeConnectedStarRefBots;
+    "payments.getConnectedStarRefBot": payments.TypeConnectedStarRefBots;
+    "payments.getSuggestedStarRefBots": payments.TypeSuggestedStarRefBots;
+    "payments.connectStarRefBot": payments.TypeConnectedStarRefBots;
+    "payments.editConnectedStarRefBot": payments.TypeConnectedStarRefBots;
+    "payments.getStarGiftUpgradePreview": payments.TypeStarGiftUpgradePreview;
+    "payments.upgradeStarGift": Api.TypeUpdates;
+    "payments.transferStarGift": Api.TypeUpdates;
+    "payments.getUniqueStarGift": payments.TypeUniqueStarGift;
+    "payments.getSavedStarGifts": payments.TypeSavedStarGifts;
+    "payments.getSavedStarGift": payments.TypeSavedStarGifts;
+    "payments.getStarGiftWithdrawalUrl": payments.TypeStarGiftWithdrawalUrl;
+    "payments.toggleChatStarGiftNotifications": Bool;
+    "payments.toggleStarGiftsPinnedToTop": Bool;
+    "payments.canPurchaseStore": Bool;
+    "payments.getResaleStarGifts": payments.TypeResaleStarGifts;
+    "payments.updateStarGiftPrice": Api.TypeUpdates;
+    "payments.createStarGiftCollection": Api.TypeStarGiftCollection;
+    "payments.updateStarGiftCollection": Api.TypeStarGiftCollection;
+    "payments.reorderStarGiftCollections": Bool;
+    "payments.deleteStarGiftCollection": Bool;
+    "payments.getStarGiftCollections": payments.TypeStarGiftCollections;
+    "payments.getUniqueStarGiftValueInfo": payments.TypeUniqueStarGiftValueInfo;
+    "payments.checkCanSendGift": payments.TypeCheckCanSendGiftResult;
+    "payments.getStarGiftAuctionState": payments.TypeStarGiftAuctionState;
+    "payments.getStarGiftAuctionAcquiredGifts": payments.TypeStarGiftAuctionAcquiredGifts;
+    "payments.getStarGiftActiveAuctions": payments.TypeStarGiftActiveAuctions;
+    "payments.resolveStarGiftOffer": Api.TypeUpdates;
+    "payments.sendStarGiftOffer": Api.TypeUpdates;
+    "payments.getStarGiftUpgradeAttributes": payments.TypeStarGiftUpgradeAttributes;
+    "payments.getCraftStarGifts": payments.TypeSavedStarGifts;
+    "payments.craftStarGift": Api.TypeUpdates;
+    "stickers.createStickerSet": messages.TypeStickerSet;
+    "stickers.removeStickerFromSet": messages.TypeStickerSet;
+    "stickers.changeStickerPosition": messages.TypeStickerSet;
+    "stickers.addStickerToSet": messages.TypeStickerSet;
+    "stickers.setStickerSetThumb": messages.TypeStickerSet;
+    "stickers.checkShortName": Bool;
+    "stickers.suggestShortName": stickers.TypeSuggestedShortName;
+    "stickers.changeSticker": messages.TypeStickerSet;
+    "stickers.renameStickerSet": messages.TypeStickerSet;
+    "stickers.deleteStickerSet": Bool;
+    "stickers.replaceSticker": messages.TypeStickerSet;
+    "phone.getCallConfig": Api.TypeDataJSON;
+    "phone.requestCall": phone.TypePhoneCall;
+    "phone.acceptCall": phone.TypePhoneCall;
+    "phone.confirmCall": phone.TypePhoneCall;
+    "phone.receivedCall": Bool;
+    "phone.discardCall": Api.TypeUpdates;
+    "phone.setCallRating": Api.TypeUpdates;
+    "phone.saveCallDebug": Bool;
+    "phone.sendSignalingData": Bool;
+    "phone.createGroupCall": Api.TypeUpdates;
+    "phone.joinGroupCall": Api.TypeUpdates;
+    "phone.leaveGroupCall": Api.TypeUpdates;
+    "phone.inviteToGroupCall": Api.TypeUpdates;
+    "phone.discardGroupCall": Api.TypeUpdates;
+    "phone.toggleGroupCallSettings": Api.TypeUpdates;
+    "phone.getGroupCall": phone.TypeGroupCall;
+    "phone.getGroupParticipants": phone.TypeGroupParticipants;
+    "phone.checkGroupCall": int[];
+    "phone.toggleGroupCallRecord": Api.TypeUpdates;
+    "phone.editGroupCallParticipant": Api.TypeUpdates;
+    "phone.editGroupCallTitle": Api.TypeUpdates;
+    "phone.getGroupCallJoinAs": phone.TypeJoinAsPeers;
+    "phone.exportGroupCallInvite": phone.TypeExportedGroupCallInvite;
+    "phone.toggleGroupCallStartSubscription": Api.TypeUpdates;
+    "phone.startScheduledGroupCall": Api.TypeUpdates;
+    "phone.saveDefaultGroupCallJoinAs": Bool;
+    "phone.joinGroupCallPresentation": Api.TypeUpdates;
+    "phone.leaveGroupCallPresentation": Api.TypeUpdates;
+    "phone.getGroupCallStreamChannels": phone.TypeGroupCallStreamChannels;
+    "phone.getGroupCallStreamRtmpUrl": phone.TypeGroupCallStreamRtmpUrl;
+    "phone.saveCallLog": Bool;
+    "phone.createConferenceCall": Api.TypeUpdates;
+    "phone.deleteConferenceCallParticipants": Api.TypeUpdates;
+    "phone.sendConferenceCallBroadcast": Api.TypeUpdates;
+    "phone.inviteConferenceCallParticipant": Api.TypeUpdates;
+    "phone.declineConferenceCallInvite": Api.TypeUpdates;
+    "phone.getGroupCallChainBlocks": Api.TypeUpdates;
+    "phone.sendGroupCallMessage": Api.TypeUpdates;
+    "phone.sendGroupCallEncryptedMessage": Bool;
+    "phone.deleteGroupCallMessages": Api.TypeUpdates;
+    "phone.deleteGroupCallParticipantMessages": Api.TypeUpdates;
+    "phone.getGroupCallStars": phone.TypeGroupCallStars;
+    "phone.saveDefaultSendAs": Bool;
+    "langpack.getLangPack": Api.TypeLangPackDifference;
+    "langpack.getStrings": Api.TypeLangPackString[];
+    "langpack.getDifference": Api.TypeLangPackDifference;
+    "langpack.getLanguages": Api.TypeLangPackLanguage[];
+    "langpack.getLanguage": Api.TypeLangPackLanguage;
+    "folders.editPeerFolders": Api.TypeUpdates;
+    "stats.getBroadcastStats": stats.TypeBroadcastStats;
+    "stats.loadAsyncGraph": Api.TypeStatsGraph;
+    "stats.getMegagroupStats": stats.TypeMegagroupStats;
+    "stats.getMessagePublicForwards": stats.TypePublicForwards;
+    "stats.getMessageStats": stats.TypeMessageStats;
+    "stats.getStoryStats": stats.TypeStoryStats;
+    "stats.getStoryPublicForwards": stats.TypePublicForwards;
+    "stats.getPollStats": stats.TypePollStats;
+    "chatlists.exportChatlistInvite": chatlists.TypeExportedChatlistInvite;
+    "chatlists.deleteExportedInvite": Bool;
+    "chatlists.editExportedInvite": Api.TypeExportedChatlistInvite;
+    "chatlists.getExportedInvites": chatlists.TypeExportedInvites;
+    "chatlists.checkChatlistInvite": chatlists.TypeChatlistInvite;
+    "chatlists.joinChatlistInvite": Api.TypeUpdates;
+    "chatlists.getChatlistUpdates": chatlists.TypeChatlistUpdates;
+    "chatlists.joinChatlistUpdates": Api.TypeUpdates;
+    "chatlists.hideChatlistUpdates": Bool;
+    "chatlists.getLeaveChatlistSuggestions": Api.TypePeer[];
+    "chatlists.leaveChatlist": Api.TypeUpdates;
+    "stories.canSendStory": stories.TypeCanSendStoryCount;
+    "stories.sendStory": Api.TypeUpdates;
+    "stories.editStory": Api.TypeUpdates;
+    "stories.deleteStories": int[];
+    "stories.togglePinned": int[];
+    "stories.getAllStories": stories.TypeAllStories;
+    "stories.getPinnedStories": stories.TypeStories;
+    "stories.getStoriesArchive": stories.TypeStories;
+    "stories.getStoriesByID": stories.TypeStories;
+    "stories.toggleAllStoriesHidden": Bool;
+    "stories.readStories": int[];
+    "stories.incrementStoryViews": Bool;
+    "stories.getStoryViewsList": stories.TypeStoryViewsList;
+    "stories.getStoriesViews": stories.TypeStoryViews;
+    "stories.exportStoryLink": Api.TypeExportedStoryLink;
+    "stories.report": Api.TypeReportResult;
+    "stories.activateStealthMode": Api.TypeUpdates;
+    "stories.sendReaction": Api.TypeUpdates;
+    "stories.getPeerStories": stories.TypePeerStories;
+    "stories.getAllReadPeerStories": Api.TypeUpdates;
+    "stories.getPeerMaxIDs": Api.TypeRecentStory[];
+    "stories.getChatsToSend": messages.TypeChats;
+    "stories.togglePeerStoriesHidden": Bool;
+    "stories.getStoryReactionsList": stories.TypeStoryReactionsList;
+    "stories.togglePinnedToTop": Bool;
+    "stories.searchPosts": stories.TypeFoundStories;
+    "stories.createAlbum": Api.TypeStoryAlbum;
+    "stories.updateAlbum": Api.TypeStoryAlbum;
+    "stories.reorderAlbums": Bool;
+    "stories.deleteAlbum": Bool;
+    "stories.getAlbums": stories.TypeAlbums;
+    "stories.getAlbumStories": stories.TypeStories;
+    "stories.startLive": Api.TypeUpdates;
+    "premium.getBoostsList": premium.TypeBoostsList;
+    "premium.getMyBoosts": premium.TypeMyBoosts;
+    "premium.applyBoost": premium.TypeMyBoosts;
+    "premium.getBoostsStatus": premium.TypeBoostsStatus;
+    "premium.getUserBoosts": premium.TypeBoostsList;
+    "smsjobs.isEligibleToJoin": smsjobs.TypeEligibilityToJoin;
+    "smsjobs.join": Bool;
+    "smsjobs.leave": Bool;
+    "smsjobs.updateSettings": Bool;
+    "smsjobs.getStatus": smsjobs.TypeStatus;
+    "smsjobs.getSmsJob": Api.TypeSmsJob;
+    "smsjobs.finishJob": Bool;
+    "fragment.getCollectibleInfo": fragment.TypeCollectibleInfo;
+    "aicompose.createTone": Api.TypeAiComposeTone;
+    "aicompose.updateTone": Api.TypeAiComposeTone;
+    "aicompose.saveTone": Bool;
+    "aicompose.deleteTone": Bool;
+    "aicompose.getTone": aicompose.TypeTones;
+    "aicompose.getTones": aicompose.TypeTones;
+    "aicompose.getToneExample": Api.TypeAiComposeToneExample;
+    "communities.create": Api.TypeUpdates;
+    "communities.togglePeerLink": Bool;
+    "communities.getJoinedCommunities": messages.TypeChats;
+    "communities.toggleCommunityCollapsedInDialogs": Api.TypeUpdates;
+    "communities.getPeerLinkRequests": communities.TypePeerLinkRequests;
+    "communities.togglePeerLinkRequestApproval": Bool;
+    "communities.toggleAllPeerLinkRequestApproval": Bool;
+    "communities.toggleParticipantBanned": Bool;
+    "communities.getParticipantJoinedChats": communities.TypeParticipantJoinedChats;
+    "ephemeral.sendMessage": Api.TypeUpdates;
+    "ephemeral.deleteMessage": Bool;
+    "ephemeral.reportMessage": Api.TypeReportResult;
+    "ephemeral.getCallbackAnswer": messages.TypeBotCallbackAnswer;
+    "ephemeral.editMessage": Api.TypeUpdates;
+    "ephemeral.deleteWelcomeMessage": Bool;
+    "ephemeral.deleteAllWelcomeMessages": Bool;
+    "ephemeral.getWelcomeMessages": ephemeral.TypeWelcomeMessages;
+    "reqPq": Api.TypeResPQ;
+    "reqPqMulti": Api.TypeResPQ;
+    "reqDHParams": Api.TypeServer_DH_Params;
+    "setClientDHParams": Api.TypeSet_client_DH_params_answer;
+    "destroyAuthKey": Api.TypeDestroyAuthKeyRes;
+    "rpcDropAnswer": Api.TypeRpcDropAnswer;
+    "getFutureSalts": Api.TypeFutureSalts;
+    "ping": Api.TypePong;
+    "pingDelayDisconnect": Api.TypePong;
+    "destroySession": Api.TypeDestroySessionRes;
+  }
+  /** A discriminated raw request, including nested query wrappers. */
+  export type RawRequest = RawRequestMap[keyof RawRequestMap];
+  /** Result inferred from a raw request or an existing request instance. */
+  export type ApiResult<R> = R extends { _: "invokeAfterMsg" | "invokeAfterMsgs" | "initConnection" | "invokeWithLayer" | "invokeWithoutUpdates" | "invokeWithMessagesRange" | "invokeWithTakeout" | "invokeWithBusinessConnection" | "invokeWithGooglePlayIntegrity" | "invokeWithApnsSecret" | "invokeWithReCaptcha"; query: infer Q } ? ApiResult<Q>
+    : R extends { __response: infer T } ? T
+    : R extends { _: infer K extends keyof RawResultMap } ? RawResultMap[K] : never;
 
   export type InitConnectionErrors = RpcErrors.ConnectionLayerInvalidError;
   export type InvokeWithLayerErrors = RpcErrors.AuthBytesInvalidError | RpcErrors.CdnMethodInvalidError | RpcErrors.ConnectionApiIdInvalidError | RpcErrors.ConnectionLayerInvalidError | RpcErrors.InviteHashExpiredError | RpcErrors.ChatWriteForbiddenError;
@@ -42668,7 +44332,7 @@ export namespace Api {
   }
   export interface InputCheckPasswordSRPIn {
     _: "inputCheckPasswordSRP";
-    srpId: long;
+    srpId: LongInput;
     A: bytes;
     M1: bytes;
   }
@@ -42694,7 +44358,7 @@ export namespace Api {
     _?: "secureSecretSettings";
     secureAlgo: TypeSecurePasswordKdfAlgoIn;
     secureSecret: bytes;
-    secureSecretId: long;
+    secureSecretId: LongInput;
   }
   export interface SecurePasswordKdfAlgoUnknownIn {
     _: "securePasswordKdfAlgoUnknown";
@@ -42733,6 +44397,74 @@ export namespace Api {
     _: "inputPasskeyCredentialFirebasePNV";
     pnvToken: string;
   }
+  export interface InputNotifyPeerIn {
+    _: "inputNotifyPeer";
+    peer: TypeInputPeerIn;
+  }
+  export interface InputPeerEmptyIn {
+    _: "inputPeerEmpty";
+  }
+  export interface InputPeerSelfIn {
+    _: "inputPeerSelf";
+  }
+  export interface InputPeerChatIn {
+    _: "inputPeerChat";
+    chatId: LongInput;
+  }
+  export interface InputPeerUserIn {
+    _: "inputPeerUser";
+    userId: LongInput;
+    accessHash: LongInput;
+  }
+  export interface InputPeerChannelIn {
+    _: "inputPeerChannel";
+    channelId: LongInput;
+    accessHash: LongInput;
+  }
+  export interface InputPeerUserFromMessageIn {
+    _: "inputPeerUserFromMessage";
+    peer: TypeInputPeerIn;
+    msgId: int;
+    userId: LongInput;
+  }
+  export interface InputPeerChannelFromMessageIn {
+    _: "inputPeerChannelFromMessage";
+    peer: TypeInputPeerIn;
+    msgId: int;
+    channelId: LongInput;
+  }
+  export interface InputNotifyUsersIn {
+    _: "inputNotifyUsers";
+  }
+  export interface InputNotifyChatsIn {
+    _: "inputNotifyChats";
+  }
+  export interface InputNotifyBroadcastsIn {
+    _: "inputNotifyBroadcasts";
+  }
+  export interface InputNotifyForumTopicIn {
+    _: "inputNotifyForumTopic";
+    peer: TypeInputPeerIn;
+    topMsgId: int;
+  }
+  export interface InputNotifyCommunityIn {
+    _: "inputNotifyCommunity";
+    community: TypeInputChannelIn;
+  }
+  export interface InputChannelEmptyIn {
+    _: "inputChannelEmpty";
+  }
+  export interface InputChannelIn {
+    _: "inputChannel";
+    channelId: LongInput;
+    accessHash: LongInput;
+  }
+  export interface InputChannelFromMessageIn {
+    _: "inputChannelFromMessage";
+    peer: TypeInputPeerIn;
+    msgId: int;
+    channelId: LongInput;
+  }
   export interface InputPeerNotifySettingsIn {
     _?: "inputPeerNotifySettings";
     showPreviews?: Bool;
@@ -42756,7 +44488,7 @@ export namespace Api {
   }
   export interface NotificationSoundRingtoneIn {
     _: "notificationSoundRingtone";
-    id: long;
+    id: LongInput;
   }
   export interface InputReportReasonSpamIn {
     _: "inputReportReasonSpam";
@@ -42848,46 +44580,14 @@ export namespace Api {
   }
   export interface InputUserIn {
     _: "inputUser";
-    userId: long;
-    accessHash: long;
+    userId: LongInput;
+    accessHash: LongInput;
   }
   export interface InputUserFromMessageIn {
     _: "inputUserFromMessage";
     peer: TypeInputPeerIn;
     msgId: int;
-    userId: long;
-  }
-  export interface InputPeerEmptyIn {
-    _: "inputPeerEmpty";
-  }
-  export interface InputPeerSelfIn {
-    _: "inputPeerSelf";
-  }
-  export interface InputPeerChatIn {
-    _: "inputPeerChat";
-    chatId: long;
-  }
-  export interface InputPeerUserIn {
-    _: "inputPeerUser";
-    userId: long;
-    accessHash: long;
-  }
-  export interface InputPeerChannelIn {
-    _: "inputPeerChannel";
-    channelId: long;
-    accessHash: long;
-  }
-  export interface InputPeerUserFromMessageIn {
-    _: "inputPeerUserFromMessage";
-    peer: TypeInputPeerIn;
-    msgId: int;
-    userId: long;
-  }
-  export interface InputPeerChannelFromMessageIn {
-    _: "inputPeerChannelFromMessage";
-    peer: TypeInputPeerIn;
-    msgId: int;
-    channelId: long;
+    userId: LongInput;
   }
   export interface InputPrivacyValueDisallowContactsIn {
     _: "inputPrivacyValueDisallowContacts";
@@ -42901,11 +44601,11 @@ export namespace Api {
   }
   export interface InputPrivacyValueAllowChatParticipantsIn {
     _: "inputPrivacyValueAllowChatParticipants";
-    chats: long[];
+    chats: LongInput[];
   }
   export interface InputPrivacyValueDisallowChatParticipantsIn {
     _: "inputPrivacyValueDisallowChatParticipants";
-    chats: long[];
+    chats: LongInput[];
   }
   export interface InputPrivacyValueAllowCloseFriendsIn {
     _: "inputPrivacyValueAllowCloseFriends";
@@ -42981,7 +44681,7 @@ export namespace Api {
   }
   export interface InputSecureFileUploadedIn {
     _: "inputSecureFileUploaded";
-    id: long;
+    id: LongInput;
     parts: int;
     md5Checksum: string;
     fileHash: bytes;
@@ -42989,8 +44689,8 @@ export namespace Api {
   }
   export interface InputSecureFileIn {
     _: "inputSecureFile";
-    id: long;
-    accessHash: long;
+    id: LongInput;
+    accessHash: LongInput;
   }
   export interface SecurePlainPhoneIn {
     _: "securePlainPhone";
@@ -43024,8 +44724,8 @@ export namespace Api {
   }
   export interface InputWallPaperIn {
     _: "inputWallPaper";
-    id: long;
-    accessHash: long;
+    id: LongInput;
+    accessHash: LongInput;
   }
   export interface InputWallPaperSlugIn {
     _: "inputWallPaperSlug";
@@ -43033,18 +44733,18 @@ export namespace Api {
   }
   export interface InputWallPaperNoFileIn {
     _: "inputWallPaperNoFile";
-    id: long;
+    id: LongInput;
   }
   export interface InputFileIn {
     _: "inputFile";
-    id: long;
+    id: LongInput;
     parts: int;
     name: string;
     md5Checksum: string;
   }
   export interface InputFileBigIn {
     _: "inputFileBig";
-    id: long;
+    id: LongInput;
     parts: int;
     name: string;
   }
@@ -43057,8 +44757,8 @@ export namespace Api {
   }
   export interface InputDocumentIn {
     _: "inputDocument";
-    id: long;
-    accessHash: long;
+    id: LongInput;
+    accessHash: LongInput;
     fileReference: bytes;
   }
   export interface WallPaperSettingsIn {
@@ -43081,8 +44781,8 @@ export namespace Api {
     phonecallsLessData?: boolean;
     storiesPreload?: boolean;
     photoSizeMax: int;
-    videoSizeMax: long;
-    fileSizeMax: long;
+    videoSizeMax: LongInput;
+    fileSizeMax: LongInput;
     videoUploadMaxbitrate: int;
     smallQueueActiveOperationsMax: int;
     largeQueueActiveOperationsMax: int;
@@ -43114,8 +44814,8 @@ export namespace Api {
   }
   export interface InputThemeIn {
     _: "inputTheme";
-    id: long;
-    accessHash: long;
+    id: LongInput;
+    accessHash: LongInput;
   }
   export interface InputThemeSlugIn {
     _: "inputThemeSlug";
@@ -43129,7 +44829,7 @@ export namespace Api {
     hideReadMarks?: boolean;
     newNoncontactPeersRequirePremium?: boolean;
     displayGiftsButton?: boolean;
-    noncontactPeersPaidStars?: long;
+    noncontactPeersPaidStars?: LongInput;
     disallowedGifts?: TypeDisallowedGiftsSettingsIn;
   }
   export interface DisallowedGiftsSettingsIn {
@@ -43145,8 +44845,8 @@ export namespace Api {
   }
   export interface InputPhotoIn {
     _: "inputPhoto";
-    id: long;
-    accessHash: long;
+    id: LongInput;
+    accessHash: LongInput;
     fileReference: bytes;
   }
   export interface EmojiStatusEmptyIn {
@@ -43154,16 +44854,16 @@ export namespace Api {
   }
   export interface EmojiStatusIn {
     _: "emojiStatus";
-    documentId: long;
+    documentId: LongInput;
     until?: int;
   }
   export interface EmojiStatusCollectibleIn {
     _: "emojiStatusCollectible";
-    collectibleId: long;
-    documentId: long;
+    collectibleId: LongInput;
+    documentId: LongInput;
     title: string;
     slug: string;
-    patternDocumentId: long;
+    patternDocumentId: LongInput;
     centerColor: int;
     edgeColor: int;
     patternColor: int;
@@ -43172,25 +44872,25 @@ export namespace Api {
   }
   export interface InputEmojiStatusCollectibleIn {
     _: "inputEmojiStatusCollectible";
-    collectibleId: long;
+    collectibleId: LongInput;
     until?: int;
   }
   export interface AutoSaveSettingsIn {
     _?: "autoSaveSettings";
     photos?: boolean;
     videos?: boolean;
-    videoMaxSize?: long;
+    videoMaxSize?: LongInput;
   }
   export interface PeerColorIn {
     _: "peerColor";
     color?: int;
-    backgroundEmojiId?: long;
+    backgroundEmojiId?: LongInput;
   }
   export interface PeerColorCollectibleIn {
     _: "peerColorCollectible";
-    collectibleId: long;
-    giftEmojiId: long;
-    backgroundEmojiId: long;
+    collectibleId: LongInput;
+    giftEmojiId: LongInput;
+    backgroundEmojiId: LongInput;
     accentColor: int;
     colors: int[];
     darkAccentColor?: int;
@@ -43198,7 +44898,7 @@ export namespace Api {
   }
   export interface InputPeerColorCollectibleIn {
     _: "inputPeerColorCollectible";
-    collectibleId: long;
+    collectibleId: LongInput;
   }
   export interface BusinessWorkHoursIn {
     _?: "businessWorkHours";
@@ -43359,7 +45059,7 @@ export namespace Api {
     _: "messageEntityMentionName";
     offset: int;
     length: int;
-    userId: long;
+    userId: LongInput;
   }
   export interface InputMessageEntityMentionNameIn {
     _: "inputMessageEntityMentionName";
@@ -43401,7 +45101,7 @@ export namespace Api {
     _: "messageEntityCustomEmoji";
     offset: int;
     length: int;
-    documentId: long;
+    documentId: LongInput;
   }
   export interface MessageEntityBlockquoteIn {
     _: "messageEntityBlockquote";
@@ -43532,7 +45232,7 @@ export namespace Api {
   }
   export interface InputPhoneContactIn {
     _?: "inputPhoneContact";
-    clientId: long;
+    clientId: LongInput;
     phone: string;
     firstName: string;
     lastName: string;
@@ -43587,7 +45287,7 @@ export namespace Api {
   export interface InputMessageCallbackQueryIn {
     _: "inputMessageCallbackQuery";
     id: int;
-    queryId: long;
+    queryId: LongInput;
   }
   export interface ReactionEmptyIn {
     _: "reactionEmpty";
@@ -43598,7 +45298,7 @@ export namespace Api {
   }
   export interface ReactionCustomEmojiIn {
     _: "reactionCustomEmoji";
-    documentId: long;
+    documentId: LongInput;
   }
   export interface ReactionPaidIn {
     _: "reactionPaid";
@@ -43726,14 +45426,14 @@ export namespace Api {
     _: "sendMessageTextDraftAction";
     canStop?: boolean;
     keepOnStop?: boolean;
-    randomId?: long;
+    randomId?: LongInput;
     text: TypeTextWithEntitiesIn;
   }
   export interface InputSendMessageRichMessageDraftActionIn {
     _: "inputSendMessageRichMessageDraftAction";
     canStop?: boolean;
     keepOnStop?: boolean;
-    randomId?: long;
+    randomId?: LongInput;
     richMessage: TypeInputRichMessageIn;
   }
   export interface InputRichMessageIn {
@@ -43783,7 +45483,7 @@ export namespace Api {
     _: "textUrl";
     text: TypeRichTextIn;
     url: string;
-    webpageId: long;
+    webpageId: LongInput;
   }
   export interface TextEmailIn {
     _: "textEmail";
@@ -43813,7 +45513,7 @@ export namespace Api {
   }
   export interface TextImageIn {
     _: "textImage";
-    documentId: long;
+    documentId: LongInput;
     w: int;
     h: int;
   }
@@ -43828,7 +45528,7 @@ export namespace Api {
   }
   export interface TextCustomEmojiIn {
     _: "textCustomEmoji";
-    documentId: long;
+    documentId: LongInput;
     alt: string;
   }
   export interface TextSpoilerIn {
@@ -43870,7 +45570,7 @@ export namespace Api {
   export interface TextMentionNameIn {
     _: "textMentionName";
     text: TypeRichTextIn;
-    userId: long;
+    userId: LongInput;
   }
   export interface TextDateIn {
     _: "textDate";
@@ -43952,7 +45652,7 @@ export namespace Api {
   }
   export interface InlineButtonTypeUserProfileIn {
     _: "inlineButtonTypeUserProfile";
-    userId: long;
+    userId: LongInput;
   }
   export interface InputInlineButtonTypeUserProfileIn {
     _: "inputInlineButtonTypeUserProfile";
@@ -44039,10 +45739,10 @@ export namespace Api {
   export interface PageBlockPhotoIn {
     _: "pageBlockPhoto";
     spoiler?: boolean;
-    photoId: long;
+    photoId: LongInput;
     caption: TypePageCaptionIn;
     url?: string;
-    webpageId?: long;
+    webpageId?: LongInput;
   }
   export interface PageCaptionIn {
     _?: "pageCaption";
@@ -44054,7 +45754,7 @@ export namespace Api {
     autoplay?: boolean;
     loop?: boolean;
     spoiler?: boolean;
-    videoId: long;
+    videoId: LongInput;
     caption: TypePageCaptionIn;
   }
   export interface PageBlockCoverIn {
@@ -44067,7 +45767,7 @@ export namespace Api {
     allowScrolling?: boolean;
     url?: string;
     html?: string;
-    posterPhotoId?: long;
+    posterPhotoId?: LongInput;
     w?: int;
     h?: int;
     caption: TypePageCaptionIn;
@@ -44075,8 +45775,8 @@ export namespace Api {
   export interface PageBlockEmbedPostIn {
     _: "pageBlockEmbedPost";
     url: string;
-    webpageId: long;
-    authorPhotoId: long;
+    webpageId: LongInput;
+    authorPhotoId: LongInput;
     author: string;
     date: int;
     blocks: TypePageBlockIn[];
@@ -44098,7 +45798,7 @@ export namespace Api {
   }
   export interface ChatEmptyIn {
     _: "chatEmpty";
-    id: long;
+    id: LongInput;
   }
   export interface ChatIn {
     _: "chat";
@@ -44108,7 +45808,7 @@ export namespace Api {
     callActive?: boolean;
     callNotEmpty?: boolean;
     noforwards?: boolean;
-    id: long;
+    id: LongInput;
     title: string;
     photo: TypeChatPhotoIn;
     participantsCount: int;
@@ -44124,23 +45824,9 @@ export namespace Api {
   export interface ChatPhotoIn {
     _: "chatPhoto";
     hasVideo?: boolean;
-    photoId: long;
+    photoId: LongInput;
     strippedThumb?: bytes;
     dcId: int;
-  }
-  export interface InputChannelEmptyIn {
-    _: "inputChannelEmpty";
-  }
-  export interface InputChannelIn {
-    _: "inputChannel";
-    channelId: long;
-    accessHash: long;
-  }
-  export interface InputChannelFromMessageIn {
-    _: "inputChannelFromMessage";
-    peer: TypeInputPeerIn;
-    msgId: int;
-    channelId: long;
   }
   export interface ChatAdminRightsIn {
     _?: "chatAdminRights";
@@ -44193,7 +45879,7 @@ export namespace Api {
   }
   export interface ChatForbiddenIn {
     _: "chatForbidden";
-    id: long;
+    id: LongInput;
     title: string;
   }
   export interface ChannelIn {
@@ -44226,8 +45912,8 @@ export namespace Api {
     broadcastMessagesAllowed?: boolean;
     monoforum?: boolean;
     forumTabs?: boolean;
-    id: long;
-    accessHash?: long;
+    id: LongInput;
+    accessHash?: LongInput;
     title: string;
     username?: string;
     photo: TypeChatPhotoIn;
@@ -44244,10 +45930,10 @@ export namespace Api {
     emojiStatus?: TypeEmojiStatusIn;
     level?: int;
     subscriptionUntilDate?: int;
-    botVerificationIcon?: long;
-    sendPaidMessagesStars?: long;
-    linkedMonoforumId?: long;
-    linkedCommunityId?: long;
+    botVerificationIcon?: LongInput;
+    sendPaidMessagesStars?: LongInput;
+    linkedMonoforumId?: LongInput;
+    linkedCommunityId?: LongInput;
   }
   export interface RestrictionReasonIn {
     _?: "restrictionReason";
@@ -44271,15 +45957,15 @@ export namespace Api {
     broadcast?: boolean;
     megagroup?: boolean;
     monoforum?: boolean;
-    id: long;
-    accessHash: long;
+    id: LongInput;
+    accessHash: LongInput;
     title: string;
     untilDate?: int;
   }
   export interface CommunityForbiddenIn {
     _: "communityForbidden";
-    id: long;
-    accessHash?: long;
+    id: LongInput;
+    accessHash?: LongInput;
     title: string;
   }
   export interface CommunityIn {
@@ -44288,8 +45974,8 @@ export namespace Api {
     left?: boolean;
     min?: boolean;
     collapsedInDialogs?: boolean;
-    id: long;
-    accessHash?: long;
+    id: LongInput;
+    accessHash?: LongInput;
     title: string;
     photo: TypeChatPhotoIn;
     date: int;
@@ -44298,7 +45984,7 @@ export namespace Api {
   }
   export interface PageBlockAudioIn {
     _: "pageBlockAudio";
-    audioId: long;
+    audioId: LongInput;
     caption: TypePageCaptionIn;
   }
   export interface PageBlockKickerIn {
@@ -44367,10 +46053,10 @@ export namespace Api {
   export interface PageRelatedArticleIn {
     _?: "pageRelatedArticle";
     url: string;
-    webpageId: long;
+    webpageId: LongInput;
     title?: string;
     description?: string;
-    photoId?: long;
+    photoId?: LongInput;
     author?: string;
     publishedDate?: int;
   }
@@ -44389,7 +46075,7 @@ export namespace Api {
     _: "geoPoint";
     long: double;
     lat: double;
-    accessHash: long;
+    accessHash: LongInput;
     accuracyRadius?: int;
   }
   export interface PageBlockHeading1In {
@@ -44452,7 +46138,7 @@ export namespace Api {
   }
   export interface PageBlockDocumentIn {
     _: "pageBlockDocument";
-    documentId: long;
+    documentId: LongInput;
     caption: TypePageCaptionIn;
   }
   export interface InputRichMessageHTMLIn {
@@ -44483,7 +46169,7 @@ export namespace Api {
     _: "sendMessageRichMessageDraftAction";
     canStop?: boolean;
     keepOnStop?: boolean;
-    randomId?: long;
+    randomId?: LongInput;
     richMessage: TypeRichMessageIn;
   }
   export interface RichMessageIn {
@@ -44496,13 +46182,13 @@ export namespace Api {
   }
   export interface PhotoEmptyIn {
     _: "photoEmpty";
-    id: long;
+    id: LongInput;
   }
   export interface PhotoIn {
     _: "photo";
     hasStickers?: boolean;
-    id: long;
-    accessHash: long;
+    id: LongInput;
+    accessHash: LongInput;
     fileReference: bytes;
     date: int;
     sizes: TypePhotoSizeIn[];
@@ -44554,13 +46240,13 @@ export namespace Api {
   }
   export interface VideoSizeEmojiMarkupIn {
     _: "videoSizeEmojiMarkup";
-    emojiId: long;
+    emojiId: LongInput;
     backgroundColors: int[];
   }
   export interface VideoSizeStickerMarkupIn {
     _: "videoSizeStickerMarkup";
     stickerset: TypeInputStickerSetIn;
-    stickerId: long;
+    stickerId: LongInput;
     backgroundColors: int[];
   }
   export interface InputStickerSetEmptyIn {
@@ -44568,8 +46254,8 @@ export namespace Api {
   }
   export interface InputStickerSetIDIn {
     _: "inputStickerSetID";
-    id: long;
-    accessHash: long;
+    id: LongInput;
+    accessHash: LongInput;
   }
   export interface InputStickerSetShortNameIn {
     _: "inputStickerSetShortName";
@@ -44605,16 +46291,16 @@ export namespace Api {
   }
   export interface DocumentEmptyIn {
     _: "documentEmpty";
-    id: long;
+    id: LongInput;
   }
   export interface DocumentIn {
     _: "document";
-    id: long;
-    accessHash: long;
+    id: LongInput;
+    accessHash: LongInput;
     fileReference: bytes;
     date: int;
     mimeType: string;
-    size: long;
+    size: LongInput;
     thumbs?: TypePhotoSizeIn[];
     videoThumbs?: TypeVideoSizeIn[];
     dcId: int;
@@ -44678,7 +46364,7 @@ export namespace Api {
   }
   export interface SendMessageStopDraftActionIn {
     _: "sendMessageStopDraftAction";
-    randomId?: long;
+    randomId?: LongInput;
   }
   export interface InputReplyToMessageIn {
     _: "inputReplyToMessage";
@@ -44740,7 +46426,7 @@ export namespace Api {
     bgPrimary?: boolean;
     bgDanger?: boolean;
     bgSuccess?: boolean;
-    icon?: long;
+    icon?: LongInput;
   }
   export interface ButtonTypeDefaultIn {
     _: "buttonTypeDefault";
@@ -44833,12 +46519,12 @@ export namespace Api {
   }
   export interface StarsAmountIn {
     _: "starsAmount";
-    amount: long;
+    amount: LongInput;
     nanos: int;
   }
   export interface StarsTonAmountIn {
     _: "starsTonAmount";
-    amount: long;
+    amount: LongInput;
   }
   export interface InputMediaEmptyIn {
     _: "inputMediaEmpty";
@@ -44923,8 +46609,8 @@ export namespace Api {
   }
   export interface InputGameIDIn {
     _: "inputGameID";
-    id: long;
-    accessHash: long;
+    id: LongInput;
+    accessHash: LongInput;
   }
   export interface InputGameShortNameIn {
     _: "inputGameShortName";
@@ -44963,15 +46649,15 @@ export namespace Api {
     recurring?: boolean;
     currency: string;
     prices: TypeLabeledPriceIn[];
-    maxTipAmount?: long;
-    suggestedTipAmounts?: long[];
+    maxTipAmount?: LongInput;
+    suggestedTipAmounts?: LongInput[];
     termsUrl?: string;
     subscriptionPeriod?: int;
   }
   export interface LabeledPriceIn {
     _?: "labeledPrice";
     label: string;
-    amount: long;
+    amount: LongInput;
   }
   export interface InputMediaGeoLiveIn {
     _: "inputMediaGeoLive";
@@ -44992,7 +46678,7 @@ export namespace Api {
   }
   export interface PollIn {
     _?: "poll";
-    id: long;
+    id: LongInput;
     closed?: boolean;
     publicVoters?: boolean;
     multipleChoice?: boolean;
@@ -45008,7 +46694,7 @@ export namespace Api {
     closePeriod?: int;
     closeDate?: int;
     countriesIso2?: string[];
-    hash: long;
+    hash: LongInput;
   }
   export interface PollAnswerIn {
     _: "pollAnswer";
@@ -45039,7 +46725,7 @@ export namespace Api {
     firstName: string;
     lastName: string;
     vcard: string;
-    userId: long;
+    userId: LongInput;
   }
   export interface MessageMediaUnsupportedIn {
     _: "messageMediaUnsupported";
@@ -45067,12 +46753,12 @@ export namespace Api {
   }
   export interface WebPageEmptyIn {
     _: "webPageEmpty";
-    id: long;
+    id: LongInput;
     url?: string;
   }
   export interface WebPagePendingIn {
     _: "webPagePending";
-    id: long;
+    id: LongInput;
     url?: string;
     date: int;
   }
@@ -45080,7 +46766,7 @@ export namespace Api {
     _: "webPage";
     hasLargeMedia?: boolean;
     videoCoverPhoto?: boolean;
-    id: long;
+    id: LongInput;
     url: string;
     displayUrl: string;
     hash: int;
@@ -45126,19 +46812,19 @@ export namespace Api {
   }
   export interface WallPaperIn {
     _: "wallPaper";
-    id: long;
+    id: LongInput;
     creator?: boolean;
     default?: boolean;
     pattern?: boolean;
     dark?: boolean;
-    accessHash: long;
+    accessHash: LongInput;
     slug: string;
     document: TypeDocumentIn;
     settings?: TypeWallPaperSettingsIn;
   }
   export interface WallPaperNoFileIn {
     _: "wallPaperNoFile";
-    id: long;
+    id: LongInput;
     default?: boolean;
     dark?: boolean;
     settings?: TypeWallPaperSettingsIn;
@@ -45151,15 +46837,15 @@ export namespace Api {
   }
   export interface PeerUserIn {
     _: "peerUser";
-    userId: long;
+    userId: LongInput;
   }
   export interface PeerChatIn {
     _: "peerChat";
-    chatId: long;
+    chatId: LongInput;
   }
   export interface PeerChannelIn {
     _: "peerChannel";
-    channelId: long;
+    channelId: LongInput;
   }
   export interface StoryItemDeletedIn {
     _: "storyItemDeleted";
@@ -45228,7 +46914,7 @@ export namespace Api {
   export interface InputMediaAreaVenueIn {
     _: "inputMediaAreaVenue";
     coordinates: TypeMediaAreaCoordinatesIn;
-    queryId: long;
+    queryId: LongInput;
     resultId: string;
   }
   export interface MediaAreaGeoPointIn {
@@ -45254,7 +46940,7 @@ export namespace Api {
   export interface MediaAreaChannelPostIn {
     _: "mediaAreaChannelPost";
     coordinates: TypeMediaAreaCoordinatesIn;
-    channelId: long;
+    channelId: LongInput;
     msgId: int;
   }
   export interface InputMediaAreaChannelPostIn {
@@ -45288,7 +46974,7 @@ export namespace Api {
   }
   export interface PrivacyValueAllowUsersIn {
     _: "privacyValueAllowUsers";
-    users: long[];
+    users: LongInput[];
   }
   export interface PrivacyValueDisallowContactsIn {
     _: "privacyValueDisallowContacts";
@@ -45298,15 +46984,15 @@ export namespace Api {
   }
   export interface PrivacyValueDisallowUsersIn {
     _: "privacyValueDisallowUsers";
-    users: long[];
+    users: LongInput[];
   }
   export interface PrivacyValueAllowChatParticipantsIn {
     _: "privacyValueAllowChatParticipants";
-    chats: long[];
+    chats: LongInput[];
   }
   export interface PrivacyValueDisallowChatParticipantsIn {
     _: "privacyValueDisallowChatParticipants";
-    chats: long[];
+    chats: LongInput[];
   }
   export interface PrivacyValueAllowCloseFriendsIn {
     _: "privacyValueAllowCloseFriends";
@@ -45327,7 +47013,7 @@ export namespace Api {
     forwardsCount?: int;
     reactions?: TypeReactionCountIn[];
     reactionsCount?: int;
-    recentViewers?: long[];
+    recentViewers?: LongInput[];
   }
   export interface ReactionCountIn {
     _?: "reactionCount";
@@ -45354,17 +47040,17 @@ export namespace Api {
     limitedPerUser?: boolean;
     peerColorAvailable?: boolean;
     auction?: boolean;
-    id: long;
+    id: LongInput;
     sticker: TypeDocumentIn;
-    stars: long;
+    stars: LongInput;
     availabilityRemains?: int;
     availabilityTotal?: int;
-    availabilityResale?: long;
-    convertStars: long;
+    availabilityResale?: LongInput;
+    convertStars: LongInput;
     firstSaleDate?: int;
     lastSaleDate?: int;
-    upgradeStars?: long;
-    resellMinStars?: long;
+    upgradeStars?: LongInput;
+    resellMinStars?: LongInput;
     title?: string;
     releasedBy?: TypePeerIn;
     perUserTotal?: int;
@@ -45389,8 +47075,8 @@ export namespace Api {
     themeAvailable?: boolean;
     burned?: boolean;
     crafted?: boolean;
-    id: long;
-    giftId: long;
+    id: LongInput;
+    giftId: LongInput;
     title: string;
     slug: string;
     num: int;
@@ -45403,9 +47089,9 @@ export namespace Api {
     giftAddress?: string;
     resellAmount?: TypeStarsAmountIn[];
     releasedBy?: TypePeerIn;
-    valueAmount?: long;
+    valueAmount?: LongInput;
     valueCurrency?: string;
-    valueUsdAmount?: long;
+    valueUsdAmount?: LongInput;
     themePeer?: TypePeerIn;
     peerColor?: TypePeerColorIn;
     hostId?: TypePeerIn;
@@ -45469,7 +47155,7 @@ export namespace Api {
   }
   export interface WebPageAttributeAiComposeToneIn {
     _: "webPageAttributeAiComposeTone";
-    emojiId: long;
+    emojiId: LongInput;
   }
   export interface WebPageNotModifiedIn {
     _: "webPageNotModified";
@@ -45490,8 +47176,8 @@ export namespace Api {
   }
   export interface GameIn {
     _?: "game";
-    id: long;
-    accessHash: long;
+    id: LongInput;
+    accessHash: LongInput;
     shortName: string;
     title: string;
     description: string;
@@ -45507,14 +47193,14 @@ export namespace Api {
     photo?: TypeWebDocumentIn;
     receiptMsgId?: int;
     currency: string;
-    totalAmount: long;
+    totalAmount: LongInput;
     startParam: string;
     extendedMedia?: TypeMessageExtendedMediaIn;
   }
   export interface WebDocumentIn {
     _: "webDocument";
     url: string;
-    accessHash: long;
+    accessHash: LongInput;
     size: int;
     mimeType: string;
     attributes: TypeDocumentAttributeIn[];
@@ -45579,8 +47265,8 @@ export namespace Api {
   export interface MessagesEmojiGameOutcomeIn {
     _?: "messages.emojiGameOutcome";
     seed: bytes;
-    stakeTonAmount: long;
-    tonAmount: long;
+    stakeTonAmount: LongInput;
+    tonAmount: LongInput;
   }
   export interface MessageMediaStoryIn {
     _: "messageMediaStory";
@@ -45593,32 +47279,32 @@ export namespace Api {
     _: "messageMediaGiveaway";
     onlyNewSubscribers?: boolean;
     winnersAreVisible?: boolean;
-    channels: long[];
+    channels: LongInput[];
     countriesIso2?: string[];
     prizeDescription?: string;
     quantity: int;
     months?: int;
-    stars?: long;
+    stars?: LongInput;
     untilDate: int;
   }
   export interface MessageMediaGiveawayResultsIn {
     _: "messageMediaGiveawayResults";
     onlyNewSubscribers?: boolean;
     refunded?: boolean;
-    channelId: long;
+    channelId: LongInput;
     additionalPeersCount?: int;
     launchMsgId: int;
     winnersCount: int;
     unclaimedCount: int;
-    winners: long[];
+    winners: LongInput[];
     months?: int;
-    stars?: long;
+    stars?: LongInput;
     prizeDescription?: string;
     untilDate: int;
   }
   export interface MessageMediaPaidMediaIn {
     _: "messageMediaPaidMedia";
-    starsAmount: long;
+    starsAmount: LongInput;
     extendedMedia: TypeMessageExtendedMediaIn[];
   }
   export interface MessageMediaToDoIn {
@@ -45651,8 +47337,8 @@ export namespace Api {
   }
   export interface InputGroupCallIn {
     _: "inputGroupCall";
-    id: long;
-    accessHash: long;
+    id: LongInput;
+    accessHash: LongInput;
   }
   export interface InputGroupCallSlugIn {
     _: "inputGroupCallSlug";
@@ -45685,7 +47371,7 @@ export namespace Api {
   }
   export interface InputMediaPaidMediaIn {
     _: "inputMediaPaidMedia";
-    starsAmount: long;
+    starsAmount: LongInput;
     extendedMedia: TypeInputMediaIn[];
     payload?: string;
   }
@@ -45696,7 +47382,7 @@ export namespace Api {
   export interface InputMediaStakeDiceIn {
     _: "inputMediaStakeDice";
     gameHash: string;
-    tonAmount: long;
+    tonAmount: LongInput;
     clientSeed: bytes;
   }
   export interface InputChatPhotoEmptyIn {
@@ -45716,33 +47402,33 @@ export namespace Api {
   export interface InputEncryptedChatIn {
     _?: "inputEncryptedChat";
     chatId: int;
-    accessHash: long;
+    accessHash: LongInput;
   }
   export interface InputEncryptedFileEmptyIn {
     _: "inputEncryptedFileEmpty";
   }
   export interface InputEncryptedFileUploadedIn {
     _: "inputEncryptedFileUploaded";
-    id: long;
+    id: LongInput;
     parts: int;
     md5Checksum: string;
     keyFingerprint: int;
   }
   export interface InputEncryptedFileIn {
     _: "inputEncryptedFile";
-    id: long;
-    accessHash: long;
+    id: LongInput;
+    accessHash: LongInput;
   }
   export interface InputEncryptedFileBigUploadedIn {
     _: "inputEncryptedFileBigUploaded";
-    id: long;
+    id: LongInput;
     parts: int;
     keyFingerprint: int;
   }
   export interface StarsSubscriptionPricingIn {
     _?: "starsSubscriptionPricing";
     period: int;
-    amount: long;
+    amount: LongInput;
   }
   export interface InputBotInlineResultIn {
     _: "inputBotInlineResult";
@@ -45862,15 +47548,27 @@ export namespace Api {
   export interface InputBotInlineMessageIDIn {
     _: "inputBotInlineMessageID";
     dcId: int;
-    id: long;
-    accessHash: long;
+    id: LongInput;
+    accessHash: LongInput;
   }
   export interface InputBotInlineMessageID64In {
     _: "inputBotInlineMessageID64";
     dcId: int;
-    ownerId: long;
+    ownerId: LongInput;
     id: int;
-    accessHash: long;
+    accessHash: LongInput;
+  }
+  export interface InputDialogPeerIn {
+    _: "inputDialogPeer";
+    peer: TypeInputPeerIn;
+  }
+  export interface InputDialogPeerFolderIn {
+    _: "inputDialogPeerFolder";
+    folderId: int;
+  }
+  export interface InputDialogPeerCommunityIn {
+    _: "inputDialogPeerCommunity";
+    community: TypeInputChannelIn;
   }
   export interface InputStickeredMediaPhotoIn {
     _: "inputStickeredMediaPhoto";
@@ -45889,7 +47587,7 @@ export namespace Api {
   export interface InputSingleMediaIn {
     _?: "inputSingleMedia";
     media: TypeInputMediaIn;
-    randomId?: long;
+    randomId?: LongInput;
     message: string;
     entities?: TypeMessageEntityIn[];
   }
@@ -45950,8 +47648,8 @@ export namespace Api {
   }
   export interface InputBotAppIDIn {
     _: "inputBotAppID";
-    id: long;
-    accessHash: long;
+    id: LongInput;
+    accessHash: LongInput;
   }
   export interface InputBotAppShortNameIn {
     _: "inputBotAppShortName";
@@ -45974,8 +47672,8 @@ export namespace Api {
   }
   export interface InputAiComposeToneIDIn {
     _: "inputAiComposeToneID";
-    id: long;
-    accessHash: long;
+    id: LongInput;
+    accessHash: LongInput;
   }
   export interface InputAiComposeToneSlugIn {
     _: "inputAiComposeToneSlug";
@@ -45988,7 +47686,7 @@ export namespace Api {
   export interface InputMessageReadMetricIn {
     _?: "inputMessageReadMetric";
     msgId: int;
-    viewId: long;
+    viewId: LongInput;
     timeInViewMs: int;
     activeTimeInViewMs: int;
     heightToViewportRatioPermille: int;
@@ -46004,52 +47702,52 @@ export namespace Api {
   }
   export interface InputFileLocationIn {
     _: "inputFileLocation";
-    volumeId: long;
+    volumeId: LongInput;
     localId: int;
-    secret: long;
+    secret: LongInput;
     fileReference: bytes;
   }
   export interface InputEncryptedFileLocationIn {
     _: "inputEncryptedFileLocation";
-    id: long;
-    accessHash: long;
+    id: LongInput;
+    accessHash: LongInput;
   }
   export interface InputDocumentFileLocationIn {
     _: "inputDocumentFileLocation";
-    id: long;
-    accessHash: long;
+    id: LongInput;
+    accessHash: LongInput;
     fileReference: bytes;
     thumbSize: string;
   }
   export interface InputSecureFileLocationIn {
     _: "inputSecureFileLocation";
-    id: long;
-    accessHash: long;
+    id: LongInput;
+    accessHash: LongInput;
   }
   export interface InputTakeoutFileLocationIn {
     _: "inputTakeoutFileLocation";
   }
   export interface InputPhotoFileLocationIn {
     _: "inputPhotoFileLocation";
-    id: long;
-    accessHash: long;
+    id: LongInput;
+    accessHash: LongInput;
     fileReference: bytes;
     thumbSize: string;
   }
   export interface InputPhotoLegacyFileLocationIn {
     _: "inputPhotoLegacyFileLocation";
-    id: long;
-    accessHash: long;
+    id: LongInput;
+    accessHash: LongInput;
     fileReference: bytes;
-    volumeId: long;
+    volumeId: LongInput;
     localId: int;
-    secret: long;
+    secret: LongInput;
   }
   export interface InputPeerPhotoFileLocationIn {
     _: "inputPeerPhotoFileLocation";
     big?: boolean;
     peer: TypeInputPeerIn;
-    photoId: long;
+    photoId: LongInput;
   }
   export interface InputStickerSetThumbIn {
     _: "inputStickerSetThumb";
@@ -46059,7 +47757,7 @@ export namespace Api {
   export interface InputGroupCallStreamIn {
     _: "inputGroupCallStream";
     call: TypeInputGroupCallIn;
-    timeMs: long;
+    timeMs: LongInput;
     scale: int;
     videoChannel?: int;
     videoQuality?: int;
@@ -46067,12 +47765,12 @@ export namespace Api {
   export interface InputWebFileLocationIn {
     _: "inputWebFileLocation";
     url: string;
-    accessHash: long;
+    accessHash: LongInput;
   }
   export interface InputWebFileGeoPointLocationIn {
     _: "inputWebFileGeoPointLocation";
     geoPoint: TypeInputGeoPointIn;
-    accessHash: long;
+    accessHash: LongInput;
     w: int;
     h: int;
     zoom: int;
@@ -46089,7 +47787,7 @@ export namespace Api {
     _?: "inputAppEvent";
     time: double;
     type: string;
-    peer: long;
+    peer: LongInput;
     data: TypeJSONValueIn;
   }
   export interface ChannelParticipantsRecentIn {
@@ -46223,14 +47921,14 @@ export namespace Api {
     _: "inputStorePaymentGiftPremium";
     userId: TypeInputUserIn;
     currency: string;
-    amount: long;
+    amount: LongInput;
   }
   export interface InputStorePaymentPremiumGiftCodeIn {
     _: "inputStorePaymentPremiumGiftCode";
     users: TypeInputUserIn[];
     boostPeer?: TypeInputPeerIn;
     currency: string;
-    amount: long;
+    amount: LongInput;
     message?: TypeTextWithEntitiesIn;
   }
   export interface InputStorePaymentPremiumGiveawayIn {
@@ -46241,38 +47939,38 @@ export namespace Api {
     additionalPeers?: TypeInputPeerIn[];
     countriesIso2?: string[];
     prizeDescription?: string;
-    randomId?: long;
+    randomId?: LongInput;
     untilDate: int;
     currency: string;
-    amount: long;
+    amount: LongInput;
   }
   export interface InputStorePaymentStarsTopupIn {
     _: "inputStorePaymentStarsTopup";
-    stars: long;
+    stars: LongInput;
     currency: string;
-    amount: long;
+    amount: LongInput;
     spendPurposePeer?: TypeInputPeerIn;
   }
   export interface InputStorePaymentStarsGiftIn {
     _: "inputStorePaymentStarsGift";
     userId: TypeInputUserIn;
-    stars: long;
+    stars: LongInput;
     currency: string;
-    amount: long;
+    amount: LongInput;
   }
   export interface InputStorePaymentStarsGiveawayIn {
     _: "inputStorePaymentStarsGiveaway";
     onlyNewSubscribers?: boolean;
     winnersAreVisible?: boolean;
-    stars: long;
+    stars: LongInput;
     boostPeer: TypeInputPeerIn;
     additionalPeers?: TypeInputPeerIn[];
     countriesIso2?: string[];
     prizeDescription?: string;
-    randomId?: long;
+    randomId?: LongInput;
     untilDate: int;
     currency: string;
-    amount: long;
+    amount: LongInput;
     users: int;
   }
   export interface InputStorePaymentAuthCodeIn {
@@ -46282,7 +47980,7 @@ export namespace Api {
     phoneCodeHash: string;
     premiumDays: int;
     currency: string;
-    amount: long;
+    amount: LongInput;
   }
   export interface PremiumGiftCodeOptionIn {
     _?: "premiumGiftCodeOption";
@@ -46291,7 +47989,7 @@ export namespace Api {
     storeProduct?: string;
     storeQuantity?: int;
     currency: string;
-    amount: long;
+    amount: LongInput;
   }
   export interface InputInvoiceStarsIn {
     _: "inputInvoiceStars";
@@ -46306,7 +48004,7 @@ export namespace Api {
     hideName?: boolean;
     includeUpgrade?: boolean;
     peer: TypeInputPeerIn;
-    giftId: long;
+    giftId: LongInput;
     message?: TypeTextWithEntitiesIn;
   }
   export interface InputInvoiceStarGiftUpgradeIn {
@@ -46321,7 +48019,7 @@ export namespace Api {
   export interface InputSavedStarGiftChatIn {
     _: "inputSavedStarGiftChat";
     peer: TypeInputPeerIn;
-    savedId: long;
+    savedId: LongInput;
   }
   export interface InputSavedStarGiftSlugIn {
     _: "inputSavedStarGiftSlug";
@@ -46341,7 +48039,7 @@ export namespace Api {
   export interface InputInvoiceBusinessBotTransferStarsIn {
     _: "inputInvoiceBusinessBotTransferStars";
     bot: TypeInputUserIn;
-    stars: long;
+    stars: LongInput;
   }
   export interface InputInvoiceStarGiftResaleIn {
     _: "inputInvoiceStarGiftResale";
@@ -46369,8 +48067,8 @@ export namespace Api {
     hideName?: boolean;
     updateBid?: boolean;
     peer?: TypeInputPeerIn;
-    giftId: long;
-    bidAmount: long;
+    giftId: LongInput;
+    bidAmount: LongInput;
     message?: TypeTextWithEntitiesIn;
   }
   export interface PaymentRequestedInfoIn {
@@ -46414,11 +48112,11 @@ export namespace Api {
   }
   export interface StarGiftAttributeIdModelIn {
     _: "starGiftAttributeIdModel";
-    documentId: long;
+    documentId: LongInput;
   }
   export interface StarGiftAttributeIdPatternIn {
     _: "starGiftAttributeIdPattern";
-    documentId: long;
+    documentId: LongInput;
   }
   export interface StarGiftAttributeIdBackdropIn {
     _: "starGiftAttributeIdBackdrop";
@@ -46426,7 +48124,7 @@ export namespace Api {
   }
   export interface InputStarGiftAuctionIn {
     _: "inputStarGiftAuction";
-    giftId: long;
+    giftId: LongInput;
   }
   export interface InputStarGiftAuctionSlugIn {
     _: "inputStarGiftAuctionSlug";
@@ -46449,8 +48147,8 @@ export namespace Api {
   }
   export interface InputPhoneCallIn {
     _?: "inputPhoneCall";
-    id: long;
-    accessHash: long;
+    id: LongInput;
+    accessHash: LongInput;
   }
   export interface PhoneCallDiscardReasonMissedIn {
     _: "phoneCallDiscardReasonMissed";
@@ -46485,199 +48183,201 @@ export namespace Api {
     _: "inputCollectiblePhone";
     phone: string;
   }
-  export type TypeInputClientProxyIn = InputClientProxyIn;
-  export type TypeJSONValueIn = JsonNullIn | JsonBoolIn | JsonNumberIn | JsonStringIn | JsonArrayIn | JsonObjectIn;
-  export type TypeJSONObjectValueIn = JsonObjectValueIn;
-  export type TypeMessageRangeIn = MessageRangeIn;
-  export type TypeCodeSettingsIn = CodeSettingsIn;
-  export type TypeEmailVerificationIn = EmailVerificationCodeIn | EmailVerificationGoogleIn | EmailVerificationAppleIn;
-  export type TypeInputCheckPasswordSRPIn = InputCheckPasswordEmptyIn | InputCheckPasswordSRPIn;
-  export type TypeAccountPasswordInputSettingsIn = AccountPasswordInputSettingsIn;
-  export type TypePasswordKdfAlgoIn = PasswordKdfAlgoUnknownIn | PasswordKdfAlgoSHA256SHA256PBKDF2HMACSHA512iter100000SHA256ModPowIn;
-  export type TypeSecureSecretSettingsIn = SecureSecretSettingsIn;
-  export type TypeSecurePasswordKdfAlgoIn = SecurePasswordKdfAlgoUnknownIn | SecurePasswordKdfAlgoPBKDF2HMACSHA512iter100000In | SecurePasswordKdfAlgoSHA512In;
-  export type TypeInputPasskeyCredentialIn = InputPasskeyCredentialPublicKeyIn | InputPasskeyCredentialFirebasePNVIn;
-  export type TypeInputPasskeyResponseIn = InputPasskeyResponseRegisterIn | InputPasskeyResponseLoginIn;
-  export type TypeDataJSONIn = DataJSONIn;
-  export type TypeInputPeerNotifySettingsIn = InputPeerNotifySettingsIn;
-  export type TypeNotificationSoundIn = NotificationSoundDefaultIn | NotificationSoundNoneIn | NotificationSoundLocalIn | NotificationSoundRingtoneIn;
-  export type TypeReportReasonIn = InputReportReasonSpamIn | InputReportReasonViolenceIn | InputReportReasonPornographyIn | InputReportReasonChildAbuseIn | InputReportReasonOtherIn | InputReportReasonCopyrightIn | InputReportReasonGeoIrrelevantIn | InputReportReasonFakeIn | InputReportReasonIllegalDrugsIn | InputReportReasonPersonalDetailsIn;
-  export type TypeInputPrivacyKeyIn = InputPrivacyKeyStatusTimestampIn | InputPrivacyKeyChatInviteIn | InputPrivacyKeyPhoneCallIn | InputPrivacyKeyPhoneP2PIn | InputPrivacyKeyForwardsIn | InputPrivacyKeyProfilePhotoIn | InputPrivacyKeyPhoneNumberIn | InputPrivacyKeyAddedByPhoneIn | InputPrivacyKeyVoiceMessagesIn | InputPrivacyKeyAboutIn | InputPrivacyKeyBirthdayIn | InputPrivacyKeyStarGiftsAutoSaveIn | InputPrivacyKeyNoPaidMessagesIn | InputPrivacyKeySavedMusicIn;
-  export type TypeInputPrivacyRuleIn = InputPrivacyValueAllowContactsIn | InputPrivacyValueAllowAllIn | InputPrivacyValueAllowUsersIn | InputPrivacyValueDisallowContactsIn | InputPrivacyValueDisallowAllIn | InputPrivacyValueDisallowUsersIn | InputPrivacyValueAllowChatParticipantsIn | InputPrivacyValueDisallowChatParticipantsIn | InputPrivacyValueAllowCloseFriendsIn | InputPrivacyValueAllowPremiumIn | InputPrivacyValueAllowBotsIn | InputPrivacyValueDisallowBotsIn;
-  export type TypeInputUserIn = InputUserEmptyIn | InputUserSelfIn | InputUserIn | InputUserFromMessageIn;
-  export type TypeInputPeerIn = InputPeerEmptyIn | InputPeerSelfIn | InputPeerChatIn | InputPeerUserIn | InputPeerChannelIn | InputPeerUserFromMessageIn | InputPeerChannelFromMessageIn;
-  export type TypeAccountDaysTTLIn = AccountDaysTTLIn;
-  export type TypeSecureValueTypeIn = SecureValueTypePersonalDetailsIn | SecureValueTypePassportIn | SecureValueTypeDriverLicenseIn | SecureValueTypeIdentityCardIn | SecureValueTypeInternalPassportIn | SecureValueTypeAddressIn | SecureValueTypeUtilityBillIn | SecureValueTypeBankStatementIn | SecureValueTypeRentalAgreementIn | SecureValueTypePassportRegistrationIn | SecureValueTypeTemporaryRegistrationIn | SecureValueTypePhoneIn | SecureValueTypeEmailIn;
-  export type TypeInputSecureValueIn = InputSecureValueIn;
-  export type TypeSecureDataIn = SecureDataIn;
-  export type TypeInputSecureFileIn = InputSecureFileUploadedIn | InputSecureFileIn;
-  export type TypeSecurePlainDataIn = SecurePlainPhoneIn | SecurePlainEmailIn;
-  export type TypeSecureValueHashIn = SecureValueHashIn;
-  export type TypeSecureCredentialsEncryptedIn = SecureCredentialsEncryptedIn;
-  export type TypeEmailVerifyPurposeIn = EmailVerifyPurposeLoginSetupIn | EmailVerifyPurposeLoginChangeIn | EmailVerifyPurposePassportIn;
-  export type TypeInputWallPaperIn = InputWallPaperIn | InputWallPaperSlugIn | InputWallPaperNoFileIn;
-  export type TypeInputFileIn = InputFileIn | InputFileBigIn | InputFileStoryDocumentIn;
-  export type TypeInputDocumentIn = InputDocumentEmptyIn | InputDocumentIn;
-  export type TypeWallPaperSettingsIn = WallPaperSettingsIn;
-  export type TypeAutoDownloadSettingsIn = AutoDownloadSettingsIn;
-  export type TypeInputThemeSettingsIn = InputThemeSettingsIn;
-  export type TypeBaseThemeIn = BaseThemeClassicIn | BaseThemeDayIn | BaseThemeNightIn | BaseThemeTintedIn | BaseThemeArcticIn;
-  export type TypeInputThemeIn = InputThemeIn | InputThemeSlugIn;
-  export type TypeGlobalPrivacySettingsIn = GlobalPrivacySettingsIn;
-  export type TypeDisallowedGiftsSettingsIn = DisallowedGiftsSettingsIn;
-  export type TypeInputPhotoIn = InputPhotoEmptyIn | InputPhotoIn;
-  export type TypeEmojiStatusIn = EmojiStatusEmptyIn | EmojiStatusIn | EmojiStatusCollectibleIn | InputEmojiStatusCollectibleIn;
-  export type TypeAutoSaveSettingsIn = AutoSaveSettingsIn;
-  export type TypePeerColorIn = PeerColorIn | PeerColorCollectibleIn | InputPeerColorCollectibleIn;
-  export type TypeBusinessWorkHoursIn = BusinessWorkHoursIn;
-  export type TypeBusinessWeeklyOpenIn = BusinessWeeklyOpenIn;
-  export type TypeInputGeoPointIn = InputGeoPointEmptyIn | InputGeoPointIn;
-  export type TypeInputBusinessGreetingMessageIn = InputBusinessGreetingMessageIn;
-  export type TypeInputBusinessRecipientsIn = InputBusinessRecipientsIn;
-  export type TypeInputBusinessAwayMessageIn = InputBusinessAwayMessageIn;
-  export type TypeBusinessAwayMessageScheduleIn = BusinessAwayMessageScheduleAlwaysIn | BusinessAwayMessageScheduleOutsideWorkHoursIn | BusinessAwayMessageScheduleCustomIn;
-  export type TypeBusinessBotRightsIn = BusinessBotRightsIn;
-  export type TypeInputBusinessBotRecipientsIn = InputBusinessBotRecipientsIn;
-  export type TypeInputBusinessIntroIn = InputBusinessIntroIn;
-  export type TypeBirthdayIn = BirthdayIn;
-  export type TypeInputBusinessChatLinkIn = InputBusinessChatLinkIn;
-  export type TypeMessageEntityIn = MessageEntityUnknownIn | MessageEntityMentionIn | MessageEntityHashtagIn | MessageEntityBotCommandIn | MessageEntityUrlIn | MessageEntityEmailIn | MessageEntityBoldIn | MessageEntityItalicIn | MessageEntityCodeIn | MessageEntityPreIn | MessageEntityTextUrlIn | MessageEntityMentionNameIn | InputMessageEntityMentionNameIn | MessageEntityPhoneIn | MessageEntityCashtagIn | MessageEntityUnderlineIn | MessageEntityStrikeIn | MessageEntityBankCardIn | MessageEntitySpoilerIn | MessageEntityCustomEmojiIn | MessageEntityBlockquoteIn | MessageEntityFormattedDateIn | MessageEntityDiffInsertIn | MessageEntityDiffReplaceIn | MessageEntityDiffDeleteIn;
-  export type TypeReactionsNotifySettingsIn = ReactionsNotifySettingsIn;
-  export type TypeReactionNotificationsFromIn = ReactionNotificationsFromContactsIn | ReactionNotificationsFromAllIn;
-  export type TypeProfileTabIn = ProfileTabPostsIn | ProfileTabGiftsIn | ProfileTabMediaIn | ProfileTabFilesIn | ProfileTabMusicIn | ProfileTabVoiceIn | ProfileTabLinksIn | ProfileTabGifsIn;
-  export type TypeSecureValueErrorIn = SecureValueErrorDataIn | SecureValueErrorFrontSideIn | SecureValueErrorReverseSideIn | SecureValueErrorSelfieIn | SecureValueErrorFileIn | SecureValueErrorFilesIn | SecureValueErrorIn | SecureValueErrorTranslationFileIn | SecureValueErrorTranslationFilesIn;
-  export type TypeInputContactIn = InputPhoneContactIn;
-  export type TypeTextWithEntitiesIn = TextWithEntitiesIn;
-  export type TypeTopPeerCategoryIn = TopPeerCategoryBotsPMIn | TopPeerCategoryBotsInlineIn | TopPeerCategoryCorrespondentsIn | TopPeerCategoryGroupsIn | TopPeerCategoryChannelsIn | TopPeerCategoryPhoneCallsIn | TopPeerCategoryForwardUsersIn | TopPeerCategoryForwardChatsIn | TopPeerCategoryBotsAppIn | TopPeerCategoryBotsGuestChatIn;
-  export type TypeInputMessageIn = InputMessageIDIn | InputMessageReplyToIn | InputMessagePinnedIn | InputMessageCallbackQueryIn;
-  export type TypeReactionIn = ReactionEmptyIn | ReactionEmojiIn | ReactionCustomEmojiIn | ReactionPaidIn;
-  export type TypeMessagesFilterIn = InputMessagesFilterEmptyIn | InputMessagesFilterPhotosIn | InputMessagesFilterVideoIn | InputMessagesFilterPhotoVideoIn | InputMessagesFilterDocumentIn | InputMessagesFilterUrlIn | InputMessagesFilterGifIn | InputMessagesFilterVoiceIn | InputMessagesFilterMusicIn | InputMessagesFilterChatPhotosIn | InputMessagesFilterPhoneCallsIn | InputMessagesFilterRoundVoiceIn | InputMessagesFilterRoundVideoIn | InputMessagesFilterMyMentionsIn | InputMessagesFilterGeoIn | InputMessagesFilterContactsIn | InputMessagesFilterPinnedIn | InputMessagesFilterPollIn;
-  export type TypeSendMessageActionIn = SendMessageTypingActionIn | SendMessageCancelActionIn | SendMessageRecordVideoActionIn | SendMessageUploadVideoActionIn | SendMessageRecordAudioActionIn | SendMessageUploadAudioActionIn | SendMessageUploadPhotoActionIn | SendMessageUploadDocumentActionIn | SendMessageGeoLocationActionIn | SendMessageChooseContactActionIn | SendMessageGamePlayActionIn | SendMessageRecordRoundActionIn | SendMessageUploadRoundActionIn | SpeakingInGroupCallActionIn | SendMessageHistoryImportActionIn | SendMessageChooseStickerActionIn | SendMessageEmojiInteractionIn | SendMessageEmojiInteractionSeenIn | SendMessageTextDraftActionIn | InputSendMessageRichMessageDraftActionIn | SendMessageRichMessageDraftActionIn | SendMessageStopDraftActionIn;
-  export type TypeInputRichMessageIn = InputRichMessageIn | InputRichMessageHTMLIn | InputRichMessageMarkdownIn;
-  export type TypePageBlockIn = PageBlockUnsupportedIn | PageBlockTitleIn | PageBlockSubtitleIn | PageBlockAuthorDateIn | PageBlockHeaderIn | PageBlockSubheaderIn | PageBlockParagraphIn | PageBlockPreformattedIn | PageBlockFooterIn | PageBlockDividerIn | PageBlockAnchorIn | PageBlockListIn | PageBlockBlockquoteIn | PageBlockPullquoteIn | PageBlockPhotoIn | PageBlockVideoIn | PageBlockCoverIn | PageBlockEmbedIn | PageBlockEmbedPostIn | PageBlockCollageIn | PageBlockSlideshowIn | PageBlockChannelIn | PageBlockAudioIn | PageBlockKickerIn | PageBlockTableIn | PageBlockOrderedListIn | PageBlockDetailsIn | PageBlockRelatedArticlesIn | PageBlockMapIn | PageBlockHeading1In | PageBlockHeading2In | PageBlockHeading3In | PageBlockHeading4In | PageBlockHeading5In | PageBlockHeading6In | PageBlockMathIn | PageBlockThinkingIn | InputPageBlockMapIn | PageBlockBlockquoteBlocksIn | PageBlockButtonRowIn | PageBlockDocumentIn;
-  export type TypeRichTextIn = TextEmptyIn | TextPlainIn | TextBoldIn | TextItalicIn | TextUnderlineIn | TextStrikeIn | TextFixedIn | TextUrlIn | TextEmailIn | TextConcatIn | TextSubscriptIn | TextSuperscriptIn | TextMarkedIn | TextPhoneIn | TextImageIn | TextAnchorIn | TextMathIn | TextCustomEmojiIn | TextSpoilerIn | TextMentionIn | TextHashtagIn | TextBotCommandIn | TextCashtagIn | TextAutoUrlIn | TextAutoEmailIn | TextAutoPhoneIn | TextBankCardIn | TextMentionNameIn | TextDateIn | TextDiffIn | TextButtonIn;
-  export type TypeInlineButtonTypeIn = InlineButtonTypeUrlIn | InlineButtonTypeUrlAuthIn | InputInlineButtonTypeUrlAuthIn | InlineButtonTypeWebViewIn | InlineButtonTypeCallbackIn | InlineButtonTypeGameIn | InlineButtonTypeBuyIn | InlineButtonTypeSwitchInlineIn | InlineButtonTypeUserProfileIn | InputInlineButtonTypeUserProfileIn | InlineButtonTypeCopyIn | InlineButtonTypeDisabledIn;
-  export type TypeInlineQueryPeerTypeIn = InlineQueryPeerTypeSameBotPMIn | InlineQueryPeerTypePMIn | InlineQueryPeerTypeChatIn | InlineQueryPeerTypeMegagroupIn | InlineQueryPeerTypeBroadcastIn | InlineQueryPeerTypeBotPMIn;
-  export type TypeRichButtonStyleIn = RichButtonStyleIn;
-  export type TypePageListItemIn = PageListItemTextIn | PageListItemBlocksIn;
-  export type TypePageCaptionIn = PageCaptionIn;
-  export type TypeChatIn = ChatEmptyIn | ChatIn | ChatForbiddenIn | ChannelIn | ChannelForbiddenIn | CommunityForbiddenIn | CommunityIn;
-  export type TypeChatPhotoIn = ChatPhotoEmptyIn | ChatPhotoIn;
-  export type TypeInputChannelIn = InputChannelEmptyIn | InputChannelIn | InputChannelFromMessageIn;
-  export type TypeChatAdminRightsIn = ChatAdminRightsIn;
-  export type TypeChatBannedRightsIn = ChatBannedRightsIn;
-  export type TypeRestrictionReasonIn = RestrictionReasonIn;
-  export type TypeUsernameIn = UsernameIn;
-  export type TypeRecentStoryIn = RecentStoryIn;
-  export type TypePageTableRowIn = PageTableRowIn;
-  export type TypePageTableCellIn = PageTableCellIn;
-  export type TypePageListOrderedItemIn = PageListOrderedItemTextIn | PageListOrderedItemBlocksIn;
-  export type TypePageRelatedArticleIn = PageRelatedArticleIn;
-  export type TypeGeoPointIn = GeoPointEmptyIn | GeoPointIn;
-  export type TypePageButtonIn = PageButtonIn;
-  export type TypeInputRichFileIn = InputRichFilePhotoIn | InputRichFileDocumentIn;
-  export type TypeRichMessageIn = RichMessageIn;
-  export type TypePhotoIn = PhotoEmptyIn | PhotoIn;
-  export type TypePhotoSizeIn = PhotoSizeEmptyIn | PhotoSizeIn | PhotoCachedSizeIn | PhotoStrippedSizeIn | PhotoSizeProgressiveIn | PhotoPathSizeIn;
-  export type TypeVideoSizeIn = VideoSizeIn | VideoSizeEmojiMarkupIn | VideoSizeStickerMarkupIn;
-  export type TypeInputStickerSetIn = InputStickerSetEmptyIn | InputStickerSetIDIn | InputStickerSetShortNameIn | InputStickerSetAnimatedEmojiIn | InputStickerSetDiceIn | InputStickerSetAnimatedEmojiAnimationsIn | InputStickerSetPremiumGiftsIn | InputStickerSetEmojiGenericAnimationsIn | InputStickerSetEmojiDefaultStatusesIn | InputStickerSetEmojiDefaultTopicIconsIn | InputStickerSetEmojiChannelDefaultStatusesIn | InputStickerSetTonGiftsIn;
-  export type TypeDocumentIn = DocumentEmptyIn | DocumentIn;
-  export type TypeDocumentAttributeIn = DocumentAttributeImageSizeIn | DocumentAttributeAnimatedIn | DocumentAttributeStickerIn | DocumentAttributeVideoIn | DocumentAttributeAudioIn | DocumentAttributeFilenameIn | DocumentAttributeHasStickersIn | DocumentAttributeCustomEmojiIn;
-  export type TypeMaskCoordsIn = MaskCoordsIn;
-  export type TypeInputReplyToIn = InputReplyToMessageIn | InputReplyToStoryIn | InputReplyToMonoForumIn | InputReplyToEphemeralMessageIn;
-  export type TypeReplyMarkupIn = ReplyKeyboardHideIn | ReplyKeyboardForceReplyIn | ReplyKeyboardMarkupIn | ReplyInlineMarkupIn;
-  export type TypeKeyboardButtonRowIn = KeyboardButtonRowIn;
-  export type TypeKeyboardButtonIn = KeyboardButtonIn;
-  export type TypeKeyboardButtonStyleIn = KeyboardButtonStyleIn;
-  export type TypeButtonTypeIn = ButtonTypeDefaultIn | ButtonTypeRequestPhoneIn | ButtonTypeRequestGeoLocationIn | ButtonTypeRequestPollIn | ButtonTypeRequestPeerIn | InputButtonTypeRequestPeerIn | ButtonTypeSimpleWebViewIn;
-  export type TypeRequestPeerTypeIn = RequestPeerTypeUserIn | RequestPeerTypeChatIn | RequestPeerTypeBroadcastIn | RequestPeerTypeCreateBotIn;
-  export type TypeKeyboardInlineButtonRowIn = KeyboardInlineButtonRowIn;
-  export type TypeKeyboardInlineButtonIn = KeyboardInlineButtonIn;
-  export type TypeInputQuickReplyShortcutIn = InputQuickReplyShortcutIn | InputQuickReplyShortcutIdIn;
-  export type TypeSuggestedPostIn = SuggestedPostIn;
-  export type TypeStarsAmountIn = StarsAmountIn | StarsTonAmountIn;
-  export type TypeInputMediaIn = InputMediaEmptyIn | InputMediaUploadedPhotoIn | InputMediaPhotoIn | InputMediaGeoPointIn | InputMediaContactIn | InputMediaUploadedDocumentIn | InputMediaDocumentIn | InputMediaVenueIn | InputMediaPhotoExternalIn | InputMediaDocumentExternalIn | InputMediaGameIn | InputMediaInvoiceIn | InputMediaGeoLiveIn | InputMediaPollIn | InputMediaDiceIn | InputMediaStoryIn | InputMediaWebPageIn | InputMediaPaidMediaIn | InputMediaTodoIn | InputMediaStakeDiceIn;
-  export type TypeInputGameIn = InputGameIDIn | InputGameShortNameIn;
-  export type TypeInputWebDocumentIn = InputWebDocumentIn;
-  export type TypeInvoiceIn = InvoiceIn;
-  export type TypeLabeledPriceIn = LabeledPriceIn;
-  export type TypePollIn = PollIn;
-  export type TypePollAnswerIn = PollAnswerIn | InputPollAnswerIn;
-  export type TypeMessageMediaIn = MessageMediaEmptyIn | MessageMediaPhotoIn | MessageMediaGeoIn | MessageMediaContactIn | MessageMediaUnsupportedIn | MessageMediaDocumentIn | MessageMediaWebPageIn | MessageMediaVenueIn | MessageMediaGameIn | MessageMediaInvoiceIn | MessageMediaGeoLiveIn | MessageMediaPollIn | MessageMediaDiceIn | MessageMediaStoryIn | MessageMediaGiveawayIn | MessageMediaGiveawayResultsIn | MessageMediaPaidMediaIn | MessageMediaToDoIn | MessageMediaVideoStreamIn;
-  export type TypeWebPageIn = WebPageEmptyIn | WebPagePendingIn | WebPageIn | WebPageNotModifiedIn;
-  export type TypePageIn = PageIn;
-  export type TypeWebPageAttributeIn = WebPageAttributeThemeIn | WebPageAttributeStoryIn | WebPageAttributeStickerSetIn | WebPageAttributeUniqueStarGiftIn | WebPageAttributeStarGiftCollectionIn | WebPageAttributeStarGiftAuctionIn | WebPageAttributeAiComposeToneIn;
-  export type TypeThemeSettingsIn = ThemeSettingsIn;
-  export type TypeWallPaperIn = WallPaperIn | WallPaperNoFileIn;
-  export type TypePeerIn = PeerUserIn | PeerChatIn | PeerChannelIn;
-  export type TypeStoryItemIn = StoryItemDeletedIn | StoryItemSkippedIn | StoryItemIn;
-  export type TypeStoryFwdHeaderIn = StoryFwdHeaderIn;
-  export type TypeMediaAreaIn = MediaAreaVenueIn | InputMediaAreaVenueIn | MediaAreaGeoPointIn | MediaAreaSuggestedReactionIn | MediaAreaChannelPostIn | InputMediaAreaChannelPostIn | MediaAreaUrlIn | MediaAreaWeatherIn | MediaAreaStarGiftIn;
-  export type TypeMediaAreaCoordinatesIn = MediaAreaCoordinatesIn;
-  export type TypeGeoPointAddressIn = GeoPointAddressIn;
-  export type TypePrivacyRuleIn = PrivacyValueAllowContactsIn | PrivacyValueAllowAllIn | PrivacyValueAllowUsersIn | PrivacyValueDisallowContactsIn | PrivacyValueDisallowAllIn | PrivacyValueDisallowUsersIn | PrivacyValueAllowChatParticipantsIn | PrivacyValueDisallowChatParticipantsIn | PrivacyValueAllowCloseFriendsIn | PrivacyValueAllowPremiumIn | PrivacyValueAllowBotsIn | PrivacyValueDisallowBotsIn;
-  export type TypeStoryViewsIn = StoryViewsIn;
-  export type TypeReactionCountIn = ReactionCountIn;
-  export type TypeStarGiftIn = StarGiftIn | StarGiftUniqueIn;
-  export type TypeStarGiftBackgroundIn = StarGiftBackgroundIn;
-  export type TypeStarGiftAttributeIn = StarGiftAttributeModelIn | StarGiftAttributePatternIn | StarGiftAttributeBackdropIn | StarGiftAttributeOriginalDetailsIn;
-  export type TypeStarGiftAttributeRarityIn = StarGiftAttributeRarityIn | StarGiftAttributeRarityUncommonIn | StarGiftAttributeRarityRareIn | StarGiftAttributeRarityEpicIn | StarGiftAttributeRarityLegendaryIn;
-  export type TypeGameIn = GameIn;
-  export type TypeWebDocumentIn = WebDocumentIn | WebDocumentNoProxyIn;
-  export type TypeMessageExtendedMediaIn = MessageExtendedMediaPreviewIn | MessageExtendedMediaIn;
-  export type TypePollResultsIn = PollResultsIn;
-  export type TypePollAnswerVotersIn = PollAnswerVotersIn;
-  export type TypeMessagesEmojiGameOutcomeIn = MessagesEmojiGameOutcomeIn;
-  export type TypeTodoListIn = TodoListIn;
-  export type TypeTodoItemIn = TodoItemIn;
-  export type TypeTodoCompletionIn = TodoCompletionIn;
-  export type TypeInputGroupCallIn = InputGroupCallIn | InputGroupCallSlugIn | InputGroupCallInviteMessageIn;
-  export type TypeInputChatPhotoIn = InputChatPhotoEmptyIn | InputChatUploadedPhotoIn | InputChatPhotoIn;
-  export type TypeInputEncryptedChatIn = InputEncryptedChatIn;
-  export type TypeInputEncryptedFileIn = InputEncryptedFileEmptyIn | InputEncryptedFileUploadedIn | InputEncryptedFileIn | InputEncryptedFileBigUploadedIn;
-  export type TypeStarsSubscriptionPricingIn = StarsSubscriptionPricingIn;
-  export type TypeInputBotInlineResultIn = InputBotInlineResultIn | InputBotInlineResultPhotoIn | InputBotInlineResultDocumentIn | InputBotInlineResultGameIn;
-  export type TypeInputBotInlineMessageIn = InputBotInlineMessageMediaAutoIn | InputBotInlineMessageTextIn | InputBotInlineMessageMediaGeoIn | InputBotInlineMessageMediaVenueIn | InputBotInlineMessageMediaContactIn | InputBotInlineMessageGameIn | InputBotInlineMessageMediaInvoiceIn | InputBotInlineMessageMediaWebPageIn | InputBotInlineMessageRichMessageIn;
-  export type TypeInlineBotSwitchPMIn = InlineBotSwitchPMIn;
-  export type TypeInlineBotWebViewIn = InlineBotWebViewIn;
-  export type TypeInputBotInlineMessageIDIn = InputBotInlineMessageIDIn | InputBotInlineMessageID64In;
-  export type TypeInputStickeredMediaIn = InputStickeredMediaPhotoIn | InputStickeredMediaDocumentIn;
-  export type TypeShippingOptionIn = ShippingOptionIn;
-  export type TypeInputSingleMediaIn = InputSingleMediaIn;
-  export type TypeDialogFilterIn = DialogFilterIn | DialogFilterDefaultIn | DialogFilterChatlistIn;
-  export type TypeInputChatThemeIn = InputChatThemeEmptyIn | InputChatThemeIn | InputChatThemeUniqueGiftIn;
-  export type TypeChatReactionsIn = ChatReactionsNoneIn | ChatReactionsAllIn | ChatReactionsSomeIn;
-  export type TypeInputBotAppIn = InputBotAppIDIn | InputBotAppShortNameIn;
-  export type TypePaidReactionPrivacyIn = PaidReactionPrivacyDefaultIn | PaidReactionPrivacyAnonymousIn | PaidReactionPrivacyPeerIn;
-  export type TypeInputAiComposeToneIn = InputAiComposeToneDefaultIn | InputAiComposeToneIDIn | InputAiComposeToneSlugIn | InputAiComposeToneSingleUseIn;
-  export type TypeInputMessageReadMetricIn = InputMessageReadMetricIn;
-  export type TypeChannelMessagesFilterIn = ChannelMessagesFilterEmptyIn | ChannelMessagesFilterIn;
-  export type TypeInputFileLocationIn = InputFileLocationIn | InputEncryptedFileLocationIn | InputDocumentFileLocationIn | InputSecureFileLocationIn | InputTakeoutFileLocationIn | InputPhotoFileLocationIn | InputPhotoLegacyFileLocationIn | InputPeerPhotoFileLocationIn | InputStickerSetThumbIn | InputGroupCallStreamIn;
-  export type TypeInputWebFileLocationIn = InputWebFileLocationIn | InputWebFileGeoPointLocationIn | InputWebFileAudioAlbumThumbLocationIn;
-  export type TypeInputAppEventIn = InputAppEventIn;
-  export type TypeChannelParticipantsFilterIn = ChannelParticipantsRecentIn | ChannelParticipantsAdminsIn | ChannelParticipantsKickedIn | ChannelParticipantsBotsIn | ChannelParticipantsBannedIn | ChannelParticipantsSearchIn | ChannelParticipantsContactsIn | ChannelParticipantsMentionsIn;
-  export type TypeChannelAdminLogEventsFilterIn = ChannelAdminLogEventsFilterIn;
-  export type TypeBotCommandScopeIn = BotCommandScopeDefaultIn | BotCommandScopeUsersIn | BotCommandScopeChatsIn | BotCommandScopeChatAdminsIn | BotCommandScopePeerIn | BotCommandScopePeerAdminsIn | BotCommandScopePeerUserIn;
-  export type TypeBotCommandIn = BotCommandIn;
-  export type TypeBotMenuButtonIn = BotMenuButtonDefaultIn | BotMenuButtonCommandsIn | BotMenuButtonIn;
-  export type TypeJoinChatBotResultIn = JoinChatBotResultApprovedIn | JoinChatBotResultDeclinedIn | JoinChatBotResultQueuedIn | JoinChatBotResultWebViewIn;
-  export type TypeInputInvoiceIn = InputInvoiceMessageIn | InputInvoiceSlugIn | InputInvoicePremiumGiftCodeIn | InputInvoiceStarsIn | InputInvoiceChatInviteSubscriptionIn | InputInvoiceStarGiftIn | InputInvoiceStarGiftUpgradeIn | InputInvoiceStarGiftTransferIn | InputInvoicePremiumGiftStarsIn | InputInvoiceBusinessBotTransferStarsIn | InputInvoiceStarGiftResaleIn | InputInvoiceStarGiftPrepaidUpgradeIn | InputInvoicePremiumAuthCodeIn | InputInvoiceStarGiftDropOriginalDetailsIn | InputInvoiceStarGiftAuctionBidIn;
-  export type TypeInputStorePaymentPurposeIn = InputStorePaymentPremiumSubscriptionIn | InputStorePaymentGiftPremiumIn | InputStorePaymentPremiumGiftCodeIn | InputStorePaymentPremiumGiveawayIn | InputStorePaymentStarsTopupIn | InputStorePaymentStarsGiftIn | InputStorePaymentStarsGiveawayIn | InputStorePaymentAuthCodeIn;
-  export type TypePremiumGiftCodeOptionIn = PremiumGiftCodeOptionIn;
-  export type TypeInputSavedStarGiftIn = InputSavedStarGiftUserIn | InputSavedStarGiftChatIn | InputSavedStarGiftSlugIn;
-  export type TypePaymentRequestedInfoIn = PaymentRequestedInfoIn;
-  export type TypePostAddressIn = PostAddressIn;
-  export type TypeInputPaymentCredentialsIn = InputPaymentCredentialsSavedIn | InputPaymentCredentialsIn | InputPaymentCredentialsApplePayIn | InputPaymentCredentialsGooglePayIn;
-  export type TypeInputStarsTransactionIn = InputStarsTransactionIn;
-  export type TypeStarGiftAttributeIdIn = StarGiftAttributeIdModelIn | StarGiftAttributeIdPatternIn | StarGiftAttributeIdBackdropIn;
-  export type TypeInputStarGiftAuctionIn = InputStarGiftAuctionIn | InputStarGiftAuctionSlugIn;
-  export type TypeInputStickerSetItemIn = InputStickerSetItemIn;
-  export type TypePhoneCallProtocolIn = PhoneCallProtocolIn;
-  export type TypeInputPhoneCallIn = InputPhoneCallIn;
-  export type TypePhoneCallDiscardReasonIn = PhoneCallDiscardReasonMissedIn | PhoneCallDiscardReasonDisconnectIn | PhoneCallDiscardReasonHangupIn | PhoneCallDiscardReasonBusyIn | PhoneCallDiscardReasonMigrateConferenceCallIn;
-  export type TypeInputFolderPeerIn = InputFolderPeerIn;
-  export type TypeInputChatlistIn = InputChatlistDialogFilterIn;
-  export type TypeInputCollectibleIn = InputCollectibleUsernameIn | InputCollectiblePhoneIn;
+  export type TypeInputClientProxyIn = InputClientProxyIn | Api.TypeInputClientProxy;
+  export type TypeJSONValueIn = JsonNullIn | JsonBoolIn | JsonNumberIn | JsonStringIn | JsonArrayIn | JsonObjectIn | Api.TypeJSONValue;
+  export type TypeJSONObjectValueIn = JsonObjectValueIn | Api.TypeJSONObjectValue;
+  export type TypeMessageRangeIn = MessageRangeIn | Api.TypeMessageRange;
+  export type TypeCodeSettingsIn = CodeSettingsIn | Api.TypeCodeSettings;
+  export type TypeEmailVerificationIn = EmailVerificationCodeIn | EmailVerificationGoogleIn | EmailVerificationAppleIn | Api.TypeEmailVerification;
+  export type TypeInputCheckPasswordSRPIn = InputCheckPasswordEmptyIn | InputCheckPasswordSRPIn | Api.TypeInputCheckPasswordSRP;
+  export type TypeAccountPasswordInputSettingsIn = AccountPasswordInputSettingsIn | account.TypePasswordInputSettings;
+  export type TypePasswordKdfAlgoIn = PasswordKdfAlgoUnknownIn | PasswordKdfAlgoSHA256SHA256PBKDF2HMACSHA512iter100000SHA256ModPowIn | Api.TypePasswordKdfAlgo;
+  export type TypeSecureSecretSettingsIn = SecureSecretSettingsIn | Api.TypeSecureSecretSettings;
+  export type TypeSecurePasswordKdfAlgoIn = SecurePasswordKdfAlgoUnknownIn | SecurePasswordKdfAlgoPBKDF2HMACSHA512iter100000In | SecurePasswordKdfAlgoSHA512In | Api.TypeSecurePasswordKdfAlgo;
+  export type TypeInputPasskeyCredentialIn = InputPasskeyCredentialPublicKeyIn | InputPasskeyCredentialFirebasePNVIn | Api.TypeInputPasskeyCredential;
+  export type TypeInputPasskeyResponseIn = InputPasskeyResponseRegisterIn | InputPasskeyResponseLoginIn | Api.TypeInputPasskeyResponse;
+  export type TypeDataJSONIn = DataJSONIn | Api.TypeDataJSON;
+  export type TypeInputNotifyPeerIn = InputNotifyPeerIn | InputNotifyUsersIn | InputNotifyChatsIn | InputNotifyBroadcastsIn | InputNotifyForumTopicIn | InputNotifyCommunityIn | Api.TypeInputNotifyPeer | EntityLike;
+  export type TypeInputPeerIn = InputPeerEmptyIn | InputPeerSelfIn | InputPeerChatIn | InputPeerUserIn | InputPeerChannelIn | InputPeerUserFromMessageIn | InputPeerChannelFromMessageIn | Api.TypeInputPeer | EntityLike;
+  export type TypeInputChannelIn = InputChannelEmptyIn | InputChannelIn | InputChannelFromMessageIn | Api.TypeInputChannel | EntityLike;
+  export type TypeInputPeerNotifySettingsIn = InputPeerNotifySettingsIn | Api.TypeInputPeerNotifySettings;
+  export type TypeNotificationSoundIn = NotificationSoundDefaultIn | NotificationSoundNoneIn | NotificationSoundLocalIn | NotificationSoundRingtoneIn | Api.TypeNotificationSound;
+  export type TypeReportReasonIn = InputReportReasonSpamIn | InputReportReasonViolenceIn | InputReportReasonPornographyIn | InputReportReasonChildAbuseIn | InputReportReasonOtherIn | InputReportReasonCopyrightIn | InputReportReasonGeoIrrelevantIn | InputReportReasonFakeIn | InputReportReasonIllegalDrugsIn | InputReportReasonPersonalDetailsIn | Api.TypeReportReason;
+  export type TypeInputPrivacyKeyIn = InputPrivacyKeyStatusTimestampIn | InputPrivacyKeyChatInviteIn | InputPrivacyKeyPhoneCallIn | InputPrivacyKeyPhoneP2PIn | InputPrivacyKeyForwardsIn | InputPrivacyKeyProfilePhotoIn | InputPrivacyKeyPhoneNumberIn | InputPrivacyKeyAddedByPhoneIn | InputPrivacyKeyVoiceMessagesIn | InputPrivacyKeyAboutIn | InputPrivacyKeyBirthdayIn | InputPrivacyKeyStarGiftsAutoSaveIn | InputPrivacyKeyNoPaidMessagesIn | InputPrivacyKeySavedMusicIn | Api.TypeInputPrivacyKey;
+  export type TypeInputPrivacyRuleIn = InputPrivacyValueAllowContactsIn | InputPrivacyValueAllowAllIn | InputPrivacyValueAllowUsersIn | InputPrivacyValueDisallowContactsIn | InputPrivacyValueDisallowAllIn | InputPrivacyValueDisallowUsersIn | InputPrivacyValueAllowChatParticipantsIn | InputPrivacyValueDisallowChatParticipantsIn | InputPrivacyValueAllowCloseFriendsIn | InputPrivacyValueAllowPremiumIn | InputPrivacyValueAllowBotsIn | InputPrivacyValueDisallowBotsIn | Api.TypeInputPrivacyRule;
+  export type TypeInputUserIn = InputUserEmptyIn | InputUserSelfIn | InputUserIn | InputUserFromMessageIn | Api.TypeInputUser | EntityLike;
+  export type TypeAccountDaysTTLIn = AccountDaysTTLIn | Api.TypeAccountDaysTTL;
+  export type TypeSecureValueTypeIn = SecureValueTypePersonalDetailsIn | SecureValueTypePassportIn | SecureValueTypeDriverLicenseIn | SecureValueTypeIdentityCardIn | SecureValueTypeInternalPassportIn | SecureValueTypeAddressIn | SecureValueTypeUtilityBillIn | SecureValueTypeBankStatementIn | SecureValueTypeRentalAgreementIn | SecureValueTypePassportRegistrationIn | SecureValueTypeTemporaryRegistrationIn | SecureValueTypePhoneIn | SecureValueTypeEmailIn | Api.TypeSecureValueType;
+  export type TypeInputSecureValueIn = InputSecureValueIn | Api.TypeInputSecureValue;
+  export type TypeSecureDataIn = SecureDataIn | Api.TypeSecureData;
+  export type TypeInputSecureFileIn = InputSecureFileUploadedIn | InputSecureFileIn | Api.TypeInputSecureFile;
+  export type TypeSecurePlainDataIn = SecurePlainPhoneIn | SecurePlainEmailIn | Api.TypeSecurePlainData;
+  export type TypeSecureValueHashIn = SecureValueHashIn | Api.TypeSecureValueHash;
+  export type TypeSecureCredentialsEncryptedIn = SecureCredentialsEncryptedIn | Api.TypeSecureCredentialsEncrypted;
+  export type TypeEmailVerifyPurposeIn = EmailVerifyPurposeLoginSetupIn | EmailVerifyPurposeLoginChangeIn | EmailVerifyPurposePassportIn | Api.TypeEmailVerifyPurpose;
+  export type TypeInputWallPaperIn = InputWallPaperIn | InputWallPaperSlugIn | InputWallPaperNoFileIn | Api.TypeInputWallPaper;
+  export type TypeInputFileIn = InputFileIn | InputFileBigIn | InputFileStoryDocumentIn | Api.TypeInputFile;
+  export type TypeInputDocumentIn = InputDocumentEmptyIn | InputDocumentIn | Api.TypeInputDocument;
+  export type TypeWallPaperSettingsIn = WallPaperSettingsIn | Api.TypeWallPaperSettings;
+  export type TypeAutoDownloadSettingsIn = AutoDownloadSettingsIn | Api.TypeAutoDownloadSettings;
+  export type TypeInputThemeSettingsIn = InputThemeSettingsIn | Api.TypeInputThemeSettings;
+  export type TypeBaseThemeIn = BaseThemeClassicIn | BaseThemeDayIn | BaseThemeNightIn | BaseThemeTintedIn | BaseThemeArcticIn | Api.TypeBaseTheme;
+  export type TypeInputThemeIn = InputThemeIn | InputThemeSlugIn | Api.TypeInputTheme;
+  export type TypeGlobalPrivacySettingsIn = GlobalPrivacySettingsIn | Api.TypeGlobalPrivacySettings;
+  export type TypeDisallowedGiftsSettingsIn = DisallowedGiftsSettingsIn | Api.TypeDisallowedGiftsSettings;
+  export type TypeInputPhotoIn = InputPhotoEmptyIn | InputPhotoIn | Api.TypeInputPhoto;
+  export type TypeEmojiStatusIn = EmojiStatusEmptyIn | EmojiStatusIn | EmojiStatusCollectibleIn | InputEmojiStatusCollectibleIn | Api.TypeEmojiStatus;
+  export type TypeAutoSaveSettingsIn = AutoSaveSettingsIn | Api.TypeAutoSaveSettings;
+  export type TypePeerColorIn = PeerColorIn | PeerColorCollectibleIn | InputPeerColorCollectibleIn | Api.TypePeerColor;
+  export type TypeBusinessWorkHoursIn = BusinessWorkHoursIn | Api.TypeBusinessWorkHours;
+  export type TypeBusinessWeeklyOpenIn = BusinessWeeklyOpenIn | Api.TypeBusinessWeeklyOpen;
+  export type TypeInputGeoPointIn = InputGeoPointEmptyIn | InputGeoPointIn | Api.TypeInputGeoPoint;
+  export type TypeInputBusinessGreetingMessageIn = InputBusinessGreetingMessageIn | Api.TypeInputBusinessGreetingMessage;
+  export type TypeInputBusinessRecipientsIn = InputBusinessRecipientsIn | Api.TypeInputBusinessRecipients;
+  export type TypeInputBusinessAwayMessageIn = InputBusinessAwayMessageIn | Api.TypeInputBusinessAwayMessage;
+  export type TypeBusinessAwayMessageScheduleIn = BusinessAwayMessageScheduleAlwaysIn | BusinessAwayMessageScheduleOutsideWorkHoursIn | BusinessAwayMessageScheduleCustomIn | Api.TypeBusinessAwayMessageSchedule;
+  export type TypeBusinessBotRightsIn = BusinessBotRightsIn | Api.TypeBusinessBotRights;
+  export type TypeInputBusinessBotRecipientsIn = InputBusinessBotRecipientsIn | Api.TypeInputBusinessBotRecipients;
+  export type TypeInputBusinessIntroIn = InputBusinessIntroIn | Api.TypeInputBusinessIntro;
+  export type TypeBirthdayIn = BirthdayIn | Api.TypeBirthday;
+  export type TypeInputBusinessChatLinkIn = InputBusinessChatLinkIn | Api.TypeInputBusinessChatLink;
+  export type TypeMessageEntityIn = MessageEntityUnknownIn | MessageEntityMentionIn | MessageEntityHashtagIn | MessageEntityBotCommandIn | MessageEntityUrlIn | MessageEntityEmailIn | MessageEntityBoldIn | MessageEntityItalicIn | MessageEntityCodeIn | MessageEntityPreIn | MessageEntityTextUrlIn | MessageEntityMentionNameIn | InputMessageEntityMentionNameIn | MessageEntityPhoneIn | MessageEntityCashtagIn | MessageEntityUnderlineIn | MessageEntityStrikeIn | MessageEntityBankCardIn | MessageEntitySpoilerIn | MessageEntityCustomEmojiIn | MessageEntityBlockquoteIn | MessageEntityFormattedDateIn | MessageEntityDiffInsertIn | MessageEntityDiffReplaceIn | MessageEntityDiffDeleteIn | Api.TypeMessageEntity;
+  export type TypeReactionsNotifySettingsIn = ReactionsNotifySettingsIn | Api.TypeReactionsNotifySettings;
+  export type TypeReactionNotificationsFromIn = ReactionNotificationsFromContactsIn | ReactionNotificationsFromAllIn | Api.TypeReactionNotificationsFrom;
+  export type TypeProfileTabIn = ProfileTabPostsIn | ProfileTabGiftsIn | ProfileTabMediaIn | ProfileTabFilesIn | ProfileTabMusicIn | ProfileTabVoiceIn | ProfileTabLinksIn | ProfileTabGifsIn | Api.TypeProfileTab;
+  export type TypeSecureValueErrorIn = SecureValueErrorDataIn | SecureValueErrorFrontSideIn | SecureValueErrorReverseSideIn | SecureValueErrorSelfieIn | SecureValueErrorFileIn | SecureValueErrorFilesIn | SecureValueErrorIn | SecureValueErrorTranslationFileIn | SecureValueErrorTranslationFilesIn | Api.TypeSecureValueError;
+  export type TypeInputContactIn = InputPhoneContactIn | Api.TypeInputContact;
+  export type TypeTextWithEntitiesIn = TextWithEntitiesIn | Api.TypeTextWithEntities;
+  export type TypeTopPeerCategoryIn = TopPeerCategoryBotsPMIn | TopPeerCategoryBotsInlineIn | TopPeerCategoryCorrespondentsIn | TopPeerCategoryGroupsIn | TopPeerCategoryChannelsIn | TopPeerCategoryPhoneCallsIn | TopPeerCategoryForwardUsersIn | TopPeerCategoryForwardChatsIn | TopPeerCategoryBotsAppIn | TopPeerCategoryBotsGuestChatIn | Api.TypeTopPeerCategory;
+  export type TypeInputMessageIn = InputMessageIDIn | InputMessageReplyToIn | InputMessagePinnedIn | InputMessageCallbackQueryIn | Api.TypeInputMessage | number;
+  export type TypeReactionIn = ReactionEmptyIn | ReactionEmojiIn | ReactionCustomEmojiIn | ReactionPaidIn | Api.TypeReaction;
+  export type TypeMessagesFilterIn = InputMessagesFilterEmptyIn | InputMessagesFilterPhotosIn | InputMessagesFilterVideoIn | InputMessagesFilterPhotoVideoIn | InputMessagesFilterDocumentIn | InputMessagesFilterUrlIn | InputMessagesFilterGifIn | InputMessagesFilterVoiceIn | InputMessagesFilterMusicIn | InputMessagesFilterChatPhotosIn | InputMessagesFilterPhoneCallsIn | InputMessagesFilterRoundVoiceIn | InputMessagesFilterRoundVideoIn | InputMessagesFilterMyMentionsIn | InputMessagesFilterGeoIn | InputMessagesFilterContactsIn | InputMessagesFilterPinnedIn | InputMessagesFilterPollIn | Api.TypeMessagesFilter;
+  export type TypeSendMessageActionIn = SendMessageTypingActionIn | SendMessageCancelActionIn | SendMessageRecordVideoActionIn | SendMessageUploadVideoActionIn | SendMessageRecordAudioActionIn | SendMessageUploadAudioActionIn | SendMessageUploadPhotoActionIn | SendMessageUploadDocumentActionIn | SendMessageGeoLocationActionIn | SendMessageChooseContactActionIn | SendMessageGamePlayActionIn | SendMessageRecordRoundActionIn | SendMessageUploadRoundActionIn | SpeakingInGroupCallActionIn | SendMessageHistoryImportActionIn | SendMessageChooseStickerActionIn | SendMessageEmojiInteractionIn | SendMessageEmojiInteractionSeenIn | SendMessageTextDraftActionIn | InputSendMessageRichMessageDraftActionIn | SendMessageRichMessageDraftActionIn | SendMessageStopDraftActionIn | Api.TypeSendMessageAction;
+  export type TypeInputRichMessageIn = InputRichMessageIn | InputRichMessageHTMLIn | InputRichMessageMarkdownIn | Api.TypeInputRichMessage;
+  export type TypePageBlockIn = PageBlockUnsupportedIn | PageBlockTitleIn | PageBlockSubtitleIn | PageBlockAuthorDateIn | PageBlockHeaderIn | PageBlockSubheaderIn | PageBlockParagraphIn | PageBlockPreformattedIn | PageBlockFooterIn | PageBlockDividerIn | PageBlockAnchorIn | PageBlockListIn | PageBlockBlockquoteIn | PageBlockPullquoteIn | PageBlockPhotoIn | PageBlockVideoIn | PageBlockCoverIn | PageBlockEmbedIn | PageBlockEmbedPostIn | PageBlockCollageIn | PageBlockSlideshowIn | PageBlockChannelIn | PageBlockAudioIn | PageBlockKickerIn | PageBlockTableIn | PageBlockOrderedListIn | PageBlockDetailsIn | PageBlockRelatedArticlesIn | PageBlockMapIn | PageBlockHeading1In | PageBlockHeading2In | PageBlockHeading3In | PageBlockHeading4In | PageBlockHeading5In | PageBlockHeading6In | PageBlockMathIn | PageBlockThinkingIn | InputPageBlockMapIn | PageBlockBlockquoteBlocksIn | PageBlockButtonRowIn | PageBlockDocumentIn | Api.TypePageBlock;
+  export type TypeRichTextIn = TextEmptyIn | TextPlainIn | TextBoldIn | TextItalicIn | TextUnderlineIn | TextStrikeIn | TextFixedIn | TextUrlIn | TextEmailIn | TextConcatIn | TextSubscriptIn | TextSuperscriptIn | TextMarkedIn | TextPhoneIn | TextImageIn | TextAnchorIn | TextMathIn | TextCustomEmojiIn | TextSpoilerIn | TextMentionIn | TextHashtagIn | TextBotCommandIn | TextCashtagIn | TextAutoUrlIn | TextAutoEmailIn | TextAutoPhoneIn | TextBankCardIn | TextMentionNameIn | TextDateIn | TextDiffIn | TextButtonIn | Api.TypeRichText;
+  export type TypeInlineButtonTypeIn = InlineButtonTypeUrlIn | InlineButtonTypeUrlAuthIn | InputInlineButtonTypeUrlAuthIn | InlineButtonTypeWebViewIn | InlineButtonTypeCallbackIn | InlineButtonTypeGameIn | InlineButtonTypeBuyIn | InlineButtonTypeSwitchInlineIn | InlineButtonTypeUserProfileIn | InputInlineButtonTypeUserProfileIn | InlineButtonTypeCopyIn | InlineButtonTypeDisabledIn | Api.TypeInlineButtonType;
+  export type TypeInlineQueryPeerTypeIn = InlineQueryPeerTypeSameBotPMIn | InlineQueryPeerTypePMIn | InlineQueryPeerTypeChatIn | InlineQueryPeerTypeMegagroupIn | InlineQueryPeerTypeBroadcastIn | InlineQueryPeerTypeBotPMIn | Api.TypeInlineQueryPeerType;
+  export type TypeRichButtonStyleIn = RichButtonStyleIn | Api.TypeRichButtonStyle;
+  export type TypePageListItemIn = PageListItemTextIn | PageListItemBlocksIn | Api.TypePageListItem;
+  export type TypePageCaptionIn = PageCaptionIn | Api.TypePageCaption;
+  export type TypeChatIn = ChatEmptyIn | ChatIn | ChatForbiddenIn | ChannelIn | ChannelForbiddenIn | CommunityForbiddenIn | CommunityIn | Api.TypeChat;
+  export type TypeChatPhotoIn = ChatPhotoEmptyIn | ChatPhotoIn | Api.TypeChatPhoto;
+  export type TypeChatAdminRightsIn = ChatAdminRightsIn | Api.TypeChatAdminRights;
+  export type TypeChatBannedRightsIn = ChatBannedRightsIn | Api.TypeChatBannedRights;
+  export type TypeRestrictionReasonIn = RestrictionReasonIn | Api.TypeRestrictionReason;
+  export type TypeUsernameIn = UsernameIn | Api.TypeUsername;
+  export type TypeRecentStoryIn = RecentStoryIn | Api.TypeRecentStory;
+  export type TypePageTableRowIn = PageTableRowIn | Api.TypePageTableRow;
+  export type TypePageTableCellIn = PageTableCellIn | Api.TypePageTableCell;
+  export type TypePageListOrderedItemIn = PageListOrderedItemTextIn | PageListOrderedItemBlocksIn | Api.TypePageListOrderedItem;
+  export type TypePageRelatedArticleIn = PageRelatedArticleIn | Api.TypePageRelatedArticle;
+  export type TypeGeoPointIn = GeoPointEmptyIn | GeoPointIn | Api.TypeGeoPoint;
+  export type TypePageButtonIn = PageButtonIn | Api.TypePageButton;
+  export type TypeInputRichFileIn = InputRichFilePhotoIn | InputRichFileDocumentIn | Api.TypeInputRichFile;
+  export type TypeRichMessageIn = RichMessageIn | Api.TypeRichMessage;
+  export type TypePhotoIn = PhotoEmptyIn | PhotoIn | Api.TypePhoto;
+  export type TypePhotoSizeIn = PhotoSizeEmptyIn | PhotoSizeIn | PhotoCachedSizeIn | PhotoStrippedSizeIn | PhotoSizeProgressiveIn | PhotoPathSizeIn | Api.TypePhotoSize;
+  export type TypeVideoSizeIn = VideoSizeIn | VideoSizeEmojiMarkupIn | VideoSizeStickerMarkupIn | Api.TypeVideoSize;
+  export type TypeInputStickerSetIn = InputStickerSetEmptyIn | InputStickerSetIDIn | InputStickerSetShortNameIn | InputStickerSetAnimatedEmojiIn | InputStickerSetDiceIn | InputStickerSetAnimatedEmojiAnimationsIn | InputStickerSetPremiumGiftsIn | InputStickerSetEmojiGenericAnimationsIn | InputStickerSetEmojiDefaultStatusesIn | InputStickerSetEmojiDefaultTopicIconsIn | InputStickerSetEmojiChannelDefaultStatusesIn | InputStickerSetTonGiftsIn | Api.TypeInputStickerSet;
+  export type TypeDocumentIn = DocumentEmptyIn | DocumentIn | Api.TypeDocument;
+  export type TypeDocumentAttributeIn = DocumentAttributeImageSizeIn | DocumentAttributeAnimatedIn | DocumentAttributeStickerIn | DocumentAttributeVideoIn | DocumentAttributeAudioIn | DocumentAttributeFilenameIn | DocumentAttributeHasStickersIn | DocumentAttributeCustomEmojiIn | Api.TypeDocumentAttribute;
+  export type TypeMaskCoordsIn = MaskCoordsIn | Api.TypeMaskCoords;
+  export type TypeInputReplyToIn = InputReplyToMessageIn | InputReplyToStoryIn | InputReplyToMonoForumIn | InputReplyToEphemeralMessageIn | Api.TypeInputReplyTo;
+  export type TypeReplyMarkupIn = ReplyKeyboardHideIn | ReplyKeyboardForceReplyIn | ReplyKeyboardMarkupIn | ReplyInlineMarkupIn | Api.TypeReplyMarkup;
+  export type TypeKeyboardButtonRowIn = KeyboardButtonRowIn | Api.TypeKeyboardButtonRow;
+  export type TypeKeyboardButtonIn = KeyboardButtonIn | Api.TypeKeyboardButton;
+  export type TypeKeyboardButtonStyleIn = KeyboardButtonStyleIn | Api.TypeKeyboardButtonStyle;
+  export type TypeButtonTypeIn = ButtonTypeDefaultIn | ButtonTypeRequestPhoneIn | ButtonTypeRequestGeoLocationIn | ButtonTypeRequestPollIn | ButtonTypeRequestPeerIn | InputButtonTypeRequestPeerIn | ButtonTypeSimpleWebViewIn | Api.TypeButtonType;
+  export type TypeRequestPeerTypeIn = RequestPeerTypeUserIn | RequestPeerTypeChatIn | RequestPeerTypeBroadcastIn | RequestPeerTypeCreateBotIn | Api.TypeRequestPeerType;
+  export type TypeKeyboardInlineButtonRowIn = KeyboardInlineButtonRowIn | Api.TypeKeyboardInlineButtonRow;
+  export type TypeKeyboardInlineButtonIn = KeyboardInlineButtonIn | Api.TypeKeyboardInlineButton;
+  export type TypeInputQuickReplyShortcutIn = InputQuickReplyShortcutIn | InputQuickReplyShortcutIdIn | Api.TypeInputQuickReplyShortcut;
+  export type TypeSuggestedPostIn = SuggestedPostIn | Api.TypeSuggestedPost;
+  export type TypeStarsAmountIn = StarsAmountIn | StarsTonAmountIn | Api.TypeStarsAmount;
+  export type TypeInputMediaIn = InputMediaEmptyIn | InputMediaUploadedPhotoIn | InputMediaPhotoIn | InputMediaGeoPointIn | InputMediaContactIn | InputMediaUploadedDocumentIn | InputMediaDocumentIn | InputMediaVenueIn | InputMediaPhotoExternalIn | InputMediaDocumentExternalIn | InputMediaGameIn | InputMediaInvoiceIn | InputMediaGeoLiveIn | InputMediaPollIn | InputMediaDiceIn | InputMediaStoryIn | InputMediaWebPageIn | InputMediaPaidMediaIn | InputMediaTodoIn | InputMediaStakeDiceIn | Api.TypeInputMedia;
+  export type TypeInputGameIn = InputGameIDIn | InputGameShortNameIn | Api.TypeInputGame;
+  export type TypeInputWebDocumentIn = InputWebDocumentIn | Api.TypeInputWebDocument;
+  export type TypeInvoiceIn = InvoiceIn | Api.TypeInvoice;
+  export type TypeLabeledPriceIn = LabeledPriceIn | Api.TypeLabeledPrice;
+  export type TypePollIn = PollIn | Api.TypePoll;
+  export type TypePollAnswerIn = PollAnswerIn | InputPollAnswerIn | Api.TypePollAnswer;
+  export type TypeMessageMediaIn = MessageMediaEmptyIn | MessageMediaPhotoIn | MessageMediaGeoIn | MessageMediaContactIn | MessageMediaUnsupportedIn | MessageMediaDocumentIn | MessageMediaWebPageIn | MessageMediaVenueIn | MessageMediaGameIn | MessageMediaInvoiceIn | MessageMediaGeoLiveIn | MessageMediaPollIn | MessageMediaDiceIn | MessageMediaStoryIn | MessageMediaGiveawayIn | MessageMediaGiveawayResultsIn | MessageMediaPaidMediaIn | MessageMediaToDoIn | MessageMediaVideoStreamIn | Api.TypeMessageMedia;
+  export type TypeWebPageIn = WebPageEmptyIn | WebPagePendingIn | WebPageIn | WebPageNotModifiedIn | Api.TypeWebPage;
+  export type TypePageIn = PageIn | Api.TypePage;
+  export type TypeWebPageAttributeIn = WebPageAttributeThemeIn | WebPageAttributeStoryIn | WebPageAttributeStickerSetIn | WebPageAttributeUniqueStarGiftIn | WebPageAttributeStarGiftCollectionIn | WebPageAttributeStarGiftAuctionIn | WebPageAttributeAiComposeToneIn | Api.TypeWebPageAttribute;
+  export type TypeThemeSettingsIn = ThemeSettingsIn | Api.TypeThemeSettings;
+  export type TypeWallPaperIn = WallPaperIn | WallPaperNoFileIn | Api.TypeWallPaper;
+  export type TypePeerIn = PeerUserIn | PeerChatIn | PeerChannelIn | Api.TypePeer;
+  export type TypeStoryItemIn = StoryItemDeletedIn | StoryItemSkippedIn | StoryItemIn | Api.TypeStoryItem;
+  export type TypeStoryFwdHeaderIn = StoryFwdHeaderIn | Api.TypeStoryFwdHeader;
+  export type TypeMediaAreaIn = MediaAreaVenueIn | InputMediaAreaVenueIn | MediaAreaGeoPointIn | MediaAreaSuggestedReactionIn | MediaAreaChannelPostIn | InputMediaAreaChannelPostIn | MediaAreaUrlIn | MediaAreaWeatherIn | MediaAreaStarGiftIn | Api.TypeMediaArea;
+  export type TypeMediaAreaCoordinatesIn = MediaAreaCoordinatesIn | Api.TypeMediaAreaCoordinates;
+  export type TypeGeoPointAddressIn = GeoPointAddressIn | Api.TypeGeoPointAddress;
+  export type TypePrivacyRuleIn = PrivacyValueAllowContactsIn | PrivacyValueAllowAllIn | PrivacyValueAllowUsersIn | PrivacyValueDisallowContactsIn | PrivacyValueDisallowAllIn | PrivacyValueDisallowUsersIn | PrivacyValueAllowChatParticipantsIn | PrivacyValueDisallowChatParticipantsIn | PrivacyValueAllowCloseFriendsIn | PrivacyValueAllowPremiumIn | PrivacyValueAllowBotsIn | PrivacyValueDisallowBotsIn | Api.TypePrivacyRule;
+  export type TypeStoryViewsIn = StoryViewsIn | Api.TypeStoryViews;
+  export type TypeReactionCountIn = ReactionCountIn | Api.TypeReactionCount;
+  export type TypeStarGiftIn = StarGiftIn | StarGiftUniqueIn | Api.TypeStarGift;
+  export type TypeStarGiftBackgroundIn = StarGiftBackgroundIn | Api.TypeStarGiftBackground;
+  export type TypeStarGiftAttributeIn = StarGiftAttributeModelIn | StarGiftAttributePatternIn | StarGiftAttributeBackdropIn | StarGiftAttributeOriginalDetailsIn | Api.TypeStarGiftAttribute;
+  export type TypeStarGiftAttributeRarityIn = StarGiftAttributeRarityIn | StarGiftAttributeRarityUncommonIn | StarGiftAttributeRarityRareIn | StarGiftAttributeRarityEpicIn | StarGiftAttributeRarityLegendaryIn | Api.TypeStarGiftAttributeRarity;
+  export type TypeGameIn = GameIn | Api.TypeGame;
+  export type TypeWebDocumentIn = WebDocumentIn | WebDocumentNoProxyIn | Api.TypeWebDocument;
+  export type TypeMessageExtendedMediaIn = MessageExtendedMediaPreviewIn | MessageExtendedMediaIn | Api.TypeMessageExtendedMedia;
+  export type TypePollResultsIn = PollResultsIn | Api.TypePollResults;
+  export type TypePollAnswerVotersIn = PollAnswerVotersIn | Api.TypePollAnswerVoters;
+  export type TypeMessagesEmojiGameOutcomeIn = MessagesEmojiGameOutcomeIn | messages.TypeEmojiGameOutcome;
+  export type TypeTodoListIn = TodoListIn | Api.TypeTodoList;
+  export type TypeTodoItemIn = TodoItemIn | Api.TypeTodoItem;
+  export type TypeTodoCompletionIn = TodoCompletionIn | Api.TypeTodoCompletion;
+  export type TypeInputGroupCallIn = InputGroupCallIn | InputGroupCallSlugIn | InputGroupCallInviteMessageIn | Api.TypeInputGroupCall;
+  export type TypeInputChatPhotoIn = InputChatPhotoEmptyIn | InputChatUploadedPhotoIn | InputChatPhotoIn | Api.TypeInputChatPhoto;
+  export type TypeInputEncryptedChatIn = InputEncryptedChatIn | Api.TypeInputEncryptedChat;
+  export type TypeInputEncryptedFileIn = InputEncryptedFileEmptyIn | InputEncryptedFileUploadedIn | InputEncryptedFileIn | InputEncryptedFileBigUploadedIn | Api.TypeInputEncryptedFile;
+  export type TypeStarsSubscriptionPricingIn = StarsSubscriptionPricingIn | Api.TypeStarsSubscriptionPricing;
+  export type TypeInputBotInlineResultIn = InputBotInlineResultIn | InputBotInlineResultPhotoIn | InputBotInlineResultDocumentIn | InputBotInlineResultGameIn | Api.TypeInputBotInlineResult;
+  export type TypeInputBotInlineMessageIn = InputBotInlineMessageMediaAutoIn | InputBotInlineMessageTextIn | InputBotInlineMessageMediaGeoIn | InputBotInlineMessageMediaVenueIn | InputBotInlineMessageMediaContactIn | InputBotInlineMessageGameIn | InputBotInlineMessageMediaInvoiceIn | InputBotInlineMessageMediaWebPageIn | InputBotInlineMessageRichMessageIn | Api.TypeInputBotInlineMessage;
+  export type TypeInlineBotSwitchPMIn = InlineBotSwitchPMIn | Api.TypeInlineBotSwitchPM;
+  export type TypeInlineBotWebViewIn = InlineBotWebViewIn | Api.TypeInlineBotWebView;
+  export type TypeInputBotInlineMessageIDIn = InputBotInlineMessageIDIn | InputBotInlineMessageID64In | Api.TypeInputBotInlineMessageID;
+  export type TypeInputDialogPeerIn = InputDialogPeerIn | InputDialogPeerFolderIn | InputDialogPeerCommunityIn | Api.TypeInputDialogPeer | EntityLike;
+  export type TypeInputStickeredMediaIn = InputStickeredMediaPhotoIn | InputStickeredMediaDocumentIn | Api.TypeInputStickeredMedia;
+  export type TypeShippingOptionIn = ShippingOptionIn | Api.TypeShippingOption;
+  export type TypeInputSingleMediaIn = InputSingleMediaIn | Api.TypeInputSingleMedia;
+  export type TypeDialogFilterIn = DialogFilterIn | DialogFilterDefaultIn | DialogFilterChatlistIn | Api.TypeDialogFilter;
+  export type TypeInputChatThemeIn = InputChatThemeEmptyIn | InputChatThemeIn | InputChatThemeUniqueGiftIn | Api.TypeInputChatTheme;
+  export type TypeChatReactionsIn = ChatReactionsNoneIn | ChatReactionsAllIn | ChatReactionsSomeIn | Api.TypeChatReactions;
+  export type TypeInputBotAppIn = InputBotAppIDIn | InputBotAppShortNameIn | Api.TypeInputBotApp;
+  export type TypePaidReactionPrivacyIn = PaidReactionPrivacyDefaultIn | PaidReactionPrivacyAnonymousIn | PaidReactionPrivacyPeerIn | Api.TypePaidReactionPrivacy;
+  export type TypeInputAiComposeToneIn = InputAiComposeToneDefaultIn | InputAiComposeToneIDIn | InputAiComposeToneSlugIn | InputAiComposeToneSingleUseIn | Api.TypeInputAiComposeTone;
+  export type TypeInputMessageReadMetricIn = InputMessageReadMetricIn | Api.TypeInputMessageReadMetric;
+  export type TypeChannelMessagesFilterIn = ChannelMessagesFilterEmptyIn | ChannelMessagesFilterIn | Api.TypeChannelMessagesFilter;
+  export type TypeInputFileLocationIn = InputFileLocationIn | InputEncryptedFileLocationIn | InputDocumentFileLocationIn | InputSecureFileLocationIn | InputTakeoutFileLocationIn | InputPhotoFileLocationIn | InputPhotoLegacyFileLocationIn | InputPeerPhotoFileLocationIn | InputStickerSetThumbIn | InputGroupCallStreamIn | Api.TypeInputFileLocation;
+  export type TypeInputWebFileLocationIn = InputWebFileLocationIn | InputWebFileGeoPointLocationIn | InputWebFileAudioAlbumThumbLocationIn | Api.TypeInputWebFileLocation;
+  export type TypeInputAppEventIn = InputAppEventIn | Api.TypeInputAppEvent;
+  export type TypeChannelParticipantsFilterIn = ChannelParticipantsRecentIn | ChannelParticipantsAdminsIn | ChannelParticipantsKickedIn | ChannelParticipantsBotsIn | ChannelParticipantsBannedIn | ChannelParticipantsSearchIn | ChannelParticipantsContactsIn | ChannelParticipantsMentionsIn | Api.TypeChannelParticipantsFilter;
+  export type TypeChannelAdminLogEventsFilterIn = ChannelAdminLogEventsFilterIn | Api.TypeChannelAdminLogEventsFilter;
+  export type TypeBotCommandScopeIn = BotCommandScopeDefaultIn | BotCommandScopeUsersIn | BotCommandScopeChatsIn | BotCommandScopeChatAdminsIn | BotCommandScopePeerIn | BotCommandScopePeerAdminsIn | BotCommandScopePeerUserIn | Api.TypeBotCommandScope;
+  export type TypeBotCommandIn = BotCommandIn | Api.TypeBotCommand;
+  export type TypeBotMenuButtonIn = BotMenuButtonDefaultIn | BotMenuButtonCommandsIn | BotMenuButtonIn | Api.TypeBotMenuButton;
+  export type TypeJoinChatBotResultIn = JoinChatBotResultApprovedIn | JoinChatBotResultDeclinedIn | JoinChatBotResultQueuedIn | JoinChatBotResultWebViewIn | Api.TypeJoinChatBotResult;
+  export type TypeInputInvoiceIn = InputInvoiceMessageIn | InputInvoiceSlugIn | InputInvoicePremiumGiftCodeIn | InputInvoiceStarsIn | InputInvoiceChatInviteSubscriptionIn | InputInvoiceStarGiftIn | InputInvoiceStarGiftUpgradeIn | InputInvoiceStarGiftTransferIn | InputInvoicePremiumGiftStarsIn | InputInvoiceBusinessBotTransferStarsIn | InputInvoiceStarGiftResaleIn | InputInvoiceStarGiftPrepaidUpgradeIn | InputInvoicePremiumAuthCodeIn | InputInvoiceStarGiftDropOriginalDetailsIn | InputInvoiceStarGiftAuctionBidIn | Api.TypeInputInvoice;
+  export type TypeInputStorePaymentPurposeIn = InputStorePaymentPremiumSubscriptionIn | InputStorePaymentGiftPremiumIn | InputStorePaymentPremiumGiftCodeIn | InputStorePaymentPremiumGiveawayIn | InputStorePaymentStarsTopupIn | InputStorePaymentStarsGiftIn | InputStorePaymentStarsGiveawayIn | InputStorePaymentAuthCodeIn | Api.TypeInputStorePaymentPurpose;
+  export type TypePremiumGiftCodeOptionIn = PremiumGiftCodeOptionIn | Api.TypePremiumGiftCodeOption;
+  export type TypeInputSavedStarGiftIn = InputSavedStarGiftUserIn | InputSavedStarGiftChatIn | InputSavedStarGiftSlugIn | Api.TypeInputSavedStarGift;
+  export type TypePaymentRequestedInfoIn = PaymentRequestedInfoIn | Api.TypePaymentRequestedInfo;
+  export type TypePostAddressIn = PostAddressIn | Api.TypePostAddress;
+  export type TypeInputPaymentCredentialsIn = InputPaymentCredentialsSavedIn | InputPaymentCredentialsIn | InputPaymentCredentialsApplePayIn | InputPaymentCredentialsGooglePayIn | Api.TypeInputPaymentCredentials;
+  export type TypeInputStarsTransactionIn = InputStarsTransactionIn | Api.TypeInputStarsTransaction;
+  export type TypeStarGiftAttributeIdIn = StarGiftAttributeIdModelIn | StarGiftAttributeIdPatternIn | StarGiftAttributeIdBackdropIn | Api.TypeStarGiftAttributeId;
+  export type TypeInputStarGiftAuctionIn = InputStarGiftAuctionIn | InputStarGiftAuctionSlugIn | Api.TypeInputStarGiftAuction;
+  export type TypeInputStickerSetItemIn = InputStickerSetItemIn | Api.TypeInputStickerSetItem;
+  export type TypePhoneCallProtocolIn = PhoneCallProtocolIn | Api.TypePhoneCallProtocol;
+  export type TypeInputPhoneCallIn = InputPhoneCallIn | Api.TypeInputPhoneCall;
+  export type TypePhoneCallDiscardReasonIn = PhoneCallDiscardReasonMissedIn | PhoneCallDiscardReasonDisconnectIn | PhoneCallDiscardReasonHangupIn | PhoneCallDiscardReasonBusyIn | PhoneCallDiscardReasonMigrateConferenceCallIn | Api.TypePhoneCallDiscardReason;
+  export type TypeInputFolderPeerIn = InputFolderPeerIn | Api.TypeInputFolderPeer;
+  export type TypeInputChatlistIn = InputChatlistDialogFilterIn | Api.TypeInputChatlist;
+  export type TypeInputCollectibleIn = InputCollectibleUsernameIn | InputCollectiblePhoneIn | Api.TypeInputCollectible;
 
   /**
    * Typed 1:1 facade over the raw MTProto methods.
@@ -46688,63 +48388,65 @@ export namespace Api {
    * `<Method>Errors`.
    */
   export interface ApiFacade {
+    /** Invokes a typed raw request object or an existing request instance. */
+    call<R extends RawRequest | AnyRequest>(request: R, opts?: ApiCallOptions): Promise<ApiResult<R>>;
     /**
      * Invokes a query after successful completion of one of the previous queries.
      * @see https://core.telegram.org/method/invokeAfterMsg
      */
-    invokeAfterMsg(params: InvokeAfterMsgParams, opts?: ApiCallOptions): Promise<X>;
+    invokeAfterMsg<Q extends RawRequest | AnyRequest>(params: Omit<InvokeAfterMsgParams, "query"> & { query: Q }, opts?: ApiCallOptions): Promise<ApiResult<Q>>;
     /**
      * Invokes a query after a successful completion of previous queries
      * @see https://core.telegram.org/method/invokeAfterMsgs
      */
-    invokeAfterMsgs(params: InvokeAfterMsgsParams, opts?: ApiCallOptions): Promise<X>;
+    invokeAfterMsgs<Q extends RawRequest | AnyRequest>(params: Omit<InvokeAfterMsgsParams, "query"> & { query: Q }, opts?: ApiCallOptions): Promise<ApiResult<Q>>;
     /**
      * Initialize connection
      * @see https://core.telegram.org/method/initConnection
      * @throws {InitConnectionErrors}
      */
-    initConnection(params: InitConnectionParams, opts?: ApiCallOptions): Promise<X>;
+    initConnection<Q extends RawRequest | AnyRequest>(params: Omit<InitConnectionParams, "query"> & { query: Q }, opts?: ApiCallOptions): Promise<ApiResult<Q>>;
     /**
      * Invoke the specified query using the specified API layer
      * @see https://core.telegram.org/method/invokeWithLayer
      * @throws {InvokeWithLayerErrors}
      */
-    invokeWithLayer(params: InvokeWithLayerParams, opts?: ApiCallOptions): Promise<X>;
+    invokeWithLayer<Q extends RawRequest | AnyRequest>(params: Omit<InvokeWithLayerParams, "query"> & { query: Q }, opts?: ApiCallOptions): Promise<ApiResult<Q>>;
     /**
      * Invoke a request without subscribing the used connection for updates (this is enabled by default for file queries ).
      * @see https://core.telegram.org/method/invokeWithoutUpdates
      */
-    invokeWithoutUpdates(params: InvokeWithoutUpdatesParams, opts?: ApiCallOptions): Promise<X>;
+    invokeWithoutUpdates<Q extends RawRequest | AnyRequest>(params: Omit<InvokeWithoutUpdatesParams, "query"> & { query: Q }, opts?: ApiCallOptions): Promise<ApiResult<Q>>;
     /**
      * Invoke with the given message range
      * @see https://core.telegram.org/method/invokeWithMessagesRange
      */
-    invokeWithMessagesRange(params: InvokeWithMessagesRangeParams, opts?: ApiCallOptions): Promise<X>;
+    invokeWithMessagesRange<Q extends RawRequest | AnyRequest>(params: Omit<InvokeWithMessagesRangeParams, "query"> & { query: Q }, opts?: ApiCallOptions): Promise<ApiResult<Q>>;
     /**
      * Invoke a method within a takeout session, see here » for more info .
      * @see https://core.telegram.org/method/invokeWithTakeout
      */
-    invokeWithTakeout(params: InvokeWithTakeoutParams, opts?: ApiCallOptions): Promise<X>;
+    invokeWithTakeout<Q extends RawRequest | AnyRequest>(params: Omit<InvokeWithTakeoutParams, "query"> & { query: Q }, opts?: ApiCallOptions): Promise<ApiResult<Q>>;
     /**
      * Invoke a method using a Telegram Business Bot connection, see here » for more info, including a list of the methods that can be wrapped in this constructor . Make sure to always send queries wrapped in a invokeWithBusinessConnection to the datacenter ID, specified in the dc_id field of the botBusinessConnection that is being used.
      * @see https://core.telegram.org/method/invokeWithBusinessConnection
      */
-    invokeWithBusinessConnection(params: InvokeWithBusinessConnectionParams, opts?: ApiCallOptions): Promise<X>;
+    invokeWithBusinessConnection<Q extends RawRequest | AnyRequest>(params: Omit<InvokeWithBusinessConnectionParams, "query"> & { query: Q }, opts?: ApiCallOptions): Promise<ApiResult<Q>>;
     /**
      * Official clients only, invoke with Google Play Integrity token.
      * @see https://core.telegram.org/method/invokeWithGooglePlayIntegrity
      */
-    invokeWithGooglePlayIntegrity(params: InvokeWithGooglePlayIntegrityParams, opts?: ApiCallOptions): Promise<X>;
+    invokeWithGooglePlayIntegrity<Q extends RawRequest | AnyRequest>(params: Omit<InvokeWithGooglePlayIntegrityParams, "query"> & { query: Q }, opts?: ApiCallOptions): Promise<ApiResult<Q>>;
     /**
      * Official clients only, invoke with Apple push verification.
      * @see https://core.telegram.org/method/invokeWithApnsSecret
      */
-    invokeWithApnsSecret(params: InvokeWithApnsSecretParams, opts?: ApiCallOptions): Promise<X>;
+    invokeWithApnsSecret<Q extends RawRequest | AnyRequest>(params: Omit<InvokeWithApnsSecretParams, "query"> & { query: Q }, opts?: ApiCallOptions): Promise<ApiResult<Q>>;
     /**
      * Official clients only: re-execute a method call that required reCAPTCHA verification via a RECAPTCHA_CHECK_%s__%s , where the first placeholder is the action , and the second one is the reCAPTCHA key ID.
      * @see https://core.telegram.org/method/invokeWithReCaptcha
      */
-    invokeWithReCaptcha(params: InvokeWithReCaptchaParams, opts?: ApiCallOptions): Promise<X>;
+    invokeWithReCaptcha<Q extends RawRequest | AnyRequest>(params: Omit<InvokeWithReCaptchaParams, "query"> & { query: Q }, opts?: ApiCallOptions): Promise<ApiResult<Q>>;
     /**
      * @see https://core.telegram.org/method/reqPq
      */
@@ -47015,7 +48717,7 @@ export namespace Api {
        * @see https://core.telegram.org/method/account.updateProfile
        * @throws {AccountUpdateProfileErrors}
        */
-      updateProfile(params: AccountUpdateProfileParams, opts?: ApiCallOptions): Promise<Api.TypeUser>;
+      updateProfile(params?: AccountUpdateProfileParams, opts?: ApiCallOptions): Promise<Api.TypeUser>;
       /**
        * Updates online user status.
        * @remarks user-only (bots rejected)
@@ -47260,14 +48962,14 @@ export namespace Api {
        * @see https://core.telegram.org/method/account.initTakeoutSession
        * @throws {AccountInitTakeoutSessionErrors}
        */
-      initTakeoutSession(params: AccountInitTakeoutSessionParams, opts?: ApiCallOptions): Promise<account.TypeTakeout>;
+      initTakeoutSession(params?: AccountInitTakeoutSessionParams, opts?: ApiCallOptions): Promise<account.TypeTakeout>;
       /**
        * Terminate a takeout session, see here » for more info .
        * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/account.finishTakeoutSession
        * @throws {AccountFinishTakeoutSessionErrors}
        */
-      finishTakeoutSession(params: AccountFinishTakeoutSessionParams, opts?: ApiCallOptions): Promise<Bool>;
+      finishTakeoutSession(params?: AccountFinishTakeoutSessionParams, opts?: ApiCallOptions): Promise<Bool>;
       /**
        * Verify an email to use as 2FA recovery method .
        * @remarks user-only (bots rejected)
@@ -47309,7 +49011,7 @@ export namespace Api {
        * @see https://core.telegram.org/method/account.getNotifyExceptions
        * @throws {AccountGetNotifyExceptionsErrors}
        */
-      getNotifyExceptions(params: AccountGetNotifyExceptionsParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      getNotifyExceptions(params?: AccountGetNotifyExceptionsParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
       /**
        * Get info about a certain wallpaper
        * @remarks user-only (bots rejected)
@@ -47393,7 +49095,7 @@ export namespace Api {
        * @see https://core.telegram.org/method/account.installTheme
        * @throws {AccountInstallThemeErrors}
        */
-      installTheme(params: AccountInstallThemeParams, opts?: ApiCallOptions): Promise<Bool>;
+      installTheme(params?: AccountInstallThemeParams, opts?: ApiCallOptions): Promise<Bool>;
       /**
        * Get theme information
        * @remarks user-only (bots rejected)
@@ -47414,7 +49116,7 @@ export namespace Api {
        * @see https://core.telegram.org/method/account.setContentSettings
        * @throws {AccountSetContentSettingsErrors}
        */
-      setContentSettings(params: AccountSetContentSettingsParams, opts?: ApiCallOptions): Promise<Bool>;
+      setContentSettings(params?: AccountSetContentSettingsParams, opts?: ApiCallOptions): Promise<Bool>;
       /**
        * Get sensitive content settings
        * @remarks user-only (bots rejected)
@@ -47596,7 +49298,7 @@ export namespace Api {
        * @see https://core.telegram.org/method/account.updateColor
        * @throws {AccountUpdateColorErrors}
        */
-      updateColor(params: AccountUpdateColorParams, opts?: ApiCallOptions): Promise<Bool>;
+      updateColor(params?: AccountUpdateColorParams, opts?: ApiCallOptions): Promise<Bool>;
       /**
        * Get a set of suggested custom emoji stickers that can be used in an accent color pattern .
        * @remarks user-only (bots rejected)
@@ -47624,28 +49326,28 @@ export namespace Api {
        * @see https://core.telegram.org/method/account.updateBusinessWorkHours
        * @throws {AccountUpdateBusinessWorkHoursErrors}
        */
-      updateBusinessWorkHours(params: AccountUpdateBusinessWorkHoursParams, opts?: ApiCallOptions): Promise<Bool>;
+      updateBusinessWorkHours(params?: AccountUpdateBusinessWorkHoursParams, opts?: ApiCallOptions): Promise<Bool>;
       /**
        * Businesses » may advertise their location using this method, see here » for more info. To remove business location information invoke the method without setting any of the parameters.
        * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/account.updateBusinessLocation
        * @throws {AccountUpdateBusinessLocationErrors}
        */
-      updateBusinessLocation(params: AccountUpdateBusinessLocationParams, opts?: ApiCallOptions): Promise<Bool>;
+      updateBusinessLocation(params?: AccountUpdateBusinessLocationParams, opts?: ApiCallOptions): Promise<Bool>;
       /**
        * Set a list of Telegram Business greeting messages .
        * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/account.updateBusinessGreetingMessage
        * @throws {AccountUpdateBusinessGreetingMessageErrors}
        */
-      updateBusinessGreetingMessage(params: AccountUpdateBusinessGreetingMessageParams, opts?: ApiCallOptions): Promise<Bool>;
+      updateBusinessGreetingMessage(params?: AccountUpdateBusinessGreetingMessageParams, opts?: ApiCallOptions): Promise<Bool>;
       /**
        * Set a list of Telegram Business away messages .
        * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/account.updateBusinessAwayMessage
        * @throws {AccountUpdateBusinessAwayMessageErrors}
        */
-      updateBusinessAwayMessage(params: AccountUpdateBusinessAwayMessageParams, opts?: ApiCallOptions): Promise<Bool>;
+      updateBusinessAwayMessage(params?: AccountUpdateBusinessAwayMessageParams, opts?: ApiCallOptions): Promise<Bool>;
       /**
        * Connect a business bot » to the current account, or to change the current connection settings.
        * @remarks user-only (bots rejected)
@@ -47672,7 +49374,7 @@ export namespace Api {
        * @see https://core.telegram.org/method/account.updateBusinessIntro
        * @throws {AccountUpdateBusinessIntroErrors}
        */
-      updateBusinessIntro(params: AccountUpdateBusinessIntroParams, opts?: ApiCallOptions): Promise<Bool>;
+      updateBusinessIntro(params?: AccountUpdateBusinessIntroParams, opts?: ApiCallOptions): Promise<Bool>;
       /**
        * Pause or unpause a specific chat, temporarily disconnecting it from all business bots » .
        * @remarks user-only (bots rejected)
@@ -47693,7 +49395,7 @@ export namespace Api {
        * @see https://core.telegram.org/method/account.updateBirthday
        * @throws {AccountUpdateBirthdayErrors}
        */
-      updateBirthday(params: AccountUpdateBirthdayParams, opts?: ApiCallOptions): Promise<Bool>;
+      updateBirthday(params?: AccountUpdateBirthdayParams, opts?: ApiCallOptions): Promise<Bool>;
       /**
        * Create a business chat deep link » .
        * @remarks user-only (bots rejected)
@@ -47851,7 +49553,7 @@ export namespace Api {
        * @see https://core.telegram.org/method/account.updateWebBrowserSettings
        * @throws {AccountUpdateWebBrowserSettingsErrors}
        */
-      updateWebBrowserSettings(params: AccountUpdateWebBrowserSettingsParams, opts?: ApiCallOptions): Promise<account.TypeWebBrowserSettings>;
+      updateWebBrowserSettings(params?: AccountUpdateWebBrowserSettingsParams, opts?: ApiCallOptions): Promise<account.TypeWebBrowserSettings>;
       /**
        * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/account.toggleWebBrowserSettingsException
@@ -48575,7 +50277,7 @@ export namespace Api {
        * @see https://core.telegram.org/method/messages.clearRecentStickers
        * @throws {MessagesClearRecentStickersErrors}
        */
-      clearRecentStickers(params: MessagesClearRecentStickersParams, opts?: ApiCallOptions): Promise<Bool>;
+      clearRecentStickers(params?: MessagesClearRecentStickersParams, opts?: ApiCallOptions): Promise<Bool>;
       /**
        * Get all archived stickers
        * @remarks user-only (bots rejected)
@@ -48763,7 +50465,7 @@ export namespace Api {
        * @see https://core.telegram.org/method/messages.getDialogUnreadMarks
        * @throws {MessagesGetDialogUnreadMarksErrors}
        */
-      getDialogUnreadMarks(params: MessagesGetDialogUnreadMarksParams, opts?: ApiCallOptions): Promise<Api.TypeDialogPeer[]>;
+      getDialogUnreadMarks(params?: MessagesGetDialogUnreadMarksParams, opts?: ApiCallOptions): Promise<Api.TypeDialogPeer[]>;
       /**
        * Clear all drafts .
        * @remarks user-only (bots rejected)
@@ -48852,14 +50554,14 @@ export namespace Api {
        * @see https://core.telegram.org/method/messages.requestUrlAuth
        * @throws {MessagesRequestUrlAuthErrors}
        */
-      requestUrlAuth(params: MessagesRequestUrlAuthParams, opts?: ApiCallOptions): Promise<Api.TypeUrlAuthResult>;
+      requestUrlAuth(params?: MessagesRequestUrlAuthParams, opts?: ApiCallOptions): Promise<Api.TypeUrlAuthResult>;
       /**
        * Use this to accept a Seamless Telegram Login authorization request, for more info click here »
        * @remarks user-only (bots rejected)
        * @see https://core.telegram.org/method/messages.acceptUrlAuth
        * @throws {MessagesAcceptUrlAuthErrors}
        */
-      acceptUrlAuth(params: MessagesAcceptUrlAuthParams, opts?: ApiCallOptions): Promise<Api.TypeUrlAuthResult>;
+      acceptUrlAuth(params?: MessagesAcceptUrlAuthParams, opts?: ApiCallOptions): Promise<Api.TypeUrlAuthResult>;
       /**
        * Should be called after the user hides the report spam/add as contact bar of a new chat, effectively prevents the user from executing the actions specified in the action bar » .
        * @remarks user-only (bots rejected)
@@ -48984,7 +50686,7 @@ export namespace Api {
        * @see https://core.telegram.org/method/messages.deletePhoneCallHistory
        * @throws {MessagesDeletePhoneCallHistoryErrors}
        */
-      deletePhoneCallHistory(params: MessagesDeletePhoneCallHistoryParams, opts?: ApiCallOptions): Promise<messages.TypeAffectedFoundMessages>;
+      deletePhoneCallHistory(params?: MessagesDeletePhoneCallHistoryParams, opts?: ApiCallOptions): Promise<messages.TypeAffectedFoundMessages>;
       /**
        * Obtains information about a chat export file, generated by a foreign chat app, click here for more info about imported chats » .
        * @remarks user-only (bots rejected)
@@ -49882,7 +51584,7 @@ export namespace Api {
       /**
        * @see https://core.telegram.org/method/messages.composeRichMessageWithAI
        */
-      composeRichMessageWithAI(params: MessagesComposeRichMessageWithAIParams, opts?: ApiCallOptions): Promise<messages.TypeComposedRichMessageWithAI>;
+      composeRichMessageWithAI(params?: MessagesComposeRichMessageWithAIParams, opts?: ApiCallOptions): Promise<messages.TypeComposedRichMessageWithAI>;
       /**
        * @see https://core.telegram.org/method/messages.requestChatJoinWebView
        */
@@ -49920,7 +51622,7 @@ export namespace Api {
        * @see https://core.telegram.org/method/photos.uploadProfilePhoto
        * @throws {PhotosUploadProfilePhotoErrors}
        */
-      uploadProfilePhoto(params: PhotosUploadProfilePhotoParams, opts?: ApiCallOptions): Promise<photos.TypePhoto>;
+      uploadProfilePhoto(params?: PhotosUploadProfilePhotoParams, opts?: ApiCallOptions): Promise<photos.TypePhoto>;
       /**
        * Deletes profile photos. The method returns a list of successfully deleted photo IDs.
        * @remarks user-only (bots rejected)
@@ -50306,7 +52008,7 @@ export namespace Api {
        * @see https://core.telegram.org/method/channels.getAdminedPublicChannels
        * @throws {ChannelsGetAdminedPublicChannelsErrors}
        */
-      getAdminedPublicChannels(params: ChannelsGetAdminedPublicChannelsParams, opts?: ApiCallOptions): Promise<messages.TypeChats>;
+      getAdminedPublicChannels(params?: ChannelsGetAdminedPublicChannelsParams, opts?: ApiCallOptions): Promise<messages.TypeChats>;
       /**
        * Ban/unban/kick a user in a supergroup/channel .
        * @see https://core.telegram.org/method/channels.editBanned
@@ -50493,7 +52195,7 @@ export namespace Api {
        * @see https://core.telegram.org/method/channels.getChannelRecommendations
        * @throws {ChannelsGetChannelRecommendationsErrors}
        */
-      getChannelRecommendations(params: ChannelsGetChannelRecommendationsParams, opts?: ApiCallOptions): Promise<messages.TypeChats>;
+      getChannelRecommendations(params?: ChannelsGetChannelRecommendationsParams, opts?: ApiCallOptions): Promise<messages.TypeChats>;
       /**
        * Set an emoji status for a channel or supergroup.
        * @remarks user-only (bots rejected)
@@ -50556,7 +52258,7 @@ export namespace Api {
        * @see https://core.telegram.org/method/channels.checkSearchPostsFlood
        * @throws {ChannelsCheckSearchPostsFloodErrors}
        */
-      checkSearchPostsFlood(params: ChannelsCheckSearchPostsFloodParams, opts?: ApiCallOptions): Promise<Api.TypeSearchPostsFlood>;
+      checkSearchPostsFlood(params?: ChannelsCheckSearchPostsFloodParams, opts?: ApiCallOptions): Promise<Api.TypeSearchPostsFlood>;
       /**
        * Changes the main profile tab of a channel, see here » for more info.
        * @remarks user-only (bots rejected)
@@ -50871,7 +52573,7 @@ export namespace Api {
        * @see https://core.telegram.org/method/payments.clearSavedInfo
        * @throws {PaymentsClearSavedInfoErrors}
        */
-      clearSavedInfo(params: PaymentsClearSavedInfoParams, opts?: ApiCallOptions): Promise<Bool>;
+      clearSavedInfo(params?: PaymentsClearSavedInfoParams, opts?: ApiCallOptions): Promise<Bool>;
       /**
        * Get info about a credit card
        * @remarks user-only (bots rejected)
@@ -50906,7 +52608,7 @@ export namespace Api {
        * @see https://core.telegram.org/method/payments.getPremiumGiftCodeOptions
        * @throws {PaymentsGetPremiumGiftCodeOptionsErrors}
        */
-      getPremiumGiftCodeOptions(params: PaymentsGetPremiumGiftCodeOptionsParams, opts?: ApiCallOptions): Promise<Api.TypePremiumGiftCodeOption[]>;
+      getPremiumGiftCodeOptions(params?: PaymentsGetPremiumGiftCodeOptionsParams, opts?: ApiCallOptions): Promise<Api.TypePremiumGiftCodeOption[]>;
       /**
        * Obtain information about a Telegram Premium giftcode »
        * @remarks user-only (bots rejected)
@@ -51003,7 +52705,7 @@ export namespace Api {
        * @see https://core.telegram.org/method/payments.getStarsGiftOptions
        * @throws {PaymentsGetStarsGiftOptionsErrors}
        */
-      getStarsGiftOptions(params: PaymentsGetStarsGiftOptionsParams, opts?: ApiCallOptions): Promise<Api.TypeStarsGiftOption[]>;
+      getStarsGiftOptions(params?: PaymentsGetStarsGiftOptionsParams, opts?: ApiCallOptions): Promise<Api.TypeStarsGiftOption[]>;
       /**
        * Obtain a list of active, expired or cancelled Telegram Star subscriptions » .
        * @remarks user-only (bots rejected)
@@ -51879,7 +53581,7 @@ export namespace Api {
        * @see https://core.telegram.org/method/stories.getAllStories
        * @throws {StoriesGetAllStoriesErrors}
        */
-      getAllStories(params: StoriesGetAllStoriesParams, opts?: ApiCallOptions): Promise<stories.TypeAllStories>;
+      getAllStories(params?: StoriesGetAllStoriesParams, opts?: ApiCallOptions): Promise<stories.TypeAllStories>;
       /**
        * Fetch the stories pinned on a peer's profile.
        * @remarks user-only (bots rejected)
@@ -51956,7 +53658,7 @@ export namespace Api {
        * @see https://core.telegram.org/method/stories.activateStealthMode
        * @throws {StoriesActivateStealthModeErrors}
        */
-      activateStealthMode(params: StoriesActivateStealthModeParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
+      activateStealthMode(params?: StoriesActivateStealthModeParams, opts?: ApiCallOptions): Promise<Api.TypeUpdates>;
       /**
        * React to a story.
        * @remarks user-only (bots rejected)
@@ -52134,7 +53836,7 @@ export namespace Api {
        * @see https://core.telegram.org/method/smsjobs.updateSettings
        * @throws {SmsjobsUpdateSettingsErrors}
        */
-      updateSettings(params: SmsjobsUpdateSettingsParams, opts?: ApiCallOptions): Promise<Bool>;
+      updateSettings(params?: SmsjobsUpdateSettingsParams, opts?: ApiCallOptions): Promise<Bool>;
       /**
        * Get SMS jobs status (official clients only).
        * @remarks user-only (bots rejected)

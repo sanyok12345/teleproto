@@ -17,6 +17,7 @@ export class RequestState {
     // @ts-ignore
     public reject: (reason?: any) => void;
     private _settled = true;
+    cancelled = false;
 
     constructor(request: Api.AnyRequest | Api.MsgsAck | Api.MsgsStateInfo) {
         this.containerId = undefined;

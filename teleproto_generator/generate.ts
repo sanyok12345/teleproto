@@ -178,12 +178,13 @@ function main(): void {
         `module.exports = ${JSON.stringify(definitions)};\n`
     );
 
+    const facadeFunctions = JSON.parse(JSON.stringify(functions)) as TlDefinition[];
     patchMethods(functions);
 
     const types = buildTypes(constructors);
     const errorMeta = loadErrorMeta(root);
     const docs = loadDocs(root);
-    const dts = renderApiTypes({ types, constructors, functions, errorMeta, docs });
+    const dts = renderApiTypes({ types, constructors, functions, facadeFunctions, errorMeta, docs });
 
     fs.writeFileSync(
         path.resolve(root, "../teleproto/tl/generated/api.js"),

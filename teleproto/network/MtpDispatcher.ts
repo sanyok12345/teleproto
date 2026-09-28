@@ -133,6 +133,7 @@ export class MtpDispatcher {
         );
 
         if (!state) {
+            if (result.error) return;
             try {
                 const reader = new BinaryReader(result.body);
                 if (!(reader.tgReadObject() instanceof Api.upload.File)) {

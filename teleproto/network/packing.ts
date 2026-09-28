@@ -23,6 +23,7 @@ export async function packRequestBatch(
         batch.length < MessageContainer.MAXIMUM_LENGTH
     ) {
         const request = queued.shift()!;
+        if (request.cancelled) continue;
         size += request.data.length + TLMessage.SIZE_OVERHEAD;
         if (size <= MessageContainer.MAXIMUM_SIZE) {
             request.msgId = await state.writeDataAsMessage(

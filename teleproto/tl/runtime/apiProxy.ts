@@ -1,13 +1,9 @@
-type Invoker = (request: unknown, dcId?: number) => Promise<unknown>;
+import type { Api } from "../api";
 
-interface ApiCallOptions {
-    dcId?: number;
-    abortSignal?: AbortSignal;
-    floodSleepThreshold?: number;
-}
-
-type RequestClass = (new (args?: Record<string, unknown>) => unknown) & {
+type Invoker = (request: Api.AnyRequest, options?: Api.ApiCallOptions) => Promise<unknown>;
+type RequestClass = (new (args?: Record<string, unknown>) => Api.AnyRequest) & {
     classType?: string;
+    hasParameters?: boolean;
 };
 
 function upperFirst(value: string): string {
@@ -21,33 +17,52 @@ function asRequestClass(value: unknown): RequestClass | undefined {
         : undefined;
 }
 
-export function createApiProxy(
-    api: Record<string, unknown>,
-    invoke: Invoker
-): unknown {
-    const callMethod =
-        (Ctor: RequestClass) =>
-        (params?: Record<string, unknown>, opts?: ApiCallOptions) =>
-            invoke(new Ctor(params || {}), opts?.dcId);
-
-    const namespaceProxy = (ns: Record<string, unknown>) =>
-        new Proxy(Object.create(null), {
+/** Builds cached method helpers and a typed raw-object entry point. */
+export function createApiProxy(api: Record<string, unknown>, invoke: Invoker): unknown {
+    const lookup = (name: string): RequestClass | undefined => {
+        const parts = name.split(".");
+        if (parts.length === 1) return asRequestClass(api[upperFirst(name)]);
+        if (parts.length !== 2) return undefined;
+        const ns = api[parts[0]];
+        return ns && typeof ns === "object"
+            ? asRequestClass((ns as Record<string, unknown>)[upperFirst(parts[1])])
+            : undefined;
+    };
+    const call = async (request: Api.RawRequest | Api.AnyRequest, options?: Api.ApiCallOptions) => {
+        if (request && "classType" in request && request.classType === "request") {
+            return invoke(request, options);
+        }
+        const tag = (request as { _?: unknown })?._;
+        const Ctor = typeof tag === "string" ? lookup(tag) : undefined;
+        if (!Ctor) throw new TypeError(`Unknown raw API method: ${String(tag)}`);
+        return invoke(new Ctor(request as unknown as Record<string, unknown>), options);
+    };
+    const namespaceProxy = (ns: Record<string, unknown>, root = false) => {
+        const cache = new Map<string, unknown>();
+        return new Proxy(Object.create(null), {
             get(_target, key) {
-                if (typeof key !== "string") return undefined;
+                if (typeof key !== "string" || key === "then") return undefined;
+                if (root && key === "call") return call;
+                if (cache.has(key)) return cache.get(key);
                 const Ctor = asRequestClass(ns[upperFirst(key)]);
-                return Ctor ? callMethod(Ctor) : undefined;
+                if (Ctor) {
+                    const method = async (params?: Record<string, unknown>, opts?: Api.ApiCallOptions) => {
+                        const options = Ctor.hasParameters ? opts : opts ?? params as Api.ApiCallOptions;
+                        return invoke(new Ctor(Ctor.hasParameters ? params : {}), options);
+                    };
+                    cache.set(key, method);
+                    return method;
+                }
+                const value = ns[key];
+                if (root && value && typeof value === "object" &&
+                    Object.values(value).some(asRequestClass)) {
+                    const proxy = namespaceProxy(value as Record<string, unknown>);
+                    cache.set(key, proxy);
+                    return proxy;
+                }
+                return undefined;
             },
         });
-
-    return new Proxy(Object.create(null), {
-        get(_target, key) {
-            if (typeof key !== "string") return undefined;
-            const direct = api[key];
-            if (direct && typeof direct === "object") {
-                return namespaceProxy(direct as Record<string, unknown>);
-            }
-            const Ctor = asRequestClass(api[upperFirst(key)]);
-            return Ctor ? callMethod(Ctor) : undefined;
-        },
-    });
+    };
+    return namespaceProxy(api, true);
 }

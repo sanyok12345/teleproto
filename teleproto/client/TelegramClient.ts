@@ -3005,6 +3005,7 @@ export class TelegramClient<
      * All available requests and types are found under the `Api.` namespace.
      * @param request - The request to send. this should be of type request.
      * @param dcId - Optional dc id to use when sending.
+     * @param options - Per-call cancellation, timeout, retry and flood-wait policy.
      * @return The response from Telegram.
      * @example
      * ```ts
@@ -3019,9 +3020,10 @@ export class TelegramClient<
      */
     invoke<R extends Api.AnyRequest>(
         request: R,
-        dcId?: number
+        dcId?: number,
+        options?: Api.ApiCallOptions
     ): Promise<R["__response"]> {
-        return userMethods.invoke(this, request, dcId);
+        return userMethods.invoke(this, request, dcId ?? options?.dcId, undefined, options);
     }
     
     invokeWithSender<R extends Api.AnyRequest>(
@@ -3036,24 +3038,28 @@ export class TelegramClient<
     /**
      * Typed 1:1 facade over the raw MTProto methods.
      *
-     * Call `client.api.messages.getDialogs({ limit: 10 })` instead of
-     * `client.invoke(new Api.messages.GetDialogs({ limit: 10 }))` — no `new`,
+     * Call `client.api.users.getFullUser({ id: "me" })` instead of
+     * `client.invoke(new Api.users.GetFullUser({ id: "me" }))` — no `new`,
      * no manual `invoke`, with full autocomplete and strict typing (including
      * the return type) generated straight from the schema.
      *
      * @example
      * ```ts
-     * const dialogs = await client.api.messages.getDialogs({ limit: 10 });
      * const full = await client.api.users.getFullUser({ id: "me" });
+     * const same = await client.api.call({ _: "users.getFullUser", id: "me" });
+     * await client.api.messages.sendMessage({ peer: "me", message: "Hello" });
      * ```
+     * Nested TL objects accept `_` tags or existing `Api` instances.
+     * Call options control DC, cancellation, timeout, retries and flood waits.
+     * Results remain regular `Api` instances; RPC updates are handled automatically.
      * @category Users
      */
     get api(): Api.ApiFacade {
         if (!this._apiProxy) {
             this._apiProxy = createApiProxy(
                 Api as unknown as Record<string, unknown>,
-                (request, dcId) =>
-                    this.invoke(request as Api.AnyRequest, dcId)
+                (request, options) =>
+                    this.invoke(request, options?.dcId, options)
             ) as Api.ApiFacade;
         }
         return this._apiProxy;

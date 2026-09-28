@@ -451,7 +451,20 @@ export class MTProtoSender {
         return true;
     }
 
+    /** Stops local delivery and retries; Telegram may already have executed the request. */
+    cancelRequest(state: RequestState, reason: unknown): void {
+        state.cancelled = true;
+        for (let index = this._queued.length - 1; index >= 0; index--) {
+            if (this._queued[index] === state) this._queued.splice(index, 1);
+        }
+        if (state.msgId) this._pendingState.delete(state.msgId);
+        state.promise?.catch(() => {});
+        state.reject(reason);
+        state.finished.resolve();
+    }
+
     addStateToQueue(state: RequestState) {
+        if (state.cancelled) return;
         if (this._lifecycle === "dead") {
             // No loops will ever service the queue of a dead sender —
             // settle the caller instead of stranding it.
@@ -526,6 +539,7 @@ export class MTProtoSender {
     }
 
     private _requeue(states: RequestState[]) {
+        states = states.filter((state) => !state.cancelled);
         for (const state of states) {
             state.msgId = undefined;
             state.containerId = undefined;
@@ -750,6 +764,10 @@ export class MTProtoSender {
                 this._requeue(batch);
                 return;
             }
+            if (batch.some((state) => state.cancelled)) {
+                this._requeue(batch);
+                continue;
+            }
             try {
                 await io.connection.send(data);
             } catch (e) {
@@ -763,7 +781,7 @@ export class MTProtoSender {
                 return;
             }
             for (const state of batch) {
-                if (state.request.classType === "request") {
+                if (!state.cancelled && state.request.classType === "request") {
                     this._pendingState.set(state.msgId!, state);
                 }
             }

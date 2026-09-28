@@ -234,14 +234,17 @@ function renderFacadeMethod(
     const methodName = lowerFirst(upperFirst(fn.name));
     const methodKey = methodKeyOf(fn);
     const prefix = methodPrefix(fn);
-    const returnType = renderResult(fn.result);
+    const generic = fn.result === "X" && "query" in fn.argsConfig;
+    const returnType = generic ? "ApiResult<Q>" : renderResult(fn.result);
     const jsdoc = renderFacadeJsDoc(methodKey, prefix, indent, errors, docs);
 
+    const paramType = generic ? `Omit<${prefix}Params, "query"> & { query: Q }` : `${prefix}Params`;
+    const optional = realArgNames(fn).every((name) => fn.argsConfig[name].isFlag) ? "?" : "";
     const params = realArgNames(fn).length
-        ? `params: ${prefix}Params, opts?: ApiCallOptions`
+        ? `params${optional}: ${paramType}, opts?: ApiCallOptions`
         : `opts?: ApiCallOptions`;
 
-    return `${jsdoc}\n${indent}${methodName}(${params}): Promise<${returnType}>;`;
+    return `${jsdoc}\n${indent}${methodName}${generic ? "<Q extends RawRequest | AnyRequest>" : ""}(${params}): Promise<${returnType}>;`;
 }
 
 const PRIMITIVE_TYPES = new Set([
@@ -311,6 +314,8 @@ function renderInputArg(
 ): string {
     const { isVector, isFlag, skipConstructorId, type } = cfg;
     const valueType =
+        type === "X" ? "RawRequest | AnyRequest" :
+        ["long", "int128", "int256"].includes(type ?? "") ? (isVector ? "LongInput[]" : "LongInput") :
         type && cone.coneTypes.has(type)
             ? isVector
                 ? `${typeInName(type)}[]`
@@ -346,7 +351,10 @@ function renderInputShapes(cone: InputCone): string {
         const members = (cone.ctorsByResult.get(t) || [])
             .map(ctorInName)
             .join(" | ");
-        parts.push(`  export type ${typeInName(t)} = ${members};`);
+        const entityLike = ["InputPeer", "InputChannel", "InputUser", "InputDialogPeer", "InputNotifyPeer"].includes(t)
+            ? " | EntityLike" : "";
+        const shorthand = t === "InputMessage" ? " | number" : "";
+        parts.push(`  export type ${typeInName(t)} = ${members} | ${renderTypeName(t)}${entityLike}${shorthand};`);
     }
 
     return parts.join("\n");
@@ -417,13 +425,33 @@ function renderApiFacade(
     return `export interface ApiCallOptions {
     /** Route this single call to a specific DC. */
     dcId?: number;
-    /** Abort the in-flight request (reserved). */
+    /** Stops waiting and retrying; an already sent request may still execute. */
     abortSignal?: AbortSignal;
-    /** Auto-sleep & retry on FLOOD_WAIT up to this many seconds (reserved). */
+    /** Per-call FLOOD_WAIT threshold in seconds; does not change client defaults. */
     floodSleepThreshold?: number;
+    /** Total call deadline in milliseconds, including resolution and retries. */
+    timeout?: number;
+    /** Retries after the initial attempt; defaults to the client retry policy. */
+    maxRetryCount?: number;
   }
 
+  /** Integer inputs; numbers must be safe integers. */
+  export type LongInput = BigInteger | bigint | number;
+
 ${renderParamsInterfaces(functions, docs, cone)}
+
+  export interface RawRequestMap {
+${functions.map((fn) => `    "${methodKeyOf(fn)}": { _: "${methodKeyOf(fn)}" }${realArgNames(fn).length ? ` & ${methodPrefix(fn)}Params` : ""};`).join("\n")}
+  }
+  export interface RawResultMap {
+${functions.map((fn) => `    "${methodKeyOf(fn)}": ${renderResult(fn.result)};`).join("\n")}
+  }
+  /** A discriminated raw request, including nested query wrappers. */
+  export type RawRequest = RawRequestMap[keyof RawRequestMap];
+  /** Result inferred from a raw request or an existing request instance. */
+  export type ApiResult<R> = R extends { _: ${functions.filter((fn) => fn.result === "X").map((fn) => `"${methodKeyOf(fn)}"`).join(" | ")}; query: infer Q } ? ApiResult<Q>
+    : R extends { __response: infer T } ? T
+    : R extends { _: infer K extends keyof RawResultMap } ? RawResultMap[K] : never;
 
 ${renderErrorUnions(functions, errors)}
 
@@ -438,6 +466,8 @@ ${renderInputShapes(cone)}
    * \`<Method>Errors\`.
    */
   export interface ApiFacade {
+    /** Invokes a typed raw request object or an existing request instance. */
+    call<R extends RawRequest | AnyRequest>(request: R, opts?: ApiCallOptions): Promise<ApiResult<R>>;
     ${rootMethods}
 ${namespacedMethods}
   }`;
@@ -447,6 +477,7 @@ export function renderApiTypes(input: {
     types: TlType[];
     constructors: TlDefinition[];
     functions: TlDefinition[];
+    facadeFunctions: TlDefinition[];
     errorMeta: ErrorMeta;
     docs: DocsMap;
 }): string {
@@ -531,7 +562,7 @@ export namespace Api {
               : ""
       )
       .join("\n")}
-  ${renderApiFacade(functions, errorMeta, docs, computeInputCone(functions, constructors))}
+  ${renderApiFacade(input.facadeFunctions, errorMeta, docs, computeInputCone(input.facadeFunctions, constructors))}
   export type TypeEntityLike = EntityLike;
   ${renderTypes(typesByNs._ || [], "  ")}
   export type AnyRequest = ${(requestsByNs._ || [])

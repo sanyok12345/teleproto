@@ -1,7 +1,8 @@
-import { BigInteger } from "big-integer";
+import bigInt, { BigInteger } from "big-integer";
 
 import {
     generateRandomBytes,
+    returnBigInt,
     readBigIntFromBuffer,
     toSignedLittleBuffer,
 } from "../../Helpers";
@@ -302,6 +303,7 @@ function createClasses(
     const { getArgFromReader } = helpers;
 
     const byTag = new Map<string, TlConstructor>(); // "inputPeerUser" -> class
+    const resolvers = new Map<TlConstructor, (value: Record<string, unknown>, client: TlClient, utils: TlUtils, seen: Set<unknown>) => Promise<void>>();
     const byResult = new Map<string, TlConstructor[]>(); // "InputPeer" -> [classes]
 
     function coerce(value: unknown, expectedType: string | null): unknown {
@@ -309,6 +311,7 @@ function createClasses(
             !value ||
             typeof value !== "object" ||
             Array.isArray(value) ||
+            bigInt.isInstance(value) ||
             typeof (value as { getBytes?: unknown }).getBytes === "function"
         ) {
             return value;
@@ -354,6 +357,7 @@ function createClasses(
             static CONSTRUCTOR_ID = constructorId;
             static SUBCLASS_OF_ID = subclassOfId;
             static className = fullName;
+            static hasParameters = Object.values(argsConfig).some((arg) => !arg.flagIndicator);
             static classType = isFunction ? "request" : "constructor";
 
             CONSTRUCTOR_ID = constructorId;
@@ -432,6 +436,12 @@ function createClasses(
                         continue;
                     }
                     const value = (this as Record<string, unknown>)[arg];
+                    if (value != null && ["long", "int128", "int256"].includes(cfg.type ?? "")) {
+                        (this as Record<string, unknown>)[arg] = cfg.isVector
+                            ? (value as Parameters<typeof returnBigInt>[0][]).map(returnBigInt)
+                            : returnBigInt(value as Parameters<typeof returnBigInt>[0]);
+                        continue;
+                    }
                     if (!value || typeof value !== "object") {
                         continue;
                     }
@@ -557,6 +567,12 @@ function createClasses(
                     throw new Error("`readResult()` called for non-request instance");
                 }
 
+                if (result === "X") {
+                    this._coerceArgs();
+                    const query = (this as unknown as { query: { readResult?: (reader: TlReader) => unknown } }).query;
+                    if (typeof query?.readResult !== "function") throw new TypeError("query must be a TL request");
+                    return query.readResult(reader);
+                }
                 const match = result.match(/Vector<(int|long)>/);
                 if (match) {
                     reader.readInt();
@@ -582,54 +598,41 @@ function createClasses(
                     throw new Error("`resolve()` called for non-request instance");
                 }
 
-                this._coerceArgs();
-
-                for (const arg in argsConfig) {
-                    if (!Object.prototype.hasOwnProperty.call(argsConfig, arg)) {
-                        continue;
-                    }
-
-                    const argConfig = argsConfig[arg];
-                    if (
-                        !AUTO_CASTS.has(argConfig.type as string) &&
-                        !NAMED_AUTO_CASTS.has(`${argConfig.name},${argConfig.type}`)
-                    ) {
-                        continue;
-                    }
-                    if (argConfig.isFlag && !(this as Record<string, unknown>)[arg]) {
-                        continue;
-                    }
-
-                    if (argConfig.isVector) {
-                        const currentValues =
-                            ((this as Record<string, unknown>)[arg] as unknown[]) || [];
-                        const resolvedValues: unknown[] = [];
-                        for (const value of currentValues) {
-                            resolvedValues.push(
-                                await getInputFromResolve(
-                                    utils,
-                                    client,
-                                    value,
-                                    argConfig.type
-                                )
-                            );
-                        }
-                        (this as Record<string, unknown>)[arg] = resolvedValues;
-                    } else {
-                        (this as Record<string, unknown>)[arg] = await getInputFromResolve(
-                            utils,
-                            client,
-                            (this as Record<string, unknown>)[arg],
-                            argConfig.type
-                        );
-                    }
-                }
+                await resolvers.get(VirtualClass)!(this as unknown as Record<string, unknown>, client, utils, new Set());
             }
 
             toJSON(): Record<string, unknown> {
                 return { ...this.originalArgs, className: fullName };
             }
         }
+
+        resolvers.set(VirtualClass, async (value, client, utils, seen) => {
+            if (seen.has(value)) return;
+            seen.add(value);
+            (value as unknown as VirtualClass)._coerceArgs();
+            for (const [arg, cfg] of Object.entries(argsConfig)) {
+                if (cfg.flagIndicator || value[arg] == null) continue;
+                if (!AUTO_CASTS.has(cfg.type ?? "") && cfg.type !== "X" &&
+                    !byResult.has(cfg.type ?? "") && !NAMED_AUTO_CASTS.has(`${arg},${cfg.type}`)) continue;
+                const resolveValue = async (item: unknown): Promise<unknown> => {
+                    if (item && typeof item === "object") {
+                        const resolve = resolvers.get(item.constructor as TlConstructor);
+                        if (resolve) await resolve(item as Record<string, unknown>, client, utils, seen);
+                    }
+                    const cast = NAMED_AUTO_CASTS.has(`${arg},${cfg.type}`)
+                        ? `${arg},${cfg.type}` : cfg.type;
+                    return AUTO_CASTS.has(cast as string) || NAMED_AUTO_CASTS.has(cast as string)
+                        ? getInputFromResolve(utils, client, item, cast) : item;
+                };
+                if (cfg.isVector && Array.isArray(value[arg])) {
+                    const resolved = [];
+                    for (const item of value[arg] as unknown[]) resolved.push(await resolveValue(item));
+                    value[arg] = resolved;
+                } else {
+                    value[arg] = await resolveValue(value[arg]);
+                }
+            }
+        });
 
         Object.defineProperty(VirtualClass, "name", {
             value: fullName,

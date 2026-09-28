@@ -6,205 +6,124 @@ export type SkippedTag = "update" | "updates";
 
 export interface SkippedEntry {
     pts: number;
+    count: number;
     tieBreaker: number;
     tag: SkippedTag;
     update?: Api.TypeUpdate;
     updates?: Api.TypeUpdates;
+    applyUpdate?: (update: Api.TypeUpdate) => void;
+    applyUpdates?: (updates: Api.TypeUpdates) => void;
 }
+
+type Payload = Omit<SkippedEntry, "pts" | "count" | "tieBreaker">;
 
 export interface PtsWaiterHost {
     onWaitForSkipped(ms: number): void;
     onWaitForShortPoll(ms: number): void;
+    onApplied?(pts: number): void;
 }
 
 export class PtsWaiter {
     private good = 0;
-    private last = 0;
-    private count = 0;
+    private initialized = false;
     private requestingFlag = false;
     private waitingForSkipped = false;
     private waitingForShortPoll = false;
-    private applyingSkippedDepth = 0;
     private skippedKey = 0;
-
     private readonly queue: SkippedEntry[] = [];
-    private readonly countedPts = new Set<number>();
 
     constructor(private readonly host: PtsWaiterHost) { }
 
-    inited(): boolean {
-        return this.good > 0;
-    }
+    inited(): boolean { return this.initialized; }
+    current(): number { return this.good; }
 
-    current(): number {
-        return this.good;
-    }
-
-    init(pts: number): void {
+    init(pts: number, preservePending = false): void {
         this.good = pts;
-        this.last = pts;
-        this.count = pts;
-        this.clearSkippedUpdates();
+        this.initialized = true;
+        if (!preservePending) this.clearSkippedUpdates();
     }
 
-    requesting(): boolean {
-        return this.requestingFlag;
-    }
+    requesting(): boolean { return this.requestingFlag; }
 
     setRequesting(value: boolean): void {
         this.requestingFlag = value;
-        if (value) this.clearSkippedUpdates();
+        if (value) this.setWaitingForSkipped(-1);
+        else this.applySkippedUpdates();
     }
 
-    isWaitingForSkipped(): boolean {
-        return this.waitingForSkipped;
-    }
-
-    isWaitingForShortPoll(): boolean {
-        return this.waitingForShortPoll;
-    }
+    isWaitingForSkipped(): boolean { return this.waitingForSkipped; }
+    isWaitingForShortPoll(): boolean { return this.waitingForShortPoll; }
 
     setWaitingForSkipped(ms: number): void {
-        if (ms >= 0) {
-            this.waitingForSkipped = true;
-            this.host.onWaitForSkipped(ms);
-        } else {
-            this.waitingForSkipped = false;
-            this.checkForWaiting();
-        }
+        this.waitingForSkipped = ms >= 0;
+        if (ms >= 0 || !this.waitingForShortPoll) this.host.onWaitForSkipped(ms);
     }
 
     setWaitingForShortPoll(ms: number): void {
-        if (ms >= 0) {
-            this.waitingForShortPoll = true;
-            this.host.onWaitForShortPoll(ms);
-        } else {
-            this.waitingForShortPoll = false;
-            this.checkForWaiting();
-        }
+        this.waitingForShortPoll = ms >= 0;
+        if (ms >= 0) this.host.onWaitForShortPoll(ms);
+        else if (!this.waitingForSkipped) this.host.onWaitForSkipped(-1);
     }
 
-    updated(pts: number, count: number, payload: Omit<SkippedEntry, "pts" | "tieBreaker">): boolean {
-        if (this.requestingFlag || this.applyingSkippedDepth > 0) {
-            return true;
-        }
-        if (count > 0 && pts <= this.good) {
+    updated(pts: number, count: number, payload: Payload): boolean {
+        if (!Number.isSafeInteger(pts) || !Number.isSafeInteger(count) || pts < 0 || count < 0) {
+            this.setWaitingForSkipped(1);
             return false;
         }
-        if (count > 0 && this.countedPts.has(pts)) {
-            const value = payload.update ?? payload.updates;
-            const duplicate = this.queue.some((entry) => {
-                if (entry.pts !== pts || entry.tag !== payload.tag) return false;
-                const buffered = entry.update ?? entry.updates;
-                return buffered === value || Boolean(
-                    buffered && value && buffered.getBytes().equals(value.getBytes()),
-                );
-            });
-            if (!duplicate) this.enqueue(pts, payload);
-            return false;
-        }
-        if (count > 0) this.countedPts.add(pts);
-        if (this.check(pts, count)) {
-            if (!this.waitingForSkipped) this.countedPts.clear();
+        if (!this.initialized) this.init(Math.max(0, pts - count));
+        if (pts < this.good || (count > 0 && pts === this.good)) return false;
+        if (!this.requestingFlag && this.good + count === pts) {
+            this.good = pts;
             return true;
         }
-        this.enqueue(pts, payload);
+        if (count > 0 && this.queue.some((entry) => entry.pts === pts && entry.count === count)) return false;
+        this.queue.push({ pts, count, tieBreaker: ++this.skippedKey, ...payload });
+        this.queue.sort((a, b) => a.pts - b.pts || b.count - a.count || a.tieBreaker - b.tieBreaker);
+        if (!this.requestingFlag) this.setWaitingForSkipped(this.good + count > pts ? 1 : WAIT_FOR_SKIPPED_TIMEOUT_MS);
         return false;
     }
 
     updateAndApply(
         pts: number,
         count: number,
-        payload: Omit<SkippedEntry, "pts" | "tieBreaker">,
+        payload: Payload,
         applyUpdate: (update: Api.TypeUpdate) => void,
         applyUpdates: (updates: Api.TypeUpdates) => void,
     ): boolean {
-        if (!this.updated(pts, count, payload)) return false;
-        if (!this.waitingForSkipped || this.queue.length === 0) {
-            if (payload.tag === "update" && payload.update) applyUpdate(payload.update);
-            else if (payload.tag === "updates" && payload.updates) applyUpdates(payload.updates);
-            return true;
-        }
-        this.enqueue(pts, payload);
+        const entry = { ...payload, applyUpdate, applyUpdates };
+        if (!this.updated(pts, count, entry)) return false;
+        this.apply(entry);
         this.applySkippedUpdates(applyUpdate, applyUpdates);
         return true;
     }
 
     applySkippedUpdates(
-        applyUpdate: (update: Api.TypeUpdate) => void,
-        applyUpdates: (updates: Api.TypeUpdates) => void,
+        applyUpdate?: (update: Api.TypeUpdate) => void,
+        applyUpdates?: (updates: Api.TypeUpdates) => void,
     ): void {
-        if (!this.waitingForSkipped) return;
-        this.setWaitingForSkipped(-1);
-        if (this.queue.length === 0) return;
-
-        this.applyingSkippedDepth++;
-        try {
-            for (const entry of this.queue) {
-                if (entry.tag === "update" && entry.update) applyUpdate(entry.update);
-                else if (entry.tag === "updates" && entry.updates) applyUpdates(entry.updates);
+        if (this.requestingFlag) return;
+        while (this.queue.length) {
+            const entry = this.queue[0];
+            if (entry.pts < this.good || (entry.count > 0 && entry.pts === this.good)) {
+                this.queue.shift();
+                continue;
             }
-        } finally {
-            this.applyingSkippedDepth--;
-            this.clearSkippedUpdates();
+            if (this.good + entry.count !== entry.pts) break;
+            this.queue.shift();
+            this.good = entry.pts;
+            this.apply({ ...entry, applyUpdate: entry.applyUpdate ?? applyUpdate, applyUpdates: entry.applyUpdates ?? applyUpdates });
         }
+        this.setWaitingForSkipped(this.queue.length ? WAIT_FOR_SKIPPED_TIMEOUT_MS : -1);
     }
 
     clearSkippedUpdates(): void {
         this.queue.length = 0;
-        this.countedPts.clear();
-        this.last = this.good;
-        this.count = this.good;
         this.setWaitingForSkipped(-1);
     }
 
-    private check(pts: number, count: number): boolean {
-        if (!this.inited()) {
-            this.init(pts);
-            return true;
-        }
-        this.last = Math.max(this.last, pts);
-        this.count += count;
-        if (this.last === this.count) {
-            this.good = this.last;
-            return true;
-        }
-        if (this.last < this.count) {
-            this.setWaitingForSkipped(1);
-            return false;
-        }
-        this.setWaitingForSkipped(WAIT_FOR_SKIPPED_TIMEOUT_MS);
-        return false;
-    }
-
-    private enqueue(pts: number, payload: Omit<SkippedEntry, "pts" | "tieBreaker">): void {
-        const entry: SkippedEntry = {
-            pts,
-            tieBreaker: ++this.skippedKey,
-            ...payload,
-        };
-        const idx = this.lowerBoundOf(entry);
-        this.queue.splice(idx, 0, entry);
-    }
-
-    private lowerBoundOf(entry: SkippedEntry): number {
-        let lo = 0;
-        let hi = this.queue.length;
-        while (lo < hi) {
-            const mid = (lo + hi) >>> 1;
-            const cur = this.queue[mid]!;
-            const lt =
-                cur.pts < entry.pts ||
-                (cur.pts === entry.pts && cur.tieBreaker < entry.tieBreaker);
-            if (lt) lo = mid + 1;
-            else hi = mid;
-        }
-        return lo;
-    }
-
-    private checkForWaiting(): void {
-        if (!this.waitingForSkipped && !this.waitingForShortPoll) {
-            this.host.onWaitForSkipped(-1);
-        }
+    private apply(entry: Payload): void {
+        this.host.onApplied?.(this.good);
+        if (entry.tag === "update" && entry.update) entry.applyUpdate?.(entry.update);
+        else if (entry.tag === "updates" && entry.updates) entry.applyUpdates?.(entry.updates);
     }
 }

@@ -1,4 +1,5 @@
 import bigInt from "big-integer";
+import { setMaxListeners } from "events";
 import { Api } from "../../tl";
 import type { EntityLike } from "../../define";
 import type { TelegramClient } from "../TelegramClient";
@@ -6,7 +7,7 @@ import type { EventBuilder } from "../../events/common";
 import { _intoIdSet } from "../../events/common";
 import { getPeerId } from "../../Utils";
 import { isArrayLike } from "../../Helpers";
-import type { UpdateState } from "./manager";
+import type { UpdateState, ChannelPollingState } from "./manager";
 import { UpdateConnectionState } from "../../network";
 
 /** Passes the update on. A handler that never calls it consumes the update. */
@@ -184,8 +185,8 @@ function peerOf(update: unknown): string | undefined {
  *
  * Handlers form one chain: `next()` passes the update on, returning without it
  * consumes the update. {@link on} matches first, by raw schema name or by an
- * event builder; {@link watch} also keeps Telegram sending updates for the
- * chats it is given.
+ * event builder; {@link watch} also polls channel differences for the chats
+ * it is given.
  *
  * A raw name gives the untouched `Api.TypeUpdate`, a builder gives its event
  * object. Direct and small-group messages arrive as the `updateShortMessage`
@@ -309,19 +310,17 @@ export class ClientUpdates {
     }
 
     /**
-     * Handles updates from the given chats only, and keeps them coming.
+     * Handles updates from the given chats and polls channel differences.
      *
-     * Telegram streams channel updates to a session only while it keeps the
-     * channel open, so for channels the account is not a member of this is the
-     * difference between receiving their messages and receiving nothing. Chats
-     * that need no such subscription are simply filtered.
-     *
-     * Synchronous like {@link on}: resolving the chats and subscribing happen in
-     * the background, waiting for the client to connect, so it can be called
-     * before `start()`. A reconnect re-subscribes on its own. The poll runs at
-     * the interval Telegram names in the difference, falling back to the
-     * client's `channelPollInterval`.
-     * At most ten distinct channels are polled; excess subscriptions report an error to {@link catch}.
+     * Registration is synchronous and may precede `start()`. Channels resume
+     * from their saved pts after reconnect; unsubscribing releases their polling slot.
+     * All channels share `channelPollRequestInterval` and `channelPollConcurrency`,
+     * including channel initialization and difference pages. More channels increase
+     * delay; server timeouts are minimum intervals, not delivery deadlines.
+     * Without a server timeout, polling uses `channelPollInterval` (1000 ms by default).
+     * Flood waits pause the shared budget. Inspect {@link polling} for queue delays.
+     * Delayed polling may interrupt passive delivery from channels you have not joined;
+     * differences resume while server history is available. No channel-count cap is imposed.
      *
      * @param chats - Chats to listen to: usernames, ids or entities.
      * @param handler - Optional handler; without it only the subscription is kept.
@@ -363,7 +362,7 @@ export class ClientUpdates {
             chats: wanted,
             channels: new Set(),
             stopped: false,
-            controller: new AbortController(),
+            controller: watchController(),
             retryDelay: 1000,
         };
         this.watches.add(entry);
@@ -388,6 +387,15 @@ export class ClientUpdates {
             await this.client._connectedDeferred.promise;
             if (!active() || !this.client.updateManager.isRunning) return;
             let retry = false;
+            const pending: Promise<void>[] = [];
+            const pendingChannels = new Set<string>();
+            const failed = async (error: unknown) => {
+                if (!active()) return;
+                const code = (error as { errorMessage?: string }).errorMessage;
+                retry ||= !(error instanceof TypeError || error instanceof RangeError) &&
+                    !["CHANNEL_PRIVATE", "CHANNEL_INVALID", "USERNAME_INVALID", "USERNAME_NOT_OCCUPIED", "PEER_ID_INVALID"].includes(code ?? "");
+                await this.reportError(error as Error, undefined);
+            };
             for (const chat of entry.chats) {
                 if (!active()) return;
                 try {
@@ -395,8 +403,9 @@ export class ClientUpdates {
                     if (!active()) return;
                     if (!(input instanceof Api.InputPeerChannel)) continue;
                     const channelId = input.channelId.toString();
-                    if (entry.channels.has(channelId)) continue;
-                    await this.client.updateManager.watchChannel(
+                    if (entry.channels.has(channelId) || pendingChannels.has(channelId)) continue;
+                    pendingChannels.add(channelId);
+                    const subscription = this.client.updateManager.watchChannel(
                         channelId,
                         new Api.InputChannel({
                             channelId: input.channelId,
@@ -404,16 +413,14 @@ export class ClientUpdates {
                         }),
                         controller.signal,
                     );
-                    if (!active()) return;
-                    entry.channels.add(channelId);
+                    pending.push(subscription.then(() => {
+                        if (active()) entry.channels.add(channelId);
+                    }).catch(failed));
                 } catch (error) {
-                    if (!active()) return;
-                    const code = (error as { errorMessage?: string }).errorMessage;
-                    retry ||= !(error instanceof TypeError || error instanceof RangeError) &&
-                        !["CHANNEL_PRIVATE", "CHANNEL_INVALID", "USERNAME_INVALID", "USERNAME_NOT_OCCUPIED", "PEER_ID_INVALID"].includes(code ?? "");
-                    await this.reportError(error as Error, undefined);
+                    await failed(error);
                 }
             }
+            await Promise.all(pending);
             if (retry && active()) {
                 entry.retryTimer = setTimeout(() => {
                     entry.retryTimer = undefined;
@@ -439,7 +446,7 @@ export class ClientUpdates {
     _pause(): void {
         for (const entry of this.watches) {
             entry.controller.abort();
-            entry.controller = new AbortController();
+            entry.controller = watchController();
             entry.channels.clear();
             entry.arming = undefined;
             if (entry.retryTimer) clearTimeout(entry.retryTimer);
@@ -461,9 +468,14 @@ export class ClientUpdates {
         }
     }
 
-    /** Ids of the channels currently kept alive by {@link watch}. */
+    /** Ids of channels registered for polling by {@link watch}, including pending initialization. */
     get watched(): string[] {
         return this.client.updateManager.watchedChannelIds();
+    }
+
+    /** Shared polling load and per-channel request timing; returns a detached snapshot. */
+    get polling(): ChannelPollingState {
+        return this.client.updateManager.polling;
     }
 
     /** Removes a middleware or handler from the chain. */
@@ -653,4 +665,10 @@ async function runChain(
         await handlers[index]!(update, () => run(index + 1));
     };
     await run(0);
+}
+
+function watchController(): AbortController {
+    const controller = new AbortController();
+    setMaxListeners(0, controller.signal);
+    return controller;
 }

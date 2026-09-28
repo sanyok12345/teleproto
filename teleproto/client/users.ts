@@ -74,6 +74,7 @@ const floodWait: InvokeErrorPolicy = async (e, ctx) => {
     ) {
         return false;
     }
+    if (ctx.client.updateManager.handleChannelFloodWait(ctx.request, e.seconds)) throw e;
     if (e.seconds > ctx.client.floodSleepThreshold) {
         throw e;
     }

@@ -235,6 +235,10 @@ export interface TelegramClientParams {
     };
     /** Channel polling fallback in milliseconds when Telegram omits timeout. Defaults to 1000. */
     channelPollInterval?: number;
+    /** Minimum spacing in milliseconds between scheduled channel RPCs. Defaults to 250; not a Telegram rate guarantee. */
+    channelPollRequestInterval?: number;
+    /** Maximum concurrent scheduled channel RPCs. Defaults to 2. More watched channels increase polling latency. */
+    channelPollConcurrency?: number;
     /**
      * Bounds the in-memory entity cache (the hot working set of resolved
      * peers; the session remains the storage tier).
@@ -266,6 +270,8 @@ const clientParamsDefault = {
     langCode: "en",
     systemLangCode: "en",
     channelPollInterval: 1000,
+    channelPollRequestInterval: 250,
+    channelPollConcurrency: 2,
     _securityChecks: true,
 };
 
@@ -323,6 +329,10 @@ export abstract class TelegramBaseClient<S extends Session = Session> {
     public _entityCache: EntityCache;
     /** @hidden */
     public _channelPollInterval: number;
+    /** @hidden */
+    public _channelPollRequestInterval: number;
+    /** @hidden */
+    public _channelPollConcurrency: number;
     public _lastRequest?: number;
     /**
      * Epoch ms of the last message decrypted on ANY session. Distinguishes a
@@ -425,6 +435,17 @@ export abstract class TelegramBaseClient<S extends Session = Session> {
         this._reconnectRetries = clientParams.reconnectRetries!;
         this._retryDelay = clientParams.retryDelay || 0;
         this._channelPollInterval = clientParams.channelPollInterval!;
+        this._channelPollRequestInterval = clientParams.channelPollRequestInterval!;
+        this._channelPollConcurrency = clientParams.channelPollConcurrency!;
+        for (const [name, value] of [
+            ["channelPollInterval", this._channelPollInterval],
+            ["channelPollRequestInterval", this._channelPollRequestInterval],
+            ["channelPollConcurrency", this._channelPollConcurrency],
+        ] as const) {
+            if (!Number.isSafeInteger(value) || value <= 0) {
+                throw new RangeError(`${name} must be a positive safe integer`);
+            }
+        }
         this._timeout = clientParams.timeout!;
         this._autoReconnect = clientParams.autoReconnect!;
         this._proxy = clientParams.proxy;

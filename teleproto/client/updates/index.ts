@@ -1,5 +1,5 @@
 export * from "./dispatch";
-export { UpdateManager, type UpdateState } from "./manager";
+export { UpdateManager, type UpdateState, type ChannelPollingState } from "./manager";
 export { PtsWaiter, WAIT_FOR_SKIPPED_TIMEOUT_MS, type PtsWaiterHost } from "./ptsWaiter";
 export {
     ClientUpdates,

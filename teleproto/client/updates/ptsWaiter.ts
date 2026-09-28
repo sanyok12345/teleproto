@@ -28,6 +28,7 @@ export class PtsWaiter {
     private skippedKey = 0;
 
     private readonly queue: SkippedEntry[] = [];
+    private readonly countedPts = new Set<number>();
 
     constructor(private readonly host: PtsWaiterHost) { }
 
@@ -90,7 +91,21 @@ export class PtsWaiter {
         if (count > 0 && pts <= this.good) {
             return false;
         }
+        if (count > 0 && this.countedPts.has(pts)) {
+            const value = payload.update ?? payload.updates;
+            const duplicate = this.queue.some((entry) => {
+                if (entry.pts !== pts || entry.tag !== payload.tag) return false;
+                const buffered = entry.update ?? entry.updates;
+                return buffered === value || Boolean(
+                    buffered && value && buffered.getBytes().equals(value.getBytes()),
+                );
+            });
+            if (!duplicate) this.enqueue(pts, payload);
+            return false;
+        }
+        if (count > 0) this.countedPts.add(pts);
         if (this.check(pts, count)) {
+            if (!this.waitingForSkipped) this.countedPts.clear();
             return true;
         }
         this.enqueue(pts, payload);
@@ -137,6 +152,10 @@ export class PtsWaiter {
 
     clearSkippedUpdates(): void {
         this.queue.length = 0;
+        this.countedPts.clear();
+        this.last = this.good;
+        this.count = this.good;
+        this.setWaitingForSkipped(-1);
     }
 
     private check(pts: number, count: number): boolean {

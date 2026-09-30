@@ -238,13 +238,13 @@ function renderFacadeMethod(
     const returnType = generic ? "ApiResult<Q>" : renderResult(fn.result);
     const jsdoc = renderFacadeJsDoc(methodKey, prefix, indent, errors, docs);
 
-    const paramType = generic ? `Omit<${prefix}Params, "query"> & { query: Q & CheckedRequest<Q> }` : `${prefix}Params`;
+    const paramType = generic ? `ReadonlyInput<Omit<${prefix}Params, "query">> & { query: Q & CheckedRequest<Q> }` : `ReadonlyInput<${prefix}Params>`;
     const optional = realArgNames(fn).every((name) => fn.argsConfig[name].isFlag) ? "?" : "";
     const params = realArgNames(fn).length
         ? `params${optional}: ${paramType}, opts?: ApiCallOptions`
         : `opts?: ApiCallOptions`;
 
-    return `${jsdoc}\n${indent}${methodName}${generic ? "<const Q extends RawRequest | AnyRequest>" : ""}(${params}): Promise<${returnType}>;`;
+    return `${jsdoc}\n${indent}${methodName}${generic ? "<Q extends RawRequest | AnyRequest>" : ""}(${params}): Promise<${returnType}>;`;
 }
 
 const PRIMITIVE_TYPES = new Set([
@@ -315,7 +315,6 @@ function renderInputArg(
     const { isVector, isFlag, skipConstructorId, type } = cfg;
     const valueType =
         type === "X" ? "RawRequest | AnyRequest" :
-        ["long", "int128", "int256"].includes(type ?? "") ? "LongInput" :
         type && cone.coneTypes.has(type)
             ? typeInName(type)
             : renderValueType(type || "unknown", false, !skipConstructorId);
@@ -323,7 +322,7 @@ function renderInputArg(
         isFlag || (argName === "randomId" && type === "long" && !isVector)
             ? "?"
             : "";
-    return `${argName}${optional}: ${isVector ? `ReadonlyArray<${valueType}>` : valueType}`;
+    return `${argName}${optional}: ${isVector ? `Array<${valueType}>` : valueType}`;
 }
 
 function renderInputShapes(cone: InputCone): string {
@@ -448,8 +447,14 @@ function renderApiFacade(
 
 ${renderParamsInterfaces(functions, docs, cone)}
 
+  /** Accepts readonly vectors and native integers while preserving mutable parameter types. */
+  export type ReadonlyInput<T> = T extends BigInteger ? LongInput
+    : T extends { classType: string } | Buffer | Date | Function ? T
+    : T extends readonly (infer V)[] ? ReadonlyArray<ReadonlyInput<V>>
+    : T extends object ? { [K in keyof T]: ReadonlyInput<T[K]> } : T;
+
   export interface RawRequestMap {
-${functions.map((fn) => `    "${methodKeyOf(fn)}": { _: "${methodKeyOf(fn)}" }${realArgNames(fn).length ? ` & ${methodPrefix(fn)}Params` : ""};`).join("\n")}
+${functions.map((fn) => `    "${methodKeyOf(fn)}": { _: "${methodKeyOf(fn)}" }${realArgNames(fn).length ? ` & ReadonlyInput<${methodPrefix(fn)}Params>` : ""};`).join("\n")}
   }
   export interface RawResultMap {
 ${functions.map((fn) => `    "${methodKeyOf(fn)}": ${renderResult(fn.result)};`).join("\n")}
@@ -481,9 +486,9 @@ ${renderInputShapes(cone)}
    */
   export interface ApiFacade {
     /** Invokes a typed raw request object or an existing request instance. */
-    call<const R extends { _: keyof RawRequestMap }>(request: R & RawRequestMap[R["_"]] & CheckedRequest<R>, opts?: ApiCallOptions): Promise<ApiResult<R>>;
+    call<R extends { _: keyof RawRequestMap }>(request: R & RawRequestMap[R["_"]] & CheckedRequest<R>, opts?: ApiCallOptions): Promise<ApiResult<R>>;
     call<R extends AnyRequest>(request: R, opts?: ApiCallOptions): Promise<R["__response"]>;
-    call<const R extends { _: keyof RawRequestMap } | { classType: "request"; __response: unknown }>(
+    call<R extends { _: keyof RawRequestMap } | { classType: "request"; __response: unknown }>(
       request: R & (R extends { _: infer K extends keyof RawRequestMap } ? RawRequestMap[K] & CheckedRequest<R> : R extends AnyRequest ? unknown : never),
       opts?: ApiCallOptions,
     ): Promise<ApiResult<R>>;

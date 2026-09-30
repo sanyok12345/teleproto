@@ -481,7 +481,12 @@ ${renderInputShapes(cone)}
    */
   export interface ApiFacade {
     /** Invokes a typed raw request object or an existing request instance. */
-    call<const R extends RawRequest | AnyRequest>(request: R & CheckedRequest<R>, opts?: ApiCallOptions): Promise<ApiResult<R>>;
+    call<const R extends { _: keyof RawRequestMap }>(request: R & RawRequestMap[R["_"]] & CheckedRequest<R>, opts?: ApiCallOptions): Promise<ApiResult<R>>;
+    call<R extends AnyRequest>(request: R, opts?: ApiCallOptions): Promise<R["__response"]>;
+    call<const R extends { _: keyof RawRequestMap } | { classType: "request"; __response: unknown }>(
+      request: R & (R extends { _: infer K extends keyof RawRequestMap } ? RawRequestMap[K] & CheckedRequest<R> : R extends AnyRequest ? unknown : never),
+      opts?: ApiCallOptions,
+    ): Promise<ApiResult<R>>;
     ${rootMethods}
 ${namespacedMethods}
   }`;

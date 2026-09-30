@@ -1,3 +1,4 @@
+import type { WebProxyOptions } from "./webProxy/protocol";
 import { createHmac, randomInt } from "node:crypto";
 
 import { ObfuscatedConnection, PacketCodec } from "./Connection";
@@ -85,11 +86,13 @@ export type SocksProxyType = BasicProxyInterface & {
     socksType: 4 | 5;
 };
 
+export type WebProxyType = WebProxyOptions & { WEB: true };
+
 /**
  * Union type for all supported proxy configurations. Pass to
  * `TelegramClientParams.proxy` to route all connections through a proxy.
  */
-export type ProxyInterface = MTProxyType | SocksProxyType;
+export type ProxyInterface = MTProxyType | SocksProxyType | WebProxyType;
 
 interface TCPMTProxyInterfaceParams {
     ip: string;
@@ -591,6 +594,9 @@ export class TCPMTProxy extends ObfuscatedConnection {
         testServers,
         keepAliveInterval,
     }: TCPMTProxyInterfaceParams) {
+        if (!("MTProxy" in proxy)) {
+            throw new Error("This connection only supports MTProxies");
+        }
         super({
             ip: proxy.ip,
             port: proxy.port,
@@ -602,9 +608,6 @@ export class TCPMTProxy extends ObfuscatedConnection {
             keepAliveInterval,
         });
 
-        if (!("MTProxy" in proxy)) {
-            throw new Error("This connection only supports MTProxies");
-        }
         const parsed = parseProxySecret(proxy.secret);
         this._secret = parsed.key;
         this._fakeTlsDomain = parsed.fakeTlsDomain;

@@ -18,6 +18,9 @@ export {
     Keyboard,
 } from "./tl/custom/keyboard";
 export { Connection } from "./network";
+export { ConnectionWebProxy } from "./network/connection/WebProxy";
+export type { WebProxyType } from "./network/connection/TCPMTProxy";
+export type { WebProxyOptions, WebProxyWebSocket } from "./network/connection/WebProxy";
 export { version } from "./Version";
 export { Logger } from "./extensions/Logger";
 import * as utils from "./Utils";

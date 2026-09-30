@@ -42,6 +42,7 @@ export class PromisedNetSockets {
         this.keepAliveInterval =
             keepAliveInterval ?? DEFAULT_KEEP_ALIVE_INTERVAL;
         if (proxy) {
+            if ("WEB" in proxy) throw new Error("WEB proxy requires ConnectionWebProxy");
             // we only want to use this when it's not an MTProto proxy.
             if (!("MTProxy" in proxy)) {
                 if (!proxy.ip || !proxy.port || !proxy.socksType) {

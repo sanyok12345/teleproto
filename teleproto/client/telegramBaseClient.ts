@@ -35,6 +35,7 @@ import Deferred from "../extensions/Deferred";
 import { UpdateManager } from "./updates/manager";
 import { _clearUpdateQueue } from "./updates/dispatch";
 import type { ClientUpdates } from "./updates/composer";
+import { ConnectionWebProxy, createWebProxySocket } from "../network/connection/WebProxy";
 import { installMessageBehaviour } from "../tl/custom/message";
 
 const SESSION_IDLE_TIMEOUT_MS = 60_000;
@@ -156,9 +157,10 @@ export interface TelegramClientParams {
     /**
      * Proxy configuration for routing all connections through a proxy server.
      *
-     * Supports two proxy types:
+     * Supports these proxy types:
      * - **MTProxy** (`{ MTProxy: true, ip, port, secret }`) — Telegram's own obfuscated proxy.
      *   Automatically switches the connection to {@link ConnectionTCPMTProxyAbridged}.
+     * - **WEB** (`{ WEB: true, server, secret }`) — experimental native WEB relay.
      * - **SOCKS4/5** (`{ socksType: 4 | 5, ip, port }`) — general-purpose SOCKS proxy.
      *   SOCKS5 supports optional `username`/`password` authentication.
      *
@@ -407,6 +409,7 @@ export abstract class TelegramBaseClient<S extends Session = Session> {
         clientParams: TelegramClientParams
     ) {
         const explicitConnection = clientParams.connection !== undefined;
+        const explicitSocket = clientParams.networkSocket !== undefined;
         clientParams = { ...clientParamsDefault, ...clientParams };
         if (!apiId || !apiHash) {
             throw new Error("Your API ID or Hash cannot be empty or undefined");
@@ -465,8 +468,17 @@ export abstract class TelegramBaseClient<S extends Session = Session> {
             this._connection = ConnectionTCPObfuscated;
         }
         let initProxy;
+        const webProxy = this._proxy && "WEB" in this._proxy ? this._proxy : undefined;
+        if (webProxy) {
+            if ((explicitConnection && this._connection !== ConnectionWebProxy) || explicitSocket) {
+                throw new Error("WEB proxy requires its own connection and socket adapter");
+            }
+            const web = createWebProxySocket(webProxy);
+            this.networkSocket = web.socket;
+            this._proxy = { MTProxy: true, ip: web.host, port: 443, secret: web.secret };
+        }
         if (this._proxy && "MTProxy" in this._proxy) {
-            this._connection = ConnectionTCPMTProxyAbridged;
+            this._connection = webProxy ? ConnectionWebProxy : ConnectionTCPMTProxyAbridged;
             initProxy = new Api.InputClientProxy({
                 address: this._proxy.ip,
                 port: this._proxy.port,

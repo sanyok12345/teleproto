@@ -237,12 +237,8 @@ export class MemorySession extends Session {
 
     getEntityRowsById(id: string | bigInt.BigInteger, exact = true) {
         if (exact) {
-            for (const e of this._entities.values()) {
-                // id, hash, username, phone, name
-                if (e[0] === id) {
-                    return [e[0], e[1]];
-                }
-            }
+            const row = this._entities.get(id.toString());
+            if (row) return [row[0], row[1]];
         } else {
             const ids = [
                 utils.getPeerId(new Api.PeerUser({ userId: returnBigInt(id) })),
@@ -276,7 +272,12 @@ export class MemorySession extends Session {
                 return key;
             }
             // Try to early return if this key can be casted as input peer
-            return utils.getInputPeer(key);
+            try {
+                return utils.getInputPeer(key);
+            } catch {
+                key = utils.getPeerId(key);
+                exact = true;
+            }
         } else {
             // Not a TLObject or can't be cast into InputPeer
             if (typeof key === "object") {

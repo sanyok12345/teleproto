@@ -130,7 +130,7 @@ export class StoreSession extends MemorySession {
     }
 
     delete() {
-        this.store.clearAll();
+        this.store.clear();
         super.delete();
     }
 
@@ -148,6 +148,33 @@ export class StoreSession extends MemorySession {
         id: string | bigInt.BigInteger,
         exact: boolean = true
     ): any {
-        return this.store.get(this.sessionName + id.toString());
+        const row = this.store.get(this.sessionName + id.toString());
+        if (row || exact) return row;
+        return this.store.get(this.sessionName + "-" + id)
+            ?? this.store.get(this.sessionName + "-100" + id);
+    }
+
+    getEntityRowsByPhone(phone: string) {
+        return this.findEntityRow((row) => row[3] === phone);
+    }
+
+    getEntityRowsByUsername(username: string) {
+        return this.findEntityRow((row) => row[2] === username.toLowerCase());
+    }
+
+    getEntityRowsByName(name: string) {
+        return this.findEntityRow((row) => row[4] === name);
+    }
+
+    private findEntityRow(matches: (row: string[]) => boolean): string[] | undefined {
+        let result: string[] | undefined;
+        this.store.each((key, row) => {
+            if (Array.isArray(row) && row.length >= 5 &&
+                key === this.sessionName + row[0] && matches(row)) {
+                result = row;
+                return false;
+            }
+        });
+        return result;
     }
 }

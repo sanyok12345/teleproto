@@ -36215,6 +36215,14 @@ export namespace Api {
   /** Integer inputs; numbers must be safe integers. */
   export type LongInput = BigInteger | bigint | number;
 
+  /** A user reference resolved before sending the request. */
+  export type UserInput = string | LongInput | Api.TypeUser | Api.PeerUser
+    | Api.InputPeerUser | Api.InputPeerUserFromMessage | Api.InputPeerSelf | Api.InputPeerEmpty;
+  /** A channel or community reference resolved before sending the request. */
+  export type ChannelInput = string | LongInput | Api.Channel | Api.ChannelForbidden
+    | Api.Community | Api.CommunityForbidden | Api.PeerChannel
+    | Api.InputPeerChannel | Api.InputPeerChannelFromMessage;
+
   export interface InvokeAfterMsgParams {
     /** Message identifier on which a current query depends */
     msgId: LongInput;
@@ -36223,7 +36231,7 @@ export namespace Api {
   }
   export interface InvokeAfterMsgsParams {
     /** List of messages on which a current query depends */
-    msgIds: LongInput[];
+    msgIds: ReadonlyArray<LongInput>;
     /** The query itself */
     query: RawRequest | AnyRequest;
   }
@@ -36386,7 +36394,7 @@ export namespace Api {
   }
   export interface AuthDropTempAuthKeysParams {
     /** The auth keys that shouldn't be dropped. */
-    exceptAuthKeys: LongInput[];
+    exceptAuthKeys: ReadonlyArray<LongInput>;
   }
   export interface AuthExportLoginTokenParams {
     /** Application identifier (see. App configuration ) */
@@ -36394,7 +36402,7 @@ export namespace Api {
     /** Application identifier hash (see. App configuration ) */
     apiHash: string;
     /** List of already logged-in user IDs, to prevent logging in twice with the same user */
-    exceptIds: LongInput[];
+    exceptIds: ReadonlyArray<LongInput>;
   }
   export interface AuthImportLoginTokenParams {
     /** Login token */
@@ -36488,7 +36496,7 @@ export namespace Api {
     /** For FCM and APNS VoIP, optional encryption key used to encrypt push notifications */
     secret: bytes;
     /** List of user identifiers of other users currently using the client */
-    otherUids: LongInput[];
+    otherUids: ReadonlyArray<LongInput>;
   }
   export interface AccountUnregisterDeviceParams {
     /** Device token type, see PUSH updates for the possible values. */
@@ -36496,7 +36504,7 @@ export namespace Api {
     /** Device token, see PUSH updates for the possible values. */
     token: string;
     /** List of user identifiers of other users currently using the client */
-    otherUids: LongInput[];
+    otherUids: ReadonlyArray<LongInput>;
   }
   export interface AccountUpdateNotifySettingsParams {
     /** Notification source */
@@ -36548,7 +36556,7 @@ export namespace Api {
     /** New privacy rule */
     key: TypeInputPrivacyKeyIn;
     /** Peers to which the privacy rule will apply. */
-    rules: TypeInputPrivacyRuleIn[];
+    rules: ReadonlyArray<TypeInputPrivacyRuleIn>;
   }
   export interface AccountDeleteAccountParams {
     /** Why is the account being deleted, can be empty */
@@ -36616,7 +36624,7 @@ export namespace Api {
   }
   export interface AccountGetSecureValueParams {
     /** Requested value types */
-    types: TypeSecureValueTypeIn[];
+    types: ReadonlyArray<TypeSecureValueTypeIn>;
   }
   export interface AccountSaveSecureValueParams {
     /** Secure value, for more info see the passport docs » */
@@ -36626,7 +36634,7 @@ export namespace Api {
   }
   export interface AccountDeleteSecureValueParams {
     /** Document types to delete */
-    types: TypeSecureValueTypeIn[];
+    types: ReadonlyArray<TypeSecureValueTypeIn>;
   }
   export interface AccountGetAuthorizationFormParams {
     /** User identifier of the service's bot */
@@ -36644,7 +36652,7 @@ export namespace Api {
     /** Service's public key */
     publicKey: string;
     /** Types of values sent and their hashes */
-    valueHashes: TypeSecureValueHashIn[];
+    valueHashes: ReadonlyArray<TypeSecureValueHashIn>;
     /** Encrypted values */
     credentials: TypeSecureCredentialsEncryptedIn;
   }
@@ -36764,7 +36772,7 @@ export namespace Api {
     /** Theme file */
     document?: TypeInputDocumentIn;
     /** Theme settings, multiple values can be provided for the different base themes (day/night mode, etc). */
-    settings?: TypeInputThemeSettingsIn[];
+    settings?: ReadonlyArray<TypeInputThemeSettingsIn>;
   }
   export interface AccountUpdateThemeParams {
     /** Theme format, a string that identifies the theming engines supported by the client */
@@ -36778,7 +36786,7 @@ export namespace Api {
     /** Theme file */
     document?: TypeInputDocumentIn;
     /** Theme settings */
-    settings?: TypeInputThemeSettingsIn[];
+    settings?: ReadonlyArray<TypeInputThemeSettingsIn>;
   }
   export interface AccountSaveThemeParams {
     /** Theme to save */
@@ -36814,7 +36822,7 @@ export namespace Api {
   }
   export interface AccountGetMultiWallPapersParams {
     /** Wallpapers to fetch info about */
-    wallpapers: TypeInputWallPaperIn[];
+    wallpapers: ReadonlyArray<TypeInputWallPaperIn>;
   }
   export interface AccountSetGlobalPrivacySettingsParams {
     /** Global privacy settings */
@@ -36880,7 +36888,7 @@ export namespace Api {
   }
   export interface AccountReorderUsernamesParams {
     /** The new order for active usernames. All active usernames must be specified. */
-    order: string[];
+    order: ReadonlyArray<string>;
   }
   export interface AccountToggleUsernameParams {
     /** Username */
@@ -36910,7 +36918,7 @@ export namespace Api {
   }
   export interface AccountInvalidateSignInCodesParams {
     /** The login codes to invalidate. */
-    codes: string[];
+    codes: ReadonlyArray<string>;
   }
   export interface AccountUpdateColorParams {
     /** Whether to change the accent color emoji pattern of the profile page; otherwise, the accent color and emoji pattern of messages will be changed. */
@@ -37079,7 +37087,7 @@ export namespace Api {
   }
   export interface UsersGetUsersParams {
     /** List of user identifiers */
-    id: TypeInputUserIn[];
+    id: ReadonlyArray<TypeInputUserIn>;
   }
   export interface UsersGetFullUserParams {
     /** User ID */
@@ -37089,11 +37097,11 @@ export namespace Api {
     /** The user */
     id: TypeInputUserIn;
     /** Errors */
-    errors: TypeSecureValueErrorIn[];
+    errors: ReadonlyArray<TypeSecureValueErrorIn>;
   }
   export interface UsersGetRequirementsToContactParams {
     /** Users to check. */
-    id: TypeInputUserIn[];
+    id: ReadonlyArray<TypeInputUserIn>;
   }
   export interface UsersGetSavedMusicParams {
     /** The ID of the user. */
@@ -37109,7 +37117,7 @@ export namespace Api {
     /** The ID of the user. */
     id: TypeInputUserIn;
     /** The songs (here, file_reference can be empty to refresh file references). */
-    documents: TypeInputDocumentIn[];
+    documents: ReadonlyArray<TypeInputDocumentIn>;
   }
   export interface UsersSuggestBirthdayParams {
     /** The user that will receive the suggested birthday date. */
@@ -37127,15 +37135,15 @@ export namespace Api {
   }
   export interface ContactsImportContactsParams {
     /** List of contacts to import */
-    contacts: TypeInputContactIn[];
+    contacts: ReadonlyArray<TypeInputContactIn>;
   }
   export interface ContactsDeleteContactsParams {
     /** User ID list */
-    id: TypeInputUserIn[];
+    id: ReadonlyArray<TypeInputUserIn>;
   }
   export interface ContactsDeleteByPhonesParams {
     /** Phone numbers */
-    phones: string[];
+    phones: ReadonlyArray<string>;
   }
   export interface ContactsBlockParams {
     /** Whether the peer should be added to the story blocklist; if not set, the peer will be added to the main blocklist, see here » for more info. */
@@ -37255,13 +37263,13 @@ export namespace Api {
   }
   export interface ContactsEditCloseFriendsParams {
     /** Full list of user IDs of close friends, see here for more info. */
-    id: LongInput[];
+    id: ReadonlyArray<LongInput>;
   }
   export interface ContactsSetBlockedParams {
     /** Whether to edit the story blocklist; if not set, will edit the main blocklist. See here » for differences between the two. */
     myStoriesFrom?: boolean;
     /** Full content of the blocklist. */
-    id: TypeInputPeerIn[];
+    id: ReadonlyArray<TypeInputPeerIn>;
     /** Maximum number of results to return, see pagination */
     limit: int;
   }
@@ -37277,7 +37285,7 @@ export namespace Api {
   }
   export interface MessagesGetMessagesParams {
     /** Message ID list */
-    id: TypeInputMessageIn[];
+    id: ReadonlyArray<TypeInputMessageIn>;
   }
   export interface MessagesGetDialogsParams {
     /** Exclude pinned dialogs */
@@ -37323,7 +37331,7 @@ export namespace Api {
     /** Search within the saved message dialog » with this ID. */
     savedPeerId?: TypeInputPeerIn;
     /** You may search for saved messages tagged » with one or more reactions using this flag. */
-    savedReaction?: TypeReactionIn[];
+    savedReaction?: ReadonlyArray<TypeReactionIn>;
     /** Thread ID */
     topMsgId?: int;
     /** Filter to return only specified message types */
@@ -37369,7 +37377,7 @@ export namespace Api {
     /** Whether to delete messages for all participants of the chat */
     revoke?: boolean;
     /** Message ID list */
-    id: int[];
+    id: ReadonlyArray<int>;
   }
   export interface MessagesReceivedMessagesParams {
     /** Maximum message ID available in a client. */
@@ -37411,7 +37419,7 @@ export namespace Api {
     /** Reply markup for sending bot buttons */
     replyMarkup?: TypeReplyMarkupIn;
     /** Message entities for sending styled text */
-    entities?: TypeMessageEntityIn[];
+    entities?: ReadonlyArray<TypeMessageEntityIn>;
     /** Scheduled message date for scheduled messages */
     scheduleDate?: int;
     /** Once sent, this message will be automatically re-scheduled to be re-sent again this many seconds in the future, see here » for more info on repeating scheduled messages. */
@@ -37456,7 +37464,7 @@ export namespace Api {
     /** Reply markup for bot keyboards */
     replyMarkup?: TypeReplyMarkupIn;
     /** Message entities for styled text */
-    entities?: TypeMessageEntityIn[];
+    entities?: ReadonlyArray<TypeMessageEntityIn>;
     /** Scheduled message date for scheduled messages */
     scheduleDate?: int;
     /** Once sent, this message will be automatically re-scheduled to be re-sent again this many seconds in the future, see here » for more info on repeating scheduled messages. */
@@ -37491,9 +37499,9 @@ export namespace Api {
     /** Source of messages */
     fromPeer: TypeInputPeerIn;
     /** IDs of messages */
-    id: int[];
+    id: ReadonlyArray<int>;
     /** Random ID to prevent resending of messages. See here » for more info on random ID deduplication and updateMessageID mapping. */
-    randomId: LongInput[];
+    randomId: ReadonlyArray<LongInput>;
     /** Destination peer */
     toPeer: TypeInputPeerIn;
     /** Destination forum topic */
@@ -37529,7 +37537,7 @@ export namespace Api {
     /** Peer */
     peer: TypeInputPeerIn;
     /** IDs of messages to report */
-    id: int[];
+    id: ReadonlyArray<int>;
     /** Menu option, intially empty */
     option: bytes;
     /** Comment for report moderation */
@@ -37537,7 +37545,7 @@ export namespace Api {
   }
   export interface MessagesGetChatsParams {
     /** List of chat IDs */
-    id: LongInput[];
+    id: ReadonlyArray<LongInput>;
   }
   export interface MessagesGetFullChatParams {
     /** Basic group ID. */
@@ -37573,7 +37581,7 @@ export namespace Api {
   }
   export interface MessagesCreateChatParams {
     /** List of user IDs to be invited */
-    users: TypeInputUserIn[];
+    users: ReadonlyArray<TypeInputUserIn>;
     /** Chat name */
     title: string;
     /** Time-to-live of all messages that will be sent in the chat: once message.date+message.ttl_period === time(), the message will be deleted on the server, and must be deleted locally as well. You can use messages.setDefaultHistoryTTL to edit this value later. */
@@ -37659,7 +37667,7 @@ export namespace Api {
   }
   export interface MessagesReadMessageContentsParams {
     /** Message ID list */
-    id: int[];
+    id: ReadonlyArray<int>;
   }
   export interface MessagesGetStickersParams {
     /** The emoji */
@@ -37675,7 +37683,7 @@ export namespace Api {
     /** Message from which to extract the preview */
     message: string;
     /** Message entities for styled text */
-    entities?: TypeMessageEntityIn[];
+    entities?: ReadonlyArray<TypeMessageEntityIn>;
   }
   export interface MessagesExportChatInviteParams {
     /** Legacy flag, reproducing legacy behavior of this method: if set, revokes all previous links before creating a new one. Kept for bot API BC, should not be used by modern clients. */
@@ -37731,7 +37739,7 @@ export namespace Api {
     /** Peer where the message was found */
     peer: TypeInputPeerIn;
     /** ID of message */
-    id: int[];
+    id: ReadonlyArray<int>;
     /** Whether to mark the message as viewed and increment the view counter */
     increment: Bool;
   }
@@ -37780,7 +37788,7 @@ export namespace Api {
     /** Reorder custom emoji stickersets */
     emojis?: boolean;
     /** New stickerset order by stickerset IDs */
-    order: LongInput[];
+    order: ReadonlyArray<LongInput>;
   }
   export interface MessagesGetDocumentByHashParams {
     /** SHA256 of file */
@@ -37820,7 +37828,7 @@ export namespace Api {
     /** Unique identifier for the answered query */
     queryId: LongInput;
     /** Vector of results for the inline query */
-    results: TypeInputBotInlineResultIn[];
+    results: ReadonlyArray<TypeInputBotInlineResultIn>;
     /** The maximum amount of time in seconds that the result of the inline query may be cached on the server. Defaults to 300. */
     cacheTime: int;
     /** Pass the offset that a client should send in the next query with the same text to receive more results. Pass an empty string if there are no more results or if you don't support pagination. Offset length can't exceed 64 bytes. */
@@ -37880,7 +37888,7 @@ export namespace Api {
     /** Reply markup for inline keyboards */
     replyMarkup?: TypeReplyMarkupIn;
     /** Message entities for styled text */
-    entities?: TypeMessageEntityIn[];
+    entities?: ReadonlyArray<TypeMessageEntityIn>;
     /** Scheduled message date for scheduled messages */
     scheduleDate?: int;
     /** Once sent, this message will be automatically re-scheduled to be re-sent again this many seconds in the future, see here » for more info on repeating scheduled messages. */
@@ -37903,7 +37911,7 @@ export namespace Api {
     /** Reply markup for inline keyboards */
     replyMarkup?: TypeReplyMarkupIn;
     /** Message entities for styled text */
-    entities?: TypeMessageEntityIn[];
+    entities?: ReadonlyArray<TypeMessageEntityIn>;
     richMessage?: TypeInputRichMessageIn;
   }
   export interface MessagesGetBotCallbackAnswerParams {
@@ -37932,7 +37940,7 @@ export namespace Api {
   }
   export interface MessagesGetPeerDialogsParams {
     /** Peers */
-    peers: TypeInputDialogPeerIn[];
+    peers: ReadonlyArray<TypeInputDialogPeerIn>;
   }
   export interface MessagesSaveDraftParams {
     /** Disable generation of the webpage preview */
@@ -37946,7 +37954,7 @@ export namespace Api {
     /** The draft */
     message: string;
     /** Message entities for styled text */
-    entities?: TypeMessageEntityIn[];
+    entities?: ReadonlyArray<TypeMessageEntityIn>;
     /** Attached media */
     media?: TypeInputMediaIn;
     /** Specifies a message effect » to use for the message. */
@@ -37961,7 +37969,7 @@ export namespace Api {
   }
   export interface MessagesReadFeaturedStickersParams {
     /** IDs of stickersets to mark as read */
-    id: LongInput[];
+    id: ReadonlyArray<LongInput>;
   }
   export interface MessagesGetRecentStickersParams {
     /** Get stickers recently attached to photo or video files */
@@ -38065,7 +38073,7 @@ export namespace Api {
     /** Peer folder ID, for more info click here */
     folderId: int;
     /** New dialog order */
-    order: TypeInputDialogPeerIn[];
+    order: ReadonlyArray<TypeInputDialogPeerIn>;
   }
   export interface MessagesGetPinnedDialogsParams {
     /** Peer folder ID, for more info click here */
@@ -38077,7 +38085,7 @@ export namespace Api {
     /** Error message in human readable form that explains why it is impossible to complete the order (e.g. "Sorry, delivery to your desired address is unavailable"). Telegram will display this message to the user. */
     error?: string;
     /** A vector of available shipping options. */
-    shippingOptions?: TypeShippingOptionIn[];
+    shippingOptions?: ReadonlyArray<TypeShippingOptionIn>;
   }
   export interface MessagesSetBotPrecheckoutResultsParams {
     /** Set this flag if everything is alright (goods are available, etc.) and the bot is ready to proceed with the order, otherwise do not set it, and set the error field, instead */
@@ -38163,7 +38171,7 @@ export namespace Api {
     /** If set, indicates that the message should be sent in reply to the specified message or story. */
     replyTo?: TypeInputReplyToIn;
     /** The medias to send: note that they must be separately uploaded using messages.uploadMedia first, using raw inputMediaUploaded* constructors is not supported. */
-    multiMedia: TypeInputSingleMediaIn[];
+    multiMedia: ReadonlyArray<TypeInputSingleMediaIn>;
     /** Scheduled message date for scheduled messages */
     scheduleDate?: int;
     /** Send this message as the specified peer */
@@ -38219,7 +38227,7 @@ export namespace Api {
     /** The message ID of the poll */
     msgId: int;
     /** The options that were chosen */
-    options: bytes[];
+    options: ReadonlyArray<bytes>;
   }
   export interface MessagesGetPollResultsParams {
     /** Peer where the poll was found */
@@ -38257,7 +38265,7 @@ export namespace Api {
   }
   export interface MessagesGetEmojiKeywordsLanguagesParams {
     /** The user's language codes */
-    langCodes: string[];
+    langCodes: ReadonlyArray<string>;
   }
   export interface MessagesGetEmojiURLParams {
     /** Language code for which the emoji keywords will be suggested */
@@ -38271,7 +38279,7 @@ export namespace Api {
     /** If set, consider only messages within the specified forum topic */
     topMsgId?: int;
     /** Search filters */
-    filters: TypeMessagesFilterIn[];
+    filters: ReadonlyArray<TypeMessagesFilterIn>;
   }
   export interface MessagesRequestUrlAuthParams {
     /** Peer where the message is located */
@@ -38315,19 +38323,19 @@ export namespace Api {
     /** Peer */
     peer: TypeInputPeerIn;
     /** IDs of scheduled messages */
-    id: int[];
+    id: ReadonlyArray<int>;
   }
   export interface MessagesSendScheduledMessagesParams {
     /** Peer */
     peer: TypeInputPeerIn;
     /** Scheduled message IDs */
-    id: int[];
+    id: ReadonlyArray<int>;
   }
   export interface MessagesDeleteScheduledMessagesParams {
     /** Peer */
     peer: TypeInputPeerIn;
     /** Scheduled message IDs */
-    id: int[];
+    id: ReadonlyArray<int>;
   }
   export interface MessagesGetPollVotesParams {
     /** Chat where the poll was sent */
@@ -38349,7 +38357,7 @@ export namespace Api {
     /** Unarchive the specified stickersets */
     unarchive?: boolean;
     /** Stickersets to act upon */
-    stickersets: TypeInputStickerSetIn[];
+    stickersets: ReadonlyArray<TypeInputStickerSetIn>;
   }
   export interface MessagesUpdateDialogFilterParams {
     /** Folder ID */
@@ -38359,7 +38367,7 @@ export namespace Api {
   }
   export interface MessagesUpdateDialogFiltersOrderParams {
     /** New folder order */
-    order: int[];
+    order: ReadonlyArray<int>;
   }
   export interface MessagesGetOldFeaturedStickersParams {
     /** Offset */
@@ -38603,13 +38611,13 @@ export namespace Api {
     /** Message ID to react to */
     msgId: int;
     /** A list of reactions (doesn't accept reactionPaid constructors, use messages.sendPaidReaction to send paid reactions, instead). */
-    reaction?: TypeReactionIn[];
+    reaction?: ReadonlyArray<TypeReactionIn>;
   }
   export interface MessagesGetMessagesReactionsParams {
     /** Peer */
     peer: TypeInputPeerIn;
     /** Message IDs */
-    id: int[];
+    id: ReadonlyArray<int>;
   }
   export interface MessagesGetMessageReactionsListParams {
     /** Peer */
@@ -38645,9 +38653,9 @@ export namespace Api {
     /** If the text is a chat message, the peer ID */
     peer?: TypeInputPeerIn;
     /** A list of message IDs to translate */
-    id?: int[];
+    id?: ReadonlyArray<int>;
     /** A list of styled messages to translate */
-    text?: TypeTextWithEntitiesIn[];
+    text?: ReadonlyArray<TypeTextWithEntitiesIn>;
     /** Two-letter ISO 639-1 language code of the language to which the message is translated */
     toLang: string;
     /** If set, rephrases the translation using the specified AI composer tone » (pass the tone identifier) */
@@ -38797,7 +38805,7 @@ export namespace Api {
   }
   export interface MessagesGetCustomEmojiDocumentsParams {
     /** Custom emoji IDs from a messageEntityCustomEmoji . */
-    documentId: LongInput[];
+    documentId: ReadonlyArray<LongInput>;
   }
   export interface MessagesGetEmojiStickersParams {
     /** Hash used for caching, for more info click here . */
@@ -38831,7 +38839,7 @@ export namespace Api {
     /** Peer with visible paid media messages. */
     peer: TypeInputPeerIn;
     /** IDs of currently visible messages containing paid media. */
-    id: int[];
+    id: ReadonlyArray<int>;
   }
   export interface MessagesSetDefaultHistoryTTLParams {
     /** The new default Time-To-Live of all messages sent in new chats, in seconds. */
@@ -38847,7 +38855,7 @@ export namespace Api {
     /** The button_id field from the keyboardButtonRequestPeer constructor. */
     buttonId: int;
     /** The chosen peers. */
-    requestedPeers: TypeInputPeerIn[];
+    requestedPeers: ReadonlyArray<TypeInputPeerIn>;
   }
   export interface MessagesGetEmojiGroupsParams {
     /** Hash used for caching, for more info click here . */
@@ -38977,7 +38985,7 @@ export namespace Api {
     /** If set, dialogs pinned server-side but not present in the order field will be unpinned. */
     force?: boolean;
     /** New dialog order */
-    order: TypeInputDialogPeerIn[];
+    order: ReadonlyArray<TypeInputDialogPeerIn>;
   }
   export interface MessagesGetSavedReactionTagsParams {
     /** If set, returns tags only used in the specified saved message dialog . */
@@ -39007,7 +39015,7 @@ export namespace Api {
   }
   export interface MessagesReorderQuickRepliesParams {
     /** IDs of all created quick reply shortcuts , in the desired order. */
-    order: int[];
+    order: ReadonlyArray<int>;
   }
   export interface MessagesCheckQuickReplyShortcutParams {
     /** Shorcut name (not ID!). */
@@ -39027,7 +39035,7 @@ export namespace Api {
     /** Quick reply shortcut ID. */
     shortcutId: int;
     /** IDs of the messages to fetch, if empty fetches all of them. */
-    id?: int[];
+    id?: ReadonlyArray<int>;
     /** Hash for pagination, generated as specified here » (not the usual algorithm used for hash generation). */
     hash: LongInput;
   }
@@ -39037,15 +39045,15 @@ export namespace Api {
     /** The ID of the quick reply shortcut to send. */
     shortcutId: int;
     /** Specify a subset of messages from the shortcut to send; if empty, defaults to all of them. */
-    id: int[];
+    id: ReadonlyArray<int>;
     /** Unique client IDs required to prevent message resending, one for each message we're sending, may be empty (but not recommended). See here » for more info on random ID deduplication and updateMessageID mapping. */
-    randomId: LongInput[];
+    randomId: ReadonlyArray<LongInput>;
   }
   export interface MessagesDeleteQuickReplyMessagesParams {
     /** Shortcut ID . */
     shortcutId: int;
     /** IDs of shortcut messages to delete. */
-    id: int[];
+    id: ReadonlyArray<int>;
   }
   export interface MessagesToggleDialogFilterTagsParams {
     /** Enable or disable folder tags. */
@@ -39083,7 +39091,7 @@ export namespace Api {
     /** Peer where the messages were sent. */
     peer: TypeInputPeerIn;
     /** Messages that have associated factCheck constructors with the need_check flag set. */
-    msgId: int[];
+    msgId: ReadonlyArray<int>;
   }
   export interface MessagesRequestMainWebViewParams {
     /** If set, requests to open the mini app in compact mode (as opposed to normal or fullscreen mode). Must be set if the mode parameter of the Main Mini App link is equal to compact . */
@@ -39151,7 +39159,7 @@ export namespace Api {
     /** The user to whom the web_app_send_prepared_message event event will be sent */
     userId: TypeInputUserIn;
     /** Types of chats where this message can be sent */
-    peerTypes?: TypeInlineQueryPeerTypeIn[];
+    peerTypes?: ReadonlyArray<TypeInlineQueryPeerTypeIn>;
   }
   export interface MessagesGetPreparedInlineMessageParams {
     /** The bot that owns the mini app that emitted the web_app_send_prepared_message event */
@@ -39167,7 +39175,7 @@ export namespace Api {
     /** Space-separated list of emojis to search for */
     emoticon: string;
     /** List of possible IETF language tags of the user's input language; may be empty if unknown */
-    langCode: string[];
+    langCode: ReadonlyArray<string>;
     /** Offset for pagination */
     offset: int;
     /** Maximum number of results to return, see pagination */
@@ -39181,13 +39189,13 @@ export namespace Api {
     /** The peer where the messages were received. */
     peer: TypeInputPeerIn;
     /** The IDs of the received messages. */
-    id: int[];
+    id: ReadonlyArray<int>;
   }
   export interface MessagesGetSavedDialogsByIDParams {
     /** If set, fetches monoforum topics » , otherwise fetches saved message dialogs » . */
     parentPeer?: TypeInputPeerIn;
     /** IDs of dialogs (topics) to fetch. */
-    ids: TypeInputPeerIn[];
+    ids: ReadonlyArray<TypeInputPeerIn>;
   }
   export interface MessagesReadSavedHistoryParams {
     /** ID of the monoforum group. */
@@ -39203,9 +39211,9 @@ export namespace Api {
     /** ID of the message with the todo list. */
     msgId: int;
     /** Items to mark as completed. */
-    completed: int[];
+    completed: ReadonlyArray<int>;
     /** Items to mark as not completed. */
-    incompleted: int[];
+    incompleted: ReadonlyArray<int>;
   }
   export interface MessagesAppendTodoListParams {
     /** Peer where the todo list was posted. */
@@ -39213,7 +39221,7 @@ export namespace Api {
     /** ID of the message with the todo list. */
     msgId: int;
     /** Items to append. */
-    list: TypeTodoItemIn[];
+    list: ReadonlyArray<TypeTodoItemIn>;
   }
   export interface MessagesToggleSuggestedPostApprovalParams {
     /** Reject the suggested post. */
@@ -39245,7 +39253,7 @@ export namespace Api {
     /** The supergroup forum, private chat (for forum-enabled bots) or bot forum (for users) where the topic is located. */
     peer: TypeInputPeerIn;
     /** Topic IDs */
-    topics: int[];
+    topics: ReadonlyArray<int>;
   }
   export interface MessagesEditForumTopicParams {
     /** The supergroup forum, private chat (for forum-enabled bots) or bot forum (for users) where the topic is located. */
@@ -39275,7 +39283,7 @@ export namespace Api {
     /** The supergroup forum, private chat (for forum-enabled bots) or bot forum (for users) where the topic is located. */
     peer: TypeInputPeerIn;
     /** Topic IDs » */
-    order: int[];
+    order: ReadonlyArray<int>;
   }
   export interface MessagesCreateForumTopicParams {
     /** If set, the topic has no user-defined title, can only be set for the per-user topics of bot forums ; if this field is set, the topic title likely needs to be changed by the bot. */
@@ -39355,7 +39363,7 @@ export namespace Api {
     /** Peer where the messages are located */
     peer: TypeInputPeerIn;
     /** List of read metrics for individual messages */
-    metrics: TypeInputMessageReadMetricIn[];
+    metrics: ReadonlyArray<TypeInputMessageReadMetricIn>;
   }
   export interface MessagesReportMusicListenParams {
     /** The InputDocument of the listened song */
@@ -39439,8 +39447,8 @@ export namespace Api {
   }
   export interface MessagesTranslateRichMessageParams {
     peer?: TypeInputPeerIn;
-    id?: int[];
-    text?: TypeInputRichMessageIn[];
+    id?: ReadonlyArray<int>;
+    text?: ReadonlyArray<TypeInputRichMessageIn>;
     toLang: string;
     tone?: string;
   }
@@ -39506,7 +39514,7 @@ export namespace Api {
   }
   export interface PhotosDeletePhotosParams {
     /** Input photos to delete */
-    id: TypeInputPhotoIn[];
+    id: ReadonlyArray<TypeInputPhotoIn>;
   }
   export interface PhotosGetUserPhotosParams {
     /** User ID */
@@ -39626,7 +39634,7 @@ export namespace Api {
   }
   export interface HelpSaveAppLogParams {
     /** List of input events */
-    events: TypeInputAppEventIn[];
+    events: ReadonlyArray<TypeInputAppEventIn>;
   }
   export interface HelpGetPassportConfigParams {
     /** Hash used for caching, for more info click here . */
@@ -39642,7 +39650,7 @@ export namespace Api {
     /** Message */
     message: string;
     /** Message entities for styled text */
-    entities: TypeMessageEntityIn[];
+    entities: ReadonlyArray<TypeMessageEntityIn>;
   }
   export interface HelpHidePromoDataParams {
     /** Peer to hide */
@@ -39682,7 +39690,7 @@ export namespace Api {
     /** Channel/supergroup */
     channel: TypeInputChannelIn;
     /** IDs of messages to delete */
-    id: int[];
+    id: ReadonlyArray<int>;
   }
   export interface ChannelsReportSpamParams {
     /** Supergroup */
@@ -39690,13 +39698,13 @@ export namespace Api {
     /** Participant whose messages should be reported */
     participant: TypeInputPeerIn;
     /** IDs of spam messages */
-    id: int[];
+    id: ReadonlyArray<int>;
   }
   export interface ChannelsGetMessagesParams {
     /** Channel/supergroup */
     channel: TypeInputChannelIn;
     /** IDs of messages to get */
-    id: TypeInputMessageIn[];
+    id: ReadonlyArray<TypeInputMessageIn>;
   }
   export interface ChannelsGetParticipantsParams {
     /** Channel */
@@ -39718,7 +39726,7 @@ export namespace Api {
   }
   export interface ChannelsGetChannelsParams {
     /** IDs of channels/supergroups to get info about */
-    id: TypeInputChannelIn[];
+    id: ReadonlyArray<TypeInputChannelIn>;
   }
   export interface ChannelsGetFullChannelParams {
     /** The channel , supergroup or gigagroup to get info about */
@@ -39790,7 +39798,7 @@ export namespace Api {
     /** Channel/supergroup */
     channel: TypeInputChannelIn;
     /** Users to invite */
-    users: TypeInputUserIn[];
+    users: ReadonlyArray<TypeInputUserIn>;
   }
   export interface ChannelsDeleteChannelParams {
     /** Channel/supergroup to delete */
@@ -39839,7 +39847,7 @@ export namespace Api {
     /** Event filter */
     eventsFilter?: TypeChannelAdminLogEventsFilterIn;
     /** Only show events from these admins */
-    admins?: TypeInputUserIn[];
+    admins?: ReadonlyArray<TypeInputUserIn>;
     /** Maximum ID of message to return (see pagination ) */
     maxId: LongInput;
     /** Minimum ID of message to return (see pagination ) */
@@ -39857,7 +39865,7 @@ export namespace Api {
     /** Channel/supergroup */
     channel: TypeInputChannelIn;
     /** IDs of messages whose contents should be marked as read */
-    id: int[];
+    id: ReadonlyArray<int>;
   }
   export interface ChannelsDeleteHistoryParams {
     /** Whether the history should be deleted for everyone */
@@ -39933,7 +39941,7 @@ export namespace Api {
     /** The supergroup or channel */
     channel: TypeInputChannelIn;
     /** The new order for active usernames. All active usernames must be specified. */
-    order: string[];
+    order: ReadonlyArray<string>;
   }
   export interface ChannelsToggleUsernameParams {
     /** Supergroup or channel */
@@ -40081,7 +40089,7 @@ export namespace Api {
     /** Language code */
     langCode: string;
     /** Bot commands */
-    commands: TypeBotCommandIn[];
+    commands: ReadonlyArray<TypeBotCommandIn>;
   }
   export interface BotsResetBotCommandsParams {
     /** Command scope */
@@ -40135,7 +40143,7 @@ export namespace Api {
     /** The bot */
     bot: TypeInputUserIn;
     /** The new order for active usernames. All active usernames must be specified. */
-    order: string[];
+    order: ReadonlyArray<string>;
   }
   export interface BotsToggleUsernameParams {
     /** The bot */
@@ -40191,7 +40199,7 @@ export namespace Api {
     /** ISO 639-1 language code, indicating the localization of the preview to delete. */
     langCode: string;
     /** The photo/video preview to delete, previously fetched as specified here » . */
-    media: TypeInputMediaIn[];
+    media: ReadonlyArray<TypeInputMediaIn>;
   }
   export interface BotsReorderPreviewMediasParams {
     /** The bot that owns the Main Mini App. */
@@ -40199,7 +40207,7 @@ export namespace Api {
     /** ISO 639-1 language code, indicating the localization of the previews to reorder. */
     langCode: string;
     /** New order of the previews. */
-    order: TypeInputMediaIn[];
+    order: ReadonlyArray<TypeInputMediaIn>;
   }
   export interface BotsGetPreviewInfoParams {
     /** The bot that owns the Main Mini App. */
@@ -40295,7 +40303,7 @@ export namespace Api {
     /** The managed bot whose access settings to edit */
     bot: TypeInputUserIn;
     /** Additional users (max 10, excluding the owner) allowed to access the managed bot when restricted is set */
-    addUsers?: TypeInputUserIn[];
+    addUsers?: ReadonlyArray<TypeInputUserIn>;
   }
   export interface BotsSetJoinChatResultsParams {
     queryId: LongInput;
@@ -40451,7 +40459,7 @@ export namespace Api {
     /** Channel or bot. */
     peer: TypeInputPeerIn;
     /** Transaction IDs. */
-    id: TypeInputStarsTransactionIn[];
+    id: ReadonlyArray<TypeInputStarsTransactionIn>;
   }
   export interface PaymentsGetStarsGiftOptionsParams {
     /** Receiver of the gift (optional). */
@@ -40593,7 +40601,7 @@ export namespace Api {
   }
   export interface PaymentsGetSavedStarGiftParams {
     /** List of gifts to fetch info about. */
-    stargift: TypeInputSavedStarGiftIn[];
+    stargift: ReadonlyArray<TypeInputSavedStarGiftIn>;
   }
   export interface PaymentsGetStarGiftWithdrawalUrlParams {
     /** The collectible gift to export. */
@@ -40611,7 +40619,7 @@ export namespace Api {
     /** The peer where to pin the gift. */
     peer: TypeInputPeerIn;
     /** The gift to pin. */
-    stargift: TypeInputSavedStarGiftIn[];
+    stargift: ReadonlyArray<TypeInputSavedStarGiftIn>;
   }
   export interface PaymentsCanPurchaseStoreParams {
     /** Payment purpose. */
@@ -40631,7 +40639,7 @@ export namespace Api {
     /** Mandatory identifier of the base gift from which the collectible gift was upgraded. */
     giftId: LongInput;
     /** Optionally filter gifts with the specified attributes. If no attributes of a specific type are specified, all attributes of that type are allowed. */
-    attributes?: TypeStarGiftAttributeIdIn[];
+    attributes?: ReadonlyArray<TypeStarGiftAttributeIdIn>;
     /** Offset for pagination. If not equal to an empty string, payments.resaleStarGifts . counters will not be set to avoid returning the counters every time a new page is fetched. */
     offset: string;
     /** Maximum number of results to return, see pagination */
@@ -40649,7 +40657,7 @@ export namespace Api {
     /** Title of the collection. */
     title: string;
     /** Gifts added to the collection. */
-    stargift: TypeInputSavedStarGiftIn[];
+    stargift: ReadonlyArray<TypeInputSavedStarGiftIn>;
   }
   export interface PaymentsUpdateStarGiftCollectionParams {
     /** Peer that owns the collection. */
@@ -40659,17 +40667,17 @@ export namespace Api {
     /** Title of the collection, to rename the collection. */
     title?: string;
     /** Can contain a list of gifts to remove from the collection. */
-    deleteStargift?: TypeInputSavedStarGiftIn[];
+    deleteStargift?: ReadonlyArray<TypeInputSavedStarGiftIn>;
     /** Can contain a list of gifts to add to the collection. */
-    addStargift?: TypeInputSavedStarGiftIn[];
+    addStargift?: ReadonlyArray<TypeInputSavedStarGiftIn>;
     /** Can contain the new gift order. */
-    order?: TypeInputSavedStarGiftIn[];
+    order?: ReadonlyArray<TypeInputSavedStarGiftIn>;
   }
   export interface PaymentsReorderStarGiftCollectionsParams {
     /** The owned peer. */
     peer: TypeInputPeerIn;
     /** New collection order. */
-    order: int[];
+    order: ReadonlyArray<int>;
   }
   export interface PaymentsDeleteStarGiftCollectionParams {
     /** Peer that owns the collection. */
@@ -40739,7 +40747,7 @@ export namespace Api {
   }
   export interface PaymentsCraftStarGiftParams {
     /** 1 to 4 owned collectible gifts of the same type to use for crafting » . The first gift's ID is reused if crafting succeeds. */
-    stargift: TypeInputSavedStarGiftIn[];
+    stargift: ReadonlyArray<TypeInputSavedStarGiftIn>;
   }
   export interface StickersCreateStickerSetParams {
     /** Whether this is a mask stickerset */
@@ -40757,7 +40765,7 @@ export namespace Api {
     /** Thumbnail */
     thumb?: TypeInputDocumentIn;
     /** Stickers */
-    stickers: TypeInputStickerSetItemIn[];
+    stickers: ReadonlyArray<TypeInputStickerSetItemIn>;
     /** Used when importing stickers using the sticker import SDKs , specifies the name of the software that created the stickers */
     software?: string;
   }
@@ -40927,7 +40935,7 @@ export namespace Api {
     /** The video chat/livestream » */
     call: TypeInputGroupCallIn;
     /** The users to invite. */
-    users: TypeInputUserIn[];
+    users: ReadonlyArray<TypeInputUserIn>;
   }
   export interface PhoneDiscardGroupCallParams {
     /** The group call to terminate */
@@ -40955,9 +40963,9 @@ export namespace Api {
     /** Group call whose participants should be fetched */
     call: TypeInputGroupCallIn;
     /** If specified, will fetch group participant info about the specified peers */
-    ids: TypeInputPeerIn[];
+    ids: ReadonlyArray<TypeInputPeerIn>;
     /** If specified, will fetch group participant info about the specified WebRTC source IDs */
-    sources: int[];
+    sources: ReadonlyArray<int>;
     /** Offset for results, taken from the next_offset field of phone.groupParticipants or the participants_next_offset field of phone.groupCall , initially an empty string. Note: if no more results are available, the method call will return an empty next_offset ; thus, avoid providing the next_offset returned in phone.groupParticipants if it is empty, to avoid an infinite loop. */
     offset: string;
     /** Maximum number of results to return, see pagination */
@@ -40967,7 +40975,7 @@ export namespace Api {
     /** Group call whose WebRTC connections should be checked */
     call: TypeInputGroupCallIn;
     /** Non-zero SSRC/source IDs of the caller's main and presentation connections */
-    sources: int[];
+    sources: ReadonlyArray<int>;
   }
   export interface PhoneToggleGroupCallRecordParams {
     /** Whether to start or stop recording */
@@ -41083,7 +41091,7 @@ export namespace Api {
     /** Conference from which to remove participants */
     call: TypeInputGroupCallIn;
     /** User IDs to remove from the conference and E2E blockchain */
-    ids: LongInput[];
+    ids: ReadonlyArray<LongInput>;
     /** Main-chain block removing the specified users and establishing a new shared key, see removing a participant » */
     block: bytes;
   }
@@ -41139,7 +41147,7 @@ export namespace Api {
     /** Video chat/livestream or live story containing the messages */
     call: TypeInputGroupCallIn;
     /** IDs of the messages to delete */
-    messages: int[];
+    messages: ReadonlyArray<int>;
   }
   export interface PhoneDeleteGroupCallParticipantMessagesParams {
     /** Also report the participant's messages as spam */
@@ -41171,7 +41179,7 @@ export namespace Api {
     /** Either an ISO 639-1 language code or a language pack name obtained from a language pack link . */
     langCode: string;
     /** Strings to get */
-    keys: string[];
+    keys: ReadonlyArray<string>;
   }
   export interface LangpackGetDifferenceParams {
     /** Platform identifier (i.e. android , tdesktop , etc). */
@@ -41193,7 +41201,7 @@ export namespace Api {
   }
   export interface FoldersEditPeerFoldersParams {
     /** New peer list */
-    folderPeers: TypeInputFolderPeerIn[];
+    folderPeers: ReadonlyArray<TypeInputFolderPeerIn>;
   }
   export interface StatsGetBroadcastStatsParams {
     /** Whether to enable dark theme for graph colors */
@@ -41263,7 +41271,7 @@ export namespace Api {
     /** An optional name for the link */
     title: string;
     /** The list of channels, group and supergroups to share with the link. Basic groups will automatically be converted to supergroups when invoking the method. */
-    peers: TypeInputPeerIn[];
+    peers: ReadonlyArray<TypeInputPeerIn>;
   }
   export interface ChatlistsDeleteExportedInviteParams {
     /** The related folder */
@@ -41279,7 +41287,7 @@ export namespace Api {
     /** If set, sets a new name for the link */
     title?: string;
     /** If set, changes the list of peers shared with the link */
-    peers?: TypeInputPeerIn[];
+    peers?: ReadonlyArray<TypeInputPeerIn>;
   }
   export interface ChatlistsGetExportedInvitesParams {
     /** The folder */
@@ -41293,7 +41301,7 @@ export namespace Api {
     /** slug obtained from a chat folder deep link » . */
     slug: string;
     /** List of new chats to join, fetched using chatlists.checkChatlistInvite and filtered as specified in the documentation » . */
-    peers: TypeInputPeerIn[];
+    peers: ReadonlyArray<TypeInputPeerIn>;
   }
   export interface ChatlistsGetChatlistUpdatesParams {
     /** The folder */
@@ -41303,7 +41311,7 @@ export namespace Api {
     /** The folder */
     chatlist: TypeInputChatlistIn;
     /** List of new chats to join, fetched using chatlists.getChatlistUpdates and filtered as specified in the documentation » . */
-    peers: TypeInputPeerIn[];
+    peers: ReadonlyArray<TypeInputPeerIn>;
   }
   export interface ChatlistsHideChatlistUpdatesParams {
     /** The folder */
@@ -41317,7 +41325,7 @@ export namespace Api {
     /** Folder ID */
     chatlist: TypeInputChatlistIn;
     /** Also leave the specified channels and groups */
-    peers: TypeInputPeerIn[];
+    peers: ReadonlyArray<TypeInputPeerIn>;
   }
   export interface StoriesCanSendStoryParams {
     /** The peer from which we wish to post stories. */
@@ -41335,13 +41343,13 @@ export namespace Api {
     /** The story media. */
     media: TypeInputMediaIn;
     /** Media areas associated to the story, see here » for more info. */
-    mediaAreas?: TypeMediaAreaIn[];
+    mediaAreas?: ReadonlyArray<TypeMediaAreaIn>;
     /** Story caption. */
     caption?: string;
     /** Message entities for styled text , if allowed by the stories_entities client configuration parameter » . */
-    entities?: TypeMessageEntityIn[];
+    entities?: ReadonlyArray<TypeMessageEntityIn>;
     /** Privacy rules for the story, indicating who can or can't view the story. */
-    privacyRules: TypeInputPrivacyRuleIn[];
+    privacyRules: ReadonlyArray<TypeInputPrivacyRuleIn>;
     /** Unique client message ID required to prevent message resending. See here » for more info on random ID deduplication and updateMessageID mapping. */
     randomId?: LongInput;
     /** Period after which the story is moved to archive (and to the profile if pinned is set), in seconds; must be one of 6 * 3600 , 12 * 3600 , 86400 , or 2 * 86400 for Telegram Premium users, and 86400 otherwise. */
@@ -41351,7 +41359,7 @@ export namespace Api {
     /** If set, indicates that this story is a repost of story with ID fwd_from_story posted by the peer in fwd_from_id . */
     fwdFromStory?: int;
     /** If set, adds the story to the specified albums. */
-    albums?: int[];
+    albums?: ReadonlyArray<int>;
     /** If set, the audio track to play as background music for the story. */
     music?: TypeInputDocumentIn;
   }
@@ -41363,13 +41371,13 @@ export namespace Api {
     /** If specified, replaces the story media. */
     media?: TypeInputMediaIn;
     /** Media areas associated to the story, see here » for more info. */
-    mediaAreas?: TypeMediaAreaIn[];
+    mediaAreas?: ReadonlyArray<TypeMediaAreaIn>;
     /** If specified, replaces the story caption. */
     caption?: string;
     /** Message entities for styled text in the caption , if allowed by the stories_entities client configuration parameter » . */
-    entities?: TypeMessageEntityIn[];
+    entities?: ReadonlyArray<TypeMessageEntityIn>;
     /** If specified, alters the privacy settings » of the story, changing who can or can't view the story. */
-    privacyRules?: TypeInputPrivacyRuleIn[];
+    privacyRules?: ReadonlyArray<TypeInputPrivacyRuleIn>;
     /** If set, the new audio track to play as background music for the story. */
     music?: TypeInputDocumentIn;
   }
@@ -41377,13 +41385,13 @@ export namespace Api {
     /** Channel/user from where to delete stories. */
     peer: TypeInputPeerIn;
     /** IDs of stories to delete. */
-    id: int[];
+    id: ReadonlyArray<int>;
   }
   export interface StoriesTogglePinnedParams {
     /** Peer where to pin or unpin stories */
     peer: TypeInputPeerIn;
     /** IDs of stories to pin or unpin */
-    id: int[];
+    id: ReadonlyArray<int>;
     /** Whether to pin or unpin the stories */
     pinned: Bool;
   }
@@ -41415,7 +41423,7 @@ export namespace Api {
     /** Peer where the stories were posted */
     peer: TypeInputPeerIn;
     /** Story IDs */
-    id: int[];
+    id: ReadonlyArray<int>;
   }
   export interface StoriesToggleAllStoriesHiddenParams {
     /** Whether to hide or unhide all active stories of the peer */
@@ -41431,7 +41439,7 @@ export namespace Api {
     /** Peer where the stories were posted. */
     peer: TypeInputPeerIn;
     /** IDs of the stories (maximum 200 at a time). */
-    id: int[];
+    id: ReadonlyArray<int>;
   }
   export interface StoriesGetStoryViewsListParams {
     /** Whether to only fetch view reaction/views made by our contacts */
@@ -41455,7 +41463,7 @@ export namespace Api {
     /** Peer whose stories should be fetched */
     peer: TypeInputPeerIn;
     /** Story IDs */
-    id: int[];
+    id: ReadonlyArray<int>;
   }
   export interface StoriesExportStoryLinkParams {
     /** Peer where the story was posted */
@@ -41467,7 +41475,7 @@ export namespace Api {
     /** The peer that uploaded the story. */
     peer: TypeInputPeerIn;
     /** IDs of the stories to report. */
-    id: int[];
+    id: ReadonlyArray<int>;
     /** Menu option, intially empty */
     option: bytes;
     /** Comment for report moderation */
@@ -41495,7 +41503,7 @@ export namespace Api {
   }
   export interface StoriesGetPeerMaxIDsParams {
     /** Peers whose active story summaries » should be fetched. */
-    id: TypeInputPeerIn[];
+    id: ReadonlyArray<TypeInputPeerIn>;
   }
   export interface StoriesTogglePeerStoriesHiddenParams {
     /** Peer whose stories should be (un)hidden. */
@@ -41521,7 +41529,7 @@ export namespace Api {
     /** Peer where to pin stories. */
     peer: TypeInputPeerIn;
     /** IDs of the stories to pin (max stories_pinned_to_top_count_max ). */
-    id: int[];
+    id: ReadonlyArray<int>;
   }
   export interface StoriesSearchPostsParams {
     /** Hashtag (without the # ) */
@@ -41541,7 +41549,7 @@ export namespace Api {
     /** Album name. */
     title: string;
     /** Stories to add to the album. */
-    stories: int[];
+    stories: ReadonlyArray<int>;
   }
   export interface StoriesUpdateAlbumParams {
     /** Peer where the album is posted. */
@@ -41551,17 +41559,17 @@ export namespace Api {
     /** New album title. */
     title?: string;
     /** If set, deletes the specified stories from the album. */
-    deleteStories?: int[];
+    deleteStories?: ReadonlyArray<int>;
     /** If set, adds the specified stories to the album. */
-    addStories?: int[];
+    addStories?: ReadonlyArray<int>;
     /** If set, reorders the stories in the album by their IDs. */
-    order?: int[];
+    order?: ReadonlyArray<int>;
   }
   export interface StoriesReorderAlbumsParams {
     /** Peer where the albums are located. */
     peer: TypeInputPeerIn;
     /** New order of the albums. */
-    order: int[];
+    order: ReadonlyArray<int>;
   }
   export interface StoriesDeleteAlbumParams {
     /** Owned peer where the album is located. */
@@ -41597,9 +41605,9 @@ export namespace Api {
     /** Live story caption */
     caption?: string;
     /** Message entities for styled text */
-    entities?: TypeMessageEntityIn[];
+    entities?: ReadonlyArray<TypeMessageEntityIn>;
     /** Privacy rules defining who can view the live story */
-    privacyRules: TypeInputPrivacyRuleIn[];
+    privacyRules: ReadonlyArray<TypeInputPrivacyRuleIn>;
     /** Client-generated random ID used to prevent duplicate live stories. See here » for more info on random ID deduplication and updateMessageID mapping. */
     randomId?: LongInput;
     /** Whether the in-call message overlay » should be enabled */
@@ -41619,7 +41627,7 @@ export namespace Api {
   }
   export interface PremiumApplyBoostParams {
     /** Which boost slots to assign to this peer. */
-    slots?: int[];
+    slots?: ReadonlyArray<int>;
     /** The peer to boost. */
     peer: TypeInputPeerIn;
   }
@@ -41746,7 +41754,7 @@ export namespace Api {
     receiverId: TypeInputUserIn;
     queryId?: LongInput;
     message: string;
-    entities?: TypeMessageEntityIn[];
+    entities?: ReadonlyArray<TypeMessageEntityIn>;
     media?: TypeInputMediaIn;
     replyMarkup?: TypeReplyMarkupIn;
     richMessage?: TypeInputRichMessageIn;
@@ -41777,7 +41785,7 @@ export namespace Api {
     id: int;
     message?: string;
     media?: TypeInputMediaIn;
-    entities?: TypeMessageEntityIn[];
+    entities?: ReadonlyArray<TypeMessageEntityIn>;
     replyMarkup?: TypeReplyMarkupIn;
     richMessage?: TypeInputRichMessageIn;
   }
@@ -43480,6 +43488,12 @@ export namespace Api {
   }
   /** A discriminated raw request, including nested query wrappers. */
   export type RawRequest = RawRequestMap[keyof RawRequestMap];
+  /** Rejects extra request fields, including those inside query wrappers. */
+  export type CheckedRequest<R> = R extends AnyRequest ? unknown
+    : R extends { _: infer K extends keyof RawRequestMap }
+      ? Record<Exclude<keyof R, keyof RawRequestMap[K]>, never>
+        & (R extends { query: infer Q } ? { query: CheckedRequest<Q> } : unknown)
+      : never;
   /** Result inferred from a raw request or an existing request instance. */
   export type ApiResult<R> = R extends { _: "invokeAfterMsg" | "invokeAfterMsgs" | "initConnection" | "invokeWithLayer" | "invokeWithoutUpdates" | "invokeWithMessagesRange" | "invokeWithTakeout" | "invokeWithBusinessConnection" | "invokeWithGooglePlayIntegrity" | "invokeWithApnsSecret" | "invokeWithReCaptcha"; query: infer Q } ? ApiResult<Q>
     : R extends { __response: infer T } ? T
@@ -44287,11 +44301,11 @@ export namespace Api {
   }
   export interface JsonArrayIn {
     _: "jsonArray";
-    value: TypeJSONValueIn[];
+    value: ReadonlyArray<TypeJSONValueIn>;
   }
   export interface JsonObjectIn {
     _: "jsonObject";
-    value: TypeJSONObjectValueIn[];
+    value: ReadonlyArray<TypeJSONObjectValueIn>;
   }
   export interface JsonObjectValueIn {
     _?: "jsonObjectValue";
@@ -44311,7 +44325,7 @@ export namespace Api {
     allowMissedCall?: boolean;
     allowFirebase?: boolean;
     unknownNumber?: boolean;
-    logoutTokens?: bytes[];
+    logoutTokens?: ReadonlyArray<bytes>;
     token?: string;
     appSandbox?: Bool;
   }
@@ -44570,7 +44584,7 @@ export namespace Api {
   }
   export interface InputPrivacyValueAllowUsersIn {
     _: "inputPrivacyValueAllowUsers";
-    users: TypeInputUserIn[];
+    users: ReadonlyArray<TypeInputUserIn>;
   }
   export interface InputUserEmptyIn {
     _: "inputUserEmpty";
@@ -44597,15 +44611,15 @@ export namespace Api {
   }
   export interface InputPrivacyValueDisallowUsersIn {
     _: "inputPrivacyValueDisallowUsers";
-    users: TypeInputUserIn[];
+    users: ReadonlyArray<TypeInputUserIn>;
   }
   export interface InputPrivacyValueAllowChatParticipantsIn {
     _: "inputPrivacyValueAllowChatParticipants";
-    chats: LongInput[];
+    chats: ReadonlyArray<LongInput>;
   }
   export interface InputPrivacyValueDisallowChatParticipantsIn {
     _: "inputPrivacyValueDisallowChatParticipants";
-    chats: LongInput[];
+    chats: ReadonlyArray<LongInput>;
   }
   export interface InputPrivacyValueAllowCloseFriendsIn {
     _: "inputPrivacyValueAllowCloseFriends";
@@ -44669,8 +44683,8 @@ export namespace Api {
     frontSide?: TypeInputSecureFileIn;
     reverseSide?: TypeInputSecureFileIn;
     selfie?: TypeInputSecureFileIn;
-    translation?: TypeInputSecureFileIn[];
-    files?: TypeInputSecureFileIn[];
+    translation?: ReadonlyArray<TypeInputSecureFileIn>;
+    files?: ReadonlyArray<TypeInputSecureFileIn>;
     plainData?: TypeSecurePlainDataIn;
   }
   export interface SecureDataIn {
@@ -44793,7 +44807,7 @@ export namespace Api {
     baseTheme: TypeBaseThemeIn;
     accentColor: int;
     outboxAccentColor?: int;
-    messageColors?: int[];
+    messageColors?: ReadonlyArray<int>;
     wallpaper?: TypeInputWallPaperIn;
     wallpaperSettings?: TypeWallPaperSettingsIn;
   }
@@ -44892,9 +44906,9 @@ export namespace Api {
     giftEmojiId: LongInput;
     backgroundEmojiId: LongInput;
     accentColor: int;
-    colors: int[];
+    colors: ReadonlyArray<int>;
     darkAccentColor?: int;
-    darkColors?: int[];
+    darkColors?: ReadonlyArray<int>;
   }
   export interface InputPeerColorCollectibleIn {
     _: "inputPeerColorCollectible";
@@ -44904,7 +44918,7 @@ export namespace Api {
     _?: "businessWorkHours";
     openNow?: boolean;
     timezoneId: string;
-    weeklyOpen: TypeBusinessWeeklyOpenIn[];
+    weeklyOpen: ReadonlyArray<TypeBusinessWeeklyOpenIn>;
   }
   export interface BusinessWeeklyOpenIn {
     _?: "businessWeeklyOpen";
@@ -44933,7 +44947,7 @@ export namespace Api {
     contacts?: boolean;
     nonContacts?: boolean;
     excludeSelected?: boolean;
-    users?: TypeInputUserIn[];
+    users?: ReadonlyArray<TypeInputUserIn>;
   }
   export interface InputBusinessAwayMessageIn {
     _?: "inputBusinessAwayMessage";
@@ -44977,8 +44991,8 @@ export namespace Api {
     contacts?: boolean;
     nonContacts?: boolean;
     excludeSelected?: boolean;
-    users?: TypeInputUserIn[];
-    excludeUsers?: TypeInputUserIn[];
+    users?: ReadonlyArray<TypeInputUserIn>;
+    excludeUsers?: ReadonlyArray<TypeInputUserIn>;
   }
   export interface InputBusinessIntroIn {
     _?: "inputBusinessIntro";
@@ -44995,7 +45009,7 @@ export namespace Api {
   export interface InputBusinessChatLinkIn {
     _?: "inputBusinessChatLink";
     message: string;
-    entities?: TypeMessageEntityIn[];
+    entities?: ReadonlyArray<TypeMessageEntityIn>;
     title?: string;
   }
   export interface MessageEntityUnknownIn {
@@ -45209,7 +45223,7 @@ export namespace Api {
   export interface SecureValueErrorFilesIn {
     _: "secureValueErrorFiles";
     type: TypeSecureValueTypeIn;
-    fileHash: bytes[];
+    fileHash: ReadonlyArray<bytes>;
     text: string;
   }
   export interface SecureValueErrorIn {
@@ -45227,7 +45241,7 @@ export namespace Api {
   export interface SecureValueErrorTranslationFilesIn {
     _: "secureValueErrorTranslationFiles";
     type: TypeSecureValueTypeIn;
-    fileHash: bytes[];
+    fileHash: ReadonlyArray<bytes>;
     text: string;
   }
   export interface InputPhoneContactIn {
@@ -45241,7 +45255,7 @@ export namespace Api {
   export interface TextWithEntitiesIn {
     _?: "textWithEntities";
     text: string;
-    entities: TypeMessageEntityIn[];
+    entities: ReadonlyArray<TypeMessageEntityIn>;
   }
   export interface TopPeerCategoryBotsPMIn {
     _: "topPeerCategoryBotsPM";
@@ -45440,10 +45454,10 @@ export namespace Api {
     _: "inputRichMessage";
     rtl?: boolean;
     noautolink?: boolean;
-    blocks: TypePageBlockIn[];
-    photos?: TypeInputPhotoIn[];
-    documents?: TypeInputDocumentIn[];
-    users?: TypeInputUserIn[];
+    blocks: ReadonlyArray<TypePageBlockIn>;
+    photos?: ReadonlyArray<TypeInputPhotoIn>;
+    documents?: ReadonlyArray<TypeInputDocumentIn>;
+    users?: ReadonlyArray<TypeInputUserIn>;
   }
   export interface PageBlockUnsupportedIn {
     _: "pageBlockUnsupported";
@@ -45492,7 +45506,7 @@ export namespace Api {
   }
   export interface TextConcatIn {
     _: "textConcat";
-    texts: TypeRichTextIn[];
+    texts: ReadonlyArray<TypeRichTextIn>;
   }
   export interface TextSubscriptIn {
     _: "textSubscript";
@@ -45630,7 +45644,7 @@ export namespace Api {
     _: "inlineButtonTypeSwitchInline";
     samePeer?: boolean;
     query: string;
-    peerTypes?: TypeInlineQueryPeerTypeIn[];
+    peerTypes?: ReadonlyArray<TypeInlineQueryPeerTypeIn>;
   }
   export interface InlineQueryPeerTypeSameBotPMIn {
     _: "inlineQueryPeerTypeSameBotPM";
@@ -45711,7 +45725,7 @@ export namespace Api {
   }
   export interface PageBlockListIn {
     _: "pageBlockList";
-    items: TypePageListItemIn[];
+    items: ReadonlyArray<TypePageListItemIn>;
   }
   export interface PageListItemTextIn {
     _: "pageListItemText";
@@ -45723,7 +45737,7 @@ export namespace Api {
     _: "pageListItemBlocks";
     checkbox?: boolean;
     checked?: boolean;
-    blocks: TypePageBlockIn[];
+    blocks: ReadonlyArray<TypePageBlockIn>;
   }
   export interface PageBlockBlockquoteIn {
     _: "pageBlockBlockquote";
@@ -45779,17 +45793,17 @@ export namespace Api {
     authorPhotoId: LongInput;
     author: string;
     date: int;
-    blocks: TypePageBlockIn[];
+    blocks: ReadonlyArray<TypePageBlockIn>;
     caption: TypePageCaptionIn;
   }
   export interface PageBlockCollageIn {
     _: "pageBlockCollage";
-    items: TypePageBlockIn[];
+    items: ReadonlyArray<TypePageBlockIn>;
     caption: TypePageCaptionIn;
   }
   export interface PageBlockSlideshowIn {
     _: "pageBlockSlideshow";
-    items: TypePageBlockIn[];
+    items: ReadonlyArray<TypePageBlockIn>;
     caption: TypePageCaptionIn;
   }
   export interface PageBlockChannelIn {
@@ -45918,12 +45932,12 @@ export namespace Api {
     username?: string;
     photo: TypeChatPhotoIn;
     date: int;
-    restrictionReason?: TypeRestrictionReasonIn[];
+    restrictionReason?: ReadonlyArray<TypeRestrictionReasonIn>;
     adminRights?: TypeChatAdminRightsIn;
     bannedRights?: TypeChatBannedRightsIn;
     defaultBannedRights?: TypeChatBannedRightsIn;
     participantsCount?: int;
-    usernames?: TypeUsernameIn[];
+    usernames?: ReadonlyArray<TypeUsernameIn>;
     storiesMaxId?: TypeRecentStoryIn;
     color?: TypePeerColorIn;
     profileColor?: TypePeerColorIn;
@@ -45997,11 +46011,11 @@ export namespace Api {
     striped?: boolean;
     compact?: boolean;
     title: TypeRichTextIn;
-    rows: TypePageTableRowIn[];
+    rows: ReadonlyArray<TypePageTableRowIn>;
   }
   export interface PageTableRowIn {
     _?: "pageTableRow";
-    cells: TypePageTableCellIn[];
+    cells: ReadonlyArray<TypePageTableCellIn>;
   }
   export interface PageTableCellIn {
     _?: "pageTableCell";
@@ -46017,7 +46031,7 @@ export namespace Api {
   export interface PageBlockOrderedListIn {
     _: "pageBlockOrderedList";
     reversed?: boolean;
-    items: TypePageListOrderedItemIn[];
+    items: ReadonlyArray<TypePageListOrderedItemIn>;
     start?: int;
     type?: string;
   }
@@ -46035,20 +46049,20 @@ export namespace Api {
     checkbox?: boolean;
     checked?: boolean;
     num?: string;
-    blocks: TypePageBlockIn[];
+    blocks: ReadonlyArray<TypePageBlockIn>;
     value?: int;
     type?: string;
   }
   export interface PageBlockDetailsIn {
     _: "pageBlockDetails";
     open?: boolean;
-    blocks: TypePageBlockIn[];
+    blocks: ReadonlyArray<TypePageBlockIn>;
     title: TypeRichTextIn;
   }
   export interface PageBlockRelatedArticlesIn {
     _: "pageBlockRelatedArticles";
     title: TypeRichTextIn;
-    articles: TypePageRelatedArticleIn[];
+    articles: ReadonlyArray<TypePageRelatedArticleIn>;
   }
   export interface PageRelatedArticleIn {
     _?: "pageRelatedArticle";
@@ -46120,7 +46134,7 @@ export namespace Api {
   }
   export interface PageBlockBlockquoteBlocksIn {
     _: "pageBlockBlockquoteBlocks";
-    blocks: TypePageBlockIn[];
+    blocks: ReadonlyArray<TypePageBlockIn>;
     caption: TypeRichTextIn;
   }
   export interface PageBlockButtonRowIn {
@@ -46128,7 +46142,7 @@ export namespace Api {
     alignLeft?: boolean;
     alignCenter?: boolean;
     alignRight?: boolean;
-    buttons: TypePageButtonIn[];
+    buttons: ReadonlyArray<TypePageButtonIn>;
   }
   export interface PageButtonIn {
     _?: "pageButton";
@@ -46146,7 +46160,7 @@ export namespace Api {
     rtl?: boolean;
     noautolink?: boolean;
     html: string;
-    files?: TypeInputRichFileIn[];
+    files?: ReadonlyArray<TypeInputRichFileIn>;
   }
   export interface InputRichFilePhotoIn {
     _: "inputRichFilePhoto";
@@ -46163,7 +46177,7 @@ export namespace Api {
     rtl?: boolean;
     noautolink?: boolean;
     markdown: string;
-    files?: TypeInputRichFileIn[];
+    files?: ReadonlyArray<TypeInputRichFileIn>;
   }
   export interface SendMessageRichMessageDraftActionIn {
     _: "sendMessageRichMessageDraftAction";
@@ -46176,9 +46190,9 @@ export namespace Api {
     _?: "richMessage";
     rtl?: boolean;
     part?: boolean;
-    blocks: TypePageBlockIn[];
-    photos: TypePhotoIn[];
-    documents: TypeDocumentIn[];
+    blocks: ReadonlyArray<TypePageBlockIn>;
+    photos: ReadonlyArray<TypePhotoIn>;
+    documents: ReadonlyArray<TypeDocumentIn>;
   }
   export interface PhotoEmptyIn {
     _: "photoEmpty";
@@ -46191,8 +46205,8 @@ export namespace Api {
     accessHash: LongInput;
     fileReference: bytes;
     date: int;
-    sizes: TypePhotoSizeIn[];
-    videoSizes?: TypeVideoSizeIn[];
+    sizes: ReadonlyArray<TypePhotoSizeIn>;
+    videoSizes?: ReadonlyArray<TypeVideoSizeIn>;
     dcId: int;
   }
   export interface PhotoSizeEmptyIn {
@@ -46223,7 +46237,7 @@ export namespace Api {
     type: string;
     w: int;
     h: int;
-    sizes: int[];
+    sizes: ReadonlyArray<int>;
   }
   export interface PhotoPathSizeIn {
     _: "photoPathSize";
@@ -46241,13 +46255,13 @@ export namespace Api {
   export interface VideoSizeEmojiMarkupIn {
     _: "videoSizeEmojiMarkup";
     emojiId: LongInput;
-    backgroundColors: int[];
+    backgroundColors: ReadonlyArray<int>;
   }
   export interface VideoSizeStickerMarkupIn {
     _: "videoSizeStickerMarkup";
     stickerset: TypeInputStickerSetIn;
     stickerId: LongInput;
-    backgroundColors: int[];
+    backgroundColors: ReadonlyArray<int>;
   }
   export interface InputStickerSetEmptyIn {
     _: "inputStickerSetEmpty";
@@ -46301,10 +46315,10 @@ export namespace Api {
     date: int;
     mimeType: string;
     size: LongInput;
-    thumbs?: TypePhotoSizeIn[];
-    videoThumbs?: TypeVideoSizeIn[];
+    thumbs?: ReadonlyArray<TypePhotoSizeIn>;
+    videoThumbs?: ReadonlyArray<TypeVideoSizeIn>;
     dcId: int;
-    attributes: TypeDocumentAttributeIn[];
+    attributes: ReadonlyArray<TypeDocumentAttributeIn>;
   }
   export interface DocumentAttributeImageSizeIn {
     _: "documentAttributeImageSize";
@@ -46372,7 +46386,7 @@ export namespace Api {
     topMsgId?: int;
     replyToPeerId?: TypeInputPeerIn;
     quoteText?: string;
-    quoteEntities?: TypeMessageEntityIn[];
+    quoteEntities?: ReadonlyArray<TypeMessageEntityIn>;
     quoteOffset?: int;
     monoforumPeerId?: TypeInputPeerIn;
     todoItemId?: int;
@@ -46408,12 +46422,12 @@ export namespace Api {
     selective?: boolean;
     persistent?: boolean;
     forceReply?: boolean;
-    rows: TypeKeyboardButtonRowIn[];
+    rows: ReadonlyArray<TypeKeyboardButtonRowIn>;
     placeholder?: string;
   }
   export interface KeyboardButtonRowIn {
     _?: "keyboardButtonRow";
-    buttons: TypeKeyboardButtonIn[];
+    buttons: ReadonlyArray<TypeKeyboardButtonIn>;
   }
   export interface KeyboardButtonIn {
     _?: "keyboardButton";
@@ -46490,11 +46504,11 @@ export namespace Api {
   export interface ReplyInlineMarkupIn {
     _: "replyInlineMarkup";
     forceReply?: boolean;
-    rows: TypeKeyboardInlineButtonRowIn[];
+    rows: ReadonlyArray<TypeKeyboardInlineButtonRowIn>;
   }
   export interface KeyboardInlineButtonRowIn {
     _?: "keyboardInlineButtonRow";
-    buttons: TypeKeyboardInlineButtonIn[];
+    buttons: ReadonlyArray<TypeKeyboardInlineButtonIn>;
   }
   export interface KeyboardInlineButtonIn {
     _?: "keyboardInlineButton";
@@ -46534,7 +46548,7 @@ export namespace Api {
     spoiler?: boolean;
     livePhoto?: boolean;
     file: TypeInputFileIn;
-    stickers?: TypeInputDocumentIn[];
+    stickers?: ReadonlyArray<TypeInputDocumentIn>;
     ttlSeconds?: int;
     video?: TypeInputDocumentIn;
   }
@@ -46565,8 +46579,8 @@ export namespace Api {
     file: TypeInputFileIn;
     thumb?: TypeInputFileIn;
     mimeType: string;
-    attributes: TypeDocumentAttributeIn[];
-    stickers?: TypeInputDocumentIn[];
+    attributes: ReadonlyArray<TypeDocumentAttributeIn>;
+    stickers?: ReadonlyArray<TypeInputDocumentIn>;
     videoCover?: TypeInputPhotoIn;
     videoTimestamp?: int;
     ttlSeconds?: int;
@@ -46634,7 +46648,7 @@ export namespace Api {
     url: string;
     size: int;
     mimeType: string;
-    attributes: TypeDocumentAttributeIn[];
+    attributes: ReadonlyArray<TypeDocumentAttributeIn>;
   }
   export interface InvoiceIn {
     _?: "invoice";
@@ -46648,9 +46662,9 @@ export namespace Api {
     emailToProvider?: boolean;
     recurring?: boolean;
     currency: string;
-    prices: TypeLabeledPriceIn[];
+    prices: ReadonlyArray<TypeLabeledPriceIn>;
     maxTipAmount?: LongInput;
-    suggestedTipAmounts?: LongInput[];
+    suggestedTipAmounts?: ReadonlyArray<LongInput>;
     termsUrl?: string;
     subscriptionPeriod?: int;
   }
@@ -46670,10 +46684,10 @@ export namespace Api {
   export interface InputMediaPollIn {
     _: "inputMediaPoll";
     poll: TypePollIn;
-    correctAnswers?: int[];
+    correctAnswers?: ReadonlyArray<int>;
     attachedMedia?: TypeInputMediaIn;
     solution?: string;
-    solutionEntities?: TypeMessageEntityIn[];
+    solutionEntities?: ReadonlyArray<TypeMessageEntityIn>;
     solutionMedia?: TypeInputMediaIn;
   }
   export interface PollIn {
@@ -46690,10 +46704,10 @@ export namespace Api {
     creator?: boolean;
     subscribersOnly?: boolean;
     question: TypeTextWithEntitiesIn;
-    answers: TypePollAnswerIn[];
+    answers: ReadonlyArray<TypePollAnswerIn>;
     closePeriod?: int;
     closeDate?: int;
-    countriesIso2?: string[];
+    countriesIso2?: ReadonlyArray<string>;
     hash: LongInput;
   }
   export interface PollAnswerIn {
@@ -46738,7 +46752,7 @@ export namespace Api {
     round?: boolean;
     voice?: boolean;
     document?: TypeDocumentIn;
-    altDocuments?: TypeDocumentIn[];
+    altDocuments?: ReadonlyArray<TypeDocumentIn>;
     videoCover?: TypePhotoIn;
     videoTimestamp?: int;
     ttlSeconds?: int;
@@ -46783,7 +46797,7 @@ export namespace Api {
     author?: string;
     document?: TypeDocumentIn;
     cachedPage?: TypePageIn;
-    attributes?: TypeWebPageAttributeIn[];
+    attributes?: ReadonlyArray<TypeWebPageAttributeIn>;
   }
   export interface PageIn {
     _?: "page";
@@ -46791,14 +46805,14 @@ export namespace Api {
     rtl?: boolean;
     v2?: boolean;
     url: string;
-    blocks: TypePageBlockIn[];
-    photos: TypePhotoIn[];
-    documents: TypeDocumentIn[];
+    blocks: ReadonlyArray<TypePageBlockIn>;
+    photos: ReadonlyArray<TypePhotoIn>;
+    documents: ReadonlyArray<TypeDocumentIn>;
     views?: int;
   }
   export interface WebPageAttributeThemeIn {
     _: "webPageAttributeTheme";
-    documents?: TypeDocumentIn[];
+    documents?: ReadonlyArray<TypeDocumentIn>;
     settings?: TypeThemeSettingsIn;
   }
   export interface ThemeSettingsIn {
@@ -46807,7 +46821,7 @@ export namespace Api {
     baseTheme: TypeBaseThemeIn;
     accentColor: int;
     outboxAccentColor?: int;
-    messageColors?: int[];
+    messageColors?: ReadonlyArray<int>;
     wallpaper?: TypeWallPaperIn;
   }
   export interface WallPaperIn {
@@ -46876,13 +46890,13 @@ export namespace Api {
     fwdFrom?: TypeStoryFwdHeaderIn;
     expireDate: int;
     caption?: string;
-    entities?: TypeMessageEntityIn[];
+    entities?: ReadonlyArray<TypeMessageEntityIn>;
     media: TypeMessageMediaIn;
-    mediaAreas?: TypeMediaAreaIn[];
-    privacy?: TypePrivacyRuleIn[];
+    mediaAreas?: ReadonlyArray<TypeMediaAreaIn>;
+    privacy?: ReadonlyArray<TypePrivacyRuleIn>;
     views?: TypeStoryViewsIn;
     sentReaction?: TypeReactionIn;
-    albums?: int[];
+    albums?: ReadonlyArray<int>;
     music?: TypeDocumentIn;
   }
   export interface StoryFwdHeaderIn {
@@ -46974,7 +46988,7 @@ export namespace Api {
   }
   export interface PrivacyValueAllowUsersIn {
     _: "privacyValueAllowUsers";
-    users: LongInput[];
+    users: ReadonlyArray<LongInput>;
   }
   export interface PrivacyValueDisallowContactsIn {
     _: "privacyValueDisallowContacts";
@@ -46984,15 +46998,15 @@ export namespace Api {
   }
   export interface PrivacyValueDisallowUsersIn {
     _: "privacyValueDisallowUsers";
-    users: LongInput[];
+    users: ReadonlyArray<LongInput>;
   }
   export interface PrivacyValueAllowChatParticipantsIn {
     _: "privacyValueAllowChatParticipants";
-    chats: LongInput[];
+    chats: ReadonlyArray<LongInput>;
   }
   export interface PrivacyValueDisallowChatParticipantsIn {
     _: "privacyValueDisallowChatParticipants";
-    chats: LongInput[];
+    chats: ReadonlyArray<LongInput>;
   }
   export interface PrivacyValueAllowCloseFriendsIn {
     _: "privacyValueAllowCloseFriends";
@@ -47011,9 +47025,9 @@ export namespace Api {
     hasViewers?: boolean;
     viewsCount: int;
     forwardsCount?: int;
-    reactions?: TypeReactionCountIn[];
+    reactions?: ReadonlyArray<TypeReactionCountIn>;
     reactionsCount?: int;
-    recentViewers?: LongInput[];
+    recentViewers?: ReadonlyArray<LongInput>;
   }
   export interface ReactionCountIn {
     _?: "reactionCount";
@@ -47025,7 +47039,7 @@ export namespace Api {
     _: "webPageAttributeStickerSet";
     emojis?: boolean;
     textColor?: boolean;
-    stickers: TypeDocumentIn[];
+    stickers: ReadonlyArray<TypeDocumentIn>;
   }
   export interface WebPageAttributeUniqueStarGiftIn {
     _: "webPageAttributeUniqueStarGift";
@@ -47083,11 +47097,11 @@ export namespace Api {
     ownerId?: TypePeerIn;
     ownerName?: string;
     ownerAddress?: string;
-    attributes: TypeStarGiftAttributeIn[];
+    attributes: ReadonlyArray<TypeStarGiftAttributeIn>;
     availabilityIssued: int;
     availabilityTotal: int;
     giftAddress?: string;
-    resellAmount?: TypeStarsAmountIn[];
+    resellAmount?: ReadonlyArray<TypeStarsAmountIn>;
     releasedBy?: TypePeerIn;
     valueAmount?: LongInput;
     valueCurrency?: string;
@@ -47146,7 +47160,7 @@ export namespace Api {
   }
   export interface WebPageAttributeStarGiftCollectionIn {
     _: "webPageAttributeStarGiftCollection";
-    icons: TypeDocumentIn[];
+    icons: ReadonlyArray<TypeDocumentIn>;
   }
   export interface WebPageAttributeStarGiftAuctionIn {
     _: "webPageAttributeStarGiftAuction";
@@ -47203,14 +47217,14 @@ export namespace Api {
     accessHash: LongInput;
     size: int;
     mimeType: string;
-    attributes: TypeDocumentAttributeIn[];
+    attributes: ReadonlyArray<TypeDocumentAttributeIn>;
   }
   export interface WebDocumentNoProxyIn {
     _: "webDocumentNoProxy";
     url: string;
     size: int;
     mimeType: string;
-    attributes: TypeDocumentAttributeIn[];
+    attributes: ReadonlyArray<TypeDocumentAttributeIn>;
   }
   export interface MessageExtendedMediaPreviewIn {
     _: "messageExtendedMediaPreview";
@@ -47241,11 +47255,11 @@ export namespace Api {
     min?: boolean;
     hasUnreadVotes?: boolean;
     canViewStats?: boolean;
-    results?: TypePollAnswerVotersIn[];
+    results?: ReadonlyArray<TypePollAnswerVotersIn>;
     totalVoters?: int;
-    recentVoters?: TypePeerIn[];
+    recentVoters?: ReadonlyArray<TypePeerIn>;
     solution?: string;
-    solutionEntities?: TypeMessageEntityIn[];
+    solutionEntities?: ReadonlyArray<TypeMessageEntityIn>;
     solutionMedia?: TypeMessageMediaIn;
   }
   export interface PollAnswerVotersIn {
@@ -47254,7 +47268,7 @@ export namespace Api {
     correct?: boolean;
     option: bytes;
     voters?: int;
-    recentVoters?: TypePeerIn[];
+    recentVoters?: ReadonlyArray<TypePeerIn>;
   }
   export interface MessageMediaDiceIn {
     _: "messageMediaDice";
@@ -47279,8 +47293,8 @@ export namespace Api {
     _: "messageMediaGiveaway";
     onlyNewSubscribers?: boolean;
     winnersAreVisible?: boolean;
-    channels: LongInput[];
-    countriesIso2?: string[];
+    channels: ReadonlyArray<LongInput>;
+    countriesIso2?: ReadonlyArray<string>;
     prizeDescription?: string;
     quantity: int;
     months?: int;
@@ -47296,7 +47310,7 @@ export namespace Api {
     launchMsgId: int;
     winnersCount: int;
     unclaimedCount: int;
-    winners: LongInput[];
+    winners: ReadonlyArray<LongInput>;
     months?: int;
     stars?: LongInput;
     prizeDescription?: string;
@@ -47305,19 +47319,19 @@ export namespace Api {
   export interface MessageMediaPaidMediaIn {
     _: "messageMediaPaidMedia";
     starsAmount: LongInput;
-    extendedMedia: TypeMessageExtendedMediaIn[];
+    extendedMedia: ReadonlyArray<TypeMessageExtendedMediaIn>;
   }
   export interface MessageMediaToDoIn {
     _: "messageMediaToDo";
     todo: TypeTodoListIn;
-    completions?: TypeTodoCompletionIn[];
+    completions?: ReadonlyArray<TypeTodoCompletionIn>;
   }
   export interface TodoListIn {
     _?: "todoList";
     othersCanAppend?: boolean;
     othersCanComplete?: boolean;
     title: TypeTextWithEntitiesIn;
-    list: TypeTodoItemIn[];
+    list: ReadonlyArray<TypeTodoItemIn>;
   }
   export interface TodoItemIn {
     _?: "todoItem";
@@ -47372,7 +47386,7 @@ export namespace Api {
   export interface InputMediaPaidMediaIn {
     _: "inputMediaPaidMedia";
     starsAmount: LongInput;
-    extendedMedia: TypeInputMediaIn[];
+    extendedMedia: ReadonlyArray<TypeInputMediaIn>;
     payload?: string;
   }
   export interface InputMediaTodoIn {
@@ -47445,7 +47459,7 @@ export namespace Api {
     _: "inputBotInlineMessageMediaAuto";
     invertMedia?: boolean;
     message: string;
-    entities?: TypeMessageEntityIn[];
+    entities?: ReadonlyArray<TypeMessageEntityIn>;
     replyMarkup?: TypeReplyMarkupIn;
   }
   export interface InputBotInlineMessageTextIn {
@@ -47453,7 +47467,7 @@ export namespace Api {
     noWebpage?: boolean;
     invertMedia?: boolean;
     message: string;
-    entities?: TypeMessageEntityIn[];
+    entities?: ReadonlyArray<TypeMessageEntityIn>;
     replyMarkup?: TypeReplyMarkupIn;
   }
   export interface InputBotInlineMessageMediaGeoIn {
@@ -47504,7 +47518,7 @@ export namespace Api {
     forceSmallMedia?: boolean;
     optional?: boolean;
     message: string;
-    entities?: TypeMessageEntityIn[];
+    entities?: ReadonlyArray<TypeMessageEntityIn>;
     url: string;
     replyMarkup?: TypeReplyMarkupIn;
   }
@@ -47582,14 +47596,14 @@ export namespace Api {
     _?: "shippingOption";
     id: string;
     title: string;
-    prices: TypeLabeledPriceIn[];
+    prices: ReadonlyArray<TypeLabeledPriceIn>;
   }
   export interface InputSingleMediaIn {
     _?: "inputSingleMedia";
     media: TypeInputMediaIn;
     randomId?: LongInput;
     message: string;
-    entities?: TypeMessageEntityIn[];
+    entities?: ReadonlyArray<TypeMessageEntityIn>;
   }
   export interface DialogFilterIn {
     _: "dialogFilter";
@@ -47606,9 +47620,9 @@ export namespace Api {
     title: TypeTextWithEntitiesIn;
     emoticon?: string;
     color?: int;
-    pinnedPeers: TypeInputPeerIn[];
-    includePeers: TypeInputPeerIn[];
-    excludePeers: TypeInputPeerIn[];
+    pinnedPeers: ReadonlyArray<TypeInputPeerIn>;
+    includePeers: ReadonlyArray<TypeInputPeerIn>;
+    excludePeers: ReadonlyArray<TypeInputPeerIn>;
   }
   export interface DialogFilterDefaultIn {
     _: "dialogFilterDefault";
@@ -47621,8 +47635,8 @@ export namespace Api {
     title: TypeTextWithEntitiesIn;
     emoticon?: string;
     color?: int;
-    pinnedPeers: TypeInputPeerIn[];
-    includePeers: TypeInputPeerIn[];
+    pinnedPeers: ReadonlyArray<TypeInputPeerIn>;
+    includePeers: ReadonlyArray<TypeInputPeerIn>;
   }
   export interface InputChatThemeEmptyIn {
     _: "inputChatThemeEmpty";
@@ -47644,7 +47658,7 @@ export namespace Api {
   }
   export interface ChatReactionsSomeIn {
     _: "chatReactionsSome";
-    reactions: TypeReactionIn[];
+    reactions: ReadonlyArray<TypeReactionIn>;
   }
   export interface InputBotAppIDIn {
     _: "inputBotAppID";
@@ -47698,7 +47712,7 @@ export namespace Api {
   export interface ChannelMessagesFilterIn {
     _: "channelMessagesFilter";
     excludeNewMessages?: boolean;
-    ranges: TypeMessageRangeIn[];
+    ranges: ReadonlyArray<TypeMessageRangeIn>;
   }
   export interface InputFileLocationIn {
     _: "inputFileLocation";
@@ -47925,7 +47939,7 @@ export namespace Api {
   }
   export interface InputStorePaymentPremiumGiftCodeIn {
     _: "inputStorePaymentPremiumGiftCode";
-    users: TypeInputUserIn[];
+    users: ReadonlyArray<TypeInputUserIn>;
     boostPeer?: TypeInputPeerIn;
     currency: string;
     amount: LongInput;
@@ -47936,8 +47950,8 @@ export namespace Api {
     onlyNewSubscribers?: boolean;
     winnersAreVisible?: boolean;
     boostPeer: TypeInputPeerIn;
-    additionalPeers?: TypeInputPeerIn[];
-    countriesIso2?: string[];
+    additionalPeers?: ReadonlyArray<TypeInputPeerIn>;
+    countriesIso2?: ReadonlyArray<string>;
     prizeDescription?: string;
     randomId?: LongInput;
     untilDate: int;
@@ -47964,8 +47978,8 @@ export namespace Api {
     winnersAreVisible?: boolean;
     stars: LongInput;
     boostPeer: TypeInputPeerIn;
-    additionalPeers?: TypeInputPeerIn[];
-    countriesIso2?: string[];
+    additionalPeers?: ReadonlyArray<TypeInputPeerIn>;
+    countriesIso2?: ReadonlyArray<string>;
     prizeDescription?: string;
     randomId?: LongInput;
     untilDate: int;
@@ -48143,7 +48157,7 @@ export namespace Api {
     udpReflector?: boolean;
     minLayer: int;
     maxLayer: int;
-    libraryVersions: string[];
+    libraryVersions: ReadonlyArray<string>;
   }
   export interface InputPhoneCallIn {
     _?: "inputPhoneCall";
@@ -48197,15 +48211,15 @@ export namespace Api {
   export type TypeInputPasskeyCredentialIn = InputPasskeyCredentialPublicKeyIn | InputPasskeyCredentialFirebasePNVIn | Api.TypeInputPasskeyCredential;
   export type TypeInputPasskeyResponseIn = InputPasskeyResponseRegisterIn | InputPasskeyResponseLoginIn | Api.TypeInputPasskeyResponse;
   export type TypeDataJSONIn = DataJSONIn | Api.TypeDataJSON;
-  export type TypeInputNotifyPeerIn = InputNotifyPeerIn | InputNotifyUsersIn | InputNotifyChatsIn | InputNotifyBroadcastsIn | InputNotifyForumTopicIn | InputNotifyCommunityIn | Api.TypeInputNotifyPeer | EntityLike;
-  export type TypeInputPeerIn = InputPeerEmptyIn | InputPeerSelfIn | InputPeerChatIn | InputPeerUserIn | InputPeerChannelIn | InputPeerUserFromMessageIn | InputPeerChannelFromMessageIn | Api.TypeInputPeer | EntityLike;
-  export type TypeInputChannelIn = InputChannelEmptyIn | InputChannelIn | InputChannelFromMessageIn | Api.TypeInputChannel | EntityLike;
+  export type TypeInputNotifyPeerIn = InputNotifyPeerIn | InputNotifyUsersIn | InputNotifyChatsIn | InputNotifyBroadcastsIn | InputNotifyForumTopicIn | InputNotifyCommunityIn | Api.TypeInputNotifyPeer | EntityLike | bigint;
+  export type TypeInputPeerIn = InputPeerEmptyIn | InputPeerSelfIn | InputPeerChatIn | InputPeerUserIn | InputPeerChannelIn | InputPeerUserFromMessageIn | InputPeerChannelFromMessageIn | Api.TypeInputPeer | EntityLike | bigint;
+  export type TypeInputChannelIn = InputChannelEmptyIn | InputChannelIn | InputChannelFromMessageIn | Api.TypeInputChannel | ChannelInput;
   export type TypeInputPeerNotifySettingsIn = InputPeerNotifySettingsIn | Api.TypeInputPeerNotifySettings;
   export type TypeNotificationSoundIn = NotificationSoundDefaultIn | NotificationSoundNoneIn | NotificationSoundLocalIn | NotificationSoundRingtoneIn | Api.TypeNotificationSound;
   export type TypeReportReasonIn = InputReportReasonSpamIn | InputReportReasonViolenceIn | InputReportReasonPornographyIn | InputReportReasonChildAbuseIn | InputReportReasonOtherIn | InputReportReasonCopyrightIn | InputReportReasonGeoIrrelevantIn | InputReportReasonFakeIn | InputReportReasonIllegalDrugsIn | InputReportReasonPersonalDetailsIn | Api.TypeReportReason;
   export type TypeInputPrivacyKeyIn = InputPrivacyKeyStatusTimestampIn | InputPrivacyKeyChatInviteIn | InputPrivacyKeyPhoneCallIn | InputPrivacyKeyPhoneP2PIn | InputPrivacyKeyForwardsIn | InputPrivacyKeyProfilePhotoIn | InputPrivacyKeyPhoneNumberIn | InputPrivacyKeyAddedByPhoneIn | InputPrivacyKeyVoiceMessagesIn | InputPrivacyKeyAboutIn | InputPrivacyKeyBirthdayIn | InputPrivacyKeyStarGiftsAutoSaveIn | InputPrivacyKeyNoPaidMessagesIn | InputPrivacyKeySavedMusicIn | Api.TypeInputPrivacyKey;
   export type TypeInputPrivacyRuleIn = InputPrivacyValueAllowContactsIn | InputPrivacyValueAllowAllIn | InputPrivacyValueAllowUsersIn | InputPrivacyValueDisallowContactsIn | InputPrivacyValueDisallowAllIn | InputPrivacyValueDisallowUsersIn | InputPrivacyValueAllowChatParticipantsIn | InputPrivacyValueDisallowChatParticipantsIn | InputPrivacyValueAllowCloseFriendsIn | InputPrivacyValueAllowPremiumIn | InputPrivacyValueAllowBotsIn | InputPrivacyValueDisallowBotsIn | Api.TypeInputPrivacyRule;
-  export type TypeInputUserIn = InputUserEmptyIn | InputUserSelfIn | InputUserIn | InputUserFromMessageIn | Api.TypeInputUser | EntityLike;
+  export type TypeInputUserIn = InputUserEmptyIn | InputUserSelfIn | InputUserIn | InputUserFromMessageIn | Api.TypeInputUser | UserInput;
   export type TypeAccountDaysTTLIn = AccountDaysTTLIn | Api.TypeAccountDaysTTL;
   export type TypeSecureValueTypeIn = SecureValueTypePersonalDetailsIn | SecureValueTypePassportIn | SecureValueTypeDriverLicenseIn | SecureValueTypeIdentityCardIn | SecureValueTypeInternalPassportIn | SecureValueTypeAddressIn | SecureValueTypeUtilityBillIn | SecureValueTypeBankStatementIn | SecureValueTypeRentalAgreementIn | SecureValueTypePassportRegistrationIn | SecureValueTypeTemporaryRegistrationIn | SecureValueTypePhoneIn | SecureValueTypeEmailIn | Api.TypeSecureValueType;
   export type TypeInputSecureValueIn = InputSecureValueIn | Api.TypeInputSecureValue;
@@ -48340,7 +48354,7 @@ export namespace Api {
   export type TypeInlineBotSwitchPMIn = InlineBotSwitchPMIn | Api.TypeInlineBotSwitchPM;
   export type TypeInlineBotWebViewIn = InlineBotWebViewIn | Api.TypeInlineBotWebView;
   export type TypeInputBotInlineMessageIDIn = InputBotInlineMessageIDIn | InputBotInlineMessageID64In | Api.TypeInputBotInlineMessageID;
-  export type TypeInputDialogPeerIn = InputDialogPeerIn | InputDialogPeerFolderIn | InputDialogPeerCommunityIn | Api.TypeInputDialogPeer | EntityLike;
+  export type TypeInputDialogPeerIn = InputDialogPeerIn | InputDialogPeerFolderIn | InputDialogPeerCommunityIn | Api.TypeInputDialogPeer | EntityLike | bigint;
   export type TypeInputStickeredMediaIn = InputStickeredMediaPhotoIn | InputStickeredMediaDocumentIn | Api.TypeInputStickeredMedia;
   export type TypeShippingOptionIn = ShippingOptionIn | Api.TypeShippingOption;
   export type TypeInputSingleMediaIn = InputSingleMediaIn | Api.TypeInputSingleMedia;
@@ -48389,64 +48403,64 @@ export namespace Api {
    */
   export interface ApiFacade {
     /** Invokes a typed raw request object or an existing request instance. */
-    call<R extends RawRequest | AnyRequest>(request: R, opts?: ApiCallOptions): Promise<ApiResult<R>>;
+    call<const R extends RawRequest | AnyRequest>(request: R & CheckedRequest<R>, opts?: ApiCallOptions): Promise<ApiResult<R>>;
     /**
      * Invokes a query after successful completion of one of the previous queries.
      * @see https://core.telegram.org/method/invokeAfterMsg
      */
-    invokeAfterMsg<Q extends RawRequest | AnyRequest>(params: Omit<InvokeAfterMsgParams, "query"> & { query: Q }, opts?: ApiCallOptions): Promise<ApiResult<Q>>;
+    invokeAfterMsg<const Q extends RawRequest | AnyRequest>(params: Omit<InvokeAfterMsgParams, "query"> & { query: Q & CheckedRequest<Q> }, opts?: ApiCallOptions): Promise<ApiResult<Q>>;
     /**
      * Invokes a query after a successful completion of previous queries
      * @see https://core.telegram.org/method/invokeAfterMsgs
      */
-    invokeAfterMsgs<Q extends RawRequest | AnyRequest>(params: Omit<InvokeAfterMsgsParams, "query"> & { query: Q }, opts?: ApiCallOptions): Promise<ApiResult<Q>>;
+    invokeAfterMsgs<const Q extends RawRequest | AnyRequest>(params: Omit<InvokeAfterMsgsParams, "query"> & { query: Q & CheckedRequest<Q> }, opts?: ApiCallOptions): Promise<ApiResult<Q>>;
     /**
      * Initialize connection
      * @see https://core.telegram.org/method/initConnection
      * @throws {InitConnectionErrors}
      */
-    initConnection<Q extends RawRequest | AnyRequest>(params: Omit<InitConnectionParams, "query"> & { query: Q }, opts?: ApiCallOptions): Promise<ApiResult<Q>>;
+    initConnection<const Q extends RawRequest | AnyRequest>(params: Omit<InitConnectionParams, "query"> & { query: Q & CheckedRequest<Q> }, opts?: ApiCallOptions): Promise<ApiResult<Q>>;
     /**
      * Invoke the specified query using the specified API layer
      * @see https://core.telegram.org/method/invokeWithLayer
      * @throws {InvokeWithLayerErrors}
      */
-    invokeWithLayer<Q extends RawRequest | AnyRequest>(params: Omit<InvokeWithLayerParams, "query"> & { query: Q }, opts?: ApiCallOptions): Promise<ApiResult<Q>>;
+    invokeWithLayer<const Q extends RawRequest | AnyRequest>(params: Omit<InvokeWithLayerParams, "query"> & { query: Q & CheckedRequest<Q> }, opts?: ApiCallOptions): Promise<ApiResult<Q>>;
     /**
      * Invoke a request without subscribing the used connection for updates (this is enabled by default for file queries ).
      * @see https://core.telegram.org/method/invokeWithoutUpdates
      */
-    invokeWithoutUpdates<Q extends RawRequest | AnyRequest>(params: Omit<InvokeWithoutUpdatesParams, "query"> & { query: Q }, opts?: ApiCallOptions): Promise<ApiResult<Q>>;
+    invokeWithoutUpdates<const Q extends RawRequest | AnyRequest>(params: Omit<InvokeWithoutUpdatesParams, "query"> & { query: Q & CheckedRequest<Q> }, opts?: ApiCallOptions): Promise<ApiResult<Q>>;
     /**
      * Invoke with the given message range
      * @see https://core.telegram.org/method/invokeWithMessagesRange
      */
-    invokeWithMessagesRange<Q extends RawRequest | AnyRequest>(params: Omit<InvokeWithMessagesRangeParams, "query"> & { query: Q }, opts?: ApiCallOptions): Promise<ApiResult<Q>>;
+    invokeWithMessagesRange<const Q extends RawRequest | AnyRequest>(params: Omit<InvokeWithMessagesRangeParams, "query"> & { query: Q & CheckedRequest<Q> }, opts?: ApiCallOptions): Promise<ApiResult<Q>>;
     /**
      * Invoke a method within a takeout session, see here » for more info .
      * @see https://core.telegram.org/method/invokeWithTakeout
      */
-    invokeWithTakeout<Q extends RawRequest | AnyRequest>(params: Omit<InvokeWithTakeoutParams, "query"> & { query: Q }, opts?: ApiCallOptions): Promise<ApiResult<Q>>;
+    invokeWithTakeout<const Q extends RawRequest | AnyRequest>(params: Omit<InvokeWithTakeoutParams, "query"> & { query: Q & CheckedRequest<Q> }, opts?: ApiCallOptions): Promise<ApiResult<Q>>;
     /**
      * Invoke a method using a Telegram Business Bot connection, see here » for more info, including a list of the methods that can be wrapped in this constructor . Make sure to always send queries wrapped in a invokeWithBusinessConnection to the datacenter ID, specified in the dc_id field of the botBusinessConnection that is being used.
      * @see https://core.telegram.org/method/invokeWithBusinessConnection
      */
-    invokeWithBusinessConnection<Q extends RawRequest | AnyRequest>(params: Omit<InvokeWithBusinessConnectionParams, "query"> & { query: Q }, opts?: ApiCallOptions): Promise<ApiResult<Q>>;
+    invokeWithBusinessConnection<const Q extends RawRequest | AnyRequest>(params: Omit<InvokeWithBusinessConnectionParams, "query"> & { query: Q & CheckedRequest<Q> }, opts?: ApiCallOptions): Promise<ApiResult<Q>>;
     /**
      * Official clients only, invoke with Google Play Integrity token.
      * @see https://core.telegram.org/method/invokeWithGooglePlayIntegrity
      */
-    invokeWithGooglePlayIntegrity<Q extends RawRequest | AnyRequest>(params: Omit<InvokeWithGooglePlayIntegrityParams, "query"> & { query: Q }, opts?: ApiCallOptions): Promise<ApiResult<Q>>;
+    invokeWithGooglePlayIntegrity<const Q extends RawRequest | AnyRequest>(params: Omit<InvokeWithGooglePlayIntegrityParams, "query"> & { query: Q & CheckedRequest<Q> }, opts?: ApiCallOptions): Promise<ApiResult<Q>>;
     /**
      * Official clients only, invoke with Apple push verification.
      * @see https://core.telegram.org/method/invokeWithApnsSecret
      */
-    invokeWithApnsSecret<Q extends RawRequest | AnyRequest>(params: Omit<InvokeWithApnsSecretParams, "query"> & { query: Q }, opts?: ApiCallOptions): Promise<ApiResult<Q>>;
+    invokeWithApnsSecret<const Q extends RawRequest | AnyRequest>(params: Omit<InvokeWithApnsSecretParams, "query"> & { query: Q & CheckedRequest<Q> }, opts?: ApiCallOptions): Promise<ApiResult<Q>>;
     /**
      * Official clients only: re-execute a method call that required reCAPTCHA verification via a RECAPTCHA_CHECK_%s__%s , where the first placeholder is the action , and the second one is the reCAPTCHA key ID.
      * @see https://core.telegram.org/method/invokeWithReCaptcha
      */
-    invokeWithReCaptcha<Q extends RawRequest | AnyRequest>(params: Omit<InvokeWithReCaptchaParams, "query"> & { query: Q }, opts?: ApiCallOptions): Promise<ApiResult<Q>>;
+    invokeWithReCaptcha<const Q extends RawRequest | AnyRequest>(params: Omit<InvokeWithReCaptchaParams, "query"> & { query: Q & CheckedRequest<Q> }, opts?: ApiCallOptions): Promise<ApiResult<Q>>;
     /**
      * @see https://core.telegram.org/method/reqPq
      */

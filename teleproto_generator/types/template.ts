@@ -238,13 +238,13 @@ function renderFacadeMethod(
     const returnType = generic ? "ApiResult<Q>" : renderResult(fn.result);
     const jsdoc = renderFacadeJsDoc(methodKey, prefix, indent, errors, docs);
 
-    const paramType = generic ? `Omit<${prefix}Params, "query"> & { query: Q }` : `${prefix}Params`;
+    const paramType = generic ? `Omit<${prefix}Params, "query"> & { query: Q & CheckedRequest<Q> }` : `${prefix}Params`;
     const optional = realArgNames(fn).every((name) => fn.argsConfig[name].isFlag) ? "?" : "";
     const params = realArgNames(fn).length
         ? `params${optional}: ${paramType}, opts?: ApiCallOptions`
         : `opts?: ApiCallOptions`;
 
-    return `${jsdoc}\n${indent}${methodName}${generic ? "<Q extends RawRequest | AnyRequest>" : ""}(${params}): Promise<${returnType}>;`;
+    return `${jsdoc}\n${indent}${methodName}${generic ? "<const Q extends RawRequest | AnyRequest>" : ""}(${params}): Promise<${returnType}>;`;
 }
 
 const PRIMITIVE_TYPES = new Set([
@@ -315,17 +315,15 @@ function renderInputArg(
     const { isVector, isFlag, skipConstructorId, type } = cfg;
     const valueType =
         type === "X" ? "RawRequest | AnyRequest" :
-        ["long", "int128", "int256"].includes(type ?? "") ? (isVector ? "LongInput[]" : "LongInput") :
+        ["long", "int128", "int256"].includes(type ?? "") ? "LongInput" :
         type && cone.coneTypes.has(type)
-            ? isVector
-                ? `${typeInName(type)}[]`
-                : typeInName(type)
-            : renderValueType(type || "unknown", isVector, !skipConstructorId);
+            ? typeInName(type)
+            : renderValueType(type || "unknown", false, !skipConstructorId);
     const optional =
         isFlag || (argName === "randomId" && type === "long" && !isVector)
             ? "?"
             : "";
-    return `${argName}${optional}: ${valueType}`;
+    return `${argName}${optional}: ${isVector ? `ReadonlyArray<${valueType}>` : valueType}`;
 }
 
 function renderInputShapes(cone: InputCone): string {
@@ -351,8 +349,10 @@ function renderInputShapes(cone: InputCone): string {
         const members = (cone.ctorsByResult.get(t) || [])
             .map(ctorInName)
             .join(" | ");
-        const entityLike = ["InputPeer", "InputChannel", "InputUser", "InputDialogPeer", "InputNotifyPeer"].includes(t)
-            ? " | EntityLike" : "";
+        const entityLike = t === "InputUser" ? " | UserInput"
+            : t === "InputChannel" ? " | ChannelInput"
+            : ["InputPeer", "InputDialogPeer", "InputNotifyPeer"].includes(t)
+                ? " | EntityLike | bigint" : "";
         const shorthand = t === "InputMessage" ? " | number" : "";
         parts.push(`  export type ${typeInName(t)} = ${members} | ${renderTypeName(t)}${entityLike}${shorthand};`);
     }
@@ -438,6 +438,14 @@ function renderApiFacade(
   /** Integer inputs; numbers must be safe integers. */
   export type LongInput = BigInteger | bigint | number;
 
+  /** A user reference resolved before sending the request. */
+  export type UserInput = string | LongInput | Api.TypeUser | Api.PeerUser
+    | Api.InputPeerUser | Api.InputPeerUserFromMessage | Api.InputPeerSelf | Api.InputPeerEmpty;
+  /** A channel or community reference resolved before sending the request. */
+  export type ChannelInput = string | LongInput | Api.Channel | Api.ChannelForbidden
+    | Api.Community | Api.CommunityForbidden | Api.PeerChannel
+    | Api.InputPeerChannel | Api.InputPeerChannelFromMessage;
+
 ${renderParamsInterfaces(functions, docs, cone)}
 
   export interface RawRequestMap {
@@ -448,6 +456,12 @@ ${functions.map((fn) => `    "${methodKeyOf(fn)}": ${renderResult(fn.result)};`)
   }
   /** A discriminated raw request, including nested query wrappers. */
   export type RawRequest = RawRequestMap[keyof RawRequestMap];
+  /** Rejects extra request fields, including those inside query wrappers. */
+  export type CheckedRequest<R> = R extends AnyRequest ? unknown
+    : R extends { _: infer K extends keyof RawRequestMap }
+      ? Record<Exclude<keyof R, keyof RawRequestMap[K]>, never>
+        & (R extends { query: infer Q } ? { query: CheckedRequest<Q> } : unknown)
+      : never;
   /** Result inferred from a raw request or an existing request instance. */
   export type ApiResult<R> = R extends { _: ${functions.filter((fn) => fn.result === "X").map((fn) => `"${methodKeyOf(fn)}"`).join(" | ")}; query: infer Q } ? ApiResult<Q>
     : R extends { __response: infer T } ? T
@@ -467,7 +481,7 @@ ${renderInputShapes(cone)}
    */
   export interface ApiFacade {
     /** Invokes a typed raw request object or an existing request instance. */
-    call<R extends RawRequest | AnyRequest>(request: R, opts?: ApiCallOptions): Promise<ApiResult<R>>;
+    call<const R extends RawRequest | AnyRequest>(request: R & CheckedRequest<R>, opts?: ApiCallOptions): Promise<ApiResult<R>>;
     ${rootMethods}
 ${namespacedMethods}
   }`;

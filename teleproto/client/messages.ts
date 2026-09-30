@@ -1244,7 +1244,7 @@ export async function deleteMessages(
         for (const chunk of utils.chunks(ids)) {
             results.push(
                 client.api.channels.deleteMessages({
-                    channel: entity!,
+                    channel: utils.getInputChannel(entity!),
                     id: chunk,
                 })
             );
@@ -1385,7 +1385,7 @@ export async function markAsRead(
 
     if (_entityType(entity) === _EntityType.CHANNEL) {
         return await client.api.channels.readHistory({
-            channel: entity,
+            channel: utils.getInputChannel(entity),
             maxId,
         });
     } else {

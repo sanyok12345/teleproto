@@ -5,6 +5,7 @@ import { UpdateConnectionState } from "../../network";
 import type { Raw } from "../../events";
 import { getRandomInt, returnBigInt, sleep } from "../../Helpers";
 import Timeout = NodeJS.Timeout;
+import { setTimeout as delay } from "node:timers/promises";
 
 const PING_INTERVAL = 9000; // 9 sec
 const PING_TIMEOUT = 10000; // 10 sec
@@ -221,14 +222,31 @@ async function dispatchUpdate(
     if (!client._destroyed) await client.updates._dispatch(args.update);
 }
 
+const updateLoops = new WeakMap<TelegramClient, AbortController>();
+
+/** @hidden */
+export function _stopUpdateLoop(client: TelegramClient): void {
+    updateLoops.get(client)?.abort();
+    updateLoops.delete(client);
+    client._loopStarted = false;
+}
+
 export async function _updateLoop(client: TelegramClient, catchUp = true) {
+    updateLoops.get(client)?.abort();
+    const controller = new AbortController();
+    updateLoops.set(client, controller);
+    const active = () => !controller.signal.aborted && !client._destroyed;
     client.updateManager.start();
     if (catchUp) await client.updateManager.catchUp();
 
     let lastPongAt: number | undefined;
-    while (!client._destroyed) {
-        await sleep(PING_INTERVAL, true);
-        if (client._destroyed) break;
+    while (active()) {
+        try {
+            await delay(PING_INTERVAL, undefined, { signal: controller.signal, ref: false });
+        } catch {
+            break;
+        }
+        if (!active()) break;
         if (client._sender?.isReconnecting || client._isSwitchingDc) {
             lastPongAt = undefined;
             continue;
@@ -236,8 +254,9 @@ export async function _updateLoop(client: TelegramClient, catchUp = true) {
         if (client.disconnected) break;
 
         try {
-            const ping = () =>
-                client._sender!.send(
+            const ping = () => {
+                if (!active()) throw new Error("Update loop stopped");
+                return client._sender!.send(
                     new Api.PingDelayDisconnect({
                         pingId: returnBigInt(
                             getRandomInt(
@@ -248,6 +267,7 @@ export async function _updateLoop(client: TelegramClient, catchUp = true) {
                         disconnectDelay: PING_DISCONNECT_DELAY,
                     }),
                 );
+            };
 
             const pingAt = Date.now();
             const lastInterval = lastPongAt ? pingAt - lastPongAt : undefined;
@@ -261,23 +281,22 @@ export async function _updateLoop(client: TelegramClient, catchUp = true) {
             } else {
                 let wakeUpWarningTimeout: Timeout | undefined =
                     setTimeout(() => {
-                        _handleUpdate(client, UpdateConnectionState.disconnected);
+                        if (active()) _handleUpdate(client, UpdateConnectionState.disconnected);
                         wakeUpWarningTimeout = undefined;
                     }, PING_WAKE_UP_WARNING_TIMEOUT);
 
-                await timeout(ping, PING_WAKE_UP_TIMEOUT);
-
-                if (wakeUpWarningTimeout) {
-                    clearTimeout(wakeUpWarningTimeout);
-                    wakeUpWarningTimeout = undefined;
+                try {
+                    await timeout(ping, PING_WAKE_UP_TIMEOUT);
+                } finally {
+                    if (wakeUpWarningTimeout) clearTimeout(wakeUpWarningTimeout);
                 }
-                _handleUpdate(client, UpdateConnectionState.connected);
+                if (active()) _handleUpdate(client, UpdateConnectionState.connected);
             }
 
             lastPongAt = Date.now();
         } catch (err) {
             lastPongAt = undefined;
-            if (client._destroyed) break;
+            if (!active()) break;
 
             if (Date.now() - client._lastReceivedAt < PING_INTERVAL + PING_TIMEOUT) {
                 client._log.debug(`Ping timed out but transfer is active, ignoring`);
@@ -287,6 +306,7 @@ export async function _updateLoop(client: TelegramClient, catchUp = true) {
             if (client._errorHandler) {
                 await client._errorHandler(err as Error);
             }
+            if (!active()) break;
             client._log.warn(`Ping failed: ${err}, reconnecting`);
 
             if (client._sender?.isReconnecting || client._isSwitchingDc) continue;
@@ -294,7 +314,9 @@ export async function _updateLoop(client: TelegramClient, catchUp = true) {
             client._sender!.reconnect();
         }
 
+        if (!active()) break;
         await client.updateManager.recoverIfStale();
+        if (!active()) break;
 
         if (Date.now() - (client._lastRequest || 0) > 30 * 60 * 1000) {
             try {
@@ -305,9 +327,9 @@ export async function _updateLoop(client: TelegramClient, catchUp = true) {
         }
     }
 
-    client._loopStarted = false;
-    if (client._destroyed) {
-        await client.disconnect();
+    if (updateLoops.get(client) === controller) {
+        _stopUpdateLoop(client);
+        if (client._destroyed) await client.disconnect();
     }
 }
 

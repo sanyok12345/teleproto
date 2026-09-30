@@ -33,7 +33,7 @@ import {
 import { LogLevel } from "../extensions/Logger";
 import Deferred from "../extensions/Deferred";
 import { UpdateManager } from "./updates/manager";
-import { _clearUpdateQueue } from "./updates/dispatch";
+import { _clearUpdateQueue, _stopUpdateLoop } from "./updates/dispatch";
 import type { ClientUpdates } from "./updates/composer";
 import { ConnectionWebProxy, createWebProxySocket } from "../network/connection/WebProxy";
 import { installMessageBehaviour } from "../tl/custom/message";
@@ -698,7 +698,7 @@ export abstract class TelegramBaseClient<S extends Session = Session> {
     }
 
     async _disconnect() {
-        this._loopStarted = false;
+        _stopUpdateLoop(this as unknown as TelegramClient);
         await this._sender?.disconnect();
     }
 

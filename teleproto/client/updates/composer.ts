@@ -10,6 +10,7 @@ import { isArrayLike } from "../../Helpers";
 import type { UpdateState, ChannelPollingState } from "./manager";
 import { UpdateConnectionState } from "../../network";
 import { UpdateContext, type WithUpdateContext } from "./context";
+import { _dispatchUpdate } from "./dispatch";
 
 /** Passes the update on. A handler that never calls it consumes the update. */
 export type NextFn = () => Promise<void>;
@@ -79,6 +80,8 @@ interface WatchEntry {
 
 /** Options of {@link ClientUpdates.watch}. */
 export interface WatchOptions {
+    /** Receives matching updates independently of the middleware chain. Defaults to false. */
+    independent?: boolean;
     /**
      * Which updates to hand the handler - raw names or an event builder.
      * Defaults to new messages, i.e. `["newMessage", "newChannelMessage"]`.
@@ -90,6 +93,8 @@ export interface WatchOptions {
 
 /** Filters accepted by {@link ClientUpdates.on}, mirroring the event builders. */
 export interface OnOptions {
+    /** Bypasses the middleware chain; `next()` only advances this registration's handler array. */
+    independent?: boolean;
     /**
      * Only handle updates coming from these chats - a username, an id or an
      * entity. Updates that carry no peer at all (`updateDcOptions`,
@@ -190,6 +195,7 @@ function peerOf(update: unknown): string | undefined {
  * consumes the update. {@link on} matches first, by raw schema name or by an
  * event builder; {@link watch} also polls channel differences for the chats
  * it is given.
+ * `independent: true` registrations run alongside this chain and cannot consume each other's updates.
  *
  * A raw name gives the original `Api.TypeUpdate`, a builder gives its event
  * object. Direct and small-group messages arrive as the `updateShortMessage`
@@ -228,6 +234,7 @@ function peerOf(update: unknown): string | undefined {
 export class ClientUpdates {
     private readonly client: TelegramClient;
     private readonly chain: UpdateMiddleware[] = [];
+    private readonly independent = new Set<UpdateMiddleware>();
     private readonly registrations = new Map<UpdateMiddleware, UpdateMiddleware[]>();
     private readonly watches = new Set<WatchEntry>();
     private onError?: (error: Error, update?: AnyUpdate) => unknown;
@@ -252,6 +259,7 @@ export class ClientUpdates {
      * ```
      */
     use<T = any>(middleware: UpdateMiddleware<T>): Unsubscribe {
+        if (this.client._destroyed) throw new Error("Cannot subscribe to a destroyed client");
         if (typeof middleware !== "function") {
             throw new TypeError("Update middleware must be a function");
         }
@@ -299,7 +307,7 @@ export class ClientUpdates {
     ): Unsubscribe {
         const run = compose(handler);
         if (typeof target !== "string" && !Array.isArray(target)) {
-            return this.register(this.builderMiddleware(target, run, options), handler);
+            return this.register(this.builderMiddleware(target, run, options), handler, options.independent);
         }
         const names = new Set(
             (Array.isArray(target) ? target : [target]).map((name) =>
@@ -313,7 +321,7 @@ export class ClientUpdates {
             if (!(await matchesChat(update))) return next();
             if (options.func && !(await options.func(update))) return next();
             await run(update, next);
-        }, handler);
+        }, handler, options.independent);
     }
 
     /**
@@ -369,6 +377,7 @@ export class ClientUpdates {
         handler?: UpdateMiddleware | UpdateMiddleware[],
         options: WatchOptions = {},
     ): Unsubscribe {
+        if (this.client._destroyed) throw new Error("Cannot subscribe to a destroyed client");
         const wanted = isArrayLike(chats)
             ? (chats as EntityLike[])
             : [chats as EntityLike];
@@ -380,10 +389,12 @@ export class ClientUpdates {
                     ? this.on(events as UpdateName[], handler as UpdateMiddleware, {
                         chats: wanted,
                         func: options.func,
+                        independent: options.independent,
                     })
                     : this.on(events, handler as UpdateMiddleware, {
                         chats: wanted,
                         func: options.func,
+                        independent: options.independent,
                     });
         }
 
@@ -551,9 +562,9 @@ export class ClientUpdates {
         return this;
     }
 
-    /** Everything currently registered, in call order. */
+    /** Registered chain handlers followed by independent subscriptions. */
     get handlers(): readonly UpdateMiddleware[] {
-        return [...this.chain];
+        return [...this.chain, ...this.independent];
     }
 
     /** @hidden */
@@ -566,6 +577,7 @@ export class ClientUpdates {
         }
         this.watches.clear();
         this.chain.length = 0;
+        this.independent.clear();
         this.registrations.clear();
         this.onError = undefined;
         this.blockedAuthorization = undefined;
@@ -582,6 +594,16 @@ export class ClientUpdates {
         await this.client.updateManager.catchUp();
     }
 
+    /** Delivers a local update without changing protocol checkpoints. In sequential mode, do not await this inside a handler. */
+    async dispatch(
+        update: AnyUpdate,
+        peers?: ReadonlyMap<string, Api.TypeUser | Api.TypeChat>,
+    ): Promise<void> {
+        if (this.client._destroyed) throw new Error("Cannot dispatch through a destroyed client");
+        if (peers) fieldsOf(update)._entities = new Map(peers);
+        await _dispatchUpdate(this.client, { update });
+    }
+
     async _dispatch(update: AnyUpdate): Promise<void> {
         if (
             update instanceof UpdateConnectionState &&
@@ -589,7 +611,7 @@ export class ClientUpdates {
         ) {
             this._resume();
         }
-        if (!this.chain.length) return;
+        if (!this.chain.length && !this.independent.size) return;
         const expanded = expandShortMessage(
             update,
             this.client._selfInputPeer?.userId,
@@ -597,6 +619,11 @@ export class ClientUpdates {
         if (expanded) {
             fieldsOf(expanded)._entities = fieldsOf(update)._entities;
             update = expanded;
+        }
+        const message = fieldsOf(update).message;
+        if ((message instanceof Api.Message || message instanceof Api.MessageService) &&
+            message._client !== this.client) {
+            message._finishInit(this.client, fieldsOf(update)._entities ?? new Map());
         }
         if (update && typeof update === "object" && !("state" in update)) {
             Object.defineProperty(update, "state", {
@@ -607,11 +634,15 @@ export class ClientUpdates {
         }
         this.attachContext(update);
         const chain = [...this.chain];
-        try {
-            await runChain(chain, update, async () => {});
-        } catch (e) {
-            await this.reportError(e as Error, update);
-        }
+        const branches = [...this.independent];
+        const deliver = async (handlers: UpdateMiddleware[]) => {
+            try {
+                await runChain(handlers, update, async () => {});
+            } catch (e) {
+                await this.reportError(e as Error, update);
+            }
+        };
+        await Promise.all([deliver(chain), ...branches.map((handler) => deliver([handler]))]);
     }
 
     private attachContext(event: object, update: AnyUpdate = event as AnyUpdate): void {
@@ -628,13 +659,20 @@ export class ClientUpdates {
     private register(
         middleware: UpdateMiddleware,
         handler: UpdateMiddleware | UpdateMiddleware[],
+        independent = false,
     ): Unsubscribe {
+        if (this.client._destroyed) throw new Error("Cannot subscribe to a destroyed client");
         this.registrations.set(middleware, Array.isArray(handler) ? handler.slice() : [handler]);
+        if (independent) {
+            this.independent.add(middleware);
+            return () => this.remove(middleware);
+        }
         return this.use(middleware);
     }
 
     private remove(middleware: UpdateMiddleware): void {
         this.registrations.delete(middleware);
+        this.independent.delete(middleware);
         const index = this.chain.indexOf(middleware);
         if (index >= 0) this.chain.splice(index, 1);
     }

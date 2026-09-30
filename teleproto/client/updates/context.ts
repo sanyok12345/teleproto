@@ -14,6 +14,11 @@ export class UpdateContext extends EventCommon {
         this._setClient(client);
     }
 
+    /** Attached users and chats keyed by marked peer ID; reading never makes an RPC. */
+    get peers(): ReadonlyMap<string, Entity> {
+        return this._entities;
+    }
+
     /** Returns the attached chat or fetches it, sharing concurrent calls within this update. */
     async getChat(): Promise<Entity | undefined> {
         if (!this.pendingChat) {

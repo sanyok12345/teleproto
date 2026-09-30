@@ -3036,16 +3036,13 @@ export class TelegramClient<
     private _apiProxy?: Api.ApiFacade;
 
     /**
-     * Typed 1:1 facade over the raw MTProto methods.
-     *
-     * Call `client.api.users.getFullUser({ id: "me" })` instead of
-     * `client.invoke(new Api.users.GetFullUser({ id: "me" }))` — no `new`,
-     * no manual `invoke`, with full autocomplete and strict typing (including
-     * the return type) generated straight from the schema.
+     * Schema-typed raw methods with automatic entity resolution and call options.
+     * User and channel inputs accept usernames, IDs and matching `Api` instances.
      *
      * @example
      * ```ts
      * const full = await client.api.users.getFullUser({ id: "me" });
+     * console.log(full.fullUser.about);
      * const same = await client.api.call({ _: "users.getFullUser", id: "me" });
      * await client.api.messages.sendMessage({ peer: "me", message: "Hello" });
      * ```
@@ -3250,7 +3247,10 @@ export class TelegramClient<
             this._loopStarted = true;
         }
         if (!this._destroyed && !this._sender?.userDisconnected) {
-            this._emitLifecycle("reconnect");
+            await this.updateManager.catchUp();
+            if (!this._destroyed && !this._sender?.userDisconnected) {
+                this._emitLifecycle("reconnect");
+            }
         }
     }
 

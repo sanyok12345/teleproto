@@ -859,6 +859,7 @@ export class MTProtoSender {
                     `Error while receiving items from the network ${e}`
                 );
                 if (e instanceof TypeNotFoundError) {
+                    if (this._isMainSender) void this._client.updateManager.catchUp();
                     // Received object which we don't know how to deserialize
                     this._log.info(
                         `Type ${e.invalidConstructorId} not found, remaining data ${e.remaining}`
@@ -902,8 +903,8 @@ export class MTProtoSender {
                 await this._dispatcher.process(message);
             } catch (e) {
                 if (e instanceof TypeNotFoundError) {
+                    if (this._isMainSender) void this._client.updateManager.catchUp();
                     // Unknown constructor in an update (e.g. new TL objects not in our schema).
-                    // Safe to skip — no reconnect needed.
                     this._log.info(
                         `Unknown constructor ${e.invalidConstructorId} in update, skipping (remaining: ${e.remaining.length} bytes)`
                     );

@@ -33,6 +33,7 @@ import {
 import { LogLevel } from "../extensions/Logger";
 import Deferred from "../extensions/Deferred";
 import { UpdateManager } from "./updates/manager";
+import { _clearUpdateQueue } from "./updates/dispatch";
 import type { ClientUpdates } from "./updates/composer";
 import { installMessageBehaviour } from "../tl/custom/message";
 
@@ -172,7 +173,7 @@ export interface TelegramClientParams {
     retryDelay?: number;
     /**Whether reconnection should be retried connection_retries times automatically if Telegram disconnects us or not. defaults to true */
     autoReconnect?: boolean;
-    /** does nothing for now */
+    /** Deliver updates one at a time, awaiting all handlers. Defaults to false. Slow handlers accumulate queued updates; destroy clears pending work. */
     sequentialUpdates?: boolean;
     /** The threshold below which the library should automatically sleep on flood wait and slow mode wait errors (inclusive).<br/>
      *  For instance, if a FloodWaitError for 17s occurs and floodSleepThreshold is 20s, the library will sleep automatically.<br/>
@@ -333,6 +334,8 @@ export abstract class TelegramBaseClient<S extends Session = Session> {
     public _channelPollRequestInterval: number;
     /** @hidden */
     public _channelPollConcurrency: number;
+    /** @hidden */
+    public readonly _sequentialUpdates: boolean;
     public _lastRequest?: number;
     /**
      * Epoch ms of the last message decrypted on ANY session. Distinguishes a
@@ -430,6 +433,7 @@ export abstract class TelegramBaseClient<S extends Session = Session> {
         this._useIPV6 = clientParams.useIPV6!;
         this._testServers = clientParams.testServers!;
         this._requestRetries = clientParams.requestRetries!;
+        this._sequentialUpdates = !!clientParams.sequentialUpdates;
         this._downloadRetries = clientParams.downloadRetries!;
         this._connectionRetries = clientParams.connectionRetries!;
         this._reconnectRetries = clientParams.reconnectRetries!;
@@ -611,7 +615,7 @@ export abstract class TelegramBaseClient<S extends Session = Session> {
         return this._subscribeLifecycle("reconnecting", handler);
     }
 
-    /** Runs after automatic reconnection and the client probe; returns an unsubscribe function. */
+    /** Runs after automatic reconnection, the client probe and a catch-up attempt; does not await application handlers. */
     onReconnect(handler: LifecycleHandler): () => void {
         return this._subscribeLifecycle("reconnect", handler);
     }
@@ -693,6 +697,7 @@ export abstract class TelegramBaseClient<S extends Session = Session> {
     destroy(): Promise<void> {
         if (this._destroyTask) return this._destroyTask;
         this._destroyed = true;
+        _clearUpdateQueue(this as unknown as TelegramClient);
         this._destroyTask = (async () => {
             await this.disconnect();
             await this._media.close();

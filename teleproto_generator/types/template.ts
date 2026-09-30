@@ -349,8 +349,8 @@ function renderInputShapes(cone: InputCone): string {
         const members = (cone.ctorsByResult.get(t) || [])
             .map(ctorInName)
             .join(" | ");
-        const entityLike = t === "InputUser" ? " | UserInput"
-            : t === "InputChannel" ? " | ChannelInput"
+        const entityLike = t === "InputUser" ? " | UserInput | EntityLike"
+            : t === "InputChannel" ? " | ChannelInput | EntityLike"
             : ["InputPeer", "InputDialogPeer", "InputNotifyPeer"].includes(t)
                 ? " | EntityLike | bigint" : "";
         const shorthand = t === "InputMessage" ? " | number" : "";

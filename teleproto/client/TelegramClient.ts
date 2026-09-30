@@ -3270,6 +3270,7 @@ export class TelegramClient<
     private async _connectOnce(): Promise<boolean> {
         await this._initSession();
         if (this._destroyed) throw new Error("Cannot connect a destroyed client");
+        const hasSessionKey = Boolean(this.session.getAuthKey(this.session.dcId)?.getKey());
         if (this._sender === undefined) {
             const dcId = this.session.dcId || 4;
             const sessionKey = this.session.getAuthKey(dcId);
@@ -3329,7 +3330,7 @@ export class TelegramClient<
         this.session.save();
 
         if (!this._loopStarted) {
-            _updateLoop(this);
+            _updateLoop(this, hasSessionKey);
             this._loopStarted = true;
         }
         this._connectedDeferred.resolve();

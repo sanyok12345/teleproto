@@ -221,9 +221,9 @@ async function dispatchUpdate(
     if (!client._destroyed) await client.updates._dispatch(args.update);
 }
 
-export async function _updateLoop(client: TelegramClient) {
+export async function _updateLoop(client: TelegramClient, catchUp = true) {
     client.updateManager.start();
-    await client.updateManager.catchUp();
+    if (catchUp) await client.updateManager.catchUp();
 
     let lastPongAt: number | undefined;
     while (!client._destroyed) {

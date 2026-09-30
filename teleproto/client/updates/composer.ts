@@ -532,7 +532,7 @@ export class ClientUpdates {
 
     /** @hidden */
     _resumeAuthorization(): void {
-        if (!this.blockedAuthorization || this.client._destroyed) return;
+        if (this.client._destroyed) return;
         this.blockedAuthorization = undefined;
         this._resume();
         void this.client.updateManager.catchUp();

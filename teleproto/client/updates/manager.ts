@@ -135,6 +135,7 @@ export class UpdateManager {
     }
 
     start(): void {
+        if (this.running) return;
         this.running = true;
         this.channelScheduler.start();
         this.client.updates._resume();
@@ -142,6 +143,17 @@ export class UpdateManager {
 
     get isRunning(): boolean {
         return this.running;
+    }
+
+    /** Clears account-specific positions after disconnect and session deletion. @hidden */
+    reset(): void {
+        this.state = undefined;
+        this.lastUpdateTime = 0;
+        this.channels.clear();
+        this.recentMessageKeys.clear();
+        this.recentMessageQueue.length = 0;
+        this.globalPts.init(0);
+        this.qts.init(0);
     }
 
     stop(): void {
@@ -481,7 +493,7 @@ export class UpdateManager {
             this.state.date = state.date;
             this.state.seq = state.seq;
         } else {
-            this.state = { ...state };
+            this.state = { pts: state.pts, qts: state.qts, date: state.date, seq: state.seq };
         }
         this.globalPts.init(state.pts);
         this.qts.init(state.qts);
@@ -835,12 +847,12 @@ export class UpdateManager {
             } else if (diff instanceof Api.updates.Difference) {
                 await this.processDifference(diff, generation);
                 if (!this.isCurrent(generation)) return;
-                this.state = { ...diff.state };
+                this.state = { pts: diff.state.pts, qts: diff.state.qts, date: diff.state.date, seq: diff.state.seq };
                 fetching = false;
             } else if (diff instanceof Api.updates.DifferenceSlice) {
                 await this.processDifference(diff, generation);
                 if (!this.isCurrent(generation)) return;
-                this.state = { ...diff.intermediateState };
+                this.state = { pts: diff.intermediateState.pts, qts: diff.intermediateState.qts, date: diff.intermediateState.date, seq: diff.intermediateState.seq };
             } else if (diff instanceof Api.updates.DifferenceTooLong) {
                 if (diff.pts <= this.state.pts) throw new Error("getDifference did not advance PTS");
                 this.state.pts = diff.pts;

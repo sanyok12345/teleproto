@@ -239,6 +239,13 @@ export async function logOut(client: TelegramClient): Promise<boolean> {
     }
     await client.disconnect();
     await client.session.delete();
+    client.updateManager.reset();
+    client._entityCache.clear();
+    client._dcenters.clear();
+    client._sender = undefined;
+    client._selfInputPeer = undefined;
+    client._bot = undefined;
+    client.updates._resumeAuthorization();
     return success;
 }
 

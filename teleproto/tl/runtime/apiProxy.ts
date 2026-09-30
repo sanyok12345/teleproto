@@ -1,6 +1,6 @@
 import type { Api } from "../api";
 
-type Invoker = (request: Api.AnyRequest, options?: Api.ApiCallOptions) => Promise<unknown>;
+type Invoker = (request: Api.AnyRequest, dcId?: number, options?: Api.ApiCallOptions) => Promise<unknown>;
 type RequestClass = (new (args?: Record<string, unknown>) => Api.AnyRequest) & {
     classType?: string;
     hasParameters?: boolean;
@@ -30,12 +30,12 @@ export function createApiProxy(api: Record<string, unknown>, invoke: Invoker): u
     };
     const call = async (request: Api.RawRequest | Api.AnyRequest, options?: Api.ApiCallOptions) => {
         if (request && "classType" in request && request.classType === "request") {
-            return invoke(request, options);
+            return invoke(request, options?.dcId, options);
         }
         const tag = (request as { _?: unknown })?._;
         const Ctor = typeof tag === "string" ? lookup(tag) : undefined;
         if (!Ctor) throw new TypeError(`Unknown raw API method: ${String(tag)}`);
-        return invoke(new Ctor(request as unknown as Record<string, unknown>), options);
+        return invoke(new Ctor(request as unknown as Record<string, unknown>), options?.dcId, options);
     };
     const namespaceProxy = (ns: Record<string, unknown>, root = false) => {
         const cache = new Map<string, unknown>();
@@ -48,7 +48,7 @@ export function createApiProxy(api: Record<string, unknown>, invoke: Invoker): u
                 if (Ctor) {
                     const method = async (params?: Record<string, unknown>, opts?: Api.ApiCallOptions) => {
                         const options = Ctor.hasParameters ? opts : opts ?? params as Api.ApiCallOptions;
-                        return invoke(new Ctor(Ctor.hasParameters ? params : {}), options);
+                        return invoke(new Ctor(Ctor.hasParameters ? params : {}), options?.dcId, options);
                     };
                     cache.set(key, method);
                     return method;

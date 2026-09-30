@@ -3050,8 +3050,8 @@ export class TelegramClient<
         if (!this._apiProxy) {
             this._apiProxy = createApiProxy(
                 Api as unknown as Record<string, unknown>,
-                (request, options) =>
-                    this.invoke(request, options?.dcId, options)
+                (request, dcId, options) =>
+                    this.invoke(request, dcId, options)
             ) as Api.ApiFacade;
         }
         return this._apiProxy;

@@ -476,7 +476,7 @@ export function getInputChatPhoto(photo: any): Api.TypeInputChatPhoto {
  * @param stripped{Buffer}
  * @returns {Buffer}
  */
-export function strippedPhotoToJpg(stripped: Buffer) {
+export function strippedPhotoToJpg(stripped: Buffer): Buffer {
     // Note: Changes here should update _stripped_real_length
     if (stripped.length < 3 || stripped[0] !== 1) {
         return stripped;

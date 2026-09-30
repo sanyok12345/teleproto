@@ -11,7 +11,7 @@ export class CTR {
         this.cipher = nodeCreateCipheriv("AES-256-CTR", key, iv);
     }
 
-    encrypt(data: any) {
+    encrypt(data: any): Buffer {
         return Buffer.from(this.cipher.update(data));
     }
 }

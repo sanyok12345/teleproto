@@ -86,7 +86,7 @@ export class BinaryReader {
      * @param length {number}
      * @param checkLength {boolean} whether to check if the length overflows or not.
      */
-    read(length = -1, checkLength = true) {
+    read(length = -1, checkLength = true): Buffer {
         if (length === -1) {
             length = this.stream.length - this.offset;
         }
@@ -105,7 +105,7 @@ export class BinaryReader {
      * Gets the byte array representing the current buffer as a whole.
      * @returns {Buffer}
      */
-    getBuffer() {
+    getBuffer(): Buffer {
         return this.stream;
     }
 
@@ -117,7 +117,7 @@ export class BinaryReader {
      * specifying its length.
      * @returns {Buffer}
      */
-    tgReadBytes() {
+    tgReadBytes(): Buffer {
         const firstByte = this.readByte();
         let padding;
         let length;

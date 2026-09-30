@@ -54,7 +54,7 @@ export class MTProtoState {
      * @param client
      * @returns {{iv: Buffer, key: Buffer}}
      */
-    _calcKey(authKey: Buffer, msgKey: Buffer, client: boolean) {
+    _calcKey(authKey: Buffer, msgKey: Buffer, client: boolean): { key: Buffer; iv: Buffer } {
         const x = client ? 0 : 8;
         const sha256a = crypto
             .createHash("sha256")
@@ -127,7 +127,7 @@ export class MTProtoState {
      * following MTProto 2.0 guidelines core.telegram.org/mtproto/description.
      * @param data
      */
-    async encryptMessageData(data: Buffer) {
+    async encryptMessageData(data: Buffer): Promise<Buffer> {
         if (!this.authKey) {
             throw new Error("Auth key unset");
         }

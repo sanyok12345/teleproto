@@ -42,7 +42,7 @@ export function createCipher(algorithm: string, key: Buffer, iv: Buffer) {
     return new CTR(key, iv, algorithm);
 }
 
-export function randomBytes(count: number) {
+export function randomBytes(count: number): Buffer {
     return nodeRandomBytes(count);
 }
 
@@ -68,7 +68,7 @@ export function pbkdf2Sync(
     iterations: any,
     keylen: any,
     digest: any
-) {
+): Buffer {
     return nodePbkdf2Sync(password, salt, iterations, keylen, digest);
 }
 

@@ -633,8 +633,8 @@ export class ConnectionTCPMTProxyAbridged extends TCPMTProxy {
 }
 
 export class PaddedIntermediatePacketCodec extends PacketCodec {
-    static tag = Buffer.from("dddddddd", "hex");
-    static obfuscateTag = PaddedIntermediatePacketCodec.tag;
+    static tag: Buffer = Buffer.from("dddddddd", "hex");
+    static obfuscateTag: Buffer = PaddedIntermediatePacketCodec.tag;
 
     encodePacket(data: Buffer): Buffer {
         const padding = randomInt(16);

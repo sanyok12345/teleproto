@@ -202,7 +202,7 @@ async function computeHash(
 async function computeDigest(
     algo: Api.PasswordKdfAlgoSHA256SHA256PBKDF2HMACSHA512iter100000SHA256ModPow,
     password: string
-) {
+): Promise<Buffer> {
     try {
         checkPrimeAndGood(algo.p, algo.g);
     } catch (e: any) {

@@ -11,7 +11,7 @@ export class FullPacketCodec extends PacketCodec {
         this._sendCounter = 0; // Telegram will ignore us otherwise
     }
 
-    encodePacket(data: Buffer) {
+    encodePacket(data: Buffer): Buffer {
         // https://core.telegram.org/mtproto#tcp-transport
         // total length, sequence number, packet and checksum (CRC32)
         const length = data.length + 12;

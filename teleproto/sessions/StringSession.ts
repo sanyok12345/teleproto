@@ -82,7 +82,7 @@ export class StringSession extends MemorySession {
      * @param x {string}
      * @returns {Buffer}
      */
-    static decode(x: string) {
+    static decode(x: string): Buffer {
         return Buffer.from(x, "base64");
     }
 

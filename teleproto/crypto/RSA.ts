@@ -51,7 +51,7 @@ PUBLIC_KEYS.forEach(({ fingerprint, ...keyInfo }) => {
  * @param data the data to be encrypted.
  * @returns {Buffer|*|undefined} the cipher text, or undefined if no key matching this fingerprint is found.
  */
-export async function encrypt(fingerprint: bigInt.BigInteger, data: Buffer) {
+export async function encrypt(fingerprint: bigInt.BigInteger, data: Buffer): Promise<Buffer | undefined> {
     const key = _serverKeys.get(fingerprint.toString());
     if (!key) {
         return undefined;

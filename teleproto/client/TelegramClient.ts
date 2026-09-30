@@ -627,7 +627,7 @@ export class TelegramClient<
     downloadFile(
         inputLocation: Api.TypeInputFileLocation,
         fileParams: downloadMethods.DownloadFileParams = {}
-    ) {
+    ): Promise<string | Buffer | undefined> {
         return downloadMethods.downloadFile(this, inputLocation, fileParams);
     }
 
@@ -657,7 +657,7 @@ export class TelegramClient<
             | string = {
             isBig: false,
         }
-    ) {
+    ): Promise<string | Buffer | undefined> {
         if (typeof downloadProfilePhotoParams === "string") {
             downloadProfilePhotoParams = {
                 outputFile: downloadProfilePhotoParams,
@@ -691,7 +691,7 @@ export class TelegramClient<
     downloadMedia(
         messageOrMedia: Api.Message | Api.TypeMessageMedia,
         downloadParams?: DownloadMediaInterface | string
-    ) {
+    ): Promise<string | Buffer | undefined> {
         if (typeof downloadParams === "string") {
             downloadParams = { outputFile: downloadParams };
         }
@@ -2801,7 +2801,7 @@ export class TelegramClient<
             | Api.MessageMediaPhoto
             | Api.TypeInputFileLocation,
         params?: downloadMethods.IterDownloadParams
-    ) {
+    ): AsyncGenerator<Buffer, void, unknown> {
         return downloadMethods.iterDownload(this, file, params);
     }
 

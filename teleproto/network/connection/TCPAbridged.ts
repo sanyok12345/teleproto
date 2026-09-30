@@ -13,8 +13,8 @@ const TRANSPORT_ERROR_HEAD = new Set([
 const TRANSPORT_ERROR_CODES = new Set([-404, -429, -444]);
 
 export class AbridgedPacketCodec extends PacketCodec {
-    static tag = Buffer.from("ef", "hex");
-    static obfuscateTag = Buffer.from("efefefef", "hex");
+    static tag: Buffer = Buffer.from("ef", "hex");
+    static obfuscateTag: Buffer = Buffer.from("efefefef", "hex");
     private tag: Buffer;
     obfuscateTag: Buffer;
 
@@ -24,7 +24,7 @@ export class AbridgedPacketCodec extends PacketCodec {
         this.obfuscateTag = AbridgedPacketCodec.obfuscateTag;
     }
 
-    encodePacket(data: Buffer) {
+    encodePacket(data: Buffer): Buffer {
         let length = data.length >> 2;
         let temp;
         if (length < 127) {

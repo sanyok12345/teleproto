@@ -71,12 +71,12 @@ class ObfuscatedIO {
         this._decrypt = decryptor;
     }
 
-    async read(n: number) {
+    async read(n: number): Promise<Buffer> {
         const data = await this.connection.readExactly(n);
         return this._decrypt!.encrypt(data);
     }
 
-    readExactly(n: number) {
+    readExactly(n: number): Promise<Buffer> {
         return this.read(n);
     }
 

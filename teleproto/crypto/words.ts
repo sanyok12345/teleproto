@@ -14,7 +14,7 @@ export function s2i(str: string, pos: number) {
 /**
  * Helper function for transforming string key to Uint32Array
  */
-export function getWords(key: string | Uint8Array | Uint32Array) {
+export function getWords(key: string | Uint8Array | Uint32Array): Uint32Array {
     if (key instanceof Uint32Array) {
         return key;
     }
@@ -46,6 +46,6 @@ export function getWords(key: string | Uint8Array | Uint32Array) {
     throw new Error("Unable to create 32-bit words");
 }
 
-export function xor(left: Uint32Array, right: Uint32Array, to = left) {
+export function xor(left: Uint32Array, right: Uint32Array, to: Uint32Array = left) {
     for (let i = 0; i < left.length; i++) to[i] = left[i] ^ right[i];
 }

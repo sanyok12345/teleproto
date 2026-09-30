@@ -1,4 +1,5 @@
 import type { Button } from "./tl/custom/button";
+import type { InlineKeyboard, ReplyKeyboard } from "./tl/custom/keyboard";
 import { Api } from "./tl";
 import type { CustomFile } from "./client/uploads";
 import TypeUser = Api.TypeUser;

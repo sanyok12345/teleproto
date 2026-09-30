@@ -30,7 +30,7 @@ import * as folderMethods from "./folders";
 import * as stickerMethods from "./stickers";
 import type { BigInteger } from "big-integer";
 import type {
-    ButtonLike,
+    MarkupLike,
     Entity,
     EntityLike,
     FileLike,
@@ -590,12 +590,7 @@ export class TelegramClient<
      * @category Messages
      */
     buildReplyMarkup(
-        buttons:
-            | Api.TypeReplyMarkup
-            | undefined
-            | ButtonLike
-            | ButtonLike[]
-            | ButtonLike[][],
+        buttons: MarkupLike | undefined,
         inlineOnly: boolean = false
     ) {
         return buttonsMethods.buildReplyMarkup(buttons, inlineOnly);

@@ -1,5 +1,5 @@
 import { Api } from "../tl";
-import type { ButtonLike } from "../define";
+import type { ButtonLike, MarkupLike } from "../define";
 import { Button } from "../tl/custom/button";
 import { InlineKeyboard, ReplyKeyboard } from "../tl/custom/keyboard";
 import { MessageButton } from "../tl/custom/messageButton";
@@ -19,12 +19,7 @@ import { isArrayLike, unionId } from "../Helpers";
  * @hidden
  */
 export function buildReplyMarkup(
-    buttons:
-        | Api.TypeReplyMarkup
-        | undefined
-        | ButtonLike
-        | ButtonLike[]
-        | ButtonLike[][],
+    buttons: MarkupLike | undefined,
     inlineOnly: boolean = false
 ): Api.TypeReplyMarkup | undefined {
     if (buttons == undefined) {

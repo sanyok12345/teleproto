@@ -8,9 +8,9 @@ import bigInt from "big-integer";
 import type { SendMessageParams } from "../../client/messages";
 import type { DeleteHistoryParams } from "../../client/chats";
 
-export class Dialog {
+export class Dialog<D extends Api.Dialog | Api.DialogCommunity = Api.Dialog> {
     _client: TelegramClient;
-    dialog: Api.Dialog | Api.DialogCommunity;
+    dialog: D;
     pinned: boolean;
     folderId?: number;
     archived: boolean;
@@ -32,7 +32,7 @@ export class Dialog {
 
     constructor(
         client: TelegramClient,
-        dialog: Api.Dialog | Api.DialogCommunity,
+        dialog: D,
         entities: Map<string, Entity>,
         message?: Api.Message
     ) {

@@ -37,6 +37,7 @@ export interface DialogsIterInterface {
     ignorePinned: boolean;
     ignoreMigrated: boolean;
     folder: number;
+    includeCommunities?: boolean;
 }
 
 /**
@@ -46,12 +47,13 @@ export interface DialogsIterInterface {
  * and can skip pinned or migrated chats. Used internally by `iterDialogs` / `getDialogs`.
  * @internal
  */
-export class _DialogsIter extends RequestIter {
+export class _DialogsIter<IncludeCommunities extends boolean = false> extends RequestIter {
     private request?: Api.messages.GetDialogs;
     private seen?: Set<any>;
     private filterDate?: number;
     private ignoreMigrated?: boolean;
     private lastOffset?: string;
+    private includeCommunities = false;
 
     async _init({
         offsetDate,
@@ -60,6 +62,7 @@ export class _DialogsIter extends RequestIter {
         ignorePinned,
         ignoreMigrated,
         folder,
+        includeCommunities,
     }: DialogsIterInterface) {
         this.request = new Api.messages.GetDialogs({
             offsetDate: offsetDate ?? 0,
@@ -86,8 +89,9 @@ export class _DialogsIter extends RequestIter {
         this.filterDate = offsetDate;
         this.ignoreMigrated = ignoreMigrated;
         this.lastOffset = undefined;
+        this.includeCommunities = !!includeCommunities;
     }
-    [Symbol.asyncIterator](): AsyncIterator<Dialog, any, undefined> {
+    [Symbol.asyncIterator](): AsyncIterator<Dialog<IncludeCommunities extends false ? Api.Dialog : Api.Dialog | Api.DialogCommunity>, any, undefined> {
         return super[Symbol.asyncIterator]();
     }
 
@@ -142,7 +146,7 @@ export class _DialogsIter extends RequestIter {
             }
 
             for (const d of r.dialogs) {
-                if (d instanceof Api.DialogFolder) {
+                if (d instanceof Api.DialogFolder || (!this.includeCommunities && d instanceof Api.DialogCommunity)) {
                     continue;
                 }
                 const peer = d instanceof Api.DialogCommunity
@@ -210,7 +214,9 @@ export class _DialogsIter extends RequestIter {
 }
 
 /** interface for iterating and getting dialogs. */
-export interface IterDialogsParams {
+export interface IterDialogsParams<IncludeCommunities extends boolean = false> {
+    /** Include community rows; defaults to false to preserve conversation-only results. */
+    includeCommunities?: IncludeCommunities;
     /**  How many dialogs to be retrieved as maximum. Can be set to undefined to retrieve all dialogs.<br/>
      * Note that this may take whole minutes if you have hundreds of dialogs, as Telegram will tell the library to slow down through a FloodWaitError.*/
     limit?: number;
@@ -236,7 +242,7 @@ export interface IterDialogsParams {
 }
 
 /** @hidden */
-export function iterDialogs(
+export function iterDialogs<IncludeCommunities extends boolean = false>(
     client: TelegramClient,
     {
         limit = undefined,
@@ -247,13 +253,14 @@ export function iterDialogs(
         ignoreMigrated = false,
         folder = undefined,
         archived = undefined,
-    }: IterDialogsParams
-): _DialogsIter {
+        includeCommunities,
+    }: IterDialogsParams<IncludeCommunities>
+): _DialogsIter<IncludeCommunities> {
     if (archived != undefined) {
         folder = archived ? 1 : 0;
     }
 
-    return new _DialogsIter(
+    return new _DialogsIter<IncludeCommunities>(
         client,
         limit,
         {},
@@ -264,14 +271,15 @@ export function iterDialogs(
             ignorePinned,
             ignoreMigrated,
             folder,
+            includeCommunities,
         }
     );
 }
 
 /** @hidden */
-export async function getDialogs(
+export async function getDialogs<IncludeCommunities extends boolean = false>(
     client: TelegramClient,
-    params: IterDialogsParams
-): Promise<TotalList<Dialog>> {
-    return (await client.iterDialogs(params).collect()) as TotalList<Dialog>;
+    params: IterDialogsParams<IncludeCommunities>
+): Promise<TotalList<Dialog<IncludeCommunities extends false ? Api.Dialog : Api.Dialog | Api.DialogCommunity>>> {
+    return (await client.iterDialogs(params).collect()) as TotalList<Dialog<IncludeCommunities extends false ? Api.Dialog : Api.Dialog | Api.DialogCommunity>>;
 }

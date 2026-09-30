@@ -1425,7 +1425,7 @@ export class TelegramClient<
      * ```
      * @category Dialogs
      */
-    iterDialogs(iterDialogsParams: dialogMethods.IterDialogsParams = {}) {
+    iterDialogs<IncludeCommunities extends boolean = false>(iterDialogsParams: dialogMethods.IterDialogsParams<IncludeCommunities> = {}) {
         return dialogMethods.iterDialogs(this, iterDialogsParams);
     }
 
@@ -1452,7 +1452,7 @@ export class TelegramClient<
      * ```
      * @category Dialogs
      */
-    getDialogs(params: dialogMethods.IterDialogsParams = {}) {
+    getDialogs<IncludeCommunities extends boolean = false>(params: dialogMethods.IterDialogsParams<IncludeCommunities> = {}) {
         return dialogMethods.getDialogs(this, params);
     }
 

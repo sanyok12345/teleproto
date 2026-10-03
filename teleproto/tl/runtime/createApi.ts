@@ -1,9 +1,8 @@
 import bigInt, { BigInteger } from "big-integer";
 
 import {
-    generateRandomBytes,
+    generateRandomLong,
     returnBigInt,
-    readBigIntFromBuffer,
     toSignedLittleBuffer,
 } from "../../Helpers";
 import { serializeBytes, serializeDate } from "./helpers";
@@ -95,10 +94,6 @@ const AUTO_CASTS = new Set([
     "InputDocument",
     "InputChatPhoto",
 ]);
-
-function generateRandomBigInt(): BigInteger {
-    return readBigIntFromBuffer(generateRandomBytes(8), false, true);
-}
 
 function isFlagFieldAbsent(cfg: ArgConfig, value: unknown): boolean {
     return (
@@ -376,12 +371,12 @@ function createClasses(
                             const randomIds: BigInteger[] = [];
                             const baseIds = (args.id as unknown[]) || [];
                             for (let i = 0; i < baseIds.length; i += 1) {
-                                randomIds.push(generateRandomBigInt());
+                                randomIds.push(generateRandomLong(true));
                             }
                             (this as Record<string, unknown>)[argName] = randomIds;
                         } else {
                             (this as Record<string, unknown>)[argName] =
-                                generateRandomBigInt();
+                                generateRandomLong(true);
                         }
                     } else {
                         (this as Record<string, unknown>)[argName] = args[argName];

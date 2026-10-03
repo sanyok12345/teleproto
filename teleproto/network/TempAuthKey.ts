@@ -5,7 +5,7 @@ import { AuthKey } from "../crypto/AuthKey";
 import { IGE } from "../crypto/IGE";
 import {
     generateRandomBytes,
-    readBigIntFromBuffer,
+    generateRandomLong,
     toSignedLittleBuffer,
 } from "../Helpers";
 
@@ -54,7 +54,7 @@ export function buildBindTempAuthKeyRequest(
     if (!tempKey.keyId) {
         throw new Error("bindTempAuthKey: temporary key is not ready");
     }
-    const nonce = readBigIntFromBuffer(generateRandomBytes(8), true, true);
+    const nonce = generateRandomLong(true);
 
     const inner = new Api.BindAuthKeyInner({
         nonce,

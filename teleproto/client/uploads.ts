@@ -1,7 +1,7 @@
 import { Api } from "../tl";
 
 import type { TelegramClient } from "./TelegramClient";
-import { generateRandomBytes, readBigIntFromBuffer, unionId } from "../Helpers";
+import { generateRandomLong, unionId } from "../Helpers";
 import { getAppropriatedPartSize, getInputMedia, getMessageId } from "../Utils";
 import { EntityLike, FileLike, MarkupLike, MessageIDLike } from "../define";
 import path from "path";
@@ -119,7 +119,7 @@ export async function uploadFile(
     let { workers } = fileParams;
 
     const { name, size } = file;
-    const fileId = readBigIntFromBuffer(generateRandomBytes(8), true, true);
+    const fileId = generateRandomLong(true);
     const isLarge = size > LARGE_FILE_THRESHOLD;
 
     const partSize = getAppropriatedPartSize(bigInt(size)) * KB_TO_BYTES;

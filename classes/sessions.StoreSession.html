@@ -1,5 +1,5 @@
-<!DOCTYPE html><html class="default" lang="en" data-base="../"><head><meta charset="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>StoreSession | teleproto - v1.229.0</title><meta name="description" content="Documentation for teleproto"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="../assets/style.css"/><link rel="stylesheet" href="../assets/highlight.css"/><script defer src="../assets/main.js"></script><script async src="../assets/icons.js" id="tsd-icons-script"></script><script async src="../assets/search.js" id="tsd-search-script"></script><script async src="../assets/navigation.js" id="tsd-nav-script"></script><script async src="../assets/hierarchy.js" id="tsd-hierarchy-script"></script></head><body><script>document.documentElement.dataset.theme = localStorage.getItem("tsd-theme") || "os";document.body.style.display="none";setTimeout(() => window.app?app.showPage():document.body.style.removeProperty("display"),500)</script><header class="tsd-page-toolbar">
-<div class="tsd-toolbar-contents container"><a href="https://docs.teleproto.dev" class="title">teleproto - v1.229.0</a>
+<!DOCTYPE html><html class="default" lang="en" data-base="../"><head><meta charset="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>StoreSession | teleproto - v1.229.2</title><meta name="description" content="Documentation for teleproto"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="../assets/style.css"/><link rel="stylesheet" href="../assets/highlight.css"/><script defer src="../assets/main.js"></script><script async src="../assets/icons.js" id="tsd-icons-script"></script><script async src="../assets/search.js" id="tsd-search-script"></script><script async src="../assets/navigation.js" id="tsd-nav-script"></script><script async src="../assets/hierarchy.js" id="tsd-hierarchy-script"></script></head><body><script>document.documentElement.dataset.theme = localStorage.getItem("tsd-theme") || "os";document.body.style.display="none";setTimeout(() => window.app?app.showPage():document.body.style.removeProperty("display"),500)</script><header class="tsd-page-toolbar">
+<div class="tsd-toolbar-contents container"><a href="https://docs.teleproto.dev" class="title">teleproto - v1.229.2</a>
 <div id="tsd-toolbar-links"><a href="https://github.com/sanyok12345/teleproto">GitHub</a><a href="https://www.npmjs.com/package/teleproto">npm</a><a href="https://github.com/sanyok12345/teleproto/issues">Issues</a></div><button id="tsd-search-trigger" class="tsd-widget" aria-label="Search"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-search"></use></svg></button><dialog id="tsd-search" aria-label="Search"><input role="combobox" id="tsd-search-input" aria-controls="tsd-search-results" aria-autocomplete="list" aria-expanded="true" autocapitalize="off" autocomplete="off" placeholder="Search the docs" maxLength="100"/>
 <ul role="listbox" id="tsd-search-results"></ul>
 <div id="tsd-search-status" aria-live="polite" aria-atomic="true">
@@ -13,7 +13,8 @@
 <h1>Class StoreSession</h1></div>
 <section class="tsd-panel tsd-comment">
 <div class="tsd-comment tsd-typography"><p>Persistent session that stores auth keys and entity data on disk using <code>node-localstorage</code>.</p>
-<p>Creates a directory named after the session in the current working directory.
+<p>Accepts an absolute path or a directory relative to the working directory.
+Reuses an existing legacy directory when the absolute target is absent.
 Suitable for long-running server applications where session data must survive restarts.</p>
 </div>
 <div class="tsd-comment tsd-typography">
@@ -22,14 +23,14 @@ Suitable for long-running server applications where session data must survive re
 </code><button type="button">Copy</button></pre>
 
 </div></div></section>
-<section class="tsd-panel tsd-hierarchy" data-refl="128059">
+<section class="tsd-panel tsd-hierarchy" data-refl="228855">
 <h4>Hierarchy (<a href="../hierarchy.html#sessions.StoreSession">View Summary</a>)</h4>
 <ul class="tsd-hierarchy">
 <li class="tsd-hierarchy-item"><a href="sessions.MemorySession.html" class="tsd-signature-type tsd-kind-class">MemorySession</a>
 <ul class="tsd-hierarchy">
 <li class="tsd-hierarchy-item"><span class="tsd-hierarchy-target">StoreSession</span></li></ul></li></ul></section><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/sessions/StoreSession.ts#L19">teleproto/sessions/StoreSession.ts:19</a></li></ul></aside>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/sessions/StoreSession.ts#L22">teleproto/sessions/StoreSession.ts:22</a></li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-accordion" open><summary class="tsd-accordion-summary tsd-index-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
@@ -57,9 +58,9 @@ Suitable for long-running server applications where session data must survive re
 <a href="#delete" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>delete</span></a>
 <a href="#getauthkey" class="tsd-index-link tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>Auth<wbr/>Key</span></a>
 <a href="#getentityrowsbyid" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>Entity<wbr/>Rows<wbr/>By<wbr/>Id</span></a>
-<a href="#getentityrowsbyname" class="tsd-index-link tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>Entity<wbr/>Rows<wbr/>By<wbr/>Name</span></a>
-<a href="#getentityrowsbyphone" class="tsd-index-link tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>Entity<wbr/>Rows<wbr/>By<wbr/>Phone</span></a>
-<a href="#getentityrowsbyusername" class="tsd-index-link tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>Entity<wbr/>Rows<wbr/>By<wbr/>Username</span></a>
+<a href="#getentityrowsbyname" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>Entity<wbr/>Rows<wbr/>By<wbr/>Name</span></a>
+<a href="#getentityrowsbyphone" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>Entity<wbr/>Rows<wbr/>By<wbr/>Phone</span></a>
+<a href="#getentityrowsbyusername" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>Entity<wbr/>Rows<wbr/>By<wbr/>Username</span></a>
 <a href="#getinputentity" class="tsd-index-link tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>Input<wbr/>Entity</span></a>
 <a href="#load" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>load</span></a>
 <a href="#processentities" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>process<wbr/>Entities</span></a>
@@ -82,7 +83,7 @@ data center, or <code>undefined</code> if a new one should be generated.</p>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">AuthKey</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">undefined</span></h4><aside class="tsd-sources">
 <p>Overrides MemorySession.authKey</p>
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/sessions/StoreSession.ts#L118">teleproto/sessions/StoreSession.ts:118</a></li></ul></aside></div></li>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/sessions/StoreSession.ts#L125">teleproto/sessions/StoreSession.ts:125</a></li></ul></aside></div></li>
 <li>
 <div class="tsd-signature" id="authkeyauthkey-1"><span class="tsd-signature-keyword">set</span> <span class="tsd-kind-set-signature">authKey</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">value</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">AuthKey</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">void</span></div>
 <div class="tsd-description">
@@ -96,7 +97,7 @@ data center, or <code>undefined</code> if a new one should be generated.</p>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4><aside class="tsd-sources">
 <p>Overrides MemorySession.authKey</p>
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/sessions/StoreSession.ts#L113">teleproto/sessions/StoreSession.ts:113</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/sessions/StoreSession.ts#L120">teleproto/sessions/StoreSession.ts:120</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member tsd-is-inherited">
 <h3 class="tsd-anchor-link" id="dcid"><span>dc<wbr/>Id</span><a href="#dcid" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-is-inherited">
@@ -163,7 +164,7 @@ data center, or <code>undefined</code> if a new one should be generated.</p>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4><aside class="tsd-sources">
 <p>Overrides MemorySession.testServers</p>
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/sessions/StoreSession.ts#L109">teleproto/sessions/StoreSession.ts:109</a></li></ul></aside></div></li>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/sessions/StoreSession.ts#L116">teleproto/sessions/StoreSession.ts:116</a></li></ul></aside></div></li>
 <li>
 <div class="tsd-signature" id="testserverstestservers-1"><span class="tsd-signature-keyword">set</span> <span class="tsd-kind-set-signature">testServers</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">value</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">void</span></div>
 <div class="tsd-description">
@@ -174,7 +175,7 @@ data center, or <code>undefined</code> if a new one should be generated.</p>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4><aside class="tsd-sources">
 <p>Overrides MemorySession.testServers</p>
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/sessions/StoreSession.ts#L104">teleproto/sessions/StoreSession.ts:104</a></li></ul></aside></div></li></ul></section></section></details>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/sessions/StoreSession.ts#L111">teleproto/sessions/StoreSession.ts:111</a></li></ul></aside></div></li></ul></section></section></details>
 <details class="tsd-panel-group tsd-member-group tsd-accordion" open><summary class="tsd-accordion-summary" data-key="section-Constructors"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
 <h2 class="tsd-anchor-link" id="constructors-1">Constructors<a href="#constructors-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h2></summary>
 <section>
@@ -192,7 +193,7 @@ data center, or <code>undefined</code> if a new one should be generated.</p>
 <h4 class="tsd-returns-title">Returns <a href="" class="tsd-signature-type tsd-kind-class">StoreSession</a></h4><aside class="tsd-sources">
 <p>Overrides <a href="sessions.MemorySession.html">MemorySession</a>.<a href="sessions.MemorySession.html#constructor">constructor</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/sessions/StoreSession.ts#L23">teleproto/sessions/StoreSession.ts:23</a></li></ul></aside></div></li></ul></section></section></details>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/sessions/StoreSession.ts#L26">teleproto/sessions/StoreSession.ts:26</a></li></ul></aside></div></li></ul></section></section></details>
 <details class="tsd-panel-group tsd-member-group tsd-accordion" open><summary class="tsd-accordion-summary" data-key="section-Methods"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
 <h2 class="tsd-anchor-link" id="methods-1">Methods<a href="#methods-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h2></summary>
 <section>
@@ -267,7 +268,7 @@ information from disk since it's not valid anymore.</p>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4><aside class="tsd-sources">
 <p>Overrides <a href="sessions.MemorySession.html">MemorySession</a>.<a href="sessions.MemorySession.html#delete">delete</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/sessions/StoreSession.ts#L131">teleproto/sessions/StoreSession.ts:131</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/sessions/StoreSession.ts#L138">teleproto/sessions/StoreSession.ts:138</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member tsd-is-inherited">
 <h3 class="tsd-anchor-link" id="getauthkey"><span>get<wbr/>Auth<wbr/>Key</span><a href="#getauthkey" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-is-inherited">
@@ -298,49 +299,49 @@ information from disk since it's not valid anymore.</p>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4><aside class="tsd-sources">
 <p>Overrides <a href="sessions.MemorySession.html">MemorySession</a>.<a href="sessions.MemorySession.html#getentityrowsbyid">getEntityRowsById</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/sessions/StoreSession.ts#L146">teleproto/sessions/StoreSession.ts:146</a></li></ul></aside></div></li></ul></section>
-<section class="tsd-panel tsd-member tsd-is-inherited">
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/sessions/StoreSession.ts#L153">teleproto/sessions/StoreSession.ts:153</a></li></ul></aside></div></li></ul></section>
+<section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="getentityrowsbyname"><span>get<wbr/>Entity<wbr/>Rows<wbr/>By<wbr/>Name</span><a href="#getentityrowsbyname" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
-<ul class="tsd-signatures tsd-is-inherited">
-<li class="tsd-is-inherited">
-<div class="tsd-signature tsd-anchor-link" id="getentityrowsbyname-1"><span class="tsd-kind-call-signature">getEntityRowsByName</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">name</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">undefined</span><a href="#getentityrowsbyname-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<ul class="tsd-signatures">
+<li class="">
+<div class="tsd-signature tsd-anchor-link" id="getentityrowsbyname-1"><span class="tsd-kind-call-signature">getEntityRowsByName</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">name</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">undefined</span><a href="#getentityrowsbyname-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
 <li><span><span class="tsd-kind-parameter">name</span>: <span class="tsd-signature-type">string</span></span></li></ul></div>
-<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">undefined</span></h4><aside class="tsd-sources">
-<p>Inherited from <a href="sessions.MemorySession.html">MemorySession</a>.<a href="sessions.MemorySession.html#getentityrowsbyname">getEntityRowsByName</a></p>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">undefined</span></h4><aside class="tsd-sources">
+<p>Overrides <a href="sessions.MemorySession.html">MemorySession</a>.<a href="sessions.MemorySession.html#getentityrowsbyname">getEntityRowsByName</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/sessions/Memory.ts#L229">teleproto/sessions/Memory.ts:229</a></li></ul></aside></div></li></ul></section>
-<section class="tsd-panel tsd-member tsd-is-inherited">
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/sessions/StoreSession.ts#L171">teleproto/sessions/StoreSession.ts:171</a></li></ul></aside></div></li></ul></section>
+<section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="getentityrowsbyphone"><span>get<wbr/>Entity<wbr/>Rows<wbr/>By<wbr/>Phone</span><a href="#getentityrowsbyphone" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
-<ul class="tsd-signatures tsd-is-inherited">
-<li class="tsd-is-inherited">
-<div class="tsd-signature tsd-anchor-link" id="getentityrowsbyphone-1"><span class="tsd-kind-call-signature">getEntityRowsByPhone</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">phone</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">undefined</span><a href="#getentityrowsbyphone-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<ul class="tsd-signatures">
+<li class="">
+<div class="tsd-signature tsd-anchor-link" id="getentityrowsbyphone-1"><span class="tsd-kind-call-signature">getEntityRowsByPhone</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">phone</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">undefined</span><a href="#getentityrowsbyphone-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
 <li><span><span class="tsd-kind-parameter">phone</span>: <span class="tsd-signature-type">string</span></span></li></ul></div>
-<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">undefined</span></h4><aside class="tsd-sources">
-<p>Inherited from <a href="sessions.MemorySession.html">MemorySession</a>.<a href="sessions.MemorySession.html#getentityrowsbyphone">getEntityRowsByPhone</a></p>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">undefined</span></h4><aside class="tsd-sources">
+<p>Overrides <a href="sessions.MemorySession.html">MemorySession</a>.<a href="sessions.MemorySession.html#getentityrowsbyphone">getEntityRowsByPhone</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/sessions/Memory.ts#L211">teleproto/sessions/Memory.ts:211</a></li></ul></aside></div></li></ul></section>
-<section class="tsd-panel tsd-member tsd-is-inherited">
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/sessions/StoreSession.ts#L163">teleproto/sessions/StoreSession.ts:163</a></li></ul></aside></div></li></ul></section>
+<section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="getentityrowsbyusername"><span>get<wbr/>Entity<wbr/>Rows<wbr/>By<wbr/>Username</span><a href="#getentityrowsbyusername" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
-<ul class="tsd-signatures tsd-is-inherited">
-<li class="tsd-is-inherited">
-<div class="tsd-signature tsd-anchor-link" id="getentityrowsbyusername-1"><span class="tsd-kind-call-signature">getEntityRowsByUsername</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">username</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">undefined</span><a href="#getentityrowsbyusername-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<ul class="tsd-signatures">
+<li class="">
+<div class="tsd-signature tsd-anchor-link" id="getentityrowsbyusername-1"><span class="tsd-kind-call-signature">getEntityRowsByUsername</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">username</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">undefined</span><a href="#getentityrowsbyusername-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
 <li><span><span class="tsd-kind-parameter">username</span>: <span class="tsd-signature-type">string</span></span></li></ul></div>
-<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">undefined</span></h4><aside class="tsd-sources">
-<p>Inherited from <a href="sessions.MemorySession.html">MemorySession</a>.<a href="sessions.MemorySession.html#getentityrowsbyusername">getEntityRowsByUsername</a></p>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">undefined</span></h4><aside class="tsd-sources">
+<p>Overrides <a href="sessions.MemorySession.html">MemorySession</a>.<a href="sessions.MemorySession.html#getentityrowsbyusername">getEntityRowsByUsername</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/sessions/Memory.ts#L220">teleproto/sessions/Memory.ts:220</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/sessions/StoreSession.ts#L167">teleproto/sessions/StoreSession.ts:167</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member tsd-is-inherited">
 <h3 class="tsd-anchor-link" id="getinputentity"><span>get<wbr/>Input<wbr/>Entity</span><a href="#getinputentity" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-is-inherited">
@@ -359,7 +360,7 @@ to use a cached username to avoid extra RPC).</p>
 <h4 class="tsd-returns-title">Returns <a href="../types/Api.TypeInputPeer.html" class="tsd-signature-type tsd-kind-type-alias">TypeInputPeer</a></h4><aside class="tsd-sources">
 <p>Inherited from <a href="sessions.MemorySession.html">MemorySession</a>.<a href="sessions.MemorySession.html#getinputentity">getInputEntity</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/sessions/Memory.ts#L263">teleproto/sessions/Memory.ts:263</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/sessions/Memory.ts#L259">teleproto/sessions/Memory.ts:259</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="load"><span>load</span><a href="#load" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -371,7 +372,7 @@ to use a cached username to avoid extra RPC).</p>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <p>Overrides <a href="sessions.MemorySession.html">MemorySession</a>.<a href="sessions.MemorySession.html#load">load</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/sessions/StoreSession.ts#L40">teleproto/sessions/StoreSession.ts:40</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/sessions/StoreSession.ts#L47">teleproto/sessions/StoreSession.ts:47</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="processentities"><span>process<wbr/>Entities</span><a href="#processentities" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -390,7 +391,7 @@ and a storage failure never fails the request that produced it.</p>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4><aside class="tsd-sources">
 <p>Overrides <a href="sessions.MemorySession.html">MemorySession</a>.<a href="sessions.MemorySession.html#processentities">processEntities</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/sessions/StoreSession.ts#L136">teleproto/sessions/StoreSession.ts:136</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/sessions/StoreSession.ts#L143">teleproto/sessions/StoreSession.ts:143</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member tsd-is-inherited">
 <h3 class="tsd-anchor-link" id="save"><span>save</span><a href="#save" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-is-inherited">
@@ -420,7 +421,7 @@ make persist the relevant session information to disk.</p>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4><aside class="tsd-sources">
 <p>Overrides <a href="sessions.MemorySession.html">MemorySession</a>.<a href="sessions.MemorySession.html#setauthkey">setAuthKey</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/sessions/StoreSession.ts#L88">teleproto/sessions/StoreSession.ts:88</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/sessions/StoreSession.ts#L95">teleproto/sessions/StoreSession.ts:95</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="setdc"><span>set<wbr/>DC</span><a href="#setdc" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -446,7 +447,7 @@ which is currently unused.</p>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4><aside class="tsd-sources">
 <p>Overrides <a href="sessions.MemorySession.html">MemorySession</a>.<a href="sessions.MemorySession.html#setdc">setDC</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/sessions/StoreSession.ts#L95">teleproto/sessions/StoreSession.ts:95</a></li></ul></aside></div></li></ul></section></section></details></div>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/sessions/StoreSession.ts#L102">teleproto/sessions/StoreSession.ts:102</a></li></ul></aside></div></li></ul></section></section></details></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">
@@ -465,10 +466,10 @@ which is currently unused.</p>
 <details open class="tsd-accordion tsd-page-navigation-section"><summary class="tsd-accordion-summary" data-key="section-Constructors"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>Constructors</summary>
 <div><a href="#constructor"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Constructor"><use href="../assets/icons.svg#icon-512"></use></svg><span>constructor</span></a></div></details>
 <details open class="tsd-accordion tsd-page-navigation-section"><summary class="tsd-accordion-summary" data-key="section-Methods"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>Methods</summary>
-<div><a href="#_entitiestorows" class="tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>_<wbr/>entities<wbr/>To<wbr/>Rows</span></a><a href="#_entitytorow" class="tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>_<wbr/>entity<wbr/>To<wbr/>Row</span></a><a href="#_entityvaluestorow" class="tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>_<wbr/>entity<wbr/>Values<wbr/>To<wbr/>Row</span></a><a href="#close" class="tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>close</span></a><a href="#delete"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>delete</span></a><a href="#getauthkey" class="tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>Auth<wbr/>Key</span></a><a href="#getentityrowsbyid"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>Entity<wbr/>Rows<wbr/>By<wbr/>Id</span></a><a href="#getentityrowsbyname" class="tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>Entity<wbr/>Rows<wbr/>By<wbr/>Name</span></a><a href="#getentityrowsbyphone" class="tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>Entity<wbr/>Rows<wbr/>By<wbr/>Phone</span></a><a href="#getentityrowsbyusername" class="tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>Entity<wbr/>Rows<wbr/>By<wbr/>Username</span></a><a href="#getinputentity" class="tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>Input<wbr/>Entity</span></a><a href="#load"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>load</span></a><a href="#processentities"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>process<wbr/>Entities</span></a><a href="#save" class="tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>save</span></a><a href="#setauthkey"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>set<wbr/>Auth<wbr/>Key</span></a><a href="#setdc"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>set<wbr/>DC</span></a></div></details></div></details></div>
+<div><a href="#_entitiestorows" class="tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>_<wbr/>entities<wbr/>To<wbr/>Rows</span></a><a href="#_entitytorow" class="tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>_<wbr/>entity<wbr/>To<wbr/>Row</span></a><a href="#_entityvaluestorow" class="tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>_<wbr/>entity<wbr/>Values<wbr/>To<wbr/>Row</span></a><a href="#close" class="tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>close</span></a><a href="#delete"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>delete</span></a><a href="#getauthkey" class="tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>Auth<wbr/>Key</span></a><a href="#getentityrowsbyid"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>Entity<wbr/>Rows<wbr/>By<wbr/>Id</span></a><a href="#getentityrowsbyname"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>Entity<wbr/>Rows<wbr/>By<wbr/>Name</span></a><a href="#getentityrowsbyphone"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>Entity<wbr/>Rows<wbr/>By<wbr/>Phone</span></a><a href="#getentityrowsbyusername"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>Entity<wbr/>Rows<wbr/>By<wbr/>Username</span></a><a href="#getinputentity" class="tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>Input<wbr/>Entity</span></a><a href="#load"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>load</span></a><a href="#processentities"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>process<wbr/>Entities</span></a><a href="#save" class="tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>save</span></a><a href="#setauthkey"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>set<wbr/>Auth<wbr/>Key</span></a><a href="#setdc"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>set<wbr/>DC</span></a></div></details></div></details></div>
 <div class="site-menu">
 <nav id="tsd-sidebar-links" class="tsd-navigation"><a href="https://github.com/sanyok12345/teleproto" class="tsd-nav-link">GitHub</a><a href="https://www.npmjs.com/package/teleproto" class="tsd-nav-link">npm</a><a href="https://github.com/sanyok12345/teleproto/issues" class="tsd-nav-link">Issues</a></nav>
-<nav class="tsd-navigation"><a href="../modules.html">teleproto - v1.229.0</a>
+<nav class="tsd-navigation"><a href="../modules.html">teleproto - v1.229.2</a>
 <ul class="tsd-small-nested-navigation" id="tsd-nav-container">
 <li>Loading...</li></ul></nav></div></div></div><footer></footer>
 <div class="overlay"></div></body></html>

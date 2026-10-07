@@ -38,6 +38,12 @@ import { LAYER } from "../tl/runtime/registry";
 import { PendingState } from "../extensions/PendingState";
 import MsgsAck = Api.MsgsAck;
 
+const PROBE_INTERVAL_MS = 10_000;
+const PROBE_AFTER_MS = 15_000;
+const PROBE_MAX_IDS = 64;
+const PROBE_EXPIRY_MS = 60_000;
+const RESEND_AFTER_MS = 60_000;
+
 const USE_INVOKE_AFTER_WITH = new Set([
     "messages.SendMessage",
     "messages.SendMedia",
@@ -127,6 +133,11 @@ export class MTProtoSender {
     private readonly _state: MTProtoState;
     private _queued: RequestState[] = [];
     private _io?: { alive: boolean; connection: Connection };
+    private _watchdog?: ReturnType<typeof setInterval>;
+    private readonly _probes = new Map<
+        string,
+        { ids: bigInt.BigInteger[]; at: number }
+    >();
     private _wakeWriter?: () => void;
     _pendingState: PendingState;
     private readonly _pendingAck: Set<bigInt.BigInteger>;
@@ -214,6 +225,7 @@ export class MTProtoSender {
             },
             enqueue: (state) => this._enqueue(state),
             requeue: (states) => this._requeue(states),
+            onStateInfo: (reqMsgId, info) => this._onStateInfo(reqMsgId, info),
             onBadAuthKey: (shouldSkipForMain) =>
                 this._handleBadAuthKey(shouldSkipForMain),
             markNeedsInitConnection: () => {
@@ -690,6 +702,12 @@ export class MTProtoSender {
         }
         const io = { alive: true, connection };
         this._io = io;
+        if (this._watchdog) clearInterval(this._watchdog);
+        this._watchdog = setInterval(
+            () => this._probePending(),
+            PROBE_INTERVAL_MS
+        );
+        this._watchdog.unref?.();
         this._log.debug("Starting I/O loops");
         this._readLoop(io).catch((err) =>
             this._log.error(
@@ -706,11 +724,69 @@ export class MTProtoSender {
     }
 
     private _stopIo() {
+        if (this._watchdog) {
+            clearInterval(this._watchdog);
+            this._watchdog = undefined;
+        }
+        this._probes.clear();
         if (this._io) {
             this._io.alive = false;
             this._io = undefined;
         }
         this._wakeUp();
+    }
+
+    private _probePending() {
+        if (this._lifecycle !== "connected" || !this._io?.alive) return;
+        const now = Date.now();
+        for (const [key, probe] of this._probes) {
+            if (now - probe.at >= PROBE_EXPIRY_MS) this._probes.delete(key);
+        }
+        const stale: RequestState[] = [];
+        for (const state of this._pendingState.values()) {
+            const since = state.probedAt ?? state.sentAt;
+            if (since === undefined || !state.msgId) continue;
+            if (now - since >= PROBE_AFTER_MS) stale.push(state);
+            if (stale.length >= PROBE_MAX_IDS) break;
+        }
+        if (!stale.length) return;
+        const ids = stale.map((state) => state.msgId!);
+        for (const state of stale) state.probedAt = now;
+        const probe = new RequestState(new Api.MsgsStateReq({ msgIds: ids }));
+        probe.forcedMsgId = this._state._getNewMsgId();
+        probe.promise?.catch(() => {});
+        this._probes.set(probe.forcedMsgId.toString(), { ids, at: now });
+        this._log.debug(
+            `Probing ${ids.length} unanswered request(s) on dc ${this._dcId}`
+        );
+        this._enqueue(probe);
+    }
+
+    private _onStateInfo(reqMsgId: bigInt.BigInteger, info: Buffer | string) {
+        const probe = this._probes.get(reqMsgId.toString());
+        if (!probe) return;
+        this._probes.delete(reqMsgId.toString());
+        const codes = Buffer.isBuffer(info)
+            ? info
+            : Buffer.from(String(info), "binary");
+        const now = Date.now();
+        const resend: RequestState[] = [];
+        probe.ids.forEach((id, index) => {
+            const state = this._pendingState.get(id);
+            if (!state || index >= codes.length) return;
+            const received = (codes[index] & 7) >= 4;
+            const overdue =
+                state.sentAt !== undefined && now - state.sentAt >= RESEND_AFTER_MS;
+            if (!received || overdue) {
+                this._pendingState.delete(id);
+                resend.push(state);
+            }
+        });
+        if (!resend.length) return;
+        this._log.debug(
+            `Resending ${resend.length} request(s) on dc ${this._dcId} after msgs_state_info`
+        );
+        this._requeue(resend);
     }
 
     private async _writeLoop(io: { alive: boolean; connection: Connection }) {
@@ -780,7 +856,10 @@ export class MTProtoSender {
                 }
                 return;
             }
+            const sentAt = Date.now();
             for (const state of batch) {
+                state.sentAt = sentAt;
+                state.probedAt = undefined;
                 if (!state.cancelled && state.request.classType === "request") {
                     this._pendingState.set(state.msgId!, state);
                 }

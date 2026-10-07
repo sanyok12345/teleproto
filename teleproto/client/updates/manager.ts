@@ -12,6 +12,8 @@ const FAIL_DIFFERENCE_INITIAL_S = 1;
 const FAIL_DIFFERENCE_CAP_S = 64;
 const CHANNEL_DIFFERENCE_LIMIT = 100;
 const RECENT_MESSAGE_BUFFER_SIZE = 1000;
+const MAX_PENDING_SEQ = 1000;
+const DIFFERENCE_DEADLINE_MS = 120_000;
 
 export interface UpdateState {
     pts: number;
@@ -530,6 +532,7 @@ export class UpdateManager {
         if (seqStart !== 0 && seqStart <= this.state.seq) return;
         if (this.fetchingDifference || (seqStart !== 0 && seqStart > this.state.seq + 1)) {
             if (seqStart === 0 || !this.pendingSeq.some((pending) => pending.seqStart === seqStart && pending.seq === seq)) {
+                if (this.pendingSeq.length >= MAX_PENDING_SEQ) this.pendingSeq.shift();
                 this.pendingSeq.push(entry);
             }
             if (!this.fetchingDifference) this.armSeqGapTimer();
@@ -832,12 +835,15 @@ export class UpdateManager {
         if (!this.state) return;
         let fetching = true;
         while (fetching && this.isCurrent(generation)) {
-            const diff: Api.updates.TypeDifference =
-                await this.client.api.updates.getDifference({
+            const diff: Api.updates.TypeDifference = await withDeadline(
+                this.client.api.updates.getDifference({
                     pts: this.state.pts,
                     date: this.state.date,
                     qts: this.state.qts,
-                });
+                }),
+                DIFFERENCE_DEADLINE_MS,
+                "updates.getDifference",
+            );
 
             if (!this.isCurrent(generation)) return;
             if (diff instanceof Api.updates.DifferenceEmpty) {
@@ -1115,4 +1121,23 @@ export class UpdateManager {
             this.channelFailTimeoutS.set(channelId, Math.min(cur * 2, FAIL_DIFFERENCE_CAP_S));
         }
     }
+}
+
+function withDeadline<T>(promise: Promise<T>, ms: number, what: string): Promise<T> {
+    return new Promise<T>((resolve, reject) => {
+        const timer = setTimeout(() => {
+            promise.catch(() => {});
+            reject(new Error(`${what} timed out after ${ms}ms`));
+        }, ms);
+        promise.then(
+            (value) => {
+                clearTimeout(timer);
+                resolve(value);
+            },
+            (error) => {
+                clearTimeout(timer);
+                reject(error);
+            },
+        );
+    });
 }

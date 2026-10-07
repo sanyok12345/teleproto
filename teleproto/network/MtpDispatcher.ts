@@ -36,6 +36,7 @@ export interface SenderActions {
     markNeedsInitConnection(): void;
     /** Hands an update (or a synthetic gap marker) to the client */
     dispatchUpdate(update: Api.TypeUpdates): void;
+    onStateInfo(reqMsgId: bigInt.BigInteger, info: Buffer | string): void;
 }
 
 /**
@@ -79,6 +80,8 @@ export class MtpDispatcher {
                 this.handleStateForgotten.bind(this),
             [Api.MsgsAllInfo.CONSTRUCTOR_ID.toString()]:
                 this.handleMsgAll.bind(this),
+            [Api.MsgsStateInfo.CONSTRUCTOR_ID.toString()]:
+                this.handleStateInfo.bind(this),
         };
     }
 
@@ -329,6 +332,10 @@ export class MtpDispatcher {
                 })
             )
         );
+    }
+
+    private handleStateInfo(message: TLMessage) {
+        this.sender.onStateInfo(message.obj.reqMsgId, message.obj.info);
     }
 
     private handleMsgAll(_message: TLMessage) { }

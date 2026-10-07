@@ -423,7 +423,7 @@ class RelayTransport {
             const timer = setTimeout(abort, Math.max(1, deadline - Date.now()));
             let wait = Math.min(250 * 2 ** attempts, 5000);
             try {
-                const response = await fetch(this.config.base + path, { method, redirect: "error", credentials: "omit", cache: "no-store",
+                const response = await fetch(this.config.base + path, { method, redirect: "error", credentials: "omit",
                     referrerPolicy: "no-referrer", signal: controller.signal,
                     headers: { ...headers, ...(bearer ? { Authorization: `Bearer ${bearer}` } : {}), ...(body ? { "Content-Type": "application/octet-stream" } : {}) },
                     body: body ? new Uint8Array(body) : undefined });

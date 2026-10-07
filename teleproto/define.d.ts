@@ -1,7 +1,7 @@
 import type { Button } from "./tl/custom/button";
 import type { InlineKeyboard, ReplyKeyboard } from "./tl/custom/keyboard";
 import { Api } from "./tl";
-import type { CustomFile } from "./client/uploads";
+import type { CustomFile, NamedBlob } from "./client/uploads";
 import TypeUser = Api.TypeUser;
 import TypeChat = Api.TypeChat;
 import TypeInputUser = Api.TypeInputUser;
@@ -56,7 +56,7 @@ type FileLike =
     | Api.TypeInputMedia
     | Api.TypeInputFile
     | Api.TypeInputFileLocation
-    | File
+    | NamedBlob
     | Api.TypePhoto
     | Api.TypeDocument
     | CustomFile;

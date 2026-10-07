@@ -19,10 +19,10 @@ export interface BalancePolicyOptions {
 
 export const DOWNLOAD_BALANCE: BalancePolicyOptions = {
     partSize: 512 * 1024,
-    startWindow: 2 * 1024 * 1024,
+    startWindow: 4 * 1024 * 1024,
     maxWindow: 4 * 1024 * 1024,
     startSessions: 2,
-    maxSessions: 8,
+    maxSessions: 4,
     slowRequestMs: 8000,
     removeAfterTimeouts: 4,
     addSessionGateMs: 2000,
@@ -31,9 +31,9 @@ export const DOWNLOAD_BALANCE: BalancePolicyOptions = {
 export const UPLOAD_BALANCE: BalancePolicyOptions = {
     partSize: 512 * 1024,
 
-    startWindow: 2 * 1024 * 1024,
+    startWindow: 1024 * 1024,
     maxWindow: 2 * 1024 * 1024,
-    startSessions: 4,
+    startSessions: 8,
     maxSessions: 8,
     slowRequestMs: 8000,
     removeAfterTimeouts: 4,

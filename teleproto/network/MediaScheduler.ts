@@ -19,6 +19,12 @@ import type { TelegramBaseClient } from "../client/telegramBaseClient";
 
 const ONE_MB = 1024 * 1024;
 const MIN_CHUNK = 4096;
+const LIMITED_UPLOAD_DCS = new Set([2, 4]);
+const LIMITED_UPLOAD_SESSIONS = 4;
+const SPACING_START_MS = 50;
+const SPACING_MIN_MS = 3;
+const SPACING_DECAY = 0.8;
+const SPACING_IDLE_MS = 1000;
 
 export interface MediaSchedulerOptions {
 
@@ -67,12 +73,20 @@ class DcBalance {
     readonly waiters: Array<() => void> = [];
     floodWaitUntil = 0;
     private _nextSlot = 0;
+    private _spacingMs = SPACING_START_MS;
+    private _nextSendAt = 0;
 
     constructor(
         readonly dcId: number,
         readonly kind: Kind,
         opts: BalancePolicyOptions
     ) {
+        if (kind === "upload" && LIMITED_UPLOAD_DCS.has(dcId)) {
+            opts = {
+                ...opts,
+                startSessions: Math.min(opts.startSessions, LIMITED_UPLOAD_SESSIONS),
+            };
+        }
         this.policy = new BalancePolicy(opts);
         for (const id of this.policy.sessionIds) {
             this.shiftedById.set(id, this._shifted(this._nextSlot++ % 16));
@@ -93,6 +107,17 @@ class DcBalance {
         const shifted = this.shiftedById.get(id);
         this.shiftedById.delete(id);
         return shifted;
+    }
+
+    async pace(signal?: AbortSignal): Promise<void> {
+        const now = Date.now();
+        if (now - this._nextSendAt > SPACING_IDLE_MS) {
+            this._spacingMs = SPACING_START_MS;
+        }
+        const at = Math.max(now, this._nextSendAt);
+        this._nextSendAt = at + this._spacingMs;
+        this._spacingMs = Math.max(SPACING_MIN_MS, this._spacingMs * SPACING_DECAY);
+        if (at > now) await sleepOrAbort(at - now, signal);
     }
 
     wakeOne(): void {
@@ -281,6 +306,8 @@ export class MediaScheduler {
             await sleepOrAbort(Math.min(wait, 1000), signal);
         }
 
+        await b.pace(signal);
+
         let id = b.policy.pick(bytes);
         while (id < 0) {
             if (signal?.aborted) throw new MediaAbortError();
@@ -334,7 +361,9 @@ export class MediaScheduler {
             return result;
         } catch (err: any) {
             if (isFlood(err)) {
-
+                this._client._log.debug(
+                    `${kind} on dc ${dcId} hit ${err?.errorMessage ?? "FLOOD_WAIT"}, pausing ${floodSeconds(err)}s`
+                );
                 b.floodWaitUntil =
                     Date.now() + Math.max(1, floodSeconds(err)) * 1000;
                 b.policy.release(id, bytes);

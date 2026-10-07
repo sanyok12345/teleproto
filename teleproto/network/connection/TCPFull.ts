@@ -12,17 +12,14 @@ export class FullPacketCodec extends PacketCodec {
     }
 
     encodePacket(data: Buffer): Buffer {
-        // https://core.telegram.org/mtproto#tcp-transport
-        // total length, sequence number, packet and checksum (CRC32)
         const length = data.length + 12;
-        const e = Buffer.alloc(8);
-        e.writeInt32LE(length, 0);
-        e.writeInt32LE(this._sendCounter, 4);
-        data = Buffer.concat([e, data]);
-        const crc = Buffer.alloc(4);
-        crc.writeUInt32LE(crc32(data), 0);
+        const packet = Buffer.allocUnsafe(length);
+        packet.writeInt32LE(length, 0);
+        packet.writeInt32LE(this._sendCounter, 4);
+        data.copy(packet, 8);
+        packet.writeUInt32LE(crc32(packet.subarray(0, length - 4)), length - 4);
         this._sendCounter += 1;
-        return Buffer.concat([data, crc]);
+        return packet;
     }
 
     /**
@@ -47,7 +44,7 @@ export class FullPacketCodec extends PacketCodec {
         const checksum = body.slice(-4).readUInt32LE(0);
         body = body.slice(0, -4);
 
-        const validChecksum = crc32(Buffer.concat([lenBuf, seqBuf, body]));
+        const validChecksum = crc32(body, crc32(seqBuf, crc32(lenBuf)));
         if (!(validChecksum === checksum)) {
             throw new InvalidChecksumError(checksum, validChecksum);
         }

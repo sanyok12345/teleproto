@@ -2,6 +2,7 @@ import bigInt from "big-integer";
 import type { EntityLike } from "./define";
 import type { Api } from "./tl";
 import crypto from "crypto";
+import zlib from "node:zlib";
 import { math, sha1 as hashSha1, sha256 as hashSha256 } from "cifrante";
 
 export function asBuffer(bytes: Uint8Array): Buffer {
@@ -532,14 +533,21 @@ function makeCRCTable() {
 
 let crcTable: number[] | undefined = undefined;
 
-export function crc32(buf: Buffer | string) {
+const nativeCrc32 = (
+    zlib as { crc32?: (data: Buffer | string, value?: number) => number }
+).crc32;
+
+export function crc32(buf: Buffer | string, previous = 0) {
+    if (nativeCrc32) {
+        return nativeCrc32(buf, previous) >>> 0;
+    }
     if (!crcTable) {
         crcTable = makeCRCTable();
     }
     if (!Buffer.isBuffer(buf)) {
         buf = Buffer.from(buf);
     }
-    let crc = -1;
+    let crc = previous ^ -1;
 
     for (let index = 0; index < buf.length; index++) {
         const byte = buf[index];

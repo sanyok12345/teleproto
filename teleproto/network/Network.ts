@@ -87,7 +87,12 @@ export class Network {
             idleTimeoutMs: this._opts.idleTimeoutMs,
             log: this._client._log,
             connect: async () => {
-
+                if (
+                    dcenter.authKey.getKey() ||
+                    this._client.session.getAuthKey(dcId)?.getKey()
+                ) {
+                    return this._gatedConnect(dcId, shiftedDcId, slot, dcenter);
+                }
                 const chain =
                     this._connectChains.get(dcId) ?? Promise.resolve();
                 const ours = chain.then(() =>

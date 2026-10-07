@@ -1,86 +1,71 @@
 export interface BalancePolicyOptions {
-
     partSize: number;
-
-    startWindow: number;
-
-    maxWindow: number;
-
-    startSessions: number;
-
-    maxSessions: number;
-
-    slowRequestMs: number;
-
-    removeAfterTimeouts: number;
-
-    addSessionGateMs: number;
+    sessions: number;
+    inFlight: number;
+    startWindow?: number;
+    maxWindow?: number;
+    startSessions?: number;
+    maxSessions?: number;
+    slowRequestMs?: number;
+    removeAfterTimeouts?: number;
+    addSessionGateMs?: number;
 }
 
 export const DOWNLOAD_BALANCE: BalancePolicyOptions = {
     partSize: 512 * 1024,
-    startWindow: 4 * 1024 * 1024,
-    maxWindow: 4 * 1024 * 1024,
-    startSessions: 2,
-    maxSessions: 4,
-    slowRequestMs: 8000,
-    removeAfterTimeouts: 4,
-    addSessionGateMs: 2000,
+    sessions: 4,
+    inFlight: 4,
 };
 
 export const UPLOAD_BALANCE: BalancePolicyOptions = {
     partSize: 512 * 1024,
-
-    startWindow: 1024 * 1024,
-    maxWindow: 2 * 1024 * 1024,
-    startSessions: 8,
-    maxSessions: 8,
-    slowRequestMs: 8000,
-    removeAfterTimeouts: 4,
-    addSessionGateMs: 2000,
-
+    sessions: 8,
+    inFlight: 2,
 };
 
-interface SessionBalance {
+export function normalizeBalanceOptions(
+    opts: Partial<BalancePolicyOptions>,
+    base: BalancePolicyOptions
+): BalancePolicyOptions {
+    const partSize = opts.partSize && opts.partSize > 0 ? opts.partSize : base.partSize;
+    const sessions = Math.max(
+        1,
+        opts.sessions ?? opts.startSessions ?? base.sessions
+    );
+    const inFlight = Math.max(
+        1,
+        opts.inFlight ??
+        (opts.startWindow && opts.startWindow > 0
+            ? Math.round(opts.startWindow / partSize)
+            : base.inFlight)
+    );
+    return { ...base, ...opts, partSize, sessions, inFlight };
+}
 
+interface SessionLoad {
     id: number;
-
     requested: number;
-
-    window: number;
-
-    timeouts: number;
 }
 
 export class BalancePolicy {
     readonly opts: BalancePolicyOptions;
-    private readonly _now: () => number;
-    private readonly _sessions: SessionBalance[] = [];
-    private _removeTimes = 0;
-    private _lastAddAt: number;
+    private readonly _sessions: SessionLoad[] = [];
+    private readonly _window: number;
     private _nextId = 0;
 
-    constructor(opts: BalancePolicyOptions, now: () => number = Date.now) {
-        this.opts = opts;
-        this._now = now;
-
-        this._lastAddAt = now();
-        const count = Math.max(1, opts.startSessions || 1);
-        for (let i = 0; i < count; i++) {
+    constructor(opts: BalancePolicyOptions, _now: () => number = Date.now) {
+        this.opts = normalizeBalanceOptions(opts, opts);
+        this._window = this.opts.inFlight * this.opts.partSize;
+        for (let i = 0; i < this.opts.sessions; i++) {
             this._sessions.push(this._fresh());
         }
     }
 
-    private _fresh(): SessionBalance {
-        return {
-            id: this._nextId++,
-            requested: 0,
-            window: this.opts.startWindow,
-            timeouts: 0,
-        };
+    private _fresh(): SessionLoad {
+        return { id: this._nextId++, requested: 0 };
     }
 
-    private _byId(id: number): SessionBalance | undefined {
+    private _byId(id: number): SessionLoad | undefined {
         return this._sessions.find((s) => s.id === id);
     }
 
@@ -92,11 +77,16 @@ export class BalancePolicy {
         return this._sessions.map((s) => s.id);
     }
 
+    get window(): number {
+        return this._window;
+    }
+
     pick(bytes: number): number {
         let best = -1;
         let bestLoad = Infinity;
         for (const s of this._sessions) {
-            if (s.requested + bytes <= s.window && s.requested < bestLoad) {
+            const fits = s.requested === 0 || s.requested + bytes <= this._window;
+            if (fits && s.requested < bestLoad) {
                 best = s.id;
                 bestLoad = s.requested;
             }
@@ -108,78 +98,34 @@ export class BalancePolicy {
         const s = this._byId(id);
         if (!s) return { wasFull: false };
         s.requested += bytes;
-        return { wasFull: s.requested >= s.window };
+        return { wasFull: s.requested >= this._window };
     }
 
     succeed(
         id: number,
         bytes: number,
-        wasFull: boolean,
-        durationMs: number
+        _wasFull = false,
+        _durationMs = 0
     ): { addedSession: boolean; addedId: number } {
-        const s = this._byId(id);
-        if (s) {
-            s.requested = Math.max(0, s.requested - bytes);
-            s.timeouts = 0;
-        }
-        if (durationMs >= this.opts.slowRequestMs) {
-
-            this._slow(id);
-            return { addedSession: false, addedId: -1 };
-        }
-        if (!s || !wasFull) return { addedSession: false, addedId: -1 };
-
-        const now = this._now();
-        if (s.window < this.opts.maxWindow) {
-
-            s.window = Math.min(
-                s.window + this.opts.partSize,
-                this.opts.maxWindow
-            );
-            return { addedSession: false, addedId: -1 };
-        }
-
-        const gate = this.opts.addSessionGateMs * (this._removeTimes + 1);
-        if (
-            this._sessions.length < this.opts.maxSessions &&
-            now - this._lastAddAt >= gate
-        ) {
-            const fresh = this._fresh();
-            this._sessions.push(fresh);
-            this._lastAddAt = now;
-            return { addedSession: true, addedId: fresh.id };
-        }
+        this.release(id, bytes);
         return { addedSession: false, addedId: -1 };
     }
 
     fail(id: number, bytes: number): { removedId: number } {
-        const s = this._byId(id);
-        if (s) s.requested = Math.max(0, s.requested - bytes);
-        return this._slow(id);
-    }
-
-    private _slow(id: number): { removedId: number } {
-        const s = this._byId(id);
-        if (!s) return { removedId: -1 };
-        s.timeouts++;
-        if (
-            s.timeouts >= this.opts.removeAfterTimeouts &&
-            this._sessions.length > 1
-        ) {
-            this._sessions.splice(this._sessions.indexOf(s), 1);
-            this._removeTimes++;
-            return { removedId: id };
-        }
+        this.release(id, bytes);
         return { removedId: -1 };
     }
 
-    remove(id: number): boolean {
+    replace(id: number): number {
         const s = this._byId(id);
-        if (!s || this._sessions.length <= 1) return false;
-        this._sessions.splice(this._sessions.indexOf(s), 1);
+        if (!s) return -1;
+        const fresh = this._fresh();
+        this._sessions.splice(this._sessions.indexOf(s), 1, fresh);
+        return fresh.id;
+    }
 
-        this._removeTimes++;
-        return true;
+    remove(id: number): boolean {
+        return this.replace(id) >= 0;
     }
 
     release(id: number, bytes: number): void {

@@ -311,16 +311,11 @@ async function streamParallel(
         );
     }
     const ordered = new OrderedWriter(writer);
-    // High-water mark only: the real rate gate is the MediaScheduler's
-    // per-session windows. We let enough parts race into the scheduler to keep
-    // every session's window fillable at maximum scale-out; the surplus queues
-    // there (that queue IS the demand signal that grows windows/sessions).
-    // This also bounds the OrderedWriter stash memory.
     const dl = client._media.opts.download;
     const inflight = new BoundedSemaphore(
         Math.max(
             1,
-            dl.maxSessions * Math.ceil(dl.maxWindow / Math.max(1, partSize))
+            dl.sessions * dl.inFlight
         )
     );
 

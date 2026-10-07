@@ -133,7 +133,7 @@ export async function uploadFile(
     const ul = client._media.opts.upload;
     let readAhead = Math.max(
         1,
-        ul.maxSessions * Math.ceil(ul.maxWindow / Math.max(1, partSize))
+        ul.sessions * ul.inFlight
     );
     if (workers && workers > 0) {
         readAhead = Math.min(readAhead, workers);

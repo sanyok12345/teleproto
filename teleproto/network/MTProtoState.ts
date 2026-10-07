@@ -12,6 +12,12 @@ import { IGE } from "../crypto/IGE";
 import { InvalidBufferError, SecurityError } from "../errors";
 import { ReceivedIdsManager } from "./ReceivedIdsManager";
 
+export class DuplicateMessageError extends SecurityError {
+    constructor(readonly msgId: bigInt.BigInteger) {
+        super(`Duplicate message ${msgId}`);
+    }
+}
+
 export class MTProtoState {
     private readonly authKey?: AuthKey;
     private _log: any;
@@ -34,6 +40,10 @@ export class MTProtoState {
         this.receivedIds = new ReceivedIdsManager();
         this.securityChecks = securityChecks;
         this.reset();
+    }
+
+    hasReceived(msgId: bigInt.BigInteger): boolean {
+        return this.receivedIds.has(msgId);
     }
 
     get sessionId(): bigInt.BigInteger {
@@ -221,6 +231,9 @@ export class MTProtoState {
 
         const remoteMsgId = reader.readLong();
         const registerResult = this.receivedIds.registerMsgId(remoteMsgId);
+        if (registerResult === "duplicate" && this.securityChecks) {
+            throw new DuplicateMessageError(remoteMsgId);
+        }
         if (registerResult !== "success" && this.securityChecks) {
             throw new SecurityError(`Rejected message: ${registerResult}`);
         }

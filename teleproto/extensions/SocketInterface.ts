@@ -10,6 +10,7 @@ export interface SocketInterface extends PacketReader {
     readAll(): Promise<Buffer>;
     write(data: Buffer): void;
     close(): Promise<void>;
+    lastDataAt?: number;
 }
 
 export interface SocketFactory {

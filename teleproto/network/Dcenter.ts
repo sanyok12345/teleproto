@@ -8,6 +8,10 @@ export class Dcenter {
 
     mediaTempFailed = false;
 
+    needsImport = false;
+
+    importing?: Promise<void>;
+
     constructor(dcId: number, authKey?: AuthKey) {
         this.dcId = dcId;
         this.authKey = authKey ?? new AuthKey();

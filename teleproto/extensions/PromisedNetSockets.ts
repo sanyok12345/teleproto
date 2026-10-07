@@ -30,6 +30,7 @@ export class PromisedNetSockets {
     private available: number;
     private canRead?: Promise<boolean>;
     private resolveRead: ((value?: any) => void) | undefined;
+    lastDataAt = 0;
     private proxy?: SocksProxyType;
     private keepAliveInterval: number;
 
@@ -232,6 +233,7 @@ export class PromisedNetSockets {
     async receive() {
         if (this.client) {
             this.client.on("data", (chunk: Buffer) => {
+                this.lastDataAt = Date.now();
                 this.chunks.push(chunk);
                 this.available += chunk.length;
                 if (this.resolveRead) {

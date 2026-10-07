@@ -22,7 +22,12 @@ export class RequestState {
     cancelled = false;
 
     constructor(
-        request: Api.AnyRequest | Api.MsgsAck | Api.MsgsStateInfo | Api.MsgsStateReq
+        request:
+            | Api.AnyRequest
+            | Api.MsgsAck
+            | Api.MsgsStateInfo
+            | Api.MsgsStateReq
+            | Api.MsgResendReq
     ) {
         this.containerId = undefined;
         this.msgId = undefined;
@@ -58,5 +63,6 @@ export class RequestState {
                 reject(reason);
             };
         });
+        this.promise.catch(() => {});
     }
 }

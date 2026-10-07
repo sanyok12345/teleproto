@@ -30,6 +30,8 @@ export interface SenderActions {
     enqueue(state: RequestState): void;
     /** Puts states back at the head of the queue for resending */
     requeue(states: RequestState[]): void;
+    resendBefore(firstMsgId: bigInt.BigInteger): void;
+    requestResend(msgIds: bigInt.BigInteger[]): void;
     /** The server told us our auth key is unusable */
     onBadAuthKey(shouldSkipForMain: boolean): void;
     /** The server started a new session re-init on the next request */
@@ -268,21 +270,33 @@ export class MtpDispatcher {
     }
 
     private handleDetailedInfo(message: TLMessage) {
-        const msgId = message.obj.answerMsgId;
-        this.sender.log.debug(`Handling detailed info for message ${msgId}`);
-        this.sender.ack(msgId);
+        const { msgId, answerMsgId } = message.obj;
+        this.sender.log.debug(`Handling detailed info for message ${answerMsgId}`);
+        if (
+            this.sender.pendingState.get(msgId) &&
+            !this.sender.state.hasReceived(answerMsgId)
+        ) {
+            this.sender.requestResend([answerMsgId]);
+        } else {
+            this.sender.ack(answerMsgId);
+        }
     }
 
     private handleNewDetailedInfo(message: TLMessage) {
-        const msgId = message.obj.answerMsgId;
+        const { answerMsgId } = message.obj;
         this.sender.log.debug(
-            `Handling new detailed info for message ${msgId}`
+            `Handling new detailed info for message ${answerMsgId}`
         );
-        this.sender.ack(msgId);
+        if (this.sender.state.hasReceived(answerMsgId)) {
+            this.sender.ack(answerMsgId);
+        } else {
+            this.sender.requestResend([answerMsgId]);
+        }
     }
 
     private handleNewSessionCreated(message: TLMessage) {
         this.sender.log.debug("Handling new session created");
+        this.sender.resendBefore(bigInt(message.obj.firstMsgId));
         this.sender.state.salt = message.obj.serverSalt;
         this.sender.dcenter?.updateSalt(message.obj.serverSalt);
         const uniqueId = String(message.obj.uniqueId);

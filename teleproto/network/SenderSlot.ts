@@ -9,6 +9,7 @@ export type SenderSlotState =
 
 export type SenderSlotDeathReason =
     | "auth-broken"
+    | "disconnected"
     | "manual"
     | "pool-closed";
 
@@ -60,7 +61,7 @@ export class SenderSlot {
     get state(): SenderSlotState {
         if (this._dead) return "dead";
         if (this._sender?.isConnected()) return "ready";
-        if (this._connectPromise) return "connecting";
+        if (this._connectPromise || this._sender?.isReconnecting) return "connecting";
         return "idle";
     }
 
@@ -77,7 +78,10 @@ export class SenderSlot {
         if (this._dead) {
             throw new SlotRemovedError(this._dead);
         }
-        if (this._sender && this._sender.isConnected()) {
+        if (
+            this._sender &&
+            (this._sender.isConnected() || this._sender.isReconnecting)
+        ) {
             return this._sender;
         }
         if (this._connectPromise) {
@@ -118,7 +122,7 @@ export class SenderSlot {
     /** Decrement the in-flight counter and re-arm the idle timer when idle. */
     leave(): void {
         if (this._active > 0) this._active--;
-        if (this._active === 0 && this.state === "ready") this._armIdle();
+        if (this._active === 0 && this._sender) this._armIdle();
     }
 
     /** Subscribe to a one-shot "this slot died" callback. */
@@ -159,7 +163,7 @@ export class SenderSlot {
     }
 
     private _armIdle(): void {
-        if (this.state !== "ready") return;
+        if (this._dead) return;
         this._clearIdle();
         if (this._opts.idleTimeoutMs <= 0) return;
         this._idleTimer = setTimeout(() => {
@@ -169,8 +173,8 @@ export class SenderSlot {
     }
 
     private _idleTick(): void {
-        if (this.state !== "ready" || this._active > 0) return;
-        if (this._sender && this._sender.hasPendingWork) {
+        if (this._dead || this._active > 0 || !this._sender) return;
+        if (this._sender.hasPendingWork || this._sender.isReconnecting) {
             this._armIdle();
             return;
         }

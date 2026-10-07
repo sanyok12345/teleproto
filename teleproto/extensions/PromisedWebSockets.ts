@@ -25,6 +25,7 @@ export class PromisedWebSockets {
     private available: number;
     private canRead?: Promise<boolean>;
     private resolveRead: ((value?: any) => void) | undefined;
+    lastDataAt = 0;
 
     constructor(proxy?: ProxyInterface, _keepAliveInterval?: number) {
         this.client = undefined;
@@ -144,6 +145,7 @@ export class PromisedWebSockets {
         });
         this.closed = false;
         socket.onmessage = (ev) => {
+            this.lastDataAt = Date.now();
             const chunk =
                 typeof ev.data === "string"
                     ? Buffer.from(ev.data)

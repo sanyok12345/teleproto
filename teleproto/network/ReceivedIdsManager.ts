@@ -19,6 +19,11 @@ export class ReceivedIdsManager {
         return "success";
     }
 
+    has(msgId: bigInt.BigInteger): boolean {
+        const idx = this.lowerBound(msgId);
+        return idx < this.ids.length && this.ids[idx]!.eq(msgId);
+    }
+
     shrink(): void {
         while (this.ids.length > ID_BUFFER_SIZE) this.ids.shift();
     }

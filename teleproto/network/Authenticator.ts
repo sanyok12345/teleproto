@@ -271,5 +271,10 @@ export async function doAuthentication(
     }
     log.debug("Finished authKey generation");
 
-    return { authKey, timeOffset };
+    const saltBytes = toSignedLittleBuffer(newNonce, 32).subarray(0, 8);
+    const serverNonceBytes = toSignedLittleBuffer(resPQ.serverNonce, 16);
+    for (let i = 0; i < 8; i++) saltBytes[i] ^= serverNonceBytes[i];
+    const serverSalt = readBigIntFromBuffer(saltBytes, true, true);
+
+    return { authKey, timeOffset, serverSalt };
 }

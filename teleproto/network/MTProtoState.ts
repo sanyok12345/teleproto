@@ -71,16 +71,14 @@ export class MTProtoState {
                 .update(msgKey)
                 .digest()
         );
-        const key = Buffer.concat([
-            sha256a.subarray(0, 8),
-            sha256b.subarray(8, 24),
-            sha256a.subarray(24, 32),
-        ]);
-        const iv = Buffer.concat([
-            sha256b.subarray(0, 8),
-            sha256a.subarray(8, 24),
-            sha256b.subarray(24, 32),
-        ]);
+        const key = Buffer.allocUnsafe(32);
+        sha256a.copy(key, 0, 0, 8);
+        sha256b.copy(key, 8, 8, 24);
+        sha256a.copy(key, 24, 24, 32);
+        const iv = Buffer.allocUnsafe(32);
+        sha256b.copy(iv, 0, 0, 8);
+        sha256a.copy(iv, 8, 8, 24);
+        sha256b.copy(iv, 24, 24, 32);
         return { key, iv };
     }
 
@@ -117,12 +115,11 @@ export class MTProtoState {
                 }).getBytes()
             );
         }
-        const s = Buffer.alloc(4);
-        s.writeInt32LE(seqNo, 0);
-        const b = Buffer.alloc(4);
-        b.writeInt32LE(body.length, 0);
-        const m = toSignedLittleBuffer(msgId, 8);
-        buffer.write(Buffer.concat([m, s, b]));
+        const header = Buffer.allocUnsafe(16);
+        toSignedLittleBuffer(msgId, 8).copy(header, 0);
+        header.writeInt32LE(seqNo, 8);
+        header.writeInt32LE(body.length, 12);
+        buffer.write(header);
         buffer.write(body);
         return msgId;
     }

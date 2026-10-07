@@ -9,34 +9,21 @@ export function serializeBytes(data: Buffer | string): Buffer {
         }
     }
 
-    const chunks: Buffer[] = [];
-    let padding: number;
-
-    if (data.length < 254) {
-        padding = (data.length + 1) % 4;
-        if (padding !== 0) {
-            padding = 4 - padding;
-        }
-        chunks.push(Buffer.from([data.length]));
-        chunks.push(data);
+    const length = data.length;
+    const head = length < 254 ? 1 : 4;
+    const padding = (4 - ((head + length) % 4)) % 4;
+    const out = Buffer.allocUnsafe(head + length + padding);
+    if (head === 1) {
+        out[0] = length;
     } else {
-        padding = data.length % 4;
-        if (padding !== 0) {
-            padding = 4 - padding;
-        }
-        chunks.push(
-            Buffer.from([
-                254,
-                data.length % 256,
-                (data.length >> 8) % 256,
-                (data.length >> 16) % 256,
-            ])
-        );
-        chunks.push(data);
+        out[0] = 254;
+        out[1] = length & 255;
+        out[2] = (length >> 8) & 255;
+        out[3] = (length >> 16) & 255;
     }
-
-    chunks.push(Buffer.alloc(padding).fill(0));
-    return Buffer.concat(chunks);
+    data.copy(out, head);
+    out.fill(0, head + length);
+    return out;
 }
 
 export function serializeDate(dt: DateLike | Date | undefined | null): Buffer {

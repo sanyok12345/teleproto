@@ -20,6 +20,21 @@ export function readBigIntFromBuffer(
     little = true,
     signed = false
 ): bigInt.BigInteger {
+    if (!Buffer.isBuffer(buffer)) {
+        const view = buffer as Uint8Array;
+        buffer = Buffer.from(view.buffer, view.byteOffset, view.byteLength);
+    }
+    if (buffer.length === 8) {
+        return bigInt(
+            little
+                ? signed
+                    ? buffer.readBigInt64LE(0)
+                    : buffer.readBigUInt64LE(0)
+                : signed
+                  ? buffer.readBigInt64BE(0)
+                  : buffer.readBigUInt64BE(0)
+        );
+    }
     let count8b = buffer.length/8 | 0;
     let bytesLeft = buffer.length - count8b*8;
 
@@ -129,17 +144,55 @@ export function addSurrogate(text: string) {
  * @param number
  * @returns {Buffer}
  */
+function toNativeBigInt(
+    value: bigInt.BigInteger | string | number | bigint
+): bigint {
+    if (typeof value === "bigint") {
+        return value;
+    }
+    if (typeof value === "number") {
+        return BigInt(value);
+    }
+    const wrapped = returnBigInt(value) as unknown as { value?: unknown };
+    return typeof wrapped.value === "bigint"
+        ? wrapped.value
+        : BigInt(String(wrapped));
+}
+
+function bitLengthOf(value: bigint): number {
+    let bits = 0;
+    while (value > BigInt(0xffffffff)) {
+        value >>= BigInt(32);
+        bits += 32;
+    }
+    return bits + (32 - Math.clz32(Number(value)));
+}
+
+function writeUnsignedLE(buffer: Buffer, value: bigint, offset: number, length: number) {
+    let rest = value;
+    for (let done = 0; done < length; ) {
+        const count = Math.min(8, length - done);
+        if (count === 8) {
+            buffer.writeBigUInt64LE(BigInt.asUintN(64, rest), offset + done);
+        } else {
+            for (let i = 0; i < count; i++) {
+                buffer[offset + done + i] = Number(
+                    BigInt.asUintN(8, rest >> BigInt(8 * i))
+                );
+            }
+        }
+        rest >>= BigInt(8 * count);
+        done += count;
+    }
+}
+
 export function toSignedLittleBuffer(
     big: bigInt.BigInteger | string | number,
     number = 8
 ): Buffer {
-    const bigNumber = returnBigInt(big);
-    const byteArray = [];
-    for (let i = 0; i < number; i++) {
-        byteArray[i] = bigNumber.shiftRight(8 * i).and(255);
-    }
-    // smh hacks
-    return Buffer.from(byteArray as unknown as number[]);
+    const buffer = Buffer.allocUnsafe(number);
+    writeUnsignedLE(buffer, BigInt.asUintN(number * 8, toNativeBigInt(big)), 0, number);
+    return buffer;
 }
 
 /**
@@ -156,31 +209,19 @@ export function readBufferFromBigInt(
     little = true,
     signed = false
 ): Buffer {
-    bigIntVar = bigInt(bigIntVar);
-    const bitLength = bigIntVar.bitLength().toJSNumber();
-
-    const bytes = Math.ceil(bitLength / 8);
-    if (bytesNumber < bytes) {
+    const value = toNativeBigInt(bigIntVar);
+    const bits = bytesNumber * 8;
+    const negative = value < BigInt(0);
+    const magnitude = negative ? -value - BigInt(1) : value;
+    if (bytesNumber < Math.ceil(bitLengthOf(magnitude) / 8)) {
         throw new Error("OverflowError: int too big to convert");
     }
-    if (!signed && bigIntVar.lesser(bigInt(0))) {
+    if (!signed && negative) {
         throw new Error("Cannot convert to unsigned");
     }
-
-    if (signed && bigIntVar.lesser(bigInt(0))) {
-        bigIntVar = bigInt(2)
-            .pow(bigInt(bytesNumber).multiply(8))
-            .add(bigIntVar);
-    }
-
-    const hex = bigIntVar.toString(16).padStart(bytesNumber * 2, "0");
-    let buffer = Buffer.from(hex, "hex");
-
-    if (little) {
-        buffer = buffer.reverse();
-    }
-
-    return buffer;
+    const buffer = Buffer.allocUnsafe(bytesNumber);
+    writeUnsignedLE(buffer, BigInt.asUintN(bits, value), 0, bytesNumber);
+    return little ? buffer : buffer.reverse();
 }
 
 /**

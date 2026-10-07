@@ -663,7 +663,7 @@ export class PaddedIntermediatePacketCodec extends PacketCodec {
         }
         if (body.readBigUInt64LE(0) === BigInt(0)) {
             const end = 20 + body.readUInt32LE(16);
-            if (end > length || length - end > 15) {
+            if (end > length) {
                 throw new Error("Invalid unencrypted MTProto payload length");
             }
             return body.subarray(0, end);

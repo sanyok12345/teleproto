@@ -1,7 +1,8 @@
 import crypto from "node:crypto";
+import { sha256 } from "cifrante";
 import bigInt from "big-integer";
 import type { AuthKey } from "../crypto/AuthKey";
-import { generateRandomLong, mod, readBufferFromBigInt, readBigIntFromBuffer } from "../Helpers";
+import { asBuffer, generateRandomLong, mod, readBufferFromBigInt, readBigIntFromBuffer } from "../Helpers";
 import { Api } from "../tl";
 import { toSignedLittleBuffer } from "../Helpers";
 import { GZIPPacked, TLMessage } from "../tl/core";
@@ -56,16 +57,20 @@ export class MTProtoState {
      */
     _calcKey(authKey: Buffer, msgKey: Buffer, client: boolean): { key: Buffer; iv: Buffer } {
         const x = client ? 0 : 8;
-        const sha256a = crypto
-            .createHash("sha256")
-            .update(msgKey)
-            .update(authKey.subarray(x, x + 36))
-            .digest();
-        const sha256b = crypto
-            .createHash("sha256")
-            .update(authKey.subarray(x + 40, x + 76))
-            .update(msgKey)
-            .digest();
+        const sha256a = asBuffer(
+            sha256.sync
+                .create()
+                .update(msgKey)
+                .update(authKey.subarray(x, x + 36))
+                .digest()
+        );
+        const sha256b = asBuffer(
+            sha256.sync
+                .create()
+                .update(authKey.subarray(x + 40, x + 76))
+                .update(msgKey)
+                .digest()
+        );
         const key = Buffer.concat([
             sha256a.subarray(0, 8),
             sha256b.subarray(8, 24),
@@ -148,11 +153,13 @@ export class MTProtoState {
         data.copy(plain, 16);
         crypto.randomFillSync(plain, 16 + data.length, padLen);
 
-        const msgKeyLarge = crypto
-            .createHash("sha256")
-            .update(authKey.subarray(88, 120))
-            .update(plain)
-            .digest();
+        const msgKeyLarge = asBuffer(
+            sha256.sync
+                .create()
+                .update(authKey.subarray(88, 120))
+                .update(plain)
+                .digest()
+        );
 
         const msgKey = msgKeyLarge.subarray(8, 24);
 
@@ -194,11 +201,13 @@ export class MTProtoState {
 
         // https://core.telegram.org/mtproto/security_guidelines
         // Sections "checking sha256 hash" and "message length"
-        const ourKey = crypto
-            .createHash("sha256")
-            .update(authKey.subarray(96, 128))
-            .update(body)
-            .digest();
+        const ourKey = asBuffer(
+            sha256.sync
+                .create()
+                .update(authKey.subarray(96, 128))
+                .update(body)
+                .digest()
+        );
 
         if (!msgKey.equals(ourKey.subarray(8, 24))) {
             throw new SecurityError(

@@ -1,10 +1,11 @@
 import type { WebProxyOptions } from "./webProxy/protocol";
-import { createHmac, randomInt } from "node:crypto";
+import { randomInt } from "node:crypto";
+import { hmac } from "cifrante";
 
 import { ObfuscatedConnection, PacketCodec } from "./Connection";
 import { InvalidBufferError } from "../../errors/Common";
 import { AbridgedPacketCodec } from "./TCPAbridged";
-import { generateRandomBytes, sha256 } from "../../Helpers";
+import { asBuffer, generateRandomBytes, sha256 } from "../../Helpers";
 import type { Logger } from "../../extensions/Logger";
 import type {
     SocketFactory,
@@ -501,7 +502,7 @@ class FakeTlsSocket implements ByteStream {
         const sessionId = generateRandomBytes(32);
         const hello = buildClientHello(this.domain, sessionId);
 
-        const stamp = createHmac("sha256", this.secret).update(hello).digest();
+        const stamp = asBuffer(hmac.sha256.sync(this.secret, hello));
         const now = Math.floor(Date.now() / 1000) >>> 0;
         const lastWord =
             (stamp.readUInt32LE(FAKE_TLS_RANDOM_TIMESTAMP_XOR_OFFSET) ^ now) >>>
@@ -558,10 +559,13 @@ class FakeTlsSocket implements ByteStream {
             serverRandomOffset + FAKE_TLS_HELLO_RANDOM_LEN
         );
 
-        const expected = createHmac("sha256", this.secret)
-            .update(this.clientRandom)
-            .update(serverResp)
-            .digest();
+        const expected = asBuffer(
+            hmac.sha256.sync
+                .create(this.secret)
+                .update(this.clientRandom)
+                .update(serverResp)
+                .digest()
+        );
         if (!expected.equals(serverRandom)) {
             throw new Error("FakeTLS: server HMAC verification failed");
         }

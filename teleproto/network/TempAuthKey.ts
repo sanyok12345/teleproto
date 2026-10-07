@@ -1,9 +1,10 @@
-import { createHash } from "node:crypto";
+import { sha1 as hashSha1 } from "cifrante";
 import bigInt from "big-integer";
 import { Api } from "../tl";
 import { AuthKey } from "../crypto/AuthKey";
 import { IGE } from "../crypto/IGE";
 import {
+    asBuffer,
     generateRandomBytes,
     generateRandomLong,
     toSignedLittleBuffer,
@@ -12,7 +13,7 @@ import {
 export const TEMP_KEY_EXPIRES_IN = 24 * 60 * 60;
 
 function sha1(data: Buffer): Buffer {
-    return createHash("sha1").update(data).digest();
+    return asBuffer(hashSha1.sync(data));
 }
 
 function calcKeyV1(authKey: Buffer, msgKey: Buffer): { key: Buffer; iv: Buffer } {

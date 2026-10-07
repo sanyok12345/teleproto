@@ -120,6 +120,7 @@
     },
     "dependencies": {
         "big-integer": "^1.6.48",
+        "cifrante": "0.5.1",
         "mime": "^3.0.0",
         "node-localstorage": "^2.2.1",
         "socks": "^2.6.2",

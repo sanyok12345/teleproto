@@ -2,6 +2,11 @@ import bigInt from "big-integer";
 import type { EntityLike } from "./define";
 import type { Api } from "./tl";
 import crypto from "crypto";
+import { math, sha1 as hashSha1, sha256 as hashSha256 } from "cifrante";
+
+export function asBuffer(bytes: Uint8Array): Buffer {
+    return Buffer.from(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+}
 
 /**
  * converts a buffer to big int
@@ -224,7 +229,7 @@ export function bigIntMod(
  * @returns {Buffer}
  */
 export function generateRandomBytes(count: number): Buffer {
-    return Buffer.from(crypto.randomBytes(count));
+    return crypto.randomBytes(count);
 }
 
 /**
@@ -337,10 +342,8 @@ export function convertToLittle(buf: Buffer): Buffer {
  * @returns {Promise}
  */
 export function sha1(data: Buffer): Promise<Buffer> {
-    const shaSum = crypto.createHash("sha1");
-    shaSum.update(data);
     // @ts-ignore
-    return shaSum.digest();
+    return asBuffer(hashSha1.sync(data));
 }
 
 /**
@@ -349,10 +352,8 @@ export function sha1(data: Buffer): Promise<Buffer> {
  * @returns {Promise}
  */
 export function sha256(data: Buffer): Promise<Buffer> {
-    const shaSum = crypto.createHash("sha256");
-    shaSum.update(data);
     // @ts-ignore
-    return shaSum.digest();
+    return asBuffer(hashSha256.sync(data));
 }
 
 /**
@@ -367,20 +368,18 @@ export function modExp(
     b: bigInt.BigInteger,
     n: bigInt.BigInteger
 ): bigInt.BigInteger {
-    a = a.remainder(n);
-    let result = bigInt.one;
-    let x = a;
-    while (b.greater(bigInt.zero)) {
-        const leastSignificantBit = b.remainder(bigInt(2));
-        b = b.divide(bigInt(2));
-        if (leastSignificantBit.eq(bigInt.one)) {
-            result = result.multiply(x);
-            result = result.remainder(n);
-        }
-        x = x.multiply(x);
-        x = x.remainder(n);
+    if (b.lesserOrEquals(bigInt.zero)) {
+        return bigInt.one;
     }
-    return result;
+    return bigInt(
+        math
+            .modPow(
+                BigInt(a.toString()),
+                BigInt(b.toString()),
+                BigInt(n.toString())
+            )
+            .toString()
+    );
 }
 
 /**

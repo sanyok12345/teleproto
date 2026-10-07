@@ -1,4 +1,5 @@
-import { createHmac } from "node:crypto";
+import { hmac } from "cifrante";
+import { asBuffer } from "../../../Helpers";
 import { isIP } from "node:net";
 
 export const WINDOW = 4 * 1024 * 1024;
@@ -74,7 +75,7 @@ export function configure(options: WebProxyOptions) {
     }
     if (maxStreams > 256) throw new Error("WEB proxy maxStreams cannot exceed 256");
     const context = path ? `tdesktop-web-proxy-bridge-v2\n${host}\n${path}` : `tdesktop-web-proxy-bridge-v1\n${host}`;
-    const capability = createHmac("sha256", secret).update(context).digest("base64url");
+    const capability = asBuffer(hmac.sha256.sync(secret, context)).toString("base64url");
     return { host, base: `https://${host}/${path ? path + "/" : ""}`, secret: secret.toString("hex"), capability,
         connectTimeoutMs, requestTimeoutMs, maxStreams, webSocket: options.webSocket };
 }

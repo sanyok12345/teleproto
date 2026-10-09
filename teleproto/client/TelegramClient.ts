@@ -28,6 +28,7 @@ import * as forumMethods from "./forums";
 import * as storyMethods from "./stories";
 import * as folderMethods from "./folders";
 import * as stickerMethods from "./stickers";
+import * as walletMethods from "./wallet";
 import type { BigInteger } from "big-integer";
 import type {
     MarkupLike,
@@ -2733,6 +2734,98 @@ export class TelegramClient<
     /** Bots only: gets the menu button of a user's chat with the bot (`bots.getBotMenuButton`). */
     getBotMenuButton(user: EntityLike) {
         return botMethods.getBotMenuButton(this, user);
+    }
+
+    /** Adds a collectible username to a bot you own (`bots.addUsername`). */
+    addBotUsername(bot: EntityLike, username: string) {
+        return botMethods.addBotUsername(this, bot, username);
+    }
+
+    /** Removes an additional username from a bot you own (`bots.removeUsername`). */
+    removeBotUsername(bot: EntityLike, username: string) {
+        return botMethods.removeBotUsername(this, bot, username);
+    }
+
+    /** Checks whether a bot username is available (`bots.checkUsername`); `additional` checks it as an extra username. */
+    checkBotUsername(username: string, params?: { additional?: boolean }) {
+        return botMethods.checkBotUsername(this, username, params);
+    }
+
+    /**
+     * Verifies a peer as a verifier bot (`bots.setCustomVerification`).
+     * A string description is parsed with `parseMode`; pass `enabled: false` to remove the verification.
+     */
+    setBotVerification(peer: EntityLike, params?: botMethods.SetBotVerificationParams) {
+        return botMethods.setBotVerification(this, peer, params);
+    }
+
+    //endregion
+    //region wallet
+
+    /** Gets the state of the account's built-in wallet (`wallet.getState`). */
+    getWallet() {
+        return walletMethods.getWallet(this);
+    }
+
+    /** Looks up wallet addresses of users and/or raw addresses (`wallet.getUserAddresses`). */
+    getWalletAddresses(
+        users: EntityLike | EntityLike[],
+        params?: walletMethods.GetWalletAddressesParams
+    ) {
+        return walletMethods.getWalletAddresses(this, users, params);
+    }
+
+    /** Iterates wallet transactions, newest first (`wallet.getTransactions`). The iterator exposes `balance`. */
+    iterWalletTransactions(params?: walletMethods.IterWalletTransactionsParams) {
+        return walletMethods.iterWalletTransactions(this, params);
+    }
+
+    /** Collects wallet transactions together with the current `balance`. */
+    getWalletTransactions(params?: walletMethods.IterWalletTransactionsParams) {
+        return walletMethods.getWalletTransactions(this, params);
+    }
+
+    /** Gets wallet transactions by their ids (`wallet.getTransactionsByIDs`). */
+    getWalletTransactionsById(ids: string[]) {
+        return walletMethods.getWalletTransactionsById(this, ids);
+    }
+
+    /** Gets wallet transactions by message hash (`wallet.getTransactionsByMsgHash`). */
+    getWalletTransactionsByHash(hashes: string[]) {
+        return walletMethods.getWalletTransactionsByHash(this, hashes);
+    }
+
+    /** Iterates NFTs held by the wallet (`wallet.getNfts`). */
+    iterWalletNfts(params?: walletMethods.IterWalletNftsParams) {
+        return walletMethods.iterWalletNfts(this, params);
+    }
+
+    /** Collects NFTs held by the wallet. */
+    getWalletNfts(params?: walletMethods.IterWalletNftsParams) {
+        return walletMethods.getWalletNfts(this, params);
+    }
+
+    /**
+     * Sends a signed wallet transfer to a user (`wallet.sendTransfer`) and returns the resulting message.
+     * `data` and `gaslessData` are the signed transfer payloads; `randomId` is generated when omitted.
+     */
+    sendWalletTransfer(user: EntityLike, params: walletMethods.SendWalletTransferParams) {
+        return walletMethods.sendWalletTransfer(this, user, params);
+    }
+
+    /** Lists TON Connect sessions of the wallet (`wallet.tonConnectGetSessions`). */
+    getTonConnectSessions() {
+        return walletMethods.getTonConnectSessions(this);
+    }
+
+    /** Closes a TON Connect session (`wallet.tonConnectCloseSession`). */
+    closeTonConnectSession(sessionId: BigInteger, params?: { body?: Buffer }) {
+        return walletMethods.closeTonConnectSession(this, sessionId, params);
+    }
+
+    /** Gets currency exchange rates as a map of currency code to rate (`payments.getCurrencyRates`). */
+    getCurrencyRates() {
+        return walletMethods.getCurrencyRates(this);
     }
 
     //endregion

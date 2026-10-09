@@ -5998,5 +5998,153 @@
     "ephemeral.editMessage": {
         "summary": "",
         "params": {}
+    },
+    "payments.getOnrampAvailability": {
+        "summary": "",
+        "params": {}
+    },
+    "bots.removeUsername": {
+        "summary": "",
+        "params": {}
+    },
+    "bots.addUsername": {
+        "summary": "",
+        "params": {}
+    },
+    "payments.getCurrencyRates": {
+        "summary": "",
+        "params": {}
+    },
+    "payments.getOnrampBaseCurrencies": {
+        "summary": "",
+        "params": {}
+    },
+    "payments.createOnrampSession": {
+        "summary": "",
+        "params": {}
+    },
+    "payments.getOnrampLimits": {
+        "summary": "",
+        "params": {}
+    },
+    "payments.getOnrampProviders": {
+        "summary": "",
+        "params": {}
+    },
+    "toncenter.getStreamingUrl": {
+        "summary": "",
+        "params": {}
+    },
+    "payments.getOnrampQuote": {
+        "summary": "",
+        "params": {}
+    },
+    "toncenter.performApiRequest": {
+        "summary": "",
+        "params": {}
+    },
+    "wallet.disableBackup": {
+        "summary": "",
+        "params": {}
+    },
+    "wallet.enableBackup": {
+        "summary": "",
+        "params": {}
+    },
+    "wallet.exportSecretPhrase": {
+        "summary": "",
+        "params": {}
+    },
+    "wallet.fetchEncryptedSecretPhrasePart": {
+        "summary": "",
+        "params": {}
+    },
+    "wallet.getBackupHolderDcs": {
+        "summary": "",
+        "params": {}
+    },
+    "wallet.getExistingWaltBalance": {
+        "summary": "",
+        "params": {}
+    },
+    "auth.cancelWebTokenAuthorization": {
+        "summary": "",
+        "params": {}
+    },
+    "wallet.getGaslessInfo": {
+        "summary": "",
+        "params": {}
+    },
+    "wallet.getState": {
+        "summary": "",
+        "params": {}
+    },
+    "wallet.getProofChallenge": {
+        "summary": "",
+        "params": {}
+    },
+    "wallet.getNfts": {
+        "summary": "",
+        "params": {}
+    },
+    "wallet.getTransactions": {
+        "summary": "",
+        "params": {}
+    },
+    "wallet.getTransactionsByMsgHash": {
+        "summary": "",
+        "params": {}
+    },
+    "wallet.getTransactionsByIDs": {
+        "summary": "",
+        "params": {}
+    },
+    "wallet.getUserAddresses": {
+        "summary": "",
+        "params": {}
+    },
+    "wallet.sendTransfer": {
+        "summary": "",
+        "params": {}
+    },
+    "wallet.replaceWallet": {
+        "summary": "",
+        "params": {}
+    },
+    "wallet.tonConnectClaimRequest": {
+        "summary": "",
+        "params": {}
+    },
+    "wallet.tonConnectCloseSession": {
+        "summary": "",
+        "params": {}
+    },
+    "wallet.tonConnectCreateSession": {
+        "summary": "",
+        "params": {}
+    },
+    "wallet.tonConnectGetPending": {
+        "summary": "",
+        "params": {}
+    },
+    "wallet.tonConnectGetSessions": {
+        "summary": "",
+        "params": {}
+    },
+    "wallet.tonConnectNextEventId": {
+        "summary": "",
+        "params": {}
+    },
+    "wallet.tonConnectRegisterKey": {
+        "summary": "",
+        "params": {}
+    },
+    "wallet.tonConnectSubmitConnectResult": {
+        "summary": "",
+        "params": {}
+    },
+    "wallet.tonConnectSubmitResponse": {
+        "summary": "",
+        "params": {}
     }
 }

@@ -340,9 +340,7 @@ export class MtpDispatcher {
             new RequestState(
                 new Api.MsgsStateInfo({
                     reqMsgId: message.msgId,
-                    info: String.fromCharCode(1).repeat(
-                        message.obj.msgIds.length
-                    ),
+                    info: Buffer.alloc(message.obj.msgIds.length, 1),
                 })
             )
         );

@@ -49,7 +49,7 @@ bad_msg_notification#a7eff811 bad_msg_id:long bad_msg_seqno:int error_code:int =
 bad_server_salt#edab447b bad_msg_id:long bad_msg_seqno:int error_code:int new_server_salt:long = BadMsgNotification;
 
 msgs_state_req#da69fb52 msg_ids:Vector<long> = MsgsStateReq;
-msgs_state_info#04deb57d req_msg_id:long info:string = MsgsStateInfo;
+msgs_state_info#04deb57d req_msg_id:long info:bytes = MsgsStateInfo;
 msgs_all_info#8cc0d131 msg_ids:Vector<long> info:string = MsgsAllInfo;
 
 msg_detailed_info#276d3ec6 msg_id:long answer_msg_id:long bytes:int status:int = MsgDetailedInfo;

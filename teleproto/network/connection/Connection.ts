@@ -78,6 +78,7 @@ class Connection {
         }
         this._connected = false;
         await this.socket.close();
+        this._obfuscation?.dispose?.();
     }
 
     async send(data: Buffer) {

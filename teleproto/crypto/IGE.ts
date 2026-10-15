@@ -16,7 +16,7 @@ class IGE {
         this.iv = iv;
     }
 
-    encryptIge(plainText: Buffer): Buffer {
+    encryptIge(plainText: Buffer, output?: Buffer): Buffer {
         const padding = plainText.length % BLOCK_SIZE;
         if (padding !== 0) {
             plainText = Buffer.concat([
@@ -24,14 +24,25 @@ class IGE {
                 generateRandomBytes(BLOCK_SIZE - padding),
             ]);
         }
-        return asBuffer(this.cipher.encryptSync(plainText, { iv: this.iv }));
+        return asBuffer(this.cipher.encryptSync(plainText, { iv: this.iv, output }));
     }
 
-    decryptIge(cipherText: Buffer): Buffer {
+    decryptIge(cipherText: Buffer, output?: Buffer): Buffer {
         if (cipherText.length % BLOCK_SIZE !== 0) {
             throw new Error("Cipher text must be multiple of 16 bytes");
         }
-        return asBuffer(this.cipher.decryptSync(cipherText, { iv: this.iv }));
+        return asBuffer(this.cipher.decryptSync(cipherText, { iv: this.iv, output }));
+    }
+
+    static backend(): string {
+        const probe = aes.ige(Buffer.alloc(32));
+        const { backend } = probe;
+        probe.dispose();
+        return backend;
+    }
+
+    dispose(): void {
+        this.cipher.dispose();
     }
 }
 

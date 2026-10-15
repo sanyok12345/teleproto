@@ -108,7 +108,8 @@ export async function doAuthentication(
         ]);
 
         const ige = new IGE(tempKey, Buffer.alloc(32));
-        const aesEncrypted = ige.encryptIge(dataWithHash);
+        const aesEncrypted = ige.encryptIge(dataWithHash, dataWithHash);
+        ige.dispose();
         const tempKeyXor = bufferXor(tempKey, await sha256(aesEncrypted));
 
         const keyAesEncrypted = Buffer.concat([tempKeyXor, aesEncrypted]);
@@ -225,6 +226,7 @@ export async function doAuthentication(
     ]);
 
     const clientDhEncrypted = ige.encryptIge(clientDdhInnerHashed);
+    ige.dispose();
     const dhGen = await sender.send(
         new Api.SetClientDHParams({
             nonce: resPQ.nonce,

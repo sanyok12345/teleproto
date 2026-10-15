@@ -9,6 +9,7 @@ import { Api } from "../tl";
 
 import os from "os";
 import type { AuthKey } from "../crypto/AuthKey";
+import { IGE } from "../crypto/IGE";
 import { EntityCache } from "../entityCache";
 import type { EntityCacheOptions } from "../entityCache";
 import type { ParseInterface } from "./messageParse";
@@ -424,7 +425,7 @@ export abstract class TelegramBaseClient<S extends Session = Session> {
         } else {
             this._log = new Logger();
         }
-        this._log.info("Running teleproto version " + version);
+        this._log.info(`Running teleproto version ${version} (crypto: ${IGE.backend()})`);
         if (session && typeof session == "string") {
             session = new StoreSession(session) as unknown as S;
         }

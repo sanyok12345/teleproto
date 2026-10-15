@@ -246,7 +246,7 @@ class MTProxyIO {
 
     async read(n: number): Promise<Buffer> {
         const data = await this.stream.readExactly(n);
-        return this.decryptor!.encrypt(data);
+        return this.decryptor!.encryptInPlace(data);
     }
 
     readExactly(n: number): Promise<Buffer> {
@@ -254,7 +254,13 @@ class MTProxyIO {
     }
 
     write(data: Buffer): void {
-        this.stream.write(this.encryptor!.encrypt(data));
+        this.stream.write(this.encryptor!.encryptInPlace(data));
+    }
+
+    dispose(): void {
+        this.encryptor?.dispose();
+        this.decryptor?.dispose();
+        this.encryptor = this.decryptor = undefined;
     }
 }
 

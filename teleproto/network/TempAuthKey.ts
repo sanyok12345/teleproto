@@ -80,7 +80,9 @@ export function buildBindTempAuthKeyRequest(
         20
     );
     const { key, iv } = calcKeyV1(permKey.getKey()!, msgKey);
-    const encrypted = new IGE(key, iv).encryptIge(payload);
+    const ige = new IGE(key, iv);
+    const encrypted = ige.encryptIge(payload, payload);
+    ige.dispose();
 
     const encryptedMessage = Buffer.concat([
         toSignedLittleBuffer(permKey.keyId, 8),

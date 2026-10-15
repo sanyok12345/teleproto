@@ -73,7 +73,7 @@ class ObfuscatedIO {
 
     async read(n: number): Promise<Buffer> {
         const data = await this.connection.readExactly(n);
-        return this._decrypt!.encrypt(data);
+        return this._decrypt!.encryptInPlace(data);
     }
 
     readExactly(n: number): Promise<Buffer> {
@@ -81,7 +81,13 @@ class ObfuscatedIO {
     }
 
     write(data: Buffer) {
-        this.connection.write(this._encrypt!.encrypt(data));
+        this.connection.write(this._encrypt!.encryptInPlace(data));
+    }
+
+    dispose() {
+        this._encrypt?.dispose();
+        this._decrypt?.dispose();
+        this._encrypt = this._decrypt = undefined;
     }
 }
 

@@ -344,7 +344,7 @@ export class TelegramClient<
      * const result = await client.verifyEmail(
      *     "+1234567890",
      *     "abc123hash",
-     *     { type: "code", code: "12345" }
+     *     "12345"
      * );
      *
      * // Or verify with Google Sign-In

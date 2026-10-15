@@ -24,9 +24,11 @@ export interface EmailVerificationOptions {
 }
 
 /**
- * Result from the email callback - can be code, Google token, or Apple token.
+ * Result from the email callback: the code as a string, like `phoneCode` returns it,
+ * or a Google / Apple token. `{ type: "code", code }` is still accepted.
  */
 export type EmailVerificationResult =
+    | string
     | { type: "code"; code: string }
     | { type: "google"; token: string }
     | { type: "apple"; token: string };
@@ -116,7 +118,7 @@ export interface UserAuthParams {
     /** callback for email verification when Telegram requires email setup or code.<br/>
      *  Called when `auth.SentCodeTypeSetUpEmailRequired` or `auth.SentCodeTypeEmailCode` is received.<br/>
      *  For setup: should return email address to use and then handle verification code.<br/>
-     *  For existing email: should return the verification result (code, Google token, or Apple token). */
+     *  For existing email: should return the code as a string, or a Google / Apple token. */
     emailVerification?: (
         options: EmailVerificationOptions
     ) => Promise<EmailVerificationResult>;
@@ -1031,7 +1033,10 @@ function toNextCodeDelivery(
 function toEmailVerification(
     verification: EmailVerificationResult
 ): Api.TypeEmailVerification {
-    switch (verification.type) {
+    if (typeof verification === "string") {
+        return new Api.EmailVerificationCode({ code: verification.trim() });
+    }
+    switch (verification?.type) {
         case "code":
             return new Api.EmailVerificationCode({ code: verification.code });
         case "google":
@@ -1043,6 +1048,9 @@ function toEmailVerification(
                 token: verification.token,
             });
     }
+    throw new Error(
+        'emailVerification must return the code as a string, or { type: "google" | "apple", token }'
+    );
 }
 
 /** @hidden */

@@ -19,8 +19,60 @@ import { IGE } from "../crypto/IGE";
 import bigInt from "big-integer";
 import { BinaryReader } from "../extensions";
 import { AuthKey } from "../crypto/AuthKey";
+import { math } from "cifrante";
 
 const RETRIES = 20;
+
+const DH_PRIME_BITS = 2048n;
+const DH_VALUE_MARGIN = 1n << (DH_PRIME_BITS - 64n);
+const DH_GENERATOR_RESIDUES: Record<number, [bigint, bigint[]]> = {
+    2: [8n, [7n]],
+    3: [3n, [2n]],
+    4: [1n, [0n]],
+    5: [5n, [1n, 4n]],
+    6: [24n, [19n, 23n]],
+    7: [7n, [3n, 5n, 6n]],
+};
+const knownSafePrimes = new Set<bigint>([
+    BigInt(
+        "0x" +
+        "c71caeb9c6b1c9048e6c522f70f13f73980d40238e3e21c14934d037563d930f" +
+        "48198a0aa7c14058229493d22530f4dbfa336f6e0ac925139543aed44cce7c37" +
+        "20fd51f69458705ac68cd4fe6b6b13abdc9746512969328454f18faf8c595f64" +
+        "2477fe96bb2a941d5bcd1d4ac8cc49880708fa9b378e3c4f3a9060bee67cf9a4" +
+        "a4a695811051907e162753b56b0f6b410dba74d8a84b2a14b3144e0ef1284754" +
+        "fd17ed950d5965b4b9dd46582db1178d169c6bc465b0d6ff9ca3928fef5b9ae4" +
+        "e418fc15e83ebea0f87fa9ff5eed70050ded2849f47bf959d956850ce929851f" +
+        "0d8115f635b105ee2e4e15d04b2454bf6f4fadf034b10403119cd8e3b92fcc5b"
+    ),
+]);
+
+function bytesToBigInt(bytes: Buffer): bigint {
+    return bytes.length ? BigInt("0x" + bytes.toString("hex")) : 0n;
+}
+
+export function isDhValueInRange(value: bigint, prime: bigint): boolean {
+    return value > DH_VALUE_MARGIN && value < prime - DH_VALUE_MARGIN;
+}
+
+export function checkDhParams(prime: bigint, g: number, gA: bigint): void {
+    if (prime >> (DH_PRIME_BITS - 1n) !== 1n) {
+        throw new SecurityError("dh_prime is not a 2048-bit number");
+    }
+    const residues = DH_GENERATOR_RESIDUES[g];
+    if (!residues || !residues[1].includes(prime % residues[0])) {
+        throw new SecurityError(`g = ${g} does not generate a subgroup of prime order`);
+    }
+    if (!knownSafePrimes.has(prime)) {
+        if (!math.isSafePrime(prime)) {
+            throw new SecurityError("dh_prime is not a safe prime");
+        }
+        knownSafePrimes.add(prime);
+    }
+    if (!isDhValueInRange(gA, prime)) {
+        throw new SecurityError("g_a is out of the allowed range");
+    }
+}
 
 export interface TempKeyParams {
     expiresIn: number;
@@ -205,12 +257,18 @@ export async function doAuthentication(
             "Invalid server nonce in encrypted answer"
         );
     }
+    const prime = bytesToBigInt(serverDhInner.dhPrime);
+    checkDhParams(prime, serverDhInner.g, bytesToBigInt(serverDhInner.gA));
     const dhPrime = readBigIntFromBuffer(serverDhInner.dhPrime, false, false);
     const ga = readBigIntFromBuffer(serverDhInner.gA, false, false);
     const timeOffset =
         serverDhInner.serverTime - Math.floor(new Date().getTime() / 1000);
-    const b = readBigIntFromBuffer(generateRandomBytes(256), false, false);
-    const gb = modExp(bigInt(serverDhInner.g), b, dhPrime);
+    let b;
+    let gb;
+    do {
+        b = readBigIntFromBuffer(generateRandomBytes(256), false, false);
+        gb = modExp(bigInt(serverDhInner.g), b, dhPrime);
+    } while (!isDhValueInRange(BigInt(gb.toString()), prime));
     const gab = modExp(ga, b, dhPrime);
 
     const clientDhInner = new Api.ClientDHInnerData({

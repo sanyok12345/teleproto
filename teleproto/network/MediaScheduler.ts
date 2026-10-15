@@ -14,6 +14,7 @@ import {
     FileMigrateError,
     FloodWaitError,
     FloodTestPhoneWaitError,
+    ProxyRejectedError,
     ServerError,
     TimedOutError,
 } from "../errors";
@@ -341,7 +342,7 @@ export class MediaScheduler {
         slot.enter();
         try {
             const sender = await slot.ensureConnected().catch((err) => {
-                if (err instanceof SlotRemovedError) throw err;
+                if (err instanceof SlotRemovedError || err instanceof ProxyRejectedError) throw err;
                 this._client._log.info(
                     `${kind} session ${shiftedId} on dc ${dcId} could not connect: ${err?.message ?? err}`
                 );

@@ -1,5 +1,6 @@
 import * as net from "node:net";
 import { SocksClient } from "socks";
+import { ProxyRejectedError } from "../errors/ProxyRejectedError";
 
 import {
     ProxyInterface,
@@ -162,6 +163,13 @@ export class PromisedNetSockets {
                 host: ip,
                 port: port,
             },
+        }).catch((error: unknown) => {
+            if (error instanceof Error && /Authentication failed/i.test(error.message)) {
+                throw new ProxyRejectedError(
+                    `SOCKS5 proxy ${this.proxy!.ip}:${this.proxy!.port} rejected the credentials`
+                );
+            }
+            throw error;
         });
         return { socket: info.socket };
     }

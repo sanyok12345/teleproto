@@ -27,6 +27,7 @@ import { buildBindTempAuthKeyRequest } from "./TempAuthKey";
 import { MTProtoPlainSender } from "./MTProtoPlainSender";
 import {
     InvalidBufferError,
+    ProxyRejectedError,
     RPCError,
     SecurityError,
     TypeNotFoundError,
@@ -297,7 +298,10 @@ export class MTProtoSender {
                 return true;
             } catch (err) {
                 lastError = err;
-                if ((this._lifecycle as SenderLifecycle) === "dead") {
+                if (
+                    (this._lifecycle as SenderLifecycle) === "dead" ||
+                    err instanceof ProxyRejectedError
+                ) {
                     break;
                 }
                 if (this._updateCallback && attempt === 0) {
@@ -1289,6 +1293,11 @@ export class MTProtoSender {
             await this._connect();
         } catch (err) {
             if (this._lifecycle !== "reconnecting") return;
+            if (err instanceof ProxyRejectedError) {
+                this._log.error(`Reconnect to dc ${this._dcId} stopped: ${err.message}`);
+                this._giveUp(err, "disconnected", true);
+                return;
+            }
             this._log.warn(`Reconnect to dc ${this._dcId} failed: ${err}`);
             this._scheduleReconnect(0);
             return;

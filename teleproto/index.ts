@@ -18,6 +18,20 @@ export {
     Keyboard,
 } from "./tl/custom/keyboard";
 export { Connection } from "./network";
+export {
+    Transport,
+    TcpTransport,
+    SocksTransport,
+    HttpProxyTransport,
+    MTProxyTransport,
+    WebSocketTransport,
+    WebProxyTransport,
+} from "./network/transport";
+export type {
+    SocksTransportOptions,
+    HttpProxyTransportOptions,
+    MTProxyTransportOptions,
+} from "./network/transport";
 export { ConnectionWebProxy } from "./network/connection/WebProxy";
 export type { WebProxyType } from "./network/connection/TCPMTProxy";
 export type { WebProxyOptions, WebProxyWebSocket } from "./network/connection/WebProxy";

@@ -42,6 +42,7 @@ export function RPCMessageToError(
 }
 
 export * from "./Common";
+export * from "./ProxyRejectedError";
 export * from "./RPCBaseErrors";
 export * from "./RPCErrorList";
 export * from "./aliases";

@@ -1,10 +1,7 @@
 import { Connection } from "../network";
 import type { TelegramClient } from "./TelegramClient";
 import { version } from "../Version";
-import {
-    ConnectionTCPFull,
-    ConnectionTCPObfuscated,
-} from "../network/connection";
+import { ConnectionTCPFull } from "../network/connection";
 import { Session, StoreSession } from "../sessions";
 import { Logger, PromisedNetSockets } from "../extensions";
 import type { SocketFactory } from "../extensions/SocketInterface";
@@ -35,7 +32,7 @@ import Deferred from "../extensions/Deferred";
 import { UpdateManager } from "./updates/manager";
 import { _clearUpdateQueue, _stopUpdateLoop } from "./updates/dispatch";
 import type { ClientUpdates } from "./updates/composer";
-import { ConnectionWebProxy, createWebProxySocket } from "../network/connection/WebProxy";
+import { resolveLegacyTransport, type ResolvedTransport, type Transport } from "../network/transport/Transport";
 import { installMessageBehaviour } from "../tl/custom/message";
 
 const SESSION_IDLE_TIMEOUT_MS = 60_000;
@@ -165,8 +162,15 @@ export interface TelegramClientParams {
      *   SOCKS5 supports optional `username`/`password` authentication.
      *
      * @see {@link ProxyInterface} for detailed type definitions and examples.
+     * @deprecated Use {@link TelegramClientParams.transport}: `SocksTransport`, `MTProxyTransport` or `WebProxyTransport`.
      */
     proxy?: ProxyInterface;
+    /**
+     * How the client reaches Telegram: `TcpTransport` (default), `SocksTransport`, `HttpProxyTransport`,
+     * `MTProxyTransport`, `WebSocketTransport` or `WebProxyTransport`.
+     * The packet framing stays the `connection` option. Cannot be combined with `proxy` or `networkSocket`.
+     */
+    transport?: Transport;
     /**
      * How many times we should retry borrowing a sender from another DC when it fails. defaults to 5
      */
@@ -217,6 +221,7 @@ export interface TelegramClientParams {
     securityChecks?: boolean;
     /**
      * What type of network connection to use.
+     * @deprecated Use {@link TelegramClientParams.transport}, for example `WebSocketTransport`.
      */
     networkSocket?: SocketFactory;
     /**
@@ -455,35 +460,35 @@ export abstract class TelegramBaseClient<S extends Session = Session> {
         }
         this._timeout = clientParams.timeout!;
         this._autoReconnect = clientParams.autoReconnect!;
-        this._proxy = clientParams.proxy;
         this._maxConcurrentDownloads = clientParams.maxConcurrentDownloads || 1;
-        this.networkSocket = clientParams.networkSocket || PromisedNetSockets;
         this._keepAliveInterval = clientParams.keepAliveInterval;
         this._reCaptchaCallback = clientParams.reCaptchaCallback;
         if (!(clientParams.connection instanceof Function)) {
             throw new Error("Connection should be a class not an instance");
         }
-        this._connection = clientParams.connection;
-        if (!explicitConnection && this.networkSocket.isWebSocket) {
-            this._connection = ConnectionTCPObfuscated;
-        }
-        let initProxy;
-        const webProxy = this._proxy && "WEB" in this._proxy ? this._proxy : undefined;
-        if (webProxy) {
-            if ((explicitConnection && this._connection !== ConnectionWebProxy) || explicitSocket) {
-                throw new Error("WEB proxy requires its own connection and socket adapter");
+        let route: ResolvedTransport;
+        if (clientParams.transport) {
+            if (clientParams.proxy || explicitSocket) {
+                throw new Error("transport replaces proxy and networkSocket: pass only transport");
             }
-            const web = createWebProxySocket(webProxy);
-            this.networkSocket = web.socket;
-            this._proxy = { MTProxy: true, ip: web.host, port: 443, secret: web.secret };
-        }
-        if (this._proxy && "MTProxy" in this._proxy) {
-            this._connection = webProxy ? ConnectionWebProxy : ConnectionTCPMTProxyAbridged;
-            initProxy = new Api.InputClientProxy({
-                address: this._proxy.ip,
-                port: this._proxy.port,
+            route = clientParams.transport.resolve(
+                explicitConnection ? clientParams.connection : undefined
+            );
+        } else {
+            route = resolveLegacyTransport({
+                proxy: clientParams.proxy,
+                socket: clientParams.networkSocket || PromisedNetSockets,
+                connection: clientParams.connection,
+                explicitConnection,
+                explicitSocket,
             });
         }
+        this._connection = route.connection;
+        this.networkSocket = route.socket;
+        this._proxy = route.proxy;
+        const initProxy = route.clientProxy
+            ? new Api.InputClientProxy(route.clientProxy)
+            : undefined;
         this._initRequest = new Api.InitConnection({
             apiId: this.apiId,
             deviceModel:

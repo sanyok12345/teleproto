@@ -12,6 +12,21 @@ export {
 } from "./connection";
 
 export {
+    Transport,
+    TcpTransport,
+    SocksTransport,
+    HttpProxyTransport,
+    MTProxyTransport,
+    WebSocketTransport,
+    WebProxyTransport,
+} from "./transport";
+export type {
+    SocksTransportOptions,
+    HttpProxyTransportOptions,
+    MTProxyTransportOptions,
+} from "./transport";
+
+export {
     SenderSlot,
     SlotRemovedError,
     SenderSlotState,

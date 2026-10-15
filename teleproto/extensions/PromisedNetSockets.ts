@@ -142,32 +142,40 @@ export class PromisedNetSockets {
      * @param ip
      * @returns {Promise<void>}
      */
+    protected async openTunnel(
+        port: number,
+        ip: string
+    ): Promise<{ socket: net.Socket; head?: Buffer } | undefined> {
+        if (!this.proxy) return undefined;
+        const info = await SocksClient.createConnection({
+            proxy: {
+                host: this.proxy.ip,
+                port: this.proxy.port,
+                type: this.proxy.socksType,
+                userId: this.proxy.username,
+                password: this.proxy.password,
+            },
+
+            command: "connect",
+            timeout: (this.proxy.timeout || 5) * 1000,
+            destination: {
+                host: ip,
+                port: port,
+            },
+        });
+        return { socket: info.socket };
+    }
+
     async connect(port: number, ip: string) {
         this.chunks = [];
         this.headOffset = 0;
         this.available = 0;
-        let connected = false;
-        if (this.proxy) {
-            const info = await SocksClient.createConnection({
-                proxy: {
-                    host: this.proxy.ip,
-                    port: this.proxy.port,
-                    type: this.proxy.socksType,
-                    userId: this.proxy.username,
-                    password: this.proxy.password,
-                },
-
-                command: "connect",
-                timeout: (this.proxy.timeout || 5) * 1000,
-                destination: {
-                    host: ip,
-                    port: port,
-                },
-            });
-            this.client = info.socket;
-            connected = true;
-        } else {
-            this.client = new net.Socket();
+        const tunnel = await this.openTunnel(port, ip);
+        const connected = tunnel !== undefined;
+        this.client = tunnel ? tunnel.socket : new net.Socket();
+        if (tunnel?.head?.length) {
+            this.chunks.push(tunnel.head);
+            this.available += tunnel.head.length;
         }
 
         this.canRead = new Promise((resolve) => {

@@ -132,6 +132,23 @@ if (button instanceof Api.KeyboardInlineButton) {
 }
 ```
 
+# Proxies
+
+Pass a `transport` to route every connection, including file transfers, through a proxy:
+
+```ts
+import { MTProxyTransport, SocksTransport, HttpProxyTransport, WebSocketTransport } from "teleproto";
+
+new TelegramClient(session, apiId, apiHash, {
+  transport: new MTProxyTransport({ host: "proxy.example.com", port: 443, secret: "dd..." }),
+});
+
+// or
+transport: new SocksTransport({ host: "127.0.0.1", port: 1080, version: 5, username, password })
+transport: new HttpProxyTransport({ host: "127.0.0.1", port: 3128, username, password })
+transport: new WebSocketTransport()
+```
+
 # Raw MTProto API
 
 Every method in Telegram's TL schema is callable through `client.api`, typed and autocompleted:

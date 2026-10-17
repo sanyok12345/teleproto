@@ -20064,7 +20064,7 @@ export namespace Api {
   }
   export class MsgsStateInfo extends VirtualClass<{
     reqMsgId: long;
-    info: string;
+    info: bytes;
   }> {
   CONSTRUCTOR_ID: 81704317;
   SUBCLASS_OF_ID: 118098532;
@@ -20072,7 +20072,7 @@ export namespace Api {
   className: "MsgsStateInfo";
   static fromReader(reader: Reader): MsgsStateInfo;
     reqMsgId: long;
-    info: string;
+    info: bytes;
   }
   export class MsgsAllInfo extends VirtualClass<{
     msgIds: long[];

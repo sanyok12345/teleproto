@@ -2,6 +2,55 @@ import * as fs from "fs";
 import * as path from "path";
 import { parseTl, TlDefinition } from "./parser";
 import { renderApiTypes, ErrorMeta, DocsMap } from "./types/template";
+import {
+    FIELD_BARE,
+    FIELD_FLAG,
+    FIELD_FLAGS_INDICATOR,
+    FIELD_VECTOR,
+    FIELD_VECTOR_ID,
+    type CompactDefinition,
+    type CompactField,
+    type CompactSchema,
+} from "../teleproto/tl/runtime/schema";
+
+function encodeSchema(layer: number, definitions: TlDefinition[]): CompactSchema {
+    const strings: string[] = [];
+    const indexes = new Map<string, number>();
+    const intern = (value: string) => {
+        let index = indexes.get(value);
+        if (index === undefined) {
+            index = strings.push(value) - 1;
+            indexes.set(value, index);
+        }
+        return index;
+    };
+    const encoded = definitions.map((definition): CompactDefinition => {
+        const names = Object.keys(definition.argsConfig);
+        const fields = names.map((name): CompactField => {
+            const arg = definition.argsConfig[name];
+            const bits =
+                (arg.isVector ? FIELD_VECTOR : 0) |
+                (arg.isFlag ? FIELD_FLAG : 0) |
+                (arg.skipConstructorId ? FIELD_BARE : 0) |
+                (arg.flagIndicator ? FIELD_FLAGS_INDICATOR : 0) |
+                (arg.useVectorId ? FIELD_VECTOR_ID : 0);
+            const field: CompactField = [intern(name), arg.type === null ? -1 : intern(arg.type), bits];
+            if (arg.isFlag) field.push(names.indexOf(arg.flagName as string), arg.flagIndex);
+            return field;
+        });
+        const fullName = definition.namespace ? `${definition.namespace}.${definition.name}` : definition.name;
+        const row: CompactDefinition = [
+            intern(fullName),
+            definition.constructorId,
+            definition.subclassOfId,
+            intern(definition.result),
+            definition.isFunction ? 1 : 0,
+        ];
+        if (fields.length) row.push(fields);
+        return row;
+    });
+    return { layer, strings, definitions: encoded };
+}
 
 type TlType = {
     namespace?: string;
@@ -170,12 +219,14 @@ function main(): void {
         "utf-8"
     );
 
+    const layer = Number(/^\/\/ LAYER (\d+)/m.exec(apiTl)?.[1]);
+    if (!layer) throw new Error("api.tl has no // LAYER line");
     const definitions = loadTlDefinitions(apiTl, schemaTl);
     const { constructors, functions } = splitDefinitions(definitions);
 
     fs.writeFileSync(
-        path.resolve(root, "../teleproto/tl/generated/api-definitions.js"),
-        `module.exports = ${JSON.stringify(definitions)};\n`
+        path.resolve(root, "../teleproto/tl/generated/schema.js"),
+        `module.exports = JSON.parse(${JSON.stringify(JSON.stringify(encodeSchema(layer, definitions)))});\n`
     );
 
     const facadeFunctions = JSON.parse(JSON.stringify(functions)) as TlDefinition[];
@@ -188,10 +239,7 @@ function main(): void {
 
     fs.writeFileSync(
         path.resolve(root, "../teleproto/tl/generated/api.js"),
-        "const { createApiFromDefinitions } = require(\"../runtime/createApi\");\n" +
-            "const definitions = require(\"./api-definitions.js\");\n" +
-            "const Api = createApiFromDefinitions(definitions);\n" +
-            "module.exports = { Api };\n"
+        "module.exports = { Api: require(\"../runtime/Registry\").registry.api };\n"
     );
 
     fs.writeFileSync(path.resolve(root, "../teleproto/tl/generated/api.d.ts"), dts);

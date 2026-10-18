@@ -2,8 +2,8 @@ import * as http from "node:http";
 import * as https from "node:https";
 import type * as net from "node:net";
 import type { Connection } from "../connection/Connection";
-import { ConnectionTCPFull } from "../connection/TCPFull";
-import { PromisedNetSockets } from "../../extensions/PromisedNetSockets";
+import { ConnectionTCPObfuscated } from "../connection/Obfuscation";
+import { NetSocket } from "./socket/NetSocket";
 import { ProxyRejectedError } from "../../errors/ProxyRejectedError";
 import { Transport, type ResolvedTransport } from "./Transport";
 
@@ -72,11 +72,11 @@ export class HttpProxyTransport extends Transport {
 
     resolve(connection?: typeof Connection): ResolvedTransport {
         const options = this.options;
-        class HttpProxySocket extends PromisedNetSockets {
+        class HttpProxySocket extends NetSocket {
             protected openTunnel(port: number, ip: string) {
                 return openHttpTunnel(options, ip, port);
             }
         }
-        return { connection: connection ?? ConnectionTCPFull, socket: HttpProxySocket };
+        return { connection: connection ?? ConnectionTCPObfuscated, socket: HttpProxySocket, proxied: true };
     }
 }

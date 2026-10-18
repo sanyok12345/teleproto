@@ -1,59 +1,51 @@
-import { serializeBytes } from "../runtime/helpers";
-import { unzipSync } from "zlib";
-import type { BinaryReader } from "../../extensions";
+import { gzipSync, unzipSync } from "zlib";
+import { Writer } from "../binary/Writer";
+import type { Reader } from "../binary/Reader";
+
+const MIN_COMPRESS_SIZE = 128;
+const SAMPLE_FROM_SIZE = 16384;
+const SAMPLE_SIZE = 1024;
+const MAX_RATIO = 0.9;
 
 export class GZIPPacked {
-    static CONSTRUCTOR_ID = 0x3072cfa1;
-    static classType = "constructor";
-    data: Buffer;
-    private CONSTRUCTOR_ID: number;
-    private classType: string;
+    static readonly CONSTRUCTOR_ID = 0x3072cfa1;
+    static readonly classType = "constructor";
+    readonly CONSTRUCTOR_ID = GZIPPacked.CONSTRUCTOR_ID;
+    readonly classType = "constructor";
 
-    constructor(data: Buffer) {
-        this.data = data;
-        this.CONSTRUCTOR_ID = 0x3072cfa1;
-        this.classType = "constructor";
-    }
+    constructor(readonly data: Buffer) {}
 
-    static async gzipIfSmaller(contentRelated: boolean, data: Buffer): Promise<Buffer> {
-        if (contentRelated && data.length > 512) {
-            const gzipped = await new GZIPPacked(data).toBytes();
-            if (gzipped.length < data.length) {
-                return gzipped;
-            }
+    static gzipIfSmaller(contentRelated: boolean, data: Buffer): Buffer {
+        if (!contentRelated || data.length < MIN_COMPRESS_SIZE) return data;
+        if (data.length >= SAMPLE_FROM_SIZE) {
+            const middle = data.subarray((data.length - SAMPLE_SIZE) >> 1, (data.length + SAMPLE_SIZE) >> 1);
+            if (GZIPPacked.gzip(middle).length > middle.length * MAX_RATIO) return data;
         }
-        return data;
+        const packed = new GZIPPacked(data).toBytes();
+        return packed.length <= data.length * MAX_RATIO ? packed : data;
     }
 
     static gzip(input: Buffer): Buffer {
-        return Buffer.from(input);
-        // TODO this usually makes it faster for large requests
-        //return Buffer.from(deflate(input, { level: 9, gzip: true }))
+        return gzipSync(input);
     }
 
     static ungzip(input: Buffer): Buffer {
         return unzipSync(input);
     }
 
-    async toBytes(): Promise<Buffer> {
-        const g = Buffer.alloc(4);
-        g.writeUInt32LE(GZIPPacked.CONSTRUCTOR_ID, 0);
-        return Buffer.concat([
-            g,
-            serializeBytes(await GZIPPacked.gzip(this.data)),
-        ]);
+    toBytes(): Buffer {
+        const writer = new Writer();
+        writer.uint(GZIPPacked.CONSTRUCTOR_ID);
+        writer.bytes(GZIPPacked.gzip(this.data));
+        return writer.finish();
     }
 
-    static async read(reader: BinaryReader): Promise<Buffer> {
-        const constructor = reader.readInt(false);
-        if (constructor !== GZIPPacked.CONSTRUCTOR_ID) {
-            throw new Error("not equal");
-        }
-        return GZIPPacked.gzip(reader.tgReadBytes());
+    static read(reader: Reader): Buffer {
+        if (reader.readInt(false) !== GZIPPacked.CONSTRUCTOR_ID) throw new Error("gzip_packed expected");
+        return GZIPPacked.ungzip(reader.tgReadBytes());
     }
 
-    static async fromReader(reader: BinaryReader) {
-        const data = reader.tgReadBytes();
-        return new GZIPPacked(await GZIPPacked.ungzip(data));
+    static fromReader(reader: Reader): GZIPPacked {
+        return new GZIPPacked(GZIPPacked.ungzip(reader.tgReadBytes()));
     }
 }

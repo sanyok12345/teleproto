@@ -1,16 +1,13 @@
-import bigInt from "big-integer";
-export class TLMessage {
-    static SIZE_OVERHEAD = 12;
-    static classType = "constructor";
-    msgId: bigInt.BigInteger;
-    private classType: string;
-    private seqNo: number;
-    obj: any;
+import type bigInt from "big-integer";
 
-    constructor(msgId: bigInt.BigInteger, seqNo: number, obj: any) {
-        this.msgId = msgId;
-        this.seqNo = seqNo;
-        this.obj = obj;
-        this.classType = "constructor";
-    }
+export class TLMessage {
+    static readonly SIZE_OVERHEAD = 12;
+    static readonly classType = "constructor";
+    readonly classType = "constructor";
+
+    constructor(
+        readonly msgId: bigInt.BigInteger,
+        readonly seqNo: number,
+        public obj: unknown
+    ) { }
 }

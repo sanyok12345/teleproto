@@ -1,49 +1,28 @@
-import { Api } from "../api";
-import type { BinaryReader } from "../../extensions";
+import type bigInt from "big-integer";
+import type { Api } from "../api";
+import type { Reader } from "../binary/Reader";
 import { GZIPPacked } from "./GZIPPacked";
-import bigInt from "big-integer";
+
+const RPC_ERROR_ID = 0x2144ca19;
 
 export class RPCResult {
-    static CONSTRUCTOR_ID = 0xf35c6d01;
-    static classType = "constructor";
-    private CONSTRUCTOR_ID: number;
-    private reqMsgId: bigInt.BigInteger;
-    private body?: Buffer;
-    private error?: Api.RpcError;
-    private classType: string;
+    static readonly CONSTRUCTOR_ID = 0xf35c6d01;
+    static readonly classType = "constructor";
+    readonly CONSTRUCTOR_ID = RPCResult.CONSTRUCTOR_ID;
+    readonly classType = "constructor";
 
     constructor(
-        reqMsgId: bigInt.BigInteger,
-        body?: Buffer,
-        error?: Api.RpcError
-    ) {
-        this.CONSTRUCTOR_ID = 0xf35c6d01;
-        this.reqMsgId = reqMsgId;
-        this.body = body;
-        this.error = error;
-        this.classType = "constructor";
-    }
+        readonly reqMsgId: bigInt.BigInteger,
+        readonly body?: Buffer,
+        readonly error?: Api.RpcError
+    ) { }
 
-    static async fromReader(reader: BinaryReader) {
-        const msgId = reader.readLong();
-        const innerCode = reader.readInt(false);
-        if (innerCode === Api.RpcError.CONSTRUCTOR_ID) {
-            return new RPCResult(
-                msgId,
-                undefined,
-                Api.RpcError.fromReader(reader)
-            );
-        }
-        if (innerCode === GZIPPacked.CONSTRUCTOR_ID) {
-            return new RPCResult(
-                msgId,
-                (await GZIPPacked.fromReader(reader)).data
-            );
-        }
+    static fromReader(reader: Reader): RPCResult {
+        const reqMsgId = reader.readLong();
+        const inner = reader.readInt(false);
+        if (inner === GZIPPacked.CONSTRUCTOR_ID) return new RPCResult(reqMsgId, GZIPPacked.fromReader(reader).data);
         reader.seek(-4);
-        // This reader.read() will read more than necessary, but it's okay.
-        // We could make use of MessageContainer's length here, but since
-        // it's not necessary we don't need to care about it.
-        return new RPCResult(msgId, reader.read(), undefined);
+        if (inner === RPC_ERROR_ID) return new RPCResult(reqMsgId, undefined, reader.tgReadObject() as Api.RpcError);
+        return new RPCResult(reqMsgId, reader.read());
     }
 }

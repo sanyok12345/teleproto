@@ -5,8 +5,8 @@ import { getDisplayName, getInputChannel, getInputPeer, getPeerId } from "../../
 import { Draft } from "./draft";
 import { returnBigInt } from "../../Helpers";
 import bigInt from "big-integer";
-import type { SendMessageParams } from "../../client/messages";
-import type { DeleteHistoryParams } from "../../client/chats";
+import type { SendMessageParams } from "../../client/methods/messages";
+import type { DeleteHistoryParams } from "../../client/methods/chats";
 
 export class Dialog<D extends Api.Dialog | Api.DialogCommunity = Api.Dialog> {
     _client: TelegramClient;

@@ -12,11 +12,10 @@ import {
     MarkAsReadParams,
     SendMessageParams,
     UpdatePinMessageParams,
-} from "../../client/messages";
-import { DownloadMediaInterface } from "../../client/downloads";
+} from "../../client/methods/messages";
+import { DownloadMediaInterface } from "../../client/methods/downloads";
 import * as rich from "../../richMessage";
 import { returnBigInt } from "../../Helpers";
-import { patchAll } from "../runtime/patches/messages";
 import { BigInteger } from "big-integer";
 import { MessageButton } from "./messageButton";
 
@@ -617,7 +616,7 @@ export class CustomMessage extends SenderGetter {
         } catch (e) {
             this._client._log.error(
                 "Got error while trying to finish init message with id " +
-                    this.id,
+                this.id,
                 e
             );
             if (this._client._errorHandler) {
@@ -1357,12 +1356,4 @@ export class CustomMessage extends SenderGetter {
             }
         }
     }
-}
-
-let installed = false;
-
-export function installMessageBehaviour(): void {
-    if (installed) return;
-    installed = true;
-    patchAll(CustomMessage);
 }

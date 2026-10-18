@@ -1,4 +1,4 @@
-import type { Api } from "../api";
+import type { Api } from "../../tl/api";
 
 type Invoker = (request: Api.AnyRequest, dcId?: number, options?: Api.ApiCallOptions) => Promise<unknown>;
 type RequestClass = (new (args?: Record<string, unknown>) => Api.AnyRequest) & {
@@ -54,8 +54,7 @@ export function createApiProxy(api: Record<string, unknown>, invoke: Invoker): u
                     return method;
                 }
                 const value = ns[key];
-                if (root && value && typeof value === "object" &&
-                    Object.values(value).some(asRequestClass)) {
+                if (root && value && typeof value === "object") {
                     const proxy = namespaceProxy(value as Record<string, unknown>);
                     cache.set(key, proxy);
                     return proxy;

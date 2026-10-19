@@ -4,7 +4,7 @@ import {
     readBufferFromBigInt,
     readBigIntFromBuffer,
 } from "../Helpers";
-import { BinaryReader } from "../extensions";
+import { Reader } from "../tl/binary/Reader";
 import { sleep } from "../Helpers";
 import bigInt from "big-integer";
 
@@ -20,7 +20,7 @@ export class AuthKey {
         }
         this._key = value;
         this._hash = hash;
-        const reader = new BinaryReader(hash);
+        const reader = new Reader(hash);
         this.auxHash = reader.readLong(false);
         reader.read(4);
         this.keyId = reader.readLong(false);
@@ -40,7 +40,7 @@ export class AuthKey {
         }
         this._key = value;
         this._hash = await sha1(this._key);
-        const reader = new BinaryReader(this._hash);
+        const reader = new Reader(this._hash);
         this.auxHash = reader.readLong(false);
         reader.read(4);
         this.keyId = reader.readLong(false);

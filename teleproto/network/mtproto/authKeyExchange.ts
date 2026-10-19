@@ -1,4 +1,5 @@
-import { MTProtoPlainSender } from "./MTProtoPlainSender";
+import type { PlainSender } from "./PlainSender";
+import type { Logger } from "../../extensions/Logger";
 import {
     bufferXor,
     generateKeyDataFromNonce,
@@ -10,15 +11,15 @@ import {
     sha1,
     sha256,
     toSignedLittleBuffer,
-} from "../Helpers";
-import { Api } from "../tl";
-import { SecurityError } from "../errors";
-import { Factorizator } from "../crypto/Factorizator";
-import { _serverKeys } from "../crypto/RSA";
-import { IGE } from "../crypto/IGE";
+} from "../../Helpers";
+import { Api } from "../../tl";
+import { SecurityError } from "../../errors";
+import { Factorizator } from "../../crypto/Factorizator";
+import { _serverKeys } from "../../crypto/RSA";
+import { IGE } from "../../crypto/IGE";
 import bigInt from "big-integer";
-import { BinaryReader } from "../extensions";
-import { AuthKey } from "../crypto/AuthKey";
+import { Reader } from "../../tl/binary/Reader";
+import { AuthKey } from "../../crypto/AuthKey";
 import { math } from "cifrante";
 
 const RETRIES = 20;
@@ -79,11 +80,17 @@ export interface TempKeyParams {
     dc: number;
 }
 
+export interface AuthKeyExchangeResult {
+    authKey: AuthKey;
+    timeOffset: number;
+    serverSalt: bigInt.BigInteger;
+}
+
 export async function doAuthentication(
-    sender: MTProtoPlainSender,
-    log: any,
+    sender: PlainSender,
+    log: Logger,
     temp?: TempKeyParams
-) {
+): Promise<AuthKeyExchangeResult> {
     let bytes = generateRandomBytes(16);
 
     const nonce = readBigIntFromBuffer(bytes, false, true);
@@ -242,7 +249,7 @@ export async function doAuthentication(
     }
     const ige = new IGE(key, iv);
     const plainTextAnswer = ige.decryptIge(serverDhParams.encryptedAnswer);
-    const reader = new BinaryReader(plainTextAnswer);
+    const reader = new Reader(plainTextAnswer);
     reader.read(20);
     const serverDhInner = reader.tgReadObject();
     if (!(serverDhInner instanceof Api.ServerDHInnerData)) {
@@ -319,8 +326,12 @@ export async function doAuthentication(
 
     const newNonceHash = await authKey.calcNewNonceHash(newNonce, nonceNumber);
 
-    // @ts-ignore
-    const dhHash = dhGen[`newNonceHash${nonceNumber}`];
+    const dhHash =
+        dhGen instanceof Api.DhGenOk
+            ? dhGen.newNonceHash1
+            : dhGen instanceof Api.DhGenRetry
+              ? dhGen.newNonceHash2
+              : dhGen.newNonceHash3;
 
     if (dhHash.neq(newNonceHash)) {
         throw new SecurityError("Invalid new nonce hash");

@@ -1,168 +1,110 @@
 import type { Logger } from "../../extensions/Logger";
-import type {
-    PacketReader,
-    SocketFactory,
-    SocketInterface,
-} from "../../extensions/SocketInterface";
-import type { ProxyInterface } from "./TCPMTProxy";
+import type { PacketReader, SocketFactory, SocketInterface } from "../transport/socket/types";
 
-interface ConnectionInterfaceParams {
+export interface ConnectionInterfaceParams {
     ip: string;
     port: number;
     dcId: number;
     loggers: Logger;
-    proxy?: ProxyInterface;
     socket: SocketFactory;
-    keepAliveInterval?: number;
     testServers?: boolean;
+    keepAliveInterval?: number;
 }
 
-/**
- * Thin transport pipe: codec framing over one socket.
- *
- * There are deliberately no internal loops, queues or buffers here the
- * sender owns exactly one reader and one writer, so `send()` and `recv()`
- * talk to the codec and socket directly. Transport-level failures (including
- * MTProto transport errors such as -404) propagate to the caller as thrown
- * errors from these two methods.
- */
-class Connection {
-    PacketCodecClass?: typeof PacketCodec;
-    readonly _ip: string;
-    readonly _port: number;
-    _dcId: number;
-    _log: Logger;
-    _proxy?: ProxyInterface;
-    _keepAliveInterval?: number;
-    _testServers?: boolean;
-    _connected: boolean;
-    protected _codec: any;
-    protected _obfuscation: any;
-    socket: SocketInterface;
+export abstract class PacketCodec {
+    static readonly tag?: Buffer;
+    static readonly obfuscateTag?: Buffer;
+    abstract encodePacket(data: Buffer): Buffer;
+    abstract readPacket(reader: PacketReader): Promise<Buffer>;
+}
 
-    constructor({
-        ip,
-        port,
-        dcId,
-        loggers,
-        proxy,
-        socket,
-        keepAliveInterval,
-        testServers,
-    }: ConnectionInterfaceParams) {
-        this._ip = ip;
-        this._port = port;
-        this._dcId = dcId;
-        this._log = loggers;
-        this._proxy = proxy;
-        this._keepAliveInterval = keepAliveInterval;
-        this._testServers = testServers;
-        this._connected = false;
-        this._codec = undefined;
-        this._obfuscation = undefined; // TcpObfuscated and MTProxy
-        this.socket = new socket(proxy, keepAliveInterval);
+export type PacketCodecClass = (new () => PacketCodec) & {
+    readonly tag?: Buffer;
+    readonly obfuscateTag?: Buffer;
+};
+
+export class Connection {
+    PacketCodecClass?: PacketCodecClass;
+    readonly ip: string;
+    readonly port: number;
+    readonly dcId: number;
+    readonly testServers: boolean;
+    readonly log: Logger;
+    socket: SocketInterface;
+    protected codec?: PacketCodec;
+    private connected = false;
+    private readonly rawSocket: SocketInterface;
+
+    constructor(private readonly params: ConnectionInterfaceParams) {
+        this.ip = params.ip;
+        this.port = params.port;
+        this.dcId = params.dcId;
+        this.testServers = !!params.testServers;
+        this.log = params.loggers;
+        this.socket = this.rawSocket = new params.socket(params.keepAliveInterval);
+    }
+
+    get usesRandomPadding(): boolean {
+        return false;
+    }
+
+    protected get codecClass(): PacketCodecClass {
+        if (!this.PacketCodecClass) throw new Error(`${this.constructor.name} has no packet codec`);
+        return this.PacketCodecClass;
     }
 
     async connect() {
-        this._log.debug("Connecting");
-        this._codec = new this.PacketCodecClass!(this);
-        await this.socket.connect(this._port, this._ip, this._testServers);
-        this._log.debug("Finished connecting");
-        await this._initConn();
-        this._connected = true;
+        this.codec = new this.codecClass();
+        this.socket = this.rawSocket;
+        try {
+            await this.socket.connect(this.port, this.ip, this.testServers);
+            await this.handshake();
+        } catch (error) {
+            await this.socket.close().catch(() => { });
+            throw error;
+        }
+        this.connected = true;
     }
 
     async disconnect() {
-        if (!this._connected) {
-            return;
-        }
-        this._connected = false;
+        this.connected = false;
         await this.socket.close();
-        this._obfuscation?.dispose?.();
-    }
-
-    async send(data: Buffer) {
-        if (!this._connected) {
-            throw new Error("Not connected");
-        }
-        await this._send(data);
-    }
-
-    async recv() {
-        if (!this._connected) {
-            throw new Error("Not connected");
-        }
-        const data = await this._recv();
-        if (!data || !data.length) {
-            throw new Error("No data received");
-        }
-        return data;
     }
 
     isConnected() {
-        return this._connected;
+        return this.connected;
     }
 
-    async _initConn() {
-        if (this._codec.tag) {
-            await this.socket.write(this._codec.tag);
-        }
+    async send(data: Buffer) {
+        if (!this.connected || !this.codec) throw new Error("Not connected");
+        this.write(this.codec.encodePacket(data));
     }
 
-    async _send(data: Buffer) {
-        const encodedPacket = this._codec.encodePacket(data);
-        this.socket.write(encodedPacket);
+    async recv(): Promise<Buffer> {
+        if (!this.connected || !this.codec) throw new Error("Not connected");
+        const data = await this.codec.readPacket(this.reader);
+        if (!data.length) throw new Error("No data received");
+        return data;
     }
 
-    async _recv() {
-        return await this._codec.readPacket(this.socket);
+    clone(): Connection {
+        return new (this.constructor as new (params: ConnectionInterfaceParams) => Connection)(this.params);
+    }
+
+    protected async handshake() {
+        const tag = this.codecClass.tag;
+        if (tag) this.socket.write(tag);
+    }
+
+    protected write(packet: Buffer) {
+        this.socket.write(packet);
+    }
+
+    protected get reader(): PacketReader {
+        return this.socket;
     }
 
     toString() {
-        return `${this._ip}:${this._port}/${this.constructor.name.replace(
-            "Connection",
-            ""
-        )}`;
+        return `${this.ip}:${this.port}/${this.constructor.name.replace("Connection", "")}`;
     }
 }
-
-class ObfuscatedConnection extends Connection {
-    ObfuscatedIO: any = undefined;
-
-    async _initConn() {
-        this._obfuscation = new this.ObfuscatedIO(this);
-        await this._obfuscation.initHeader();
-        this.socket.write(this._obfuscation.header);
-    }
-
-    async _send(data: Buffer) {
-        this._obfuscation.write(this._codec.encodePacket(data));
-    }
-
-    async _recv() {
-        return await this._codec.readPacket(this._obfuscation);
-    }
-}
-
-class PacketCodec {
-    private _conn: Connection;
-
-    constructor(connection: Connection) {
-        this._conn = connection;
-    }
-
-    encodePacket(data: Buffer) {
-        throw new Error("Not Implemented");
-
-        // Override
-    }
-
-    async readPacket(
-        reader: PacketReader
-    ): Promise<Buffer> {
-        // override
-        throw new Error("Not Implemented");
-    }
-}
-
-export { Connection, PacketCodec, ObfuscatedConnection };

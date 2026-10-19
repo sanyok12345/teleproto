@@ -1,6 +1,7 @@
-import { packRequestBatch } from "../network/packing";
-import type { MTProtoState } from "../network/MTProtoState";
-import type { RequestState } from "../network/RequestState";
+import { packMessages } from "../network/mtproto/containerPacker";
+import type { SessionState } from "../network/mtproto/SessionState";
+import type { RequestState } from "../network/mtproto/RequestState";
+
 const USE_INVOKE_AFTER_WITH = new Set([
     "messages.SendMessage",
     "messages.SendMedia",
@@ -10,14 +11,14 @@ const USE_INVOKE_AFTER_WITH = new Set([
 ]);
 
 export class MessagePacker {
-    private _state: MTProtoState;
+    private _state: SessionState;
     public _pendingStates: RequestState[];
     private _queue: any[];
     private _ready: Promise<unknown>;
     private setReady: ((value?: any) => void) | undefined;
     private _log: any;
 
-    constructor(state: MTProtoState, logger: any) {
+    constructor(state: SessionState, logger: any) {
         this._state = state;
         this._queue = [];
         this._pendingStates = [];
@@ -128,6 +129,6 @@ export class MessagePacker {
         }
 
         this._queue = this._queue.filter(Boolean);
-        return packRequestBatch(this._state, this._queue, this._log);
+        return (await packMessages(this._state, [this._queue])) ?? null;
     }
 }

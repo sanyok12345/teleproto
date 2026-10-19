@@ -1,6 +1,6 @@
 import bigInt from "big-integer";
 
-const ID_BUFFER_SIZE = 400;
+const ID_BUFFER_SIZE = 1000;
 
 export type RegisterResult = "success" | "duplicate" | "tooOld";
 

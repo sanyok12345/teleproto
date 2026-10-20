@@ -12,6 +12,8 @@ export const kBaseDownloadDcShift = 0x10;
 
 export const kBaseUploadDcShift = 0x20;
 
+export const kBaseDownloadSmallDcShift = 0x30;
+
 export type ShiftedDcId = number;
 
 export function bareDcId(shiftedDcId: ShiftedDcId): number {
@@ -48,4 +50,17 @@ export function isUploadDcId(shiftedDcId: ShiftedDcId): boolean {
         shift >= kBaseUploadDcShift &&
         shift < kBaseUploadDcShift + kMaxMediaDcCount
     );
+}
+
+export function downloadSmallDcId(dcId: number, index: number): ShiftedDcId {
+    return shiftDcId(dcId, kBaseDownloadSmallDcShift + index);
+}
+
+export function isDownloadSmallDcId(shiftedDcId: ShiftedDcId): boolean {
+    const shift = getDcIdShift(shiftedDcId);
+    return shift >= kBaseDownloadSmallDcShift && shift < kBaseDownloadSmallDcShift + kMaxMediaDcCount;
+}
+
+export function isMediaDcId(shiftedDcId: ShiftedDcId): boolean {
+    return isDownloadDcId(shiftedDcId) || isUploadDcId(shiftedDcId) || isDownloadSmallDcId(shiftedDcId);
 }

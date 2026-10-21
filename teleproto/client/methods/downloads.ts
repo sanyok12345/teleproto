@@ -1,20 +1,18 @@
-import { Api } from "../tl";
-import type { TelegramClient } from "./TelegramClient";
-import { strippedPhotoToJpg } from "../Utils";
-import { EntityLike, OutFile, ProgressCallback } from "../define";
-import * as utils from "../Utils";
-import { createWriteStream } from "fs";
-import { BinaryWriter } from "../extensions";
+import { Api } from "../../tl";
+import type { TelegramClient } from "../TelegramClient";
+import { strippedPhotoToJpg } from "../../Utils";
+import { EntityLike, OutFile, ProgressCallback } from "../../define";
+import * as utils from "../../Utils";
 import * as fs from "fs";
 import path from "path";
 import bigInt from "big-integer";
-import {
-    BoundedSemaphore,
-    OrderedWriter,
-} from "../network/OrderedWriter";
-import { MediaAbortError } from "../network/MediaScheduler";
+import { MediaAbortError } from "../../errors";
+import { FileDownloader } from "../files/FileDownloader";
+import { transferKindFor } from "../files/FileTransfers";
+import { choosePartSize } from "../files/PartsManager";
+import { OrderedSink, openTarget, type DownloadTarget } from "../files/sinks";
 import { sha256 } from "cifrante";
-import { asBuffer } from "../Helpers";
+import { asBuffer } from "../../Helpers";
 
 export interface progressCallback {
     (
@@ -50,62 +48,12 @@ const sizeTypes = ["w", "y", "d", "x", "c", "m", "b", "a", "s"];
 
 const MIN_CHUNK_SIZE = 4096;
 const ONE_MB = 1024 * 1024;
+const ITER_AHEAD_BYTES = 4 * ONE_MB;
 
-function getWriter(outputFile?: OutFile) {
-    if (!outputFile || Buffer.isBuffer(outputFile)) {
-        return new BinaryWriter(Buffer.alloc(0));
-    } else if (typeof outputFile == "string") {
-        return createWriteStream(outputFile);
-    } else {
-        return outputFile;
-    }
-}
-
-async function closeWriter(
-    writer: BinaryWriter | { write: Function; close?: Function; end?: Function },
-) {
-    if (writer instanceof fs.WriteStream) {
-        await new Promise<void>((resolve, reject) => {
-            const onErr = (err: any) => {
-                writer.removeListener("close", onClose);
-                reject(err);
-            };
-            const onClose = () => {
-                writer.removeListener("error", onErr);
-                resolve();
-            };
-            writer.once("close", onClose);
-            writer.once("error", onErr);
-            writer.end();
-        });
-        return;
-    }
-    if ("close" in writer && typeof writer.close === "function") {
-        writer.close();
-    }
-}
-
-function returnWriterValue(writer: any): Buffer | string | undefined {
-    if (writer instanceof BinaryWriter) {
-        return writer.getValue();
-    }
-    if (writer instanceof fs.WriteStream) {
-        if (typeof writer.path == "string") {
-            return path.resolve(writer.path);
-        } else {
-            return Buffer.from(writer.path);
-        }
-    }
-}
-
-function resolvePartSize(client: TelegramClient, partSizeKb?: number): number {
-    let size = partSizeKb && partSizeKb > 0
-        ? Math.floor(partSizeKb * 1024)
-        : client._media.opts.partSize;
-    if (size > ONE_MB) size = ONE_MB;
-    if (size % MIN_CHUNK_SIZE !== 0) {
-        throw new Error("partSizeKb must be a multiple of 4 (KB)");
-    }
+function explicitPartSize(partSizeKb?: number): number | undefined {
+    if (!partSizeKb || partSizeKb <= 0) return undefined;
+    const size = Math.min(Math.floor(partSizeKb * 1024), ONE_MB);
+    if (size % MIN_CHUNK_SIZE !== 0) throw new Error("partSizeKb must be a multiple of 4 (KB)");
     return size;
 }
 
@@ -114,6 +62,8 @@ const HASH_BLOCK = 128 * 1024;
 class FileHashChecker {
     private readonly _hashes = new Map<number, Buffer>();
     private _unsupported = false;
+    private pending: Buffer = Buffer.alloc(0);
+    private pendingOffset = 0;
 
     constructor(
         private readonly client: TelegramClient,
@@ -139,6 +89,16 @@ class FileHashChecker {
                 );
             }
         }
+    }
+
+    async feed(offset: number, data: Buffer, final = false): Promise<void> {
+        if (!this.pending.length) this.pendingOffset = offset;
+        this.pending = this.pending.length ? Buffer.concat([this.pending, data]) : data;
+        const whole = final ? this.pending.length : this.pending.length - (this.pending.length % HASH_BLOCK);
+        if (!whole) return;
+        await this.verify(this.pendingOffset, this.pending.subarray(0, whole));
+        this.pendingOffset += whole;
+        this.pending = this.pending.subarray(whole);
     }
 
     private async _fetch(absOffset: number): Promise<void> {
@@ -169,208 +129,98 @@ export async function downloadFile(
         fileSize = undefined,
         progressCallback = undefined,
         dcId = undefined,
+        msgData = undefined,
         verifyHashes = false,
         signal = undefined,
         requestTimeout = undefined,
     }: DownloadFileParams
 ): Promise<Buffer | string | undefined> {
     const info = utils.getFileInfo(inputLocation);
-    const targetDc = dcId ?? info.dcId ?? client.session.dcId;
     const location = (info.location ?? inputLocation) as Api.TypeInputFileLocation;
-    const totalSize: bigInt.BigInteger | undefined = fileSize ?? info.size;
-    const totalBytes = totalSize ? totalSize.toJSNumber() : 0;
-    const partSize = resolvePartSize(client, partSizeKb);
-    const route = { dcId: targetDc };
-
-    const writer = getWriter(outputFile);
+    const totalSize = fileSize ?? info.size;
+    const size = totalSize && totalSize.greater(0) ? totalSize.toJSNumber() : undefined;
     const abort = new AbortController();
-    let timeoutTimer: ReturnType<typeof setTimeout> | undefined;
-    let unforward: (() => void) | undefined;
-    if (signal) {
-        if (signal.aborted) abort.abort();
-        else {
-            const forward = () => abort.abort();
-            signal.addEventListener("abort", forward, { once: true });
-            unforward = () => signal.removeEventListener("abort", forward);
-        }
-    }
-    if (requestTimeout && requestTimeout > 0) {
-        timeoutTimer = setTimeout(() => abort.abort(), requestTimeout);
-    }
-    const hashChecker = verifyHashes
-        ? new FileHashChecker(client, location)
-        : undefined;
-    let downloaded = 0;
+    const forward = () => abort.abort();
+    if (signal?.aborted) abort.abort();
+    else signal?.addEventListener("abort", forward, { once: true });
+    const timer = requestTimeout && requestTimeout > 0 ? setTimeout(forward, requestTimeout) : undefined;
 
-    const reportProgress = async (bytes: number) => {
-        downloaded += bytes;
-        if (!progressCallback) return;
-        if (progressCallback.isCanceled) {
-            abort.abort();
-            return;
-        }
-        await progressCallback(
-            bigInt(downloaded),
-            bigInt(totalBytes || downloaded),
-        );
-    };
-
+    const dc = dcId ?? info.dcId ?? client.session.dcId;
+    let release: (() => void) | undefined;
     try {
-        if (totalBytes <= 0) {
-            await streamSequential(
-                client,
-                location,
-                route,
-                partSize,
-                writer,
-                abort.signal,
-                reportProgress,
-                hashChecker,
-            );
-        } else {
-            await streamParallel(
-                client,
-                location,
-                route,
-                partSize,
-                totalBytes,
-                writer,
-                abort.signal,
-                reportProgress,
-                hashChecker,
-                dcId === undefined && info.dcId === undefined,
-            );
-        }
-        await closeWriter(writer);
-        return returnWriterValue(writer);
-    } catch (err) {
-        await closeWriter(writer).catch(() => {});
-        throw err;
+        release = await client._files.acquireDownload(dc, size, abort.signal);
+    } catch (error) {
+        clearTimeout(timer);
+        signal?.removeEventListener("abort", forward);
+        throw error;
+    }
+    const target: DownloadTarget = await openTarget(outputFile, size).catch((error) => {
+        release?.();
+        clearTimeout(timer);
+        signal?.removeEventListener("abort", forward);
+        throw error;
+    });
+    const hashes = verifyHashes ? new FileHashChecker(client, location) : undefined;
+    const sink = hashes
+        ? new OrderedSink(0, async (offset, data) => {
+              await hashes.feed(offset, data);
+              await target.write(offset, data);
+          })
+        : target;
+    let downloaded = 0;
+    const downloader = new FileDownloader(client._files, {
+        location,
+        dcId: dc,
+        kind: transferKindFor(size),
+        size,
+        partSize: explicitPartSize(partSizeKb) ?? choosePartSize(size, client._files.maxPartSize),
+        cdn: client._files.cdnEnabled,
+        onCdnUnavailable: (cdnDc) => client._log.info(`CDN dc ${cdnDc} is not announced in the config, downloading directly`),
+        stagger: location instanceof Api.InputDocumentFileLocation && (size ?? 0) > ONE_MB,
+        signal: abort.signal,
+        sink,
+        refreshLocation: msgData ? () => refreshFileLocation(client, location, msgData) : undefined,
+        onBytes: async (bytes) => {
+            downloaded += bytes;
+            if (!progressCallback) return;
+            if (progressCallback.isCanceled) {
+                abort.abort();
+                return;
+            }
+            await progressCallback(bigInt(downloaded), bigInt(size ?? downloaded));
+        },
+    });
+    try {
+        await downloader.run();
+        await hashes?.feed(downloaded, Buffer.alloc(0), true);
+        return await target.close();
+    } catch (error) {
+        await target.abort();
+        if (error instanceof MediaAbortError && progressCallback?.isCanceled) return undefined;
+        throw error;
     } finally {
-        if (timeoutTimer) clearTimeout(timeoutTimer);
-        unforward?.();
+        release();
+        clearTimeout(timer);
+        signal?.removeEventListener("abort", forward);
     }
 }
 
-async function streamSequential(
+async function refreshFileLocation(
     client: TelegramClient,
     location: Api.TypeInputFileLocation,
-    route: { dcId: number },
-    partSize: number,
-    writer: any,
-    signal: AbortSignal,
-    onBytes: (n: number) => Promise<void>,
-    hashChecker?: FileHashChecker,
-): Promise<void> {
-    let idx = 0;
-    while (true) {
-        if (signal.aborted) return;
-        const offset = bigInt(idx).multiply(partSize);
-        const data = await client._media.getFile(
-            route.dcId,
-            location,
-            offset,
-            partSize,
-            signal,
-            (dc) => (route.dcId = dc),
-        );
-        if (data.length > 0) {
-            if (hashChecker) {
-                await hashChecker.verify(idx * partSize, data);
-            }
-            await writer.write(data);
-            await onBytes(data.length);
-        }
-        if (data.length < partSize) return;
-        idx++;
+    [chat, id]: [EntityLike, number]
+): Promise<Api.TypeInputFileLocation | undefined> {
+    const [message] = await client.getMessages(chat, { ids: id });
+    const media = message?.media;
+    const fresh =
+        media instanceof Api.MessageMediaDocument ? media.document : media instanceof Api.MessageMediaPhoto ? media.photo : undefined;
+    if (!(fresh instanceof Api.Document || fresh instanceof Api.Photo)) return undefined;
+    if (location instanceof Api.InputDocumentFileLocation || location instanceof Api.InputPhotoFileLocation) {
+        if (!location.id.equals(fresh.id)) return undefined;
+        const Location = location.constructor as new (args: object) => Api.TypeInputFileLocation;
+        return new Location({ ...location.originalArgs, fileReference: fresh.fileReference });
     }
-}
-
-async function streamParallel(
-    client: TelegramClient,
-    location: Api.TypeInputFileLocation,
-    route: { dcId: number },
-    partSize: number,
-    totalBytes: number,
-    writer: any,
-    signal: AbortSignal,
-    onBytes: (n: number) => Promise<void>,
-    hashChecker?: FileHashChecker,
-    probeRoute = false,
-): Promise<void> {
-    const totalParts = Math.max(1, Math.ceil(totalBytes / partSize));
-    let firstPart: Buffer | undefined;
-    if (probeRoute && totalParts > 1) {
-        firstPart = await client._media.getFile(
-            route.dcId,
-            location,
-            bigInt.zero,
-            partSize,
-            signal,
-            (dc) => (route.dcId = dc),
-        );
-    }
-    const ordered = new OrderedWriter(writer);
-    const dl = client._media.opts.download;
-    const inflight = new BoundedSemaphore(
-        Math.max(
-            1,
-            dl.sessions * dl.inFlight
-        )
-    );
-
-    let firstError: any;
-    const tasks: Promise<void>[] = [];
-
-    for (let i = 0; i < totalParts; i++) {
-        if (signal.aborted || firstError) break;
-        await inflight.acquire();
-        if (signal.aborted || firstError) {
-            inflight.release();
-            break;
-        }
-        const idx = i;
-        const offset = bigInt(idx).multiply(partSize);
-        tasks.push((async () => {
-            try {
-                const data =
-                    idx === 0 && firstPart !== undefined
-                        ? firstPart
-                        : await client._media.getFile(
-                              route.dcId,
-                              location,
-                              offset,
-                              partSize,
-                              signal,
-                              (dc) => (route.dcId = dc),
-                          );
-                if (!firstError) {
-                    if (hashChecker) {
-                        await hashChecker.verify(idx * partSize, data);
-                    }
-                    await onBytes(data.length);
-                    // Always push to the ordered writer, even if the part
-                    // came back empty — otherwise `nextIdx` would stall on
-                    // the gap and every later part would stay stuck in the
-                    // stash, silently truncating the output.
-                    await ordered.write(idx, data);
-                }
-            } catch (err: any) {
-                if (!firstError) firstError = err;
-            } finally {
-                // Holding the ticket until after the ordered write keeps the
-                // stash naturally bounded by inflightPerDc parts. The disk
-                // path is non-blocking (WriteStream.write is queued), so this
-                // doesn't choke throughput.
-                inflight.release();
-            }
-        })());
-    }
-
-    await Promise.all(tasks);
-    if (firstError && !(firstError instanceof MediaAbortError)) {
-        throw firstError;
-    }
+    return undefined;
 }
 
 export interface DownloadMediaInterface extends DownloadCancelParams {
@@ -445,12 +295,12 @@ export async function downloadMedia(
             extra
         );
     } else if (media instanceof Api.MessageMediaContact) {
-        return _downloadContact(client, media, {});
+        return _downloadContact(client, media, { outputFile, ...extra });
     } else if (
         media instanceof Api.WebDocument ||
         media instanceof Api.WebDocumentNoProxy
     ) {
-        return _downloadWebDocument(client, media, {});
+        return _downloadWebDocument(client, media, { outputFile, progressCallback, ...extra });
     } else if (!media) {
         return undefined;
     } else {
@@ -523,19 +373,64 @@ export async function _downloadDocument(
 /** @hidden */
 export async function _downloadContact(
     _client: TelegramClient,
-    _media: Api.MessageMediaContact,
-    _args: DownloadMediaInterface
-): Promise<Buffer> {
-    throw new Error("not implemented");
+    media: Api.MessageMediaContact,
+    args: DownloadMediaInterface
+): Promise<Buffer | string | undefined> {
+    const vcard =
+        media.vcard ||
+        [
+            "BEGIN:VCARD",
+            "VERSION:4.0",
+            `N:${media.lastName};${media.firstName};;;`,
+            `FN:${[media.firstName, media.lastName].filter(Boolean).join(" ")}`,
+            `TEL;TYPE=cell:${media.phoneNumber}`,
+            "END:VCARD",
+        ].join("\r\n");
+    const data = Buffer.from(vcard, "utf8");
+    const target = await openTarget(args.outputFile, data.length);
+    await target.write(0, data);
+    return target.close();
 }
+
+const WEB_FILE_PART = 128 * 1024;
 
 /** @hidden */
 export async function _downloadWebDocument(
-    _client: TelegramClient,
-    _media: Api.WebDocument | Api.WebDocumentNoProxy,
-    _args: DownloadMediaInterface
-): Promise<Buffer> {
-    throw new Error("not implemented");
+    client: TelegramClient,
+    media: Api.WebDocument | Api.WebDocumentNoProxy,
+    args: DownloadMediaInterface
+): Promise<Buffer | string | undefined> {
+    const target = await openTarget(args.outputFile, media.size || undefined);
+    try {
+        if (media instanceof Api.WebDocumentNoProxy) {
+            const response = await fetch(media.url, { signal: args.signal });
+            if (!response.ok) throw new Error(`Fetching ${media.url} failed with HTTP ${response.status}`);
+            const data = Buffer.from(await response.arrayBuffer());
+            await target.write(0, data);
+            await args.progressCallback?.(bigInt(data.length), bigInt(data.length));
+            return await target.close();
+        }
+        if (!client._config) await client.getDC(client.session.dcId);
+        const dcId = client._config?.webfileDcId ?? client.session.dcId;
+        const location = new Api.InputWebFileLocation({ url: media.url, accessHash: media.accessHash });
+        let offset = 0;
+        for (;;) {
+            const part = await client._files.run(
+                "download",
+                dcId,
+                () => new Api.upload.GetWebFile({ location, offset, limit: WEB_FILE_PART }),
+                args.signal
+            );
+            if (part.bytes.length) await target.write(offset, part.bytes);
+            offset += part.bytes.length;
+            await args.progressCallback?.(bigInt(offset), bigInt(part.size || media.size || offset));
+            if (part.bytes.length < WEB_FILE_PART || (part.size && offset >= part.size)) break;
+        }
+        return await target.close();
+    } catch (error) {
+        await target.abort();
+        throw error;
+    }
 }
 
 function pickFileSize(sizes: Api.TypePhotoSize[], sizeType: string) {
@@ -615,15 +510,14 @@ export async function _downloadCachedPhotoSize(
     } else {
         data = size.bytes;
     }
-    const writer = getWriter(outputFile);
+    const target = await openTarget(outputFile, data.length);
     try {
-        await writer.write(data);
-        await closeWriter(writer);
+        await target.write(0, data);
+        return await target.close();
     } catch (err) {
-        await closeWriter(writer).catch(() => {});
+        await target.abort();
         throw err;
     }
-    return returnWriterValue(writer);
 }
 
 function getProperFilename(
@@ -776,56 +670,67 @@ export async function* iterDownload(
 ): AsyncGenerator<Buffer, void, unknown> {
     const info = utils.getFileInfo(file);
     const requestSize = params.requestSize ?? 512 * 1024;
-    if (requestSize % 4096 !== 0) {
-        throw new Error("requestSize must be divisible by 4096");
-    }
-    let dcId = params.dcId ?? info.dcId;
-    let offset =
-        typeof params.offset === "number"
-            ? bigInt(params.offset)
-            : params.offset ?? bigInt.zero;
-    let downloaded = 0;
-    for (;;) {
-        if (params.signal?.aborted) {
-            throw new MediaAbortError();
-        }
-        let result;
-        try {
-            result = await client.invoke(
-                new Api.upload.GetFile({
-                    location: info.location,
-                    offset: offset,
-                    limit: requestSize,
-                    precise: true,
-                }),
-                dcId
-            );
-        } catch (e: any) {
-            if (
-                typeof e?.errorMessage === "string" &&
-                e.errorMessage.startsWith("FILE_MIGRATE") &&
-                typeof e.newDc === "number"
-            ) {
-                dcId = e.newDc;
+    if (requestSize % MIN_CHUNK_SIZE !== 0) throw new Error("requestSize must be divisible by 4096");
+    const offset = typeof params.offset === "number" ? params.offset : params.offset?.toJSNumber() ?? 0;
+    const aligned = ONE_MB % requestSize === 0;
+    const origin = aligned ? offset - (offset % requestSize) : offset;
+    let skip = offset - origin;
+    const abort = new AbortController();
+    const forward = () => abort.abort();
+    if (params.signal?.aborted) abort.abort();
+    else params.signal?.addEventListener("abort", forward, { once: true });
+    const ready = new Map<number, Buffer>();
+    let wake: (() => void) | undefined;
+    const notify = () => {
+        const resolve = wake;
+        wake = undefined;
+        resolve?.();
+    };
+    let next = origin;
+    const dc = params.dcId ?? info.dcId ?? client.session.dcId;
+    const release = await client._files.acquireDownload(dc, info.size?.toJSNumber(), abort.signal);
+    const downloader = new FileDownloader(client._files, {
+        location: info.location as Api.TypeInputFileLocation,
+        dcId: dc,
+        kind: "download",
+        partSize: requestSize,
+        offset: origin,
+        limit: params.limit !== undefined ? params.limit + skip : undefined,
+        precise: !aligned,
+        signal: abort.signal,
+        sink: {
+            write(partOffset, data) {
+                ready.set(partOffset, data);
+                notify();
+            },
+        },
+    });
+    downloader.setAheadLimit(offset + Math.max(ITER_AHEAD_BYTES, 4 * requestSize));
+    let finished = false;
+    let failure: unknown;
+    downloader.run().then(
+        () => (finished = true),
+        (error) => (failure = error)
+    ).finally(notify);
+    try {
+        for (;;) {
+            const chunk = ready.get(next);
+            if (chunk) {
+                ready.delete(next);
+                next += chunk.length;
+                downloader.setAheadLimit(next + Math.max(ITER_AHEAD_BYTES, 4 * requestSize));
+                const out = skip ? chunk.subarray(skip) : chunk;
+                skip = 0;
+                if (out.length) yield out;
                 continue;
             }
-            throw e;
+            if (failure) throw failure instanceof MediaAbortError ? new MediaAbortError() : failure;
+            if (finished) return;
+            await new Promise<void>((resolve) => (wake = resolve));
         }
-        if (result instanceof Api.upload.FileCdnRedirect) {
-            throw new Error(
-                "CDN redirects are not supported by iterDownload; use downloadFile instead"
-            );
-        }
-        if (result.bytes.length) {
-            yield result.bytes;
-            downloaded += result.bytes.length;
-            offset = offset.add(result.bytes.length);
-        }
-        if (result.bytes.length < requestSize) {
-            return;
-        }
-        if (params.limit != undefined && downloaded >= params.limit) {
-            return;
-        }
+    } finally {
+        release();
+        abort.abort();
+        params.signal?.removeEventListener("abort", forward);
     }
 }

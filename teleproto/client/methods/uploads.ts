@@ -1,15 +1,19 @@
-import { Api } from "../tl";
+import { Api } from "../../tl";
 
-import type { TelegramClient } from "./TelegramClient";
-import { generateRandomLong, unionId } from "../Helpers";
-import { getAppropriatedPartSize, getInputMedia, getMessageId } from "../Utils";
-import { EntityLike, FileLike, MarkupLike, MessageIDLike } from "../define";
+import type { TelegramClient } from "../TelegramClient";
+import { generateRandomLong, unionId } from "../../Helpers";
+import { getInputMedia, getMessageId } from "../../Utils";
+import { EntityLike, FileLike, MarkupLike, MessageIDLike } from "../../define";
 import path from "path";
 import { promises as fs } from "fs";
-import * as utils from "../Utils";
+import { createHash } from "crypto";
+import * as utils from "../../Utils";
 import { _parseMessageText } from "./messageParse";
 import bigInt, { BigInteger } from "big-integer";
-import { BoundedSemaphore } from "../network/OrderedWriter";
+import { MediaAbortError } from "../../errors";
+import { FileUploader } from "../files/FileUploader";
+import { findUploads, rememberUpload, type UploadSource } from "../files/uploadRegistry";
+import { choosePartSize, MAX_PART_SIZE } from "../files/PartsManager";
 
 interface OnProgress {
     // Float between 0 and 1.
@@ -73,56 +77,30 @@ export class CustomFile {
     }
 }
 
-interface CustomBufferOptions {
-    filePath?: string;
-    buffer?: Buffer;
-}
-
-class CustomBuffer {
-    constructor(private readonly options: CustomBufferOptions) {
-        if (!options.buffer && !options.filePath) {
-            throw new Error(
-                "Either one of `buffer` or `filePath` should be specified"
-            );
-        }
-    }
-
-    async slice(begin: number, end: number): Promise<Buffer> {
-        const { buffer, filePath } = this.options;
-        if (buffer) {
-            return buffer.slice(begin, end);
-        } else if (filePath) {
-            const buffSize = end - begin;
-            const buff = Buffer.alloc(buffSize);
-            const fHandle = await fs.open(filePath, "r");
-
-            await fHandle.read(buff, 0, buffSize, begin);
-            await fHandle.close();
-
-            return Buffer.from(buff);
-        }
-
-        return Buffer.alloc(0);
-    }
-}
-
-const KB_TO_BYTES = 1024;
-const LARGE_FILE_THRESHOLD = 10 * 1024 * 1024;
 const BUFFER_SIZE_20MB = 20 * 1024 * 1024;
 
-async function getFileBuffer(
-    file: NamedBlob | CustomFile,
-    fileSize: number,
-    maxBufferSize: number
-): Promise<CustomBuffer> {
-    const options: CustomBufferOptions = {};
-    if (fileSize > maxBufferSize && file instanceof CustomFile && file.path) {
-        options.filePath = file.path;
-    } else {
-        options.buffer = Buffer.from(await fileToBuffer(file));
+async function openUploadSource(file: NamedBlob | CustomFile, size: number, maxBufferSize: number): Promise<UploadSource> {
+    if (size > maxBufferSize && file instanceof CustomFile && file.path) {
+        const handle = await fs.open(file.path, "r");
+        return {
+            async read(offset, length) {
+                const buffer = Buffer.allocUnsafe(length);
+                let read = 0;
+                while (read < length) {
+                    const { bytesRead } = await handle.read(buffer, read, length - read, offset + read);
+                    if (!bytesRead) throw new Error(`${file.path} ended at ${offset + read} bytes, expected ${size}`);
+                    read += bytesRead;
+                }
+                return buffer;
+            },
+            close: () => handle.close(),
+        };
     }
-
-    return new CustomBuffer(options);
+    const buffer = Buffer.from(await fileToBuffer(file));
+    return {
+        read: async (offset, length) => buffer.subarray(offset, offset + length),
+        close: async () => {},
+    };
 }
 
 /** @hidden */
@@ -130,121 +108,86 @@ export async function uploadFile(
     client: TelegramClient,
     fileParams: UploadFileParams
 ): Promise<Api.InputFile | Api.InputFileBig> {
-    const { file, onProgress } = fileParams;
-    let { workers } = fileParams;
-
+    const { file, onProgress, workers } = fileParams;
     const { name, size } = file;
     const fileId = generateRandomLong(true);
-    const isLarge = size > LARGE_FILE_THRESHOLD;
-
-    const partSize = getAppropriatedPartSize(bigInt(size)) * KB_TO_BYTES;
-    const partCount = Math.floor((size + partSize - 1) / partSize);
-    const buffer = await getFileBuffer(
-        file,
-        size,
-        fileParams.maxBufferSize || BUFFER_SIZE_20MB - 1
-    );
-
-    const ul = client._media.opts.upload;
-    let readAhead = Math.max(
-        1,
-        ul.sessions * ul.inFlight
-    );
-    if (workers && workers > 0) {
-        readAhead = Math.min(readAhead, workers);
+    let partSize = choosePartSize(size, client._files.maxPartSize);
+    const maxParts = await client._files.maxUploadParts();
+    if (Math.ceil(size / MAX_PART_SIZE) > maxParts) {
+        throw new Error(`${name} is ${size} bytes, larger than the ${maxParts * MAX_PART_SIZE} bytes this account can upload`);
     }
-    if (readAhead > partCount) {
-        readAhead = partCount;
-    }
-
-    let progress = 0;
-    if (onProgress) {
-        onProgress(progress);
-    }
-
-    const dcId = client.session.dcId;
+    if (Math.ceil(size / partSize) > maxParts) partSize = MAX_PART_SIZE;
+    const maxBufferSize = fileParams.maxBufferSize || BUFFER_SIZE_20MB - 1;
+    const source = await openUploadSource(file, size, maxBufferSize);
     const abort = new AbortController();
-    const inflight = new BoundedSemaphore(Math.max(1, readAhead));
-    let firstError: any;
-    const tasks: Promise<void>[] = [];
-
-    for (let j = 0; j < partCount; j++) {
-        let endPart = (j + 1) * partSize;
-        if (endPart > size) {
-            endPart = size;
-        }
-        if (endPart == j * partSize) {
-            break;
-        }
-
-        if (firstError) break;
-        await inflight.acquire();
-        if (firstError) {
-            inflight.release();
-            break;
-        }
-
-        const jMemo = j;
-        const startPart = j * partSize;
-        const endPartMemo = endPart;
-
-        // eslint-disable-next-line no-loop-func
-        tasks.push(
-            (async () => {
-                try {
-                    const bytesMemo = await buffer.slice(startPart, endPartMemo);
-                    await client._media.savePart(
-                        dcId,
-                        isLarge
-                            ? new Api.upload.SaveBigFilePart({
-                                fileId,
-                                filePart: jMemo,
-                                fileTotalParts: partCount,
-                                bytes: bytesMemo,
-                            })
-                            : new Api.upload.SaveFilePart({
-                                fileId,
-                                filePart: jMemo,
-                                bytes: bytesMemo,
-                            }),
-                        abort.signal
-                    );
-
-                    if (onProgress) {
-                        if (onProgress.isCanceled) {
-                            throw new Error("USER_CANCELED");
-                        }
-
-                        progress += 1 / partCount;
-                        onProgress(progress);
-                    }
-                } catch (err: any) {
-                    if (!firstError) firstError = err;
-                    abort.abort();
-                } finally {
-                    inflight.release();
-                }
-            })()
-        );
-    }
-
-    await Promise.all(tasks);
-    if (firstError) {
-        throw firstError;
-    }
-
-    return isLarge
-        ? new Api.InputFileBig({
-            id: fileId,
-            parts: partCount,
-            name,
-        })
-        : new Api.InputFile({
-            id: fileId,
-            parts: partCount,
-            name,
-            md5Checksum: "", // This is not a "flag", so not sure if we can make it optional.
+    let uploaded = 0;
+    onProgress?.(0);
+    const uploader = new FileUploader(client._files, {
+        fileId,
+        size,
+        partSize,
+        dcId: client.session.dcId,
+        maxInflight: workers && workers > 0 ? workers : undefined,
+        read: (offset, length) => source.read(offset, length),
+        signal: abort.signal,
+        onPart: () => {
+            if (!onProgress) return;
+            if (onProgress.isCanceled) {
+                abort.abort();
+                return;
+            }
+            onProgress(++uploaded / uploader.partCount);
+        },
+    });
+    try {
+        await uploader.run();
+        const parts = uploader.partCount;
+        const input = uploader.isBig
+            ? new Api.InputFileBig({ id: fileId, parts, name })
+            : new Api.InputFile({ id: fileId, parts, name, md5Checksum: createHash("md5").update(await source.read(0, size)).digest("hex") });
+        rememberUpload(input, {
+            fileId,
+            size,
+            partSize,
+            partCount: parts,
+            isBig: uploader.isBig,
+            dcId: client.session.dcId,
+            open: () => openUploadSource(file, size, maxBufferSize),
         });
+        return input;
+    } catch (error) {
+        if (error instanceof MediaAbortError && onProgress?.isCanceled) throw new Error("USER_CANCELED");
+        throw error;
+    } finally {
+        await source.close();
+    }
+}
+
+/** @hidden */
+export async function _resaveUploadedParts(client: TelegramClient, request: unknown, part: number | "all"): Promise<boolean> {
+    const files = findUploads(request);
+    if (!files.length) return false;
+    for (const file of files) {
+        if (part !== "all" && part >= file.partCount) continue;
+        const source = await file.open();
+        try {
+            if (part === "all") {
+                await new FileUploader(client._files, { ...file, read: (offset, length) => source.read(offset, length) }).run();
+                continue;
+            }
+            const offset = part * file.partSize;
+            const bytes = await source.read(offset, Math.min(file.partSize, file.size - offset));
+            await client._files.run("upload", file.dcId, () =>
+                file.isBig
+                    ? new Api.upload.SaveBigFilePart({ fileId: file.fileId, filePart: part, fileTotalParts: file.partCount, bytes })
+                    : new Api.upload.SaveFilePart({ fileId: file.fileId, filePart: part, bytes })
+            );
+        } finally {
+            await source.close();
+        }
+    }
+    client._log.info(`Re-saved ${part === "all" ? "all parts" : `part ${part}`} of ${files.length} uploaded file(s)`);
+    return true;
 }
 
 /**

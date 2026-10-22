@@ -1,4 +1,4 @@
-import type { Api } from "../tl";
+import type { Api } from "../../tl";
 
 export class RpcCallControl {
     private readonly controller = new AbortController();

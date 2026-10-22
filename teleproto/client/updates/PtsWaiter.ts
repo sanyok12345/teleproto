@@ -1,12 +1,15 @@
 import type { Api } from "../../tl";
 
-export const WAIT_FOR_SKIPPED_TIMEOUT_MS = 500;
+export const WAIT_FOR_SKIPPED_TIMEOUT_MS = 700;
+export const SINGLE_GAP_REPAIR_MS = 50;
+const GAP_TIMEOUT_UPDATE_COUNT = 20;
 
 export type SkippedTag = "update" | "updates";
 
 export interface SkippedEntry {
     pts: number;
     count: number;
+    receivedAt: number;
     tieBreaker: number;
     tag: SkippedTag;
     update?: Api.TypeUpdate;
@@ -15,11 +18,11 @@ export interface SkippedEntry {
     applyUpdates?: (updates: Api.TypeUpdates) => void;
 }
 
-type Payload = Omit<SkippedEntry, "pts" | "count" | "tieBreaker">;
+type Payload = Omit<SkippedEntry, "pts" | "count" | "tieBreaker" | "receivedAt">;
 
 export interface PtsWaiterHost {
     onWaitForSkipped(ms: number): void;
-    onWaitForShortPoll(ms: number): void;
+    onSingleGap?(): void;
     onApplied?(pts: number): void;
 }
 
@@ -27,15 +30,22 @@ export class PtsWaiter {
     private good = 0;
     private initialized = false;
     private requestingFlag = false;
-    private waitingForSkipped = false;
-    private waitingForShortPoll = false;
     private skippedKey = 0;
     private readonly queue: SkippedEntry[] = [];
 
-    constructor(private readonly host: PtsWaiterHost) { }
+    constructor(private readonly host: PtsWaiterHost) {}
 
-    inited(): boolean { return this.initialized; }
-    current(): number { return this.good; }
+    inited(): boolean {
+        return this.initialized;
+    }
+
+    current(): number {
+        return this.good;
+    }
+
+    get pendingCount(): number {
+        return this.queue.length;
+    }
 
     init(pts: number, preservePending = false): void {
         this.good = pts;
@@ -43,33 +53,18 @@ export class PtsWaiter {
         if (!preservePending) this.clearSkippedUpdates();
     }
 
-    requesting(): boolean { return this.requestingFlag; }
+    requesting(): boolean {
+        return this.requestingFlag;
+    }
 
     setRequesting(value: boolean): void {
         this.requestingFlag = value;
-        if (value) this.setWaitingForSkipped(-1);
+        if (value) this.host.onWaitForSkipped(-1);
         else this.applySkippedUpdates();
     }
 
-    isWaitingForSkipped(): boolean { return this.waitingForSkipped; }
-    isWaitingForShortPoll(): boolean { return this.waitingForShortPoll; }
-
-    setWaitingForSkipped(ms: number): void {
-        this.waitingForSkipped = ms >= 0;
-        if (ms >= 0 || !this.waitingForShortPoll) this.host.onWaitForSkipped(ms);
-    }
-
-    setWaitingForShortPoll(ms: number): void {
-        this.waitingForShortPoll = ms >= 0;
-        if (ms >= 0) this.host.onWaitForShortPoll(ms);
-        else if (!this.waitingForSkipped) this.host.onWaitForSkipped(-1);
-    }
-
     updated(pts: number, count: number, payload: Payload): boolean {
-        if (!Number.isSafeInteger(pts) || !Number.isSafeInteger(count) || pts < 0 || count < 0) {
-            this.setWaitingForSkipped(1);
-            return false;
-        }
+        if (!Number.isSafeInteger(pts) || !Number.isSafeInteger(count) || pts < 0 || count < 0) return false;
         if (!this.initialized) this.init(Math.max(0, pts - count));
         if (pts < this.good || (count > 0 && pts === this.good)) return false;
         if (!this.requestingFlag && this.good + count === pts) {
@@ -77,9 +72,12 @@ export class PtsWaiter {
             return true;
         }
         if (count > 0 && this.queue.some((entry) => entry.pts === pts && entry.count === count)) return false;
-        this.queue.push({ pts, count, tieBreaker: ++this.skippedKey, ...payload });
+        this.queue.push({ pts, count, receivedAt: Date.now(), tieBreaker: ++this.skippedKey, ...payload });
         this.queue.sort((a, b) => a.pts - b.pts || b.count - a.count || a.tieBreaker - b.tieBreaker);
-        if (!this.requestingFlag) this.setWaitingForSkipped(this.good + count > pts ? 1 : WAIT_FOR_SKIPPED_TIMEOUT_MS);
+        if (!this.requestingFlag) {
+            if (this.good + count > pts) this.host.onWaitForSkipped(1);
+            else this.armGap();
+        }
         return false;
     }
 
@@ -88,7 +86,7 @@ export class PtsWaiter {
         count: number,
         payload: Payload,
         applyUpdate: (update: Api.TypeUpdate) => void,
-        applyUpdates: (updates: Api.TypeUpdates) => void,
+        applyUpdates: (updates: Api.TypeUpdates) => void
     ): boolean {
         const entry = { ...payload, applyUpdate, applyUpdates };
         if (!this.updated(pts, count, entry)) return false;
@@ -99,7 +97,7 @@ export class PtsWaiter {
 
     applySkippedUpdates(
         applyUpdate?: (update: Api.TypeUpdate) => void,
-        applyUpdates?: (updates: Api.TypeUpdates) => void,
+        applyUpdates?: (updates: Api.TypeUpdates) => void
     ): void {
         if (this.requestingFlag) return;
         while (this.queue.length) {
@@ -111,14 +109,29 @@ export class PtsWaiter {
             if (this.good + entry.count !== entry.pts) break;
             this.queue.shift();
             this.good = entry.pts;
-            this.apply({ ...entry, applyUpdate: entry.applyUpdate ?? applyUpdate, applyUpdates: entry.applyUpdates ?? applyUpdates });
+            this.apply({
+                ...entry,
+                applyUpdate: entry.applyUpdate ?? applyUpdate,
+                applyUpdates: entry.applyUpdates ?? applyUpdates,
+            });
         }
-        this.setWaitingForSkipped(this.queue.length ? WAIT_FOR_SKIPPED_TIMEOUT_MS : -1);
+        if (this.queue.length) this.armGap();
+        else this.host.onWaitForSkipped(-1);
     }
 
     clearSkippedUpdates(): void {
         this.queue.length = 0;
-        this.setWaitingForSkipped(-1);
+        this.host.onWaitForSkipped(-1);
+    }
+
+    private armGap() {
+        let firstReceivedAt = Infinity;
+        for (const entry of this.queue.slice(0, GAP_TIMEOUT_UPDATE_COUNT)) {
+            firstReceivedAt = Math.min(firstReceivedAt, entry.receivedAt);
+        }
+        this.host.onWaitForSkipped(Math.max(0, firstReceivedAt + WAIT_FOR_SKIPPED_TIMEOUT_MS - Date.now()));
+        const first = this.queue[0];
+        if (first && first.pts - first.count === this.good + 1) this.host.onSingleGap?.();
     }
 
     private apply(entry: Payload): void {

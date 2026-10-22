@@ -206,9 +206,10 @@ export class ChannelUpdates {
             };
             signal.addEventListener("abort", onAbort, { once: true });
             task.then(resolve, (error) => {
+                signal.removeEventListener("abort", onAbort);
                 release();
                 reject(error);
-            }).finally(() => signal.removeEventListener("abort", onAbort));
+            });
         });
     }
 

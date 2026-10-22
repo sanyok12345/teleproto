@@ -1,6 +1,6 @@
 import bigInt from "big-integer";
 import mime from "mime";
-import type { CustomFile } from "./client/uploads";
+import type { CustomFile } from "./client/methods/uploads";
 import type { Entity, EntityLike, MessageIDLike } from "./define";
 import type { EntityCache } from "./entityCache";
 import { returnBigInt, unionId } from "./Helpers";
@@ -1243,21 +1243,11 @@ export function getPeerId(peer: EntityLike, addMark = true): string {
     if (peer instanceof Api.PeerUser) {
         return peer.userId.toString();
     } else if (peer instanceof Api.PeerChat) {
-        // Check in case the user mixed things up to avoid blowing up
-        peer.chatId = resolveId(returnBigInt(peer.chatId))[0];
-        return addMark
-            ? peer.chatId.negate().toString()
-            : peer.chatId.toString();
+        const chatId = resolveId(returnBigInt(peer.chatId))[0];
+        return addMark ? chatId.negate().toString() : chatId.toString();
     } else if (typeof peer == "object" && "channelId" in peer) {
-        // if (peer instanceof Api.PeerChannel)
-        // Check in case the user mixed things up to avoid blowing up
-        peer.channelId = resolveId(returnBigInt(peer.channelId))[0];
-        if (!addMark) {
-            return peer.channelId.toString();
-        }
-        // Concat -100 through math tricks, .to_supergroup() on
-        // Madeline IDs will be strictly positive -> log works.
-        return "-100" + peer.channelId.toString();
+        const channelId = resolveId(returnBigInt(peer.channelId))[0];
+        return addMark ? "-100" + channelId.toString() : channelId.toString();
     }
     _raiseCastFail(peer, "int");
 }

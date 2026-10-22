@@ -13,7 +13,9 @@ const CONCURRENCY = 8;
 type Doc = { summary: string; params: Record<string, string> };
 
 function loadMethodKeys(): string[] {
-    const defs = parseTl(fs.readFileSync(path.resolve(root, "static/tl/api.tl"), "utf-8"));
+    const defs = ["api.tl", "schema.tl"].flatMap((file) =>
+        parseTl(fs.readFileSync(path.resolve(root, "static/tl", file), "utf-8"))
+    );
     const keys = new Set<string>();
     for (const d of defs) {
         if (!d.isFunction) continue;

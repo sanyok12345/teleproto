@@ -1,9 +1,9 @@
-import type { TelegramClient } from "./TelegramClient";
-import type { EntityLike, FileLike } from "../define";
+import type { TelegramClient } from "../TelegramClient";
+import type { EntityLike, FileLike } from "../../define";
 import type { BigInteger } from "big-integer";
-import { TotalList } from "../Helpers";
-import * as utils from "../Utils";
-import { Api } from "../tl";
+import { TotalList } from "../../Helpers";
+import * as utils from "../../Utils";
+import { Api } from "../../tl";
 import { _fileToMedia } from "./uploads";
 
 /** Parameters for {@link updateProfile}. Only the fields you set are changed. */

@@ -1,7 +1,7 @@
-import type { TelegramClient } from "./TelegramClient";
-import type { EntityLike } from "../define";
-import { TotalList, returnBigInt } from "../Helpers";
-import { Api } from "../tl";
+import type { TelegramClient } from "../TelegramClient";
+import type { EntityLike } from "../../define";
+import { TotalList, returnBigInt } from "../../Helpers";
+import { Api } from "../../tl";
 import bigInt from "big-integer";
 
 /** @hidden */

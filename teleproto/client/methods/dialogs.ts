@@ -1,10 +1,10 @@
-import { Api } from "../tl";
-import { RequestIter } from "../requestIter";
-import type { TelegramClient } from "./TelegramClient";
-import * as utils from "../Utils";
-import { Dialog } from "../tl/custom/dialog";
-import { DateLike, EntityLike } from "../define";
-import { TotalList } from "../Helpers";
+import { Api } from "../../tl";
+import { RequestIter } from "../../requestIter";
+import type { TelegramClient } from "../TelegramClient";
+import * as utils from "../../Utils";
+import { Dialog } from "../../tl/custom/dialog";
+import { DateLike, EntityLike } from "../../define";
+import { TotalList } from "../../Helpers";
 import bigInt from "big-integer";
 
 const _MAX_CHUNK_SIZE = 100;

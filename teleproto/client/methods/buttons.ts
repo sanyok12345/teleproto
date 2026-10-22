@@ -1,9 +1,9 @@
-import { Api } from "../tl";
-import type { ButtonLike, MarkupLike } from "../define";
-import { Button } from "../tl/custom/button";
-import { InlineKeyboard, ReplyKeyboard } from "../tl/custom/keyboard";
-import { MessageButton } from "../tl/custom/messageButton";
-import { isArrayLike, unionId } from "../Helpers";
+import { Api } from "../../tl";
+import type { ButtonLike, MarkupLike } from "../../define";
+import { Button } from "../../tl/custom/button";
+import { InlineKeyboard, ReplyKeyboard } from "../../tl/custom/keyboard";
+import { MessageButton } from "../../tl/custom/messageButton";
+import { isArrayLike, unionId } from "../../Helpers";
 
 // ButtonMethods
 /**

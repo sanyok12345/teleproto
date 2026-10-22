@@ -1,9 +1,9 @@
 import type { BigInteger } from "big-integer";
-import type { EntityLike } from "../define";
-import { Api } from "../tl";
-import { RequestIter } from "../requestIter";
-import { TotalList, generateRandomLong } from "../Helpers";
-import type { TelegramClient } from "./TelegramClient";
+import type { EntityLike } from "../../define";
+import { Api } from "../../tl";
+import { RequestIter } from "../../requestIter";
+import { TotalList, generateRandomLong } from "../../Helpers";
+import type { TelegramClient } from "../TelegramClient";
 
 const PAGE_LIMIT = 100;
 

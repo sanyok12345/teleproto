@@ -1,9 +1,9 @@
-import { getPeerId } from "../Utils";
-import { Api } from "../tl";
-import type { EntityLike } from "../define";
-import type { TelegramClient } from "./TelegramClient";
-import * as utils from "../Utils";
-import { _EntityType, _entityType, isArrayLike } from "../Helpers";
+import { getPeerId } from "../../Utils";
+import { Api } from "../../tl";
+import type { EntityLike } from "../../define";
+import type { TelegramClient } from "../TelegramClient";
+import * as utils from "../../Utils";
+import { _EntityType, _entityType, isArrayLike } from "../../Helpers";
 import bigInt from "big-integer";
 
 export interface ParseInterface {
@@ -11,8 +11,8 @@ export interface ParseInterface {
     unparse: (text: string, entities: Api.TypeMessageEntity[]) => string;
 }
 
-export { DEFAULT_DELIMITERS } from "../extensions/markdown";
-export type { messageEntities } from "../extensions/markdown";
+export { DEFAULT_DELIMITERS } from "../../extensions/markdown";
+export type { messageEntities } from "../../extensions/markdown";
 
 /** @hidden */
 export async function _replaceWithMention(

@@ -1,9 +1,9 @@
-import type { TelegramClient } from "./TelegramClient";
-import type { Entity, EntityLike } from "../define";
-import { Api } from "../tl";
-import { getInputChannel, getPeerId } from "../Utils";
-import { RequestIter } from "../requestIter";
-import { TotalList } from "../Helpers";
+import type { TelegramClient } from "../TelegramClient";
+import type { Entity, EntityLike } from "../../define";
+import { Api } from "../../tl";
+import { getInputChannel, getPeerId } from "../../Utils";
+import { RequestIter } from "../../requestIter";
+import { TotalList } from "../../Helpers";
 import type { UpdateNotifySettingsParams } from "./account";
 
 /** Options for creating a community around an initial chat or bot. */

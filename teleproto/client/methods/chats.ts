@@ -1,11 +1,11 @@
-import type { TelegramClient } from "./TelegramClient";
+import type { TelegramClient } from "../TelegramClient";
 import type {
     EntitiesLike,
     Entity,
     EntityLike,
     FileLike,
     ValueOf,
-} from "../define";
+} from "../../define";
 import { _fileToMedia } from "./uploads";
 import { _parseInviteHash } from "./inviteLinks";
 import {
@@ -13,13 +13,13 @@ import {
     getMinBigInt,
     TotalList,
     returnBigInt,
-} from "../Helpers";
-import { RequestIter } from "../requestIter";
-import * as helpers from "../Helpers";
-import * as utils from "../Utils";
-import { Api } from "../tl";
+} from "../../Helpers";
+import { RequestIter } from "../../requestIter";
+import * as helpers from "../../Helpers";
+import * as utils from "../../Utils";
+import { Api } from "../../tl";
 import bigInt, { BigInteger, isInstance } from "big-integer";
-import { getPeerId } from "../Utils";
+import { getPeerId } from "../../Utils";
 
 const _MAX_PARTICIPANTS_CHUNK_SIZE = 200;
 const _MAX_ADMIN_LOG_CHUNK_SIZE = 100;

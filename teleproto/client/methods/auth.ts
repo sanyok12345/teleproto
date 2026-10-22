@@ -1,9 +1,9 @@
-import { Api } from "../tl";
-import * as utils from "../Utils";
-import { sleep } from "../Helpers";
-import { computeCheck as computePasswordSrpCheck } from "../Password";
-import { UnauthorizedError } from "../errors";
-import type { TelegramClient } from "./TelegramClient";
+import { Api } from "../../tl";
+import * as utils from "../../Utils";
+import { sleep } from "../../Helpers";
+import { computeCheck as computePasswordSrpCheck } from "../../Password";
+import { UnauthorizedError } from "../../errors";
+import type { TelegramClient } from "../TelegramClient";
 
 /**
  * Email verification options passed to the email callback.
@@ -732,7 +732,7 @@ export async function signInUserWithQrCode(
         }
     })();
 
-    const Raw = require("../events/Raw").Raw;
+    const Raw = require("../../events/Raw").Raw;
     const rawEvent = new Raw({});
     const onUpdate = (update: Api.TypeUpdate) => {
         if (update instanceof Api.UpdateLoginToken) resolveUpdate();
@@ -1162,6 +1162,7 @@ export async function signInWithWebToken(
     }
     const user = result.user as Api.User;
     client._bot = user.bot;
+    client._premium = !!user.premium;
     client._selfInputPeer = utils.getInputPeer(
         user,
         false

@@ -1,8 +1,8 @@
-import type { TelegramClient } from "./TelegramClient";
-import type { EntityLike } from "../define";
-import { TotalList } from "../Helpers";
-import { RequestIter } from "../requestIter";
-import { Api } from "../tl";
+import type { TelegramClient } from "../TelegramClient";
+import type { EntityLike } from "../../define";
+import { TotalList } from "../../Helpers";
+import { RequestIter } from "../../requestIter";
+import { Api } from "../../tl";
 
 const _MAX_INVITES_CHUNK_SIZE = 100;
 const _MAX_IMPORTERS_CHUNK_SIZE = 100;

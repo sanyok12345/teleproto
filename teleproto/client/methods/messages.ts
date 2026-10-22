@@ -1,4 +1,4 @@
-import { Api } from "../tl";
+import { Api } from "../../tl";
 import type {
     DateLike,
     EntityLike,
@@ -6,8 +6,8 @@ import type {
     MarkupLike,
     MessageIDLike,
     MessageLike,
-} from "../define";
-import { RequestIter } from "../requestIter";
+} from "../../define";
+import { RequestIter } from "../../requestIter";
 import {
     _EntityType,
     _entityType,
@@ -15,10 +15,10 @@ import {
     isArrayLike,
     groupBy,
     generateRandomBigInt,
-} from "../Helpers";
-import { getInputMedia, getMessageId, getPeerId, parseID } from "../Utils";
-import type { TelegramClient } from "./TelegramClient";
-import * as utils from "../Utils";
+} from "../../Helpers";
+import { getInputMedia, getMessageId, getPeerId, parseID } from "../../Utils";
+import type { TelegramClient } from "../TelegramClient";
+import * as utils from "../../Utils";
 import { _parseMessageText } from "./messageParse";
 import { _getPeer } from "./users";
 import bigInt, { BigInteger } from "big-integer";

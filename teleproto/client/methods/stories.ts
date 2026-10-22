@@ -1,8 +1,8 @@
-import type { TelegramClient } from "./TelegramClient";
-import type { EntityLike, FileLike } from "../define";
+import type { TelegramClient } from "../TelegramClient";
+import type { EntityLike, FileLike } from "../../define";
 import type { BigInteger } from "big-integer";
-import { generateRandomBigInt } from "../Helpers";
-import { Api } from "../tl";
+import { generateRandomBigInt } from "../../Helpers";
+import { Api } from "../../tl";
 import { _fileToMedia } from "./uploads";
 import { _parseMessageText } from "./messageParse";
 

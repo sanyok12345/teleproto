@@ -1,19 +1,19 @@
-import * as twoFA from "./2fa";
-import * as auth from "./auth";
-import * as bots from "./bots";
-import * as buttons from "./buttons";
-import * as chats from "./chats";
-import * as communities from "./communities";
-import * as dialogs from "./dialogs";
-import * as downloads from "./downloads";
-import * as messageParse from "./messageParse";
-import * as message from "./messages";
-import * as telegramBaseClient from "./telegramBaseClient";
+import * as twoFA from "./methods/2fa";
+import * as auth from "./methods/auth";
+import * as bots from "./methods/bots";
+import * as buttons from "./methods/buttons";
+import * as chats from "./methods/chats";
+import * as communities from "./methods/communities";
+import * as dialogs from "./methods/dialogs";
+import * as downloads from "./methods/downloads";
+import * as messageParse from "./methods/messageParse";
+import * as message from "./methods/messages";
+import * as telegramBaseClient from "./TelegramBaseClient";
 import * as tgClient from "./TelegramClient";
 import * as updates from "./updates";
-import * as uploads from "./uploads";
-import * as users from "./users";
-import * as wallet from "./wallet";
+import * as uploads from "./methods/uploads";
+import * as users from "./methods/users";
+import * as wallet from "./methods/wallet";
 
 export {
     twoFA,

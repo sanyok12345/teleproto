@@ -1,5 +1,5 @@
-import type { TelegramClient } from "./TelegramClient";
-import { Api } from "../tl";
+import type { TelegramClient } from "../TelegramClient";
+import { Api } from "../../tl";
 
 /** @hidden */
 export async function getDialogFilters(

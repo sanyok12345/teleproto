@@ -1,8 +1,8 @@
-import type { TelegramClient } from "./TelegramClient";
+import type { TelegramClient } from "../TelegramClient";
 import type { BigInteger } from "big-integer";
 import bigInt from "big-integer";
-import * as utils from "../Utils";
-import { Api } from "../tl";
+import * as utils from "../../Utils";
+import { Api } from "../../tl";
 
 /** A sticker set reference: its short name (from the t.me/addstickers link) or a raw {@link Api.TypeInputStickerSet}. */
 export type InputStickerSetLike = string | Api.TypeInputStickerSet;

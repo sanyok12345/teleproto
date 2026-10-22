@@ -1,9 +1,9 @@
-import type { TelegramClient } from "./TelegramClient";
-import type { EntityLike } from "../define";
+import type { TelegramClient } from "../TelegramClient";
+import type { EntityLike } from "../../define";
 import type { BigInteger } from "big-integer";
-import { generateRandomBigInt } from "../Helpers";
-import { Api } from "../tl";
-import { getInputChannel } from "../Utils";
+import { generateRandomBigInt } from "../../Helpers";
+import { Api } from "../../tl";
+import { getInputChannel } from "../../Utils";
 
 /** Parameters for {@link createForumTopic}. */
 export interface CreateForumTopicParams {

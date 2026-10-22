@@ -1,8 +1,8 @@
-import { generateRandomBytes } from "../Helpers";
-import { computeCheck, computeDigest } from "../Password";
-import type { TelegramClient } from "./TelegramClient";
-import { Api } from "../tl";
-import * as errors from "../errors";
+import { generateRandomBytes } from "../../Helpers";
+import { computeCheck, computeDigest } from "../../Password";
+import type { TelegramClient } from "../TelegramClient";
+import { Api } from "../../tl";
+import * as errors from "../../errors";
 
 export interface TwoFaParams {
     isCheckPassword?: boolean;

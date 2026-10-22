@@ -4,7 +4,7 @@ import { Api } from "../tl";
 import { returnBigInt, toSignedLittleBuffer } from "../Helpers";
 import type { TelegramClient } from "../client/TelegramClient";
 import { _getEntityPair, getInputPeer } from "../Utils";
-import { EditMessageParams, SendMessageParams } from "../client/messages";
+import { EditMessageParams, SendMessageParams } from "../client/methods/messages";
 
 export interface NewCallbackQueryInterface {
     chats: EntityLike[];

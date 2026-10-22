@@ -2,7 +2,7 @@ export { Api } from "./tl";
 export * as Rich from "./richMessage";
 import * as tl from "./tl";
 export { TelegramClient } from "./client/TelegramClient";
-export type { UserWithParticipant } from "./client/chats";
+export type { UserWithParticipant } from "./client/methods/chats";
 export type {
     CreateCommunityParams,
     CommunityPeerLinkAction,
@@ -10,7 +10,7 @@ export type {
     CommunityPeerLinkRequest,
     IterCommunityPeerLinkRequestsParams,
     FullCommunity,
-} from "./client/communities";
+} from "./client/methods/communities";
 export { Button } from "./tl/custom/button";
 export {
     InlineKeyboard,
@@ -18,6 +18,7 @@ export {
     Keyboard,
 } from "./tl/custom/keyboard";
 export { Connection } from "./network";
+export { ConnectionWebProxy } from "./compat/network/connection/WebProxy";
 export {
     Transport,
     TcpTransport,
@@ -31,10 +32,10 @@ export type {
     SocksTransportOptions,
     HttpProxyTransportOptions,
     MTProxyTransportOptions,
+    WebProxyOptions,
+    WebProxyWebSocket,
 } from "./network/transport";
-export { ConnectionWebProxy } from "./network/connection/WebProxy";
-export type { WebProxyType } from "./network/connection/TCPMTProxy";
-export type { WebProxyOptions, WebProxyWebSocket } from "./network/connection/WebProxy";
+export type { ProxyInterface, WebProxyType } from "./client/TelegramBaseClient";
 export { version } from "./Version";
 export { Logger } from "./extensions/Logger";
 import * as utils from "./Utils";

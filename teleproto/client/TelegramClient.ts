@@ -1,34 +1,28 @@
-import {
-    PROD_DC_IPV4,
-    PROD_DC_IPV6,
-    TEST_DC_IPV4,
-    TEST_DC_IPV6,
-    TelegramBaseClient,
-    TelegramClientParams,
-    webSocketDcAddress,
-} from "./telegramBaseClient";
+import { TelegramBaseClient, TelegramClientParams } from "./TelegramBaseClient";
+import type { DcAddress } from "../network/dc/DcAddressBook";
 
-import * as authMethods from "./auth";
-import * as botMethods from "./bots";
-import * as buttonsMethods from "./buttons";
-import * as downloadMethods from "./downloads";
-import * as parseMethods from "./messageParse";
-import * as messageMethods from "./messages";
-import * as updateMethods from "./updates/dispatch";
-import * as uploadMethods from "./uploads";
-import * as userMethods from "./users";
-import * as chatMethods from "./chats";
-import * as communityMethods from "./communities";
-import * as inviteLinkMethods from "./inviteLinks";
-import * as accountMethods from "./account";
-import * as contactMethods from "./contacts";
-import * as dialogMethods from "./dialogs";
-import * as twoFA from "./2fa";
-import * as forumMethods from "./forums";
-import * as storyMethods from "./stories";
-import * as folderMethods from "./folders";
-import * as stickerMethods from "./stickers";
-import * as walletMethods from "./wallet";
+import type { Connection } from "../network/connection/Connection";
+import * as authMethods from "./methods/auth";
+import * as botMethods from "./methods/bots";
+import * as buttonsMethods from "./methods/buttons";
+import * as downloadMethods from "./methods/downloads";
+import * as parseMethods from "./methods/messageParse";
+import * as messageMethods from "./methods/messages";
+import * as updateMethods from "./methods/updates";
+import * as uploadMethods from "./methods/uploads";
+import * as userMethods from "./methods/users";
+import * as chatMethods from "./methods/chats";
+import * as communityMethods from "./methods/communities";
+import * as inviteLinkMethods from "./methods/inviteLinks";
+import * as accountMethods from "./methods/account";
+import * as contactMethods from "./methods/contacts";
+import * as dialogMethods from "./methods/dialogs";
+import * as twoFA from "./methods/2fa";
+import * as forumMethods from "./methods/forums";
+import * as storyMethods from "./methods/stories";
+import * as folderMethods from "./methods/folders";
+import * as stickerMethods from "./methods/stickers";
+import * as walletMethods from "./methods/wallet";
 import type { BigInteger } from "big-integer";
 import type {
     MarkupLike,
@@ -38,19 +32,18 @@ import type {
     MessageIDLike,
 } from "../define";
 import { Api } from "../tl";
-import { createApiProxy } from "../tl/runtime/apiProxy";
+import { createApiProxy } from "./rpc/apiProxy";
 import { HTMLParser } from "../extensions/html";
 import { MarkdownParser } from "../extensions/markdown";
 import { MarkdownV2Parser } from "../extensions/markdownv2";
 import type { EventBuilder } from "../events/common";
 import { MTProtoSender } from "../network";
-import type { SessionLease } from "../network/Network";
+import type { SessionLease } from "../network/dc/SessionPool";
 
-import { LAYER } from "../tl/runtime/registry";
-import { DownloadMediaInterface } from "./downloads";
+import { LAYER } from "../tl/runtime/Registry";
+import { DownloadMediaInterface } from "./methods/downloads";
 import { NewMessage, NewMessageEvent } from "../events";
-import { _handleUpdate, _updateLoop, catchUp } from "./updates/dispatch";
-import { ClientUpdates } from "./updates/composer";
+import { ClientUpdates } from "./updates/ClientUpdates";
 import { Session } from "../sessions";
 import { Album, AlbumEvent } from "../events/Album";
 import { CallbackQuery, CallbackQueryEvent } from "../events/CallbackQuery";
@@ -3006,7 +2999,7 @@ export class TelegramClient<
      * @category Updates
      */
     async catchUp() {
-        return catchUp(this);
+        return updateMethods.catchUp(this);
     }
 
     // region uploads
@@ -3302,6 +3295,15 @@ export class TelegramClient<
 
     //endregion
     /** @hidden */
+    private _nextMainConnection(): Connection {
+        const address = this._addresses.next(this.session.dcId, this.session.serverAddress);
+        if (address.ipAddress !== this.session.serverAddress) {
+            this._log.info(`Switching dc ${address.id} to ${address.ipAddress}:${address.port}`);
+            this.session.setDC(address.id, address.ipAddress, address.port);
+        }
+        return this._createConnection(address);
+    }
+
     async _handleReconnect() {
         this._log.info("Handling reconnect!");
         try {
@@ -3328,12 +3330,7 @@ export class TelegramClient<
                 }
             }
         }
-        // Restart update loop if it was stopped during reconnect
-        if (!this._loopStarted && !this._destroyed) {
-            this._log.info("Restarting update loop after reconnect");
-            _updateLoop(this);
-            this._loopStarted = true;
-        }
+        if (!this._destroyed) this._updateLoop.start(false);
         if (!this._destroyed && !this._sender?.userDisconnected) {
             await this.updateManager.catchUp();
             if (!this._destroyed && !this._sender?.userDisconnected) {
@@ -3359,88 +3356,62 @@ export class TelegramClient<
         await this._initSession();
         if (this._destroyed) throw new Error("Cannot connect a destroyed client");
         const hasSessionKey = Boolean(this.session.getAuthKey(this.session.dcId)?.getKey());
-        if (this._sender === undefined) {
-            const dcId = this.session.dcId || 4;
+        if (!this._sender) {
+            const dcId = this.session.dcId;
             const sessionKey = this.session.getAuthKey(dcId);
-            const dcenter = this._dcenters.get(
-                dcId,
-                sessionKey
-            );
-            if (sessionKey && sessionKey !== dcenter.authKey) {
-                await dcenter.authKey.setKey(sessionKey.getKey());
-            }
-            // Dcenter is canonical per-DC state shared by main and pooled
-            // senders, so persist this very object rather than a copy.
-            this.session.setAuthKey(dcenter.authKey, dcId);
-            this._sender = new MTProtoSender(dcenter.authKey, {
+            const dc = this._dcenters.get(dcId, sessionKey);
+            if (sessionKey && sessionKey !== dc.authKey) await dc.authKey.setKey(sessionKey.getKey());
+            this.session.setAuthKey(dc.authKey, dcId);
+            this._sender = new MTProtoSender(dc.authKey, {
                 logger: this._log,
                 dcId,
+                client: this,
+                isMainSender: true,
                 retries: this._connectionRetries,
-                delay: this._retryDelay,
+                reconnectRetries: this._reconnectRetries,
                 autoReconnect: this._autoReconnect,
                 connectTimeout: this._timeout,
-                authKeyCallback: this._authKeyCallback.bind(this),
-                updateCallback: _handleUpdate.bind(this),
-                isMainSender: true,
-                client: this,
                 securityChecks: this._securityChecks,
+                dcenter: dc,
+                throttle: dc.throttle,
+                authKeyCallback: this._authKeyCallback.bind(this),
+                updateCallback: (_client, update) => this.updateManager.receive(update),
                 autoReconnectCallback: this._handleReconnect.bind(this),
+                nextConnection: this._nextMainConnection.bind(this),
                 lifecycleCallback: this._handleConnectionLifecycle.bind(this),
-                reconnectRetries: this._reconnectRetries,
-                dcenter,
             });
         }
-
-        if (this._sender.isConnected()) {
-            if (!this._loopStarted) {
-                _updateLoop(this);
-                this._loopStarted = true;
-            }
+        const sender = this._sender;
+        if (sender.isConnected()) {
+            this._updateLoop.start();
             return false;
         }
-
-        const connection = new this._connection({
-            ip: this.session.serverAddress,
-            port: this.session.port || 80,
-            dcId: this.session.dcId,
-            loggers: this._log,
-            proxy: this._proxy,
-            socket: this.networkSocket,
-            keepAliveInterval: this._keepAliveInterval,
-            testServers: this._testServers,
-        });
-        this._log.info(`Using LAYER ${LAYER} for initial connect`);
-        await this._connectSender(this._sender, this.session.dcId, connection);
-        if (this._destroyed || this._sender.userDisconnected) {
-            throw new Error("Connection attempt cancelled");
-        }
-        this.session.setAuthKey(this._sender.authKey);
-        this.session.save();
-
-        if (!this._loopStarted) {
-            _updateLoop(this, hasSessionKey);
-            this._loopStarted = true;
-        }
+        await sender.connect(
+            this._createConnection({ id: this.session.dcId, ipAddress: this.session.serverAddress, port: this.session.port || 443 })
+        );
+        if (this._destroyed || sender.userDisconnected) throw new Error("Connection attempt cancelled");
+        this._log.info(`Connected to dc ${this.session.dcId} with layer ${LAYER}`);
+        this.session.setAuthKey(sender.authKey);
+        await this.session.save();
+        const config = await sender.send(new Api.help.GetConfig());
+        if (config instanceof Api.Config) this._setConfig(config);
+        this._updateLoop.start(hasSessionKey);
         this._connectedDeferred.resolve();
-        this._isSwitchingDc = false;
         return true;
     }
-    //endregion
-    // region Working with different connections/Data Centers
+
     /** @hidden */
     async _switchDC(newDc: number) {
         this._log.info(`Reconnecting to new data center ${newDc}`);
-        const DC = await this.getDC(newDc);
-        this.session.setDC(newDc, DC.ipAddress, DC.port);
-        // setDC archives the source key and promotes the target key. Auth
-        // keys are DC-scoped transport state; account authorization is
-        // transferred separately only via export/importAuthorization.
+        const address = await this.getDC(newDc);
+        this.session.setDC(newDc, address.ipAddress, address.port);
         this.session.save();
-        this._isSwitchingDc = true;
-        await this._media.purge();
-        await this._network.purge();
-        await this._disconnect();
+        const previous = this._sender;
         this._sender = undefined;
+        this._files.reset();
+        await this._network.purge();
+        this._updateLoop.stop();
+        await previous?.disconnect();
         return await this.connect();
     }
 
@@ -3453,101 +3424,15 @@ export class TelegramClient<
      * (These only support downloading/uploading and not creating a new AUTH key)
      * @category Connection
      */
-    async getDC(
-        dcId: number,
-        downloadDC = false
-    ): Promise<{ id: number; ipAddress: string; port: number }> {
-        this._log.debug(`Getting DC ${dcId}`);
-        if (this.networkSocket.isWebSocket) {
-            const address = webSocketDcAddress(dcId, downloadDC);
-            if (address) {
-                return { id: dcId, ipAddress: address, port: 443 };
-            }
-            throw new Error(`Cannot find the DC with the ID of ${dcId}`);
-        }
-        if (!this._config) {
+    async getDC(dcId: number, downloadDC = false): Promise<DcAddress> {
+        if (!this._transport.webSocket && !this._addresses.hasConfig && this._sender?.isConnected()) {
             try {
-                this._config = await this.api.help.getConfig();
+                this._setConfig(await this.api.help.getConfig());
             } catch (e) {
-                this._log.warn(
-                    `help.GetConfig failed, falling back to built-in DC seeds: ${e}`
-                );
+                this._log.warn(`help.GetConfig failed, falling back to built-in DC seeds: ${e}`);
             }
         }
-        const lookup = this._lookupDcOption(dcId, downloadDC);
-        if (lookup) {
-            return lookup;
-        }
-        const ipv4Table = this._testServers ? TEST_DC_IPV4 : PROD_DC_IPV4;
-        const ipv6Table = this._testServers ? TEST_DC_IPV6 : PROD_DC_IPV6;
-        const ipAddress = (this._useIPV6 ? ipv6Table : ipv4Table)[dcId];
-        if (ipAddress) {
-            return { id: dcId, ipAddress, port: 443 };
-        }
-        throw new Error(`Cannot find the DC with the ID of ${dcId}`);
-    }
-
-    private _lookupDcOption(
-        dcId: number,
-        mediaCluster: boolean
-    ): { id: number; ipAddress: string; port: number } | undefined {
-        if (!this._config) return undefined;
-        let candidates = this._config.dcOptions.filter((DC) => {
-            if (DC.id !== dcId) return false;
-            if (DC.cdn) return false;
-            if (DC.mediaOnly && !mediaCluster) return false;
-            if (DC.secret && DC.secret.length) return false;
-            if (DC.tcpoOnly) return false;
-            return !!DC.ipv6 === this._useIPV6;
-        });
-        if (!candidates.length) return undefined;
-        if (mediaCluster && candidates.some((DC) => DC.mediaOnly)) {
-            candidates = candidates.filter((DC) => DC.mediaOnly);
-        }
-        if (this._proxy && candidates.some((DC) => DC.static)) {
-            candidates = candidates.filter((DC) => DC.static);
-        }
-        const failures =
-            this._dcConnectFailures.get(`${dcId}:${mediaCluster}`) ?? 0;
-        const chosen = candidates[failures % candidates.length];
-        return {
-            id: chosen.id,
-            ipAddress: chosen.ipAddress,
-            port: chosen.port || 443,
-        };
-    }
-
-    /** @hidden */
-    async _getDownloadConcurrency(fileSize: number): Promise<number> {
-        if (!this._appConfig) {
-            try {
-                const result = await this.api.help.getAppConfig({ hash: 0 });
-                if (result instanceof Api.help.AppConfig) {
-                    this._appConfig = {};
-                    const walk = (v: any): any => {
-                        if (v instanceof Api.JsonObject) {
-                            const obj: any = {};
-                            for (const kv of v.value) {
-                                obj[kv.key] = walk(kv.value);
-                            }
-                            return obj;
-                        }
-                        if (v instanceof Api.JsonArray) return v.value.map(walk);
-                        if (v instanceof Api.JsonString) return v.value;
-                        if (v instanceof Api.JsonNumber) return v.value;
-                        if (v instanceof Api.JsonBool) return v.value;
-                        if (v instanceof Api.JsonNull) return null;
-                        return v;
-                    };
-                    this._appConfig = walk(result.config);
-                }
-            } catch {
-                this._appConfig = {};
-            }
-        }
-        const smallLimit = this._appConfig?.small_queue_max_active_operations_count ?? 4;
-        const largeLimit = this._appConfig?.large_queue_max_active_operations_count ?? 8;
-        return fileSize > 20 * 1024 * 1024 ? largeLimit : smallLimit;
+        return this._addresses.resolve(dcId, downloadDC);
     }
 
     /** @hidden */

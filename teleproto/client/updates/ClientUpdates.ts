@@ -7,10 +7,9 @@ import type { EventBuilder } from "../../events/common";
 import { _intoIdSet } from "../../events/common";
 import { getPeerId } from "../../Utils";
 import { isArrayLike } from "../../Helpers";
-import type { UpdateState, ChannelPollingState } from "./manager";
+import type { UpdateState, ChannelPollingState } from "./UpdateManager";
 import { UpdateConnectionState } from "../../network";
-import { UpdateContext, type WithUpdateContext } from "./context";
-import { _dispatchUpdate } from "./dispatch";
+import { UpdateContext, type WithUpdateContext } from "./UpdateContext";
 
 /** Passes the update on. A handler that never calls it consumes the update. */
 export type NextFn = () => Promise<void>;
@@ -525,7 +524,8 @@ export class ClientUpdates {
         if (!this.blockedAuthorization) {
             this.blockedAuthorization = error as Error;
             this._pause();
-            void this.reportError(error as Error);
+            if (this.client._selfInputPeer) void this.reportError(error as Error);
+            else this.client._log.debug(`Updates wait for authorization: ${code}`);
         }
         return true;
     }
@@ -601,7 +601,7 @@ export class ClientUpdates {
     ): Promise<void> {
         if (this.client._destroyed) throw new Error("Cannot dispatch through a destroyed client");
         if (peers) fieldsOf(update)._entities = new Map(peers);
-        await _dispatchUpdate(this.client, { update });
+        await this.client._updateDispatcher.dispatch(update);
     }
 
     async _dispatch(update: AnyUpdate): Promise<void> {

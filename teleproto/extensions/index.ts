@@ -1,12 +1,8 @@
 export { Logger } from "./Logger";
-export { BinaryWriter } from "./BinaryWriter";
-export { BinaryReader } from "./BinaryReader";
-export { PromisedNetSockets } from "./PromisedNetSockets";
-export { PromisedWebSockets } from "./PromisedWebSockets";
-export type {
-    PacketReader,
-    SocketInterface,
-    SocketFactory,
-} from "./SocketInterface";
+export { Writer as BinaryWriter } from "../tl/binary/Writer";
+export { Reader as BinaryReader } from "../tl/binary/Reader";
+export type { PacketReader, SocketInterface, SocketFactory } from "../compat/extensions/SocketInterface";
+export { PromisedNetSockets } from "../compat/extensions/PromisedNetSockets";
+export { PromisedWebSockets } from "../compat/extensions/PromisedWebSockets";
 export { MessagePacker } from "./MessagePacker";
 export { AsyncQueue } from "./AsyncQueue";

@@ -479,7 +479,7 @@ export async function _getInputDialog(client: TelegramClient, dialog: any) {
         }
     } catch (e) {}
     return new Api.InputDialogPeer({
-        peer: dialog,
+        peer: await client.getInputEntity(dialog),
     });
 }
 

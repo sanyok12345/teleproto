@@ -33,19 +33,22 @@ class StrictFloodControl {
 export class ConnectThrottle {
     private readonly sanity = new StrictFloodControl(SANITY);
     private readonly offline = new StrictFloodControl(OFFLINE);
-    private readonly online = new StrictFloodControl(ONLINE);
+    private readonly onlineLimits = new StrictFloodControl(ONLINE);
     private readonly transportFlood = new StrictFloodControl(TRANSPORT_FLOOD);
     private backoffAt = 0;
     private backoffDelayS = 1;
+    private online = false;
 
-    constructor(private readonly isOnline: () => boolean = () => true) {}
+    setOnline(online: boolean) {
+        this.online = online;
+    }
 
     nextAttemptAt(): number {
-        const online = this.isOnline();
+        const online = this.online;
         let at = Math.max(
             this.sanity.wakeupAt(),
             this.transportFlood.wakeupAt(),
-            (online ? this.online : this.offline).wakeupAt()
+            (online ? this.onlineLimits : this.offline).wakeupAt()
         );
         if (!online) at = Math.max(at, this.backoffAt);
         return at;
@@ -53,8 +56,8 @@ export class ConnectThrottle {
 
     attempt(now = Date.now()) {
         this.sanity.add(now);
-        (this.isOnline() ? this.online : this.offline).add(now);
-        if (!this.isOnline()) {
+        (this.online ? this.onlineLimits : this.offline).add(now);
+        if (!this.online) {
             this.backoffAt = now + this.backoffDelayS * 1000;
             this.backoffDelayS = Math.min(MAX_BACKOFF_S, this.backoffDelayS * 2);
         }
@@ -73,7 +76,7 @@ export class ConnectThrottle {
         this.connected();
         this.sanity.clear();
         this.offline.clear();
-        this.online.clear();
+        this.onlineLimits.clear();
         this.transportFlood.clear();
     }
 }

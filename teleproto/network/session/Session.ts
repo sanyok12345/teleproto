@@ -224,6 +224,7 @@ export class Session implements LinkHost, RouterHost {
         let established = false;
         this.setStatus("connecting");
         while (!signal.aborted) {
+            this.throttle.setOnline(this.wantsOnline(Date.now()));
             const attemptAt = this.throttle.nextAttemptAt();
             if (attemptAt > Date.now() && !(await this.wait(attemptAt - Date.now(), signal))) return;
             this.throttle.attempt();

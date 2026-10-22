@@ -18,7 +18,7 @@ export type TlClient = {
     getPeerId: (value: unknown, addMark: boolean) => Promise<unknown>;
 };
 
-const NAMED_CASTS = new Set(["chatId,int"]);
+const NAMED_CASTS = new Set(["chatId,long"]);
 const TYPE_CASTS = new Set([
     "InputPeer",
     "InputChannel",
@@ -60,7 +60,7 @@ export async function castInput(utils: TlUtils, client: TlClient, value: unknown
             return utils.getInputDocument(value);
         case "InputChatPhoto":
             return utils.getInputChatPhoto(value);
-        case "chatId,int":
+        case "chatId,long":
             return client.getPeerId(value, false);
         default:
             throw new Error("unsupported peer type : " + cast);

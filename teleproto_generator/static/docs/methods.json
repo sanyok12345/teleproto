@@ -1,8 +1,4 @@
 {
-    "account.confirmBotConnection": {
-        "summary": "",
-        "params": {}
-    },
     "account.clearRecentEmojiStatuses": {
         "summary": "Clears list of recently used emoji statuses",
         "params": {}
@@ -104,10 +100,6 @@
         "params": {
             "types": "Document types to delete"
         }
-    },
-    "account.deleteWebBrowserSettingsExceptions": {
-        "summary": "",
-        "params": {}
     },
     "account.disablePeerConnectedBot": {
         "summary": "Permanently disconnect a specific chat from all business bots » (equivalent to specifying it in recipients.exclude_users during initial configuration with account.updateConnectedBot » ); to reconnect of a chat disconnected using this method the user must reconnect the entire bot by invoking account.updateConnectedBot » .",
@@ -324,10 +316,6 @@
         "params": {
             "hash": "Hash used for caching, for more info click here ."
         }
-    },
-    "account.getWebBrowserSettings": {
-        "summary": "",
-        "params": {}
     },
     "account.initPasskeyRegistration": {
         "summary": "Initialize passkey registration for the current account, see here » for more info on the full flow.",
@@ -609,10 +597,6 @@
             "enabled": "Enable or disable ads."
         }
     },
-    "account.toggleWebBrowserSettingsException": {
-        "summary": "",
-        "params": {}
-    },
     "account.setReactionsNotifySettings": {
         "summary": "Change the reaction notification settings » .",
         "params": {
@@ -752,10 +736,6 @@
             "document": "Theme file",
             "settings": "Theme settings"
         }
-    },
-    "account.updateWebBrowserSettings": {
-        "summary": "",
-        "params": {}
     },
     "account.updateUsername": {
         "summary": "Changes username for the current user.",
@@ -1249,10 +1229,6 @@
         "params": {
             "adminRights": "Admin rights"
         }
-    },
-    "bots.setJoinChatResults": {
-        "summary": "",
-        "params": {}
     },
     "bots.setBotInfo": {
         "summary": "Set localized name, about text and description of a bot (or of the current account, if called by a bot).",
@@ -1994,18 +1970,6 @@
             "referer": "Referrer ID from referral links » ."
         }
     },
-    "destroyAuthKey": {
-        "summary": "",
-        "params": {}
-    },
-    "destroySession": {
-        "summary": "",
-        "params": {}
-    },
-    "getFutureSalts": {
-        "summary": "",
-        "params": {}
-    },
     "contacts.updateContactNote": {
         "summary": "Update the private note associated to a contact; see here » for more info.",
         "params": {
@@ -2290,18 +2254,6 @@
             "peer": "Secret chat ID",
             "gB": "B = g ^ b mod p , see Wikipedia",
             "keyFingerprint": "64-bit fingerprint of the received key"
-        }
-    },
-    "messages.acceptUrlAuth": {
-        "summary": "Use this to accept a Seamless Telegram Login authorization request, for more info click here »",
-        "params": {
-            "writeAllowed": "Set this flag to allow the bot to send messages to you (if requested)",
-            "sharePhoneNumber": "Set this flag to share the user's phone number with the bot (if requested via urlAuthResultRequest . request_phone_number and consented to by the user)",
-            "peer": "The location of the message",
-            "msgId": "Message ID of the message with the login button",
-            "buttonId": "ID of the login button",
-            "url": "URL used for link URL authorization, click here for more info »",
-            "matchCode": "If urlAuthResultRequest . match_codes was set, the emoji or code selected by the user from the provided list; must always be provided when match_codes is set, even if match_codes_first was set and the code was already validated via messages.checkUrlAuthMatchCode"
         }
     },
     "messages.addPollAnswer": {
@@ -3231,10 +3183,6 @@
         "params": {
             "hash": "Hash for pagination, generated as specified here » (not the usual algorithm used for hash generation.)"
         }
-    },
-    "messages.getRichMessage": {
-        "summary": "",
-        "params": {}
     },
     "messages.getSavedDialogs": {
         "summary": "Returns the current saved dialog list » or monoforum topic list » .",
@@ -4637,13 +4585,6 @@
             "hash": "Hash used for caching, for more info click here . The hash may be generated locally by using the id s of the returned or stored sticker starGift s."
         }
     },
-    "payments.getStarGiftWithdrawalUrl": {
-        "summary": "Convert a collectible gift » to an NFT on the TON blockchain.",
-        "params": {
-            "stargift": "The collectible gift to export.",
-            "password": "The current user's 2FA password, passed as specified here » ."
-        }
-    },
     "payments.getStarGiftUpgradePreview": {
         "summary": "Obtain a preview of the possible attributes (chosen randomly) a gift » can receive after upgrading it to a collectible gift » , see here » for more info.",
         "params": {
@@ -5229,14 +5170,6 @@
             "limit": "Number of list elements to be returned"
         }
     },
-    "ping": {
-        "summary": "",
-        "params": {}
-    },
-    "pingDelayDisconnect": {
-        "summary": "",
-        "params": {}
-    },
     "photos.uploadProfilePhoto": {
         "summary": "Updates current user profile photo. The file , video and video_emoji_markup flags are mutually exclusive.",
         "params": {
@@ -5274,10 +5207,6 @@
         "summary": "Obtain which peers are we currently boosting , and how many boost slots we have left.",
         "params": {}
     },
-    "reqDHParams": {
-        "summary": "",
-        "params": {}
-    },
     "photos.uploadContactProfilePhoto": {
         "summary": "Upload a custom profile picture for a contact, or suggest a new profile picture to a contact. The file , video and video_emoji_markup flags are mutually exclusive.",
         "params": {
@@ -5290,28 +5219,12 @@
             "videoEmojiMarkup": "Animated sticker profile picture, must contain either a videoSizeEmojiMarkup or a videoSizeStickerMarkup constructor."
         }
     },
-    "reqPq": {
-        "summary": "",
-        "params": {}
-    },
-    "reqPqMulti": {
-        "summary": "",
-        "params": {}
-    },
     "premium.getUserBoosts": {
         "summary": "Returns the lists of boost that were applied to a channel/supergroup by a specific user (admins only)",
         "params": {
             "peer": "The channel/supergroup",
             "userId": "The user"
         }
-    },
-    "setClientDHParams": {
-        "summary": "",
-        "params": {}
-    },
-    "rpcDropAnswer": {
-        "summary": "",
-        "params": {}
     },
     "smsjobs.finishJob": {
         "summary": "Finish an SMS job (official clients only).",
@@ -5907,23 +5820,15 @@
             "errors": "Errors"
         }
     },
+    "account.updateWebBrowserSettings": {
+        "summary": "",
+        "params": {}
+    },
+    "account.deleteWebBrowserSettingsExceptions": {
+        "summary": "",
+        "params": {}
+    },
     "auth.firebasePnvSignUp": {
-        "summary": "",
-        "params": {}
-    },
-    "communities.getParticipantJoinedChats": {
-        "summary": "",
-        "params": {}
-    },
-    "auth.initFirebasePnvLogin": {
-        "summary": "",
-        "params": {}
-    },
-    "communities.create": {
-        "summary": "",
-        "params": {}
-    },
-    "communities.toggleAllPeerLinkRequestApproval": {
         "summary": "",
         "params": {}
     },
@@ -5931,11 +5836,55 @@
         "summary": "",
         "params": {}
     },
-    "communities.getPeerLinkRequests": {
+    "auth.initFirebasePnvLogin": {
+        "summary": "",
+        "params": {}
+    },
+    "bots.removeUsername": {
+        "summary": "",
+        "params": {}
+    },
+    "bots.setJoinChatResults": {
+        "summary": "",
+        "params": {}
+    },
+    "bots.addUsername": {
+        "summary": "",
+        "params": {}
+    },
+    "account.confirmBotConnection": {
+        "summary": "",
+        "params": {}
+    },
+    "account.getWebBrowserSettings": {
+        "summary": "",
+        "params": {}
+    },
+    "account.toggleWebBrowserSettingsException": {
+        "summary": "",
+        "params": {}
+    },
+    "auth.cancelWebTokenAuthorization": {
+        "summary": "",
+        "params": {}
+    },
+    "communities.create": {
         "summary": "",
         "params": {}
     },
     "communities.getJoinedCommunities": {
+        "summary": "",
+        "params": {}
+    },
+    "communities.getPeerLinkRequests": {
+        "summary": "",
+        "params": {}
+    },
+    "communities.getParticipantJoinedChats": {
+        "summary": "",
+        "params": {}
+    },
+    "communities.toggleAllPeerLinkRequestApproval": {
         "summary": "",
         "params": {}
     },
@@ -5947,35 +5896,23 @@
         "summary": "",
         "params": {}
     },
+    "communities.togglePeerLinkRequestApproval": {
+        "summary": "",
+        "params": {}
+    },
     "communities.togglePeerLink": {
         "summary": "",
         "params": {}
     },
-    "ephemeral.getCallbackAnswer": {
+    "contacts.importNoPaidMessagesToken": {
         "summary": "",
         "params": {}
     },
-    "ephemeral.getWelcomeMessages": {
+    "contacts.exportNoPaidMessagesToken": {
         "summary": "",
         "params": {}
     },
-    "ephemeral.reportMessage": {
-        "summary": "",
-        "params": {}
-    },
-    "messages.composeRichMessageWithAI": {
-        "summary": "",
-        "params": {}
-    },
-    "ephemeral.sendMessage": {
-        "summary": "",
-        "params": {}
-    },
-    "messages.requestChatJoinWebView": {
-        "summary": "",
-        "params": {}
-    },
-    "messages.translateRichMessage": {
+    "ephemeral.deleteAllWelcomeMessages": {
         "summary": "",
         "params": {}
     },
@@ -5987,27 +5924,71 @@
         "summary": "",
         "params": {}
     },
-    "ephemeral.deleteAllWelcomeMessages": {
-        "summary": "",
-        "params": {}
-    },
-    "communities.togglePeerLinkRequestApproval": {
-        "summary": "",
-        "params": {}
-    },
     "ephemeral.editMessage": {
         "summary": "",
         "params": {}
     },
-    "payments.getOnrampAvailability": {
+    "ephemeral.getCallbackAnswer": {
         "summary": "",
         "params": {}
     },
-    "bots.removeUsername": {
+    "ephemeral.reportMessage": {
         "summary": "",
         "params": {}
     },
-    "bots.addUsername": {
+    "ephemeral.sendMessage": {
+        "summary": "",
+        "params": {}
+    },
+    "ephemeral.getWelcomeMessages": {
+        "summary": "",
+        "params": {}
+    },
+    "messages.acceptUrlAuth": {
+        "summary": "Use this to accept a Seamless Telegram Login authorization request, for more info click here »",
+        "params": {
+            "writeAllowed": "Set this flag to allow the bot to send messages to you (if requested)",
+            "sharePhoneNumber": "Set this flag to share the user's phone number with the bot (if requested via urlAuthResultRequest . request_phone_number and consented to by the user)",
+            "peer": "The location of the message",
+            "msgId": "Message ID of the message with the login button",
+            "buttonId": "ID of the login button",
+            "url": "URL used for link URL authorization, click here for more info »",
+            "matchCode": "If urlAuthResultRequest . match_codes was set, the emoji or code selected by the user from the provided list; must always be provided when match_codes is set, even if match_codes_first was set and the code was already validated via messages.checkUrlAuthMatchCode"
+        }
+    },
+    "messages.composeRichMessageWithAI": {
+        "summary": "",
+        "params": {}
+    },
+    "messages.getRichMessage": {
+        "summary": "",
+        "params": {}
+    },
+    "messages.requestChatJoinWebView": {
+        "summary": "",
+        "params": {}
+    },
+    "messages.getShareThemeBackdrops": {
+        "summary": "",
+        "params": {}
+    },
+    "messages.setShareTheme": {
+        "summary": "",
+        "params": {}
+    },
+    "messages.translateRichMessage": {
+        "summary": "",
+        "params": {}
+    },
+    "payments.deleteStarGift": {
+        "summary": "",
+        "params": {}
+    },
+    "payments.createOnrampSession": {
+        "summary": "",
+        "params": {}
+    },
+    "payments.depositStarGift": {
         "summary": "",
         "params": {}
     },
@@ -6015,11 +5996,15 @@
         "summary": "",
         "params": {}
     },
-    "payments.getOnrampBaseCurrencies": {
+    "payments.displayStarGift": {
         "summary": "",
         "params": {}
     },
-    "payments.createOnrampSession": {
+    "payments.getOnrampAvailability": {
+        "summary": "",
+        "params": {}
+    },
+    "payments.getOnrampBaseCurrencies": {
         "summary": "",
         "params": {}
     },
@@ -6031,19 +6016,30 @@
         "summary": "",
         "params": {}
     },
-    "toncenter.getStreamingUrl": {
-        "summary": "",
-        "params": {}
-    },
     "payments.getOnrampQuote": {
         "summary": "",
         "params": {}
     },
-    "toncenter.performApiRequest": {
+    "payments.withdrawStarGift": {
+        "summary": "",
+        "params": {}
+    },
+    "toncenter.getStreamingUrl": {
         "summary": "",
         "params": {}
     },
     "wallet.disableBackup": {
+        "summary": "",
+        "params": {}
+    },
+    "payments.getStarGiftWithdrawalUrl": {
+        "summary": "Convert a collectible gift » to an NFT on the TON blockchain.",
+        "params": {
+            "stargift": "The collectible gift to export.",
+            "password": "The current user's 2FA password, passed as specified here » ."
+        }
+    },
+    "toncenter.performApiRequest": {
         "summary": "",
         "params": {}
     },
@@ -6055,11 +6051,15 @@
         "summary": "",
         "params": {}
     },
+    "wallet.getBackupHolderDcs": {
+        "summary": "",
+        "params": {}
+    },
     "wallet.fetchEncryptedSecretPhrasePart": {
         "summary": "",
         "params": {}
     },
-    "wallet.getBackupHolderDcs": {
+    "wallet.getGaslessInfo": {
         "summary": "",
         "params": {}
     },
@@ -6067,11 +6067,7 @@
         "summary": "",
         "params": {}
     },
-    "auth.cancelWebTokenAuthorization": {
-        "summary": "",
-        "params": {}
-    },
-    "wallet.getGaslessInfo": {
+    "wallet.getNfts": {
         "summary": "",
         "params": {}
     },
@@ -6083,15 +6079,7 @@
         "summary": "",
         "params": {}
     },
-    "wallet.getNfts": {
-        "summary": "",
-        "params": {}
-    },
     "wallet.getTransactions": {
-        "summary": "",
-        "params": {}
-    },
-    "wallet.getTransactionsByMsgHash": {
         "summary": "",
         "params": {}
     },
@@ -6103,11 +6091,19 @@
         "summary": "",
         "params": {}
     },
-    "wallet.sendTransfer": {
+    "wallet.getTransactionsByMsgHash": {
         "summary": "",
         "params": {}
     },
     "wallet.replaceWallet": {
+        "summary": "",
+        "params": {}
+    },
+    "wallet.sendTransfer": {
+        "summary": "",
+        "params": {}
+    },
+    "wallet.setCardStickers": {
         "summary": "",
         "params": {}
     },
@@ -6127,11 +6123,11 @@
         "summary": "",
         "params": {}
     },
-    "wallet.tonConnectGetSessions": {
+    "wallet.tonConnectSubmitConnectResult": {
         "summary": "",
         "params": {}
     },
-    "wallet.tonConnectNextEventId": {
+    "wallet.tonConnectGetSessions": {
         "summary": "",
         "params": {}
     },
@@ -6139,11 +6135,51 @@
         "summary": "",
         "params": {}
     },
-    "wallet.tonConnectSubmitConnectResult": {
+    "wallet.tonConnectNextEventId": {
         "summary": "",
         "params": {}
     },
     "wallet.tonConnectSubmitResponse": {
+        "summary": "",
+        "params": {}
+    },
+    "destroyAuthKey": {
+        "summary": "",
+        "params": {}
+    },
+    "reqDHParams": {
+        "summary": "",
+        "params": {}
+    },
+    "pingDelayDisconnect": {
+        "summary": "",
+        "params": {}
+    },
+    "ping": {
+        "summary": "",
+        "params": {}
+    },
+    "destroySession": {
+        "summary": "",
+        "params": {}
+    },
+    "reqPqMulti": {
+        "summary": "",
+        "params": {}
+    },
+    "getFutureSalts": {
+        "summary": "",
+        "params": {}
+    },
+    "reqPq": {
+        "summary": "",
+        "params": {}
+    },
+    "rpcDropAnswer": {
+        "summary": "",
+        "params": {}
+    },
+    "setClientDHParams": {
         "summary": "",
         "params": {}
     }

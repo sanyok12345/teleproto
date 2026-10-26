@@ -16,6 +16,7 @@ const DIFFERENCE_LIMIT_USER = 100;
 const DIFFERENCE_LIMIT_BOT = 100_000;
 const PEER_DIALOGS_BATCH = 100;
 const PEER_DIALOGS_KEY = "peerDialogs";
+const JOINED_POLL_MS = 60_000;
 const PROBE_MAX_PAGES = 50;
 const FLOOD_WAIT = /^FLOOD_(?:PREMIUM_)?WAIT(?:_|$)/;
 
@@ -54,6 +55,7 @@ interface ChannelTracker {
     lastPolledAt?: number;
     lastDelayMs?: number;
     nextPollAt?: number;
+    joined?: boolean;
     lastMessageId?: number;
 }
 
@@ -334,6 +336,7 @@ export class ChannelUpdates {
         if (stored) return stored;
         if (!this.client._bot && inputChannel instanceof Api.InputChannel) {
             const start = await this.peerDialogPts(channelId, inputChannel);
+            tracker.joined = start.joined;
             if (start.pts) return start.pts;
         }
         return this.probePts(channelId, inputChannel);
@@ -571,7 +574,8 @@ export class ChannelUpdates {
     private schedulePoll(channelId: string, tracker: ChannelTracker, serverTimeoutS?: number) {
         if (!this.watched.has(channelId)) return;
         clearTimeout(tracker.pollTimer);
-        const delayMs = serverTimeoutS && serverTimeoutS > 0 ? serverTimeoutS * 1000 : this.client._channelPollInterval;
+        const baseMs = serverTimeoutS && serverTimeoutS > 0 ? serverTimeoutS * 1000 : this.client._channelPollInterval;
+        const delayMs = tracker.joined ? Math.max(baseMs, JOINED_POLL_MS) : baseMs;
         tracker.nextPollAt = Date.now() + delayMs;
         tracker.pollTimer = setTimeout(() => {
             tracker.pollTimer = undefined;

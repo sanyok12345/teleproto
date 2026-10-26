@@ -54,6 +54,7 @@ interface ChannelTracker {
     lastPolledAt?: number;
     lastDelayMs?: number;
     nextPollAt?: number;
+    lastMessageId?: number;
 }
 
 interface StartPts {
@@ -132,7 +133,7 @@ export class ChannelUpdates {
             if (stored === undefined) {
                 tracker.pts.init(update.pts);
                 this.host.saveState();
-                this.host.dispatch(update, payload);
+                this.deliver(tracker, update, payload);
                 return;
             }
             tracker.pts.init(stored);
@@ -143,7 +144,7 @@ export class ChannelUpdates {
             { tag: "update", update },
             (applied) => {
                 this.host.saveState();
-                this.host.dispatch(applied, payload);
+                this.deliver(tracker, applied, payload);
             },
             () => {}
         );
@@ -418,6 +419,14 @@ export class ChannelUpdates {
         return pts;
     }
 
+    private deliver(tracker: ChannelTracker, update: Api.TypeUpdate, payload: DispatchPayload) {
+        const message = (update as { message?: { id?: number } }).message;
+        if (message?.id !== undefined && (update instanceof Api.UpdateNewChannelMessage || update instanceof Api.UpdateNewMessage)) {
+            tracker.lastMessageId = Math.max(tracker.lastMessageId ?? 0, message.id);
+        }
+        this.host.dispatch(update, payload);
+    }
+
     private fetchDifference(channelId: string): Promise<void> {
         const tracker = this.trackers.get(channelId);
         if (!tracker) return Promise.resolve();
@@ -506,7 +515,7 @@ export class ChannelUpdates {
         if (diff instanceof Api.updates.ChannelDifference) {
             const entities = collectEntities(diff.users, diff.chats);
             for (const message of diff.newMessages.filter(isMessage).sort((a, b) => a.id - b.id)) {
-                this.host.dispatch(new Api.UpdateNewChannelMessage({ message, pts: 0, ptsCount: 0 }), { others: null, entities });
+                this.deliver(tracker, new Api.UpdateNewChannelMessage({ message, pts: 0, ptsCount: 0 }), { others: null, entities });
             }
             for (const update of diff.otherUpdates) this.host.dispatch(update, { others: diff.otherUpdates, entities });
             tracker.pts.init(diff.pts > requestPts ? diff.pts : requestPts + 1, true);
@@ -514,7 +523,16 @@ export class ChannelUpdates {
         }
         const dialogPts = diff.dialog instanceof Api.Dialog ? diff.dialog.pts : undefined;
         const next = dialogPts !== undefined && dialogPts > requestPts ? dialogPts : requestPts + 1;
-        this.client._log.warn(`Channel ${channelId} difference is too long, skipping to pts ${next}`);
+        const seen = tracker.lastMessageId;
+        const recent = seen === undefined ? [] : diff.messages
+            .filter(isMessage)
+            .filter((message) => message.id > seen)
+            .sort((a, b) => a.id - b.id);
+        this.client._log.warn(`Channel ${channelId} difference is too long, delivering ${recent.length} recent messages and skipping to pts ${next}`);
+        const entities = collectEntities(diff.users, diff.chats);
+        for (const message of recent) {
+            this.deliver(tracker, new Api.UpdateNewChannelMessage({ message, pts: 0, ptsCount: 0 }), { others: null, entities });
+        }
         tracker.pts.init(next, true);
     }
 

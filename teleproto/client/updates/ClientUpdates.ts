@@ -436,29 +436,32 @@ export class ClientUpdates {
                     !["CHANNEL_PRIVATE", "CHANNEL_INVALID", "USERNAME_INVALID", "USERNAME_NOT_OCCUPIED", "PEER_ID_INVALID"].includes(code ?? "");
                 await this.reportError(error as Error, undefined);
             };
+            const inputs: Api.InputPeerChannel[] = [];
             for (const chat of entry.chats) {
                 if (!active()) return;
                 try {
                     const input = await this.client.getInputEntity(chat);
-                    if (!active()) return;
-                    if (!(input instanceof Api.InputPeerChannel)) continue;
-                    const channelId = input.channelId.toString();
-                    if (entry.channels.has(channelId) || pendingChannels.has(channelId)) continue;
-                    pendingChannels.add(channelId);
-                    const subscription = this.client.updateManager.watchChannel(
-                        channelId,
-                        new Api.InputChannel({
-                            channelId: input.channelId,
-                            accessHash: input.accessHash,
-                        }),
-                        controller.signal,
-                    );
-                    pending.push(subscription.then(() => {
-                        if (active()) entry.channels.add(channelId);
-                    }).catch(failed));
+                    if (input instanceof Api.InputPeerChannel) inputs.push(input);
                 } catch (error) {
                     await failed(error);
                 }
+            }
+            if (!active()) return;
+            for (const input of inputs) {
+                const channelId = input.channelId.toString();
+                if (entry.channels.has(channelId) || pendingChannels.has(channelId)) continue;
+                pendingChannels.add(channelId);
+                const subscription = this.client.updateManager.watchChannel(
+                    channelId,
+                    new Api.InputChannel({
+                        channelId: input.channelId,
+                        accessHash: input.accessHash,
+                    }),
+                    controller.signal,
+                );
+                pending.push(subscription.then(() => {
+                    if (active()) entry.channels.add(channelId);
+                }).catch(failed));
             }
             await Promise.all(pending);
             if (retry && active()) {

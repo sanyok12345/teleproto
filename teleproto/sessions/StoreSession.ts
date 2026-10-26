@@ -3,9 +3,7 @@ import type { StoredUpdateState } from "./Abstract";
 import store, { StoreBase } from "store2";
 import { AuthKey } from "../crypto/AuthKey";
 import bigInt from "big-integer";
-import { LocalStorage } from "node-localstorage";
-import { isAbsolute, resolve } from "path";
-import { existsSync } from "fs";
+import { fs, storage } from "../platform";
 
 /**
  * Persistent session that stores auth keys and entity data on disk using `node-localstorage`.
@@ -31,11 +29,11 @@ export class StoreSession extends MemorySession {
                 "Session name can't be 'session'. Please use a different name."
             );
         }
-        const directory = resolve(sessionName);
-        const legacyDirectory = resolve("./" + sessionName);
+        const directory = fs.resolve(sessionName);
+        const legacyDirectory = fs.resolve("./" + sessionName);
         this.store = store.area(
             sessionName,
-            new LocalStorage(isAbsolute(sessionName) && !existsSync(directory) && existsSync(legacyDirectory)
+            storage.open(fs.isAbsolute(sessionName) && !fs.exists(directory) && fs.exists(legacyDirectory)
                 ? legacyDirectory
                 : directory)
         );

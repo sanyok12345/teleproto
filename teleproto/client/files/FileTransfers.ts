@@ -1,4 +1,4 @@
-import { setTimeout as sleep } from "node:timers/promises";
+import { timers } from "../../platform";
 import { Api } from "../../tl";
 import { FileMigrateError, MediaAbortError } from "../../errors";
 import type { TelegramBaseClient } from "../TelegramBaseClient";
@@ -216,7 +216,7 @@ export class FileTransfers {
                         this.client._log.info(`Telegram limits ${kind} speed for accounts without Premium, waiting ${flood}s between parts`);
                     }
                     try {
-                        await sleep(flood * 1000, undefined, { signal });
+                        await timers.sleep(flood * 1000, { signal });
                     } catch {
                         throw new MediaAbortError();
                     }
@@ -234,7 +234,7 @@ export class FileTransfers {
                 waited += delayS * 1000;
                 this.client._log.debug(`${kind} part on dc ${dcId} retries in ${delayS}s: ${(error as Error).message}`);
                 try {
-                    await sleep(delayS * 1000, undefined, { signal });
+                    await timers.sleep(delayS * 1000, { signal });
                 } catch {
                     throw new MediaAbortError();
                 }

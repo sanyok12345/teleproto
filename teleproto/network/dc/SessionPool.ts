@@ -1,4 +1,4 @@
-import { setTimeout as sleep } from "node:timers/promises";
+import { timers } from "../../platform";
 import { AuthKey } from "../../crypto/AuthKey";
 import type { TelegramBaseClient } from "../../client/TelegramBaseClient";
 import { tempKeyLifetime } from "../mtproto/tempKeyBinding";
@@ -104,7 +104,7 @@ export class SessionPool {
         const gap = this.opts.sessionStartupDelayMs;
         const last = this.lastStartAt.get(shiftedDcId) ?? 0;
         const wait = gap - (Date.now() - last);
-        if (gap > 0 && last > 0 && wait > 0) await sleep(wait);
+        if (gap > 0 && last > 0 && wait > 0) await timers.sleep(wait);
         try {
             const dcId = dc.dcId;
             const sessionKey = this.client.session.getAuthKey(dcId)?.getKey();

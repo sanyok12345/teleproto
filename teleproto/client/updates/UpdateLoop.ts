@@ -1,4 +1,4 @@
-import { setTimeout as delay } from "node:timers/promises";
+import { timers } from "../../platform";
 import type { TelegramClient } from "../TelegramClient";
 
 const STALE_CHECK_INTERVAL_MS = 9000;
@@ -32,7 +32,7 @@ export class UpdateLoop {
 
         while (active()) {
             try {
-                await delay(STALE_CHECK_INTERVAL_MS, undefined, { signal: controller.signal, ref: false });
+                await timers.sleep(STALE_CHECK_INTERVAL_MS, { signal: controller.signal, ref: false });
             } catch {
                 break;
             }

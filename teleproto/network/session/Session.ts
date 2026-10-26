@@ -1,5 +1,5 @@
 import bigInt from "big-integer";
-import { setTimeout as sleep } from "node:timers/promises";
+import { timers } from "../../platform";
 import { AuthKey } from "../../crypto/AuthKey";
 import { Api } from "../../tl";
 import { LAYER } from "../../tl/runtime/Registry";
@@ -477,7 +477,7 @@ export class Session implements LinkHost, RouterHost {
     private async wait(ms: number, signal: AbortSignal): Promise<boolean> {
         if (ms <= 0) return !signal.aborted;
         try {
-            await sleep(ms, undefined, { signal });
+            await timers.sleep(ms, { signal });
             return true;
         } catch {
             return false;

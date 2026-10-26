@@ -1,10 +1,9 @@
 import { setMaxListeners } from "node:events";
 import { isIP } from "node:net";
-import { setTimeout as delay } from "node:timers/promises";
 import type { Connection } from "../connection/Connection";
 import type { SocketInterface, SocketFactory } from "./socket/types";
 import { ByteQueue } from "./socket/ByteStream";
-import { crypto } from "../../platform";
+import { crypto, timers } from "../../platform";
 import { mtproxyConnection, parseProxySecret } from "./MTProxyTransport";
 import { Transport, ownFraming, type ResolvedTransport } from "./Transport";
 
@@ -355,7 +354,7 @@ class RelayTransport {
                     if (!this.isLanes() || !lane.id || response.body.length || this.streams.has(lane.id)) throw new Error("Invalid WEB proxy lane closure");
                     this.finishLane(lane); return;
                 }
-                if (response.status === 204) await delay(10, undefined, { signal: lane.controller.signal });
+                if (response.status === 204) await timers.sleep(10, { signal: lane.controller.signal });
             }
         })().catch(error => { if (!lane.closed) this.fail(error instanceof Error ? error : closedError()); });
     }
@@ -543,7 +542,7 @@ class RelayTransport {
                 clearTimeout(timer); this.controller.signal.removeEventListener("abort", abort); signal?.removeEventListener("abort", abort);
             }
             if (Date.now() + wait >= deadline) throw new Error("WEB proxy HTTP retry deadline exceeded");
-            await delay(wait, undefined, { signal: this.controller.signal });
+            await timers.sleep(wait, { signal: this.controller.signal });
         }
         throw closedError();
     }

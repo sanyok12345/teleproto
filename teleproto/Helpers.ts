@@ -1,7 +1,7 @@
 import bigInt from "big-integer";
 import type { EntityLike } from "./define";
 import type { Api } from "./tl";
-import { compression, crypto } from "./platform";
+import { compression, crypto, timers } from "./platform";
 
 export function asBuffer(bytes: Uint8Array): Buffer {
     return Buffer.from(bytes.buffer, bytes.byteOffset, bytes.byteLength);
@@ -487,10 +487,7 @@ export function getRandomInt(min: number, max: number): number {
  * @param isUnref make a timer unref'ed
  * @returns {Promise}
  */
-export const sleep = (ms: number, isUnref: boolean = false) =>
-    new Promise((resolve) =>
-        isUnref ? setTimeout(resolve, ms).unref() : setTimeout(resolve, ms)
-    );
+export const sleep = (ms: number, isUnref: boolean = false): Promise<unknown> => timers.sleep(ms, { ref: !isUnref });
 
 /**
  * Helper to export two buffers of same length

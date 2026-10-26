@@ -171,6 +171,15 @@ function fieldReadExpression(field: FieldDef, index: number): string {
     return `readField(context, reader, fields[${index}])`;
 }
 
+function interpretFieldsReader(context: CodecContext, fields: FieldDef[]): FieldsReader {
+    return (reader, target) => {
+        for (const field of fields) {
+            const set = !field.isFlag || ((target[fields[field.flagField].name] as number) & (1 << field.flagBit)) !== 0;
+            target[field.name] = field.type === "true" ? set : set ? readField(context, reader, field) : null;
+        }
+    };
+}
+
 export function compileFieldsReader(context: CodecContext, fields: FieldDef[]): FieldsReader {
     const lines = fields.map((field, index) => {
         const target = `target[${JSON.stringify(field.name)}]`;
@@ -180,14 +189,24 @@ export function compileFieldsReader(context: CodecContext, fields: FieldDef[]): 
             ? `${target} = ${set};`
             : `${target} = ${set} ? ${fieldReadExpression(field, index)} : null;`;
     });
-    return new Function("readField", "context", "fields", `return function read(reader, target) {\n${lines.join("\n")}\n};`)(
-        readField,
-        context,
-        fields
-    ) as FieldsReader;
+    try {
+        return new Function("readField", "context", "fields", `return function read(reader, target) {\n${lines.join("\n")}\n};`)(
+            readField,
+            context,
+            fields
+        ) as FieldsReader;
+    } catch {
+        return interpretFieldsReader(context, fields);
+    }
 }
 
 export function compileFieldsCopier(fields: FieldDef[]): FieldsCopier {
     const lines = fields.map((field) => `target[${JSON.stringify(field.name)}] = source[${JSON.stringify(field.name)}];`);
-    return new Function("target", "source", lines.join("\n")) as FieldsCopier;
+    try {
+        return new Function("target", "source", lines.join("\n")) as FieldsCopier;
+    } catch {
+        return (target, source) => {
+            for (const field of fields) target[field.name] = source[field.name];
+        };
+    }
 }

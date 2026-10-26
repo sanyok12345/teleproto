@@ -450,6 +450,7 @@ export class ChannelUpdates {
         clearTimeout(tracker.retryTimer);
         tracker.pollTimer = tracker.retryTimer = tracker.nextPollAt = undefined;
         let failed = false;
+        let reset = false;
         let serverTimeoutS: number | undefined;
         try {
             const inputChannel = await this.resolve(channelId, tracker);
@@ -490,14 +491,32 @@ export class ChannelUpdates {
                 this.drop(channelId);
                 return;
             }
+            if (message === "PERSISTENT_TIMESTAMP_INVALID") reset = true;
             failed = true;
             this.client._log.warn(`updates.getChannelDifference for ${channelId} failed: ${error}`);
         } finally {
             if (current()) tracker.pts.setRequesting(false);
         }
         if (!current()) return;
+        if (reset) await this.resetPts(channelId, tracker, current);
+        if (!current()) return;
         if (failed) this.scheduleRetry(channelId, tracker);
         else this.schedulePoll(channelId, tracker, serverTimeoutS);
+    }
+
+    private async resetPts(channelId: string, tracker: ChannelTracker, current: () => boolean) {
+        this.stored.delete(channelId);
+        const inputChannel = tracker.inputChannel;
+        if (!inputChannel) return;
+        try {
+            const pts = await this.probePts(channelId, inputChannel);
+            if (!current()) return;
+            this.client._log.info(`Channel ${channelId} pts was reset to ${pts}`);
+            tracker.pts.init(pts, true);
+            this.host.saveState();
+        } catch (error) {
+            if (current()) this.client._log.warn(`Cannot reset pts of channel ${channelId}: ${error}`);
+        }
     }
 
     private async applyDifference(

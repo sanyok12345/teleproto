@@ -1,5 +1,4 @@
 import bigInt from "big-integer";
-import { setMaxListeners } from "events";
 import { Api } from "../../tl";
 import type { EntityLike } from "../../define";
 import type { TelegramClient } from "../TelegramClient";
@@ -7,6 +6,7 @@ import type { EventBuilder } from "../../events/common";
 import { _intoIdSet } from "../../events/common";
 import { getPeerId } from "../../Utils";
 import { isArrayLike } from "../../Helpers";
+import { events } from "../../platform";
 import type { UpdateState, ChannelPollingState } from "./UpdateManager";
 import { UpdateConnectionState } from "../../network";
 import { UpdateContext, type WithUpdateContext } from "./UpdateContext";
@@ -783,6 +783,6 @@ async function runChain(
 
 function watchController(): AbortController {
     const controller = new AbortController();
-    setMaxListeners(0, controller.signal);
+    events.setMaxListeners(0, controller.signal);
     return controller;
 }

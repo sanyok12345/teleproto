@@ -1,9 +1,8 @@
-import { setMaxListeners } from "node:events";
 import { isIP } from "node:net";
 import type { Connection } from "../connection/Connection";
 import type { SocketInterface, SocketFactory } from "./socket/types";
 import { ByteQueue } from "./socket/ByteStream";
-import { crypto, timers } from "../../platform";
+import { crypto, events, timers } from "../../platform";
 import { mtproxyConnection, parseProxySecret } from "./MTProxyTransport";
 import { Transport, ownFraming, type ResolvedTransport } from "./Transport";
 
@@ -154,7 +153,7 @@ class RelayTransport {
     private wsTimer?: ReturnType<typeof setTimeout>;
 
     constructor(readonly config: Configuration) {
-        setMaxListeners(config.maxStreams * 3 + 16, this.controller.signal);
+        events.setMaxListeners(config.maxStreams * 3 + 16, this.controller.signal);
     }
 
     async open(stream: RelaySocket): Promise<void> {

@@ -4,11 +4,11 @@ import type { SocketFactory as LegacySocketFactory } from "../compat/extensions/
 import { isLegacyProxyConnection } from "../compat/network/connection/TCPMTProxy";
 import type { TelegramClient } from "./TelegramClient";
 import { version } from "../Version";
+import { system } from "../platform";
 import { Session, StoreSession } from "../sessions";
 import { Logger } from "../extensions";
 import { Api } from "../tl";
 
-import os from "os";
 import { AuthKey } from "../crypto/AuthKey";
 import { addServerKey } from "../crypto/RSA";
 import { IGE } from "../crypto/IGE";
@@ -484,9 +484,9 @@ export abstract class TelegramBaseClient<S extends Session = Session> {
         this._initRequest = new Api.InitConnection({
             apiId: this.apiId,
             deviceModel:
-                clientParams.deviceModel || os.type().toString() || "Unknown",
+                clientParams.deviceModel || system.deviceModel() || "Unknown",
             systemVersion:
-                clientParams.systemVersion || os.release().toString() || "1.0",
+                clientParams.systemVersion || system.systemVersion() || "1.0",
             appVersion: clientParams.appVersion || "1.0",
             langCode: clientParams.langCode || clientParamsDefault.langCode,
             langPack: clientParams.langPack || "",

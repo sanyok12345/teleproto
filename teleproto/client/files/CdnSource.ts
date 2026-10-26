@@ -1,5 +1,5 @@
-import { createDecipheriv, createHash } from "node:crypto";
 import { Api } from "../../tl";
+import { crypto } from "../../platform";
 
 interface RangeHash {
     limit: number;
@@ -45,8 +45,12 @@ export class CdnSource {
     decrypt(offset: number, data: Buffer): Buffer {
         const iv = Buffer.from(this.iv);
         iv.writeUInt32BE((offset / 16) >>> 0, 12);
-        const decipher = createDecipheriv("aes-256-ctr", this.key, iv);
-        return Buffer.concat([decipher.update(data), decipher.final()]);
+        const cipher = crypto.aesCtr(this.key, iv);
+        try {
+            return cipher.update(data);
+        } finally {
+            cipher.dispose();
+        }
     }
 
     async verify(offset: number, data: Buffer): Promise<void> {
@@ -102,6 +106,6 @@ export class CdnSource {
     }
 
     private check(start: number, range: RangeHash, data: Buffer) {
-        if (!createHash("sha256").update(data).digest().equals(range.hash)) throw new CdnHashMismatchError(start);
+        if (!crypto.hash("sha256", data).equals(range.hash)) throw new CdnHashMismatchError(start);
     }
 }

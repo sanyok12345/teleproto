@@ -1,13 +1,11 @@
-import { generateKeyPairSync, randomInt } from "node:crypto";
-import { hmac } from "cifrante";
-
 import type { Connection, ConnectionInterfaceParams } from "../connection/Connection";
 import { ConnectionTCPObfuscated, ObfuscatedIO } from "../connection/Obfuscation";
 import { IntermediatePacketCodec, PaddedIntermediatePacketCodec } from "../connection/IntermediateCodec";
 import { NetSocket } from "./socket/NetSocket";
 import type { SocketInterface } from "./socket/types";
 import { ByteQueue } from "./socket/ByteStream";
-import { asBuffer, generateRandomBytes } from "../../Helpers";
+import { generateRandomBytes } from "../../Helpers";
+import { crypto } from "../../platform";
 import { Transport, ownFraming, type ResolvedTransport } from "./Transport";
 
 export interface MTProxyTransportOptions {
@@ -66,7 +64,7 @@ function hex(value: string): Buffer {
 
 function shuffle<T>(items: T[]): T[] {
     for (let i = items.length - 1; i > 0; i--) {
-        const j = randomInt(i + 1);
+        const j = crypto.randomInt(i + 1);
         [items[i], items[j]] = [items[j], items[i]];
     }
     return items;
@@ -81,16 +79,11 @@ function greaseValues(): Buffer {
     return grease;
 }
 
-function x25519Key(): Buffer {
-    const { publicKey } = generateKeyPairSync("x25519");
-    return Buffer.from(publicKey.export({ format: "jwk" }).x as string, "base64url");
-}
-
 function mlKem768Key(): Buffer {
     const key = Buffer.alloc(384 * 3 + 32);
     for (let i = 0; i < 384; i++) {
-        const a = randomInt(3329);
-        const b = randomInt(3329);
+        const a = crypto.randomInt(3329);
+        const b = crypto.randomInt(3329);
         key[i * 3] = a & 0xff;
         key[i * 3 + 1] = (a >> 8) + ((b & 0x0f) << 4);
         key[i * 3 + 2] = b >> 4;
@@ -121,9 +114,9 @@ function buildClientHello(domain: Buffer): Buffer {
             g(4),
             hex("00010011ec04c0"),
             mlKem768Key(),
-            x25519Key(),
+            crypto.x25519PublicKey(),
             hex("001d0020"),
-            x25519Key(),
+            crypto.x25519PublicKey(),
         ]),
         hex("44cd00050003026832"),
         Buffer.concat([
@@ -132,8 +125,8 @@ function buildClientHello(domain: Buffer): Buffer {
                 hex("0000010001"),
                 generateRandomBytes(1),
                 hex("0020"),
-                x25519Key(),
-                scope(generateRandomBytes(randomInt(4) * 32 + 144))
+                crypto.x25519PublicKey(),
+                scope(generateRandomBytes(crypto.randomInt(4) * 32 + 144))
             ),
         ]),
         hex("ff01000100"),
@@ -180,7 +173,7 @@ class FakeTlsSocket implements SocketInterface {
 
     async handshake(): Promise<void> {
         const hello = buildClientHello(this.domain);
-        const random = asBuffer(hmac.sha256.sync(this.secret, hello));
+        const random = crypto.hmac("sha256", this.secret, hello);
         const now = Math.floor(Date.now() / 1000);
         random.writeInt32LE(random.readInt32LE(28) ^ now, 28);
         random.copy(hello, RANDOM_OFFSET);
@@ -200,13 +193,7 @@ class FakeTlsSocket implements SocketInterface {
             serverResponse.subarray(RANDOM_OFFSET, RANDOM_OFFSET + RANDOM_LEN)
         );
         serverResponse.fill(0, RANDOM_OFFSET, RANDOM_OFFSET + RANDOM_LEN);
-        const expected = asBuffer(
-            hmac.sha256.sync
-                .create(this.secret)
-                .update(random)
-                .update(serverResponse)
-                .digest()
-        );
+        const expected = crypto.createHmac("sha256", this.secret).update(random).update(serverResponse).digest();
         if (!expected.equals(serverRandom)) {
             throw new Error("FakeTLS: response hash mismatch");
         }

@@ -1,5 +1,5 @@
-import { randomInt } from "node:crypto";
 import { generateRandomBytes } from "../../Helpers";
+import { crypto } from "../../platform";
 import { Connection, PacketCodec } from "./Connection";
 import { InvalidBufferError } from "../../errors";
 import type { PacketReader } from "../transport/socket/types";
@@ -42,7 +42,7 @@ export class PaddedIntermediatePacketCodec extends PacketCodec {
     static readonly obfuscateTag = PaddedIntermediatePacketCodec.tag;
 
     encodePacket(data: Buffer): Buffer {
-        const padding = randomInt(16);
+        const padding = crypto.randomInt(16);
         const packet = Buffer.allocUnsafe(4 + data.length + padding);
         packet.writeUInt32LE(data.length + padding, 0);
         data.copy(packet, 4);

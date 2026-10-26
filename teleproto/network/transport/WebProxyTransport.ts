@@ -1,11 +1,10 @@
 import { setMaxListeners } from "node:events";
 import { isIP } from "node:net";
 import { setTimeout as delay } from "node:timers/promises";
-import { hmac } from "cifrante";
 import type { Connection } from "../connection/Connection";
 import type { SocketInterface, SocketFactory } from "./socket/types";
 import { ByteQueue } from "./socket/ByteStream";
-import { asBuffer } from "../../Helpers";
+import { crypto } from "../../platform";
 import { mtproxyConnection, parseProxySecret } from "./MTProxyTransport";
 import { Transport, ownFraming, type ResolvedTransport } from "./Transport";
 
@@ -81,7 +80,7 @@ function configure(options: WebProxyOptions) {
     }
     if (maxStreams > 256) throw new Error("WEB proxy maxStreams cannot exceed 256");
     const context = path ? `tdesktop-web-proxy-bridge-v2\n${host}\n${path}` : `tdesktop-web-proxy-bridge-v1\n${host}`;
-    const capability = asBuffer(hmac.sha256.sync(secret, context)).toString("base64url");
+    const capability = crypto.hmac("sha256", secret, context).toString("base64url");
     return {
         host, base: `https://${host}/${path ? path + "/" : ""}`, secret: secret.toString("hex"), capability,
         connectTimeoutMs, requestTimeoutMs, maxStreams, webSocket: options.webSocket

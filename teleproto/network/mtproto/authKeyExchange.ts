@@ -20,7 +20,7 @@ import { IGE } from "../../crypto/IGE";
 import bigInt from "big-integer";
 import { Reader } from "../../tl/binary/Reader";
 import { AuthKey } from "../../crypto/AuthKey";
-import { math } from "cifrante";
+import { crypto } from "../../platform";
 
 const RETRIES = 20;
 
@@ -65,7 +65,7 @@ export function checkDhParams(prime: bigint, g: number, gA: bigint): void {
         throw new SecurityError(`g = ${g} does not generate a subgroup of prime order`);
     }
     if (!knownSafePrimes.has(prime)) {
-        if (!math.isSafePrime(prime)) {
+        if (!crypto.isSafePrime(prime)) {
             throw new SecurityError("dh_prime is not a safe prime");
         }
         knownSafePrimes.add(prime);

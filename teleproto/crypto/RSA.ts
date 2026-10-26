@@ -1,4 +1,3 @@
-import { createPublicKey } from "node:crypto";
 import bigInt from "big-integer";
 import {
     generateRandomBytes,
@@ -7,6 +6,7 @@ import {
     readBufferFromBigInt,
     sha1,
 } from "../Helpers";
+import { crypto } from "../platform";
 
 const PUBLIC_KEYS = [
     {
@@ -78,9 +78,7 @@ function tlBytes(data: Buffer): Buffer {
 }
 
 export async function addServerKey(pem: string): Promise<bigInt.BigInteger> {
-    const jwk = createPublicKey(pem).export({ format: "jwk" });
-    const n = Buffer.from(jwk.n!, "base64url");
-    const e = Buffer.from(jwk.e!, "base64url");
+    const { n, e } = crypto.rsaPublicKey(pem);
     const digest = await sha1(Buffer.concat([tlBytes(n), tlBytes(e)]));
     const fingerprint = readBigIntFromBuffer(digest.subarray(12, 20), true, true);
     _serverKeys.set(fingerprint.toString(), { n: readBigIntFromBuffer(n, false), e: readBigIntFromBuffer(e, false).toJSNumber() });

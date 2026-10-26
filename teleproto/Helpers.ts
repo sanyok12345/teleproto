@@ -1,9 +1,8 @@
 import bigInt from "big-integer";
 import type { EntityLike } from "./define";
 import type { Api } from "./tl";
-import crypto from "crypto";
 import zlib from "node:zlib";
-import { math, sha1 as hashSha1, sha256 as hashSha256 } from "cifrante";
+import { crypto } from "./platform";
 
 export function asBuffer(bytes: Uint8Array): Buffer {
     return Buffer.from(bytes.buffer, bytes.byteOffset, bytes.byteLength);
@@ -384,8 +383,7 @@ export function convertToLittle(buf: Buffer): Buffer {
  * @returns {Promise}
  */
 export function sha1(data: Buffer): Promise<Buffer> {
-    // @ts-ignore
-    return asBuffer(hashSha1.sync(data));
+    return crypto.hash("sha1", data) as unknown as Promise<Buffer>;
 }
 
 /**
@@ -394,8 +392,7 @@ export function sha1(data: Buffer): Promise<Buffer> {
  * @returns {Promise}
  */
 export function sha256(data: Buffer): Promise<Buffer> {
-    // @ts-ignore
-    return asBuffer(hashSha256.sync(data));
+    return crypto.hash("sha256", data) as unknown as Promise<Buffer>;
 }
 
 /**
@@ -413,15 +410,7 @@ export function modExp(
     if (b.lesserOrEquals(bigInt.zero)) {
         return bigInt.one;
     }
-    return bigInt(
-        math
-            .modPow(
-                BigInt(a.toString()),
-                BigInt(b.toString()),
-                BigInt(n.toString())
-            )
-            .toString()
-    );
+    return bigInt(crypto.modPow(BigInt(a.toString()), BigInt(b.toString()), BigInt(n.toString())).toString());
 }
 
 /**

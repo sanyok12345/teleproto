@@ -11,8 +11,7 @@ import { FileDownloader } from "../files/FileDownloader";
 import { transferKindFor } from "../files/FileTransfers";
 import { choosePartSize } from "../files/PartsManager";
 import { OrderedSink, openTarget, type DownloadTarget } from "../files/sinks";
-import { sha256 } from "cifrante";
-import { asBuffer } from "../../Helpers";
+import { crypto } from "../../platform";
 
 export interface progressCallback {
     (
@@ -82,7 +81,7 @@ class FileHashChecker {
             }
             if (!expected) return; // unsupported location or past EOF
             const block = data.subarray(o, Math.min(o + HASH_BLOCK, data.length));
-            const actual = asBuffer(sha256.sync(block));
+            const actual = crypto.hash("sha256", block);
             if (!actual.equals(expected)) {
                 throw new Error(
                     `File hash mismatch at offset ${abs} — corrupted part`

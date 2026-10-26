@@ -1,22 +1,18 @@
-import type { CtrState } from "cifrante";
-import { aes } from "cifrante";
-import { asBuffer } from "../Helpers";
+import { crypto, type CtrCipher } from "../platform";
 
 export class CTR {
-    private readonly state: CtrState;
+    private readonly state: CtrCipher;
 
     constructor(key: Buffer, iv: Buffer) {
         if (!Buffer.isBuffer(key) || !Buffer.isBuffer(iv) || iv.length !== 16) {
             throw new Error("Key and iv need to be a buffer");
         }
 
-        const cipher = aes.ctr(key);
-        this.state = cipher.create({ iv });
-        cipher.dispose();
+        this.state = crypto.aesCtr(key, iv);
     }
 
     encrypt(data: Uint8Array): Buffer {
-        return asBuffer(this.state.update(data));
+        return this.state.update(data);
     }
 
     encryptInPlace(data: Buffer): Buffer {

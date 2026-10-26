@@ -1,18 +1,12 @@
-import {
-    createCipheriv as nodeCreateCipheriv,
-    createDecipheriv as nodeCreateDecipheriv,
-    createHash as nodeCreateHash,
-    randomBytes as nodeRandomBytes,
-    pbkdf2Sync as nodePbkdf2Sync,
-} from 'node:crypto';
+import { crypto } from "../platform";
 
 export class CTR {
     private cipher: any;
     private decipher: any;
 
     constructor(key: Buffer, iv: Buffer, algorithm: string) {
-        this.cipher = nodeCreateCipheriv(algorithm, key, iv);
-        this.decipher = nodeCreateDecipheriv(algorithm, key, iv);
+        this.cipher = crypto.createCipher(algorithm, key, iv);
+        this.decipher = crypto.createDecipher(algorithm, key, iv);
     }
 
     update(plainText: Buffer) {
@@ -43,14 +37,14 @@ export function createCipher(algorithm: string, key: Buffer, iv: Buffer) {
 }
 
 export function randomBytes(count: number): Buffer {
-    return nodeRandomBytes(count);
+    return crypto.randomBytes(count);
 }
 
 export class Hash {
     private readonly hash: any;
 
     constructor(algorithm: string) {
-        this.hash = nodeCreateHash(algorithm);
+        this.hash = crypto.createHash(algorithm);
     }
 
     update(data: Buffer) {
@@ -69,7 +63,7 @@ export function pbkdf2Sync(
     keylen: any,
     digest: any
 ): Buffer {
-    return nodePbkdf2Sync(password, salt, iterations, keylen, digest);
+    return crypto.pbkdf2Sync(password, salt, iterations, keylen, digest);
 }
 
 export function createHash(algorithm: string) {

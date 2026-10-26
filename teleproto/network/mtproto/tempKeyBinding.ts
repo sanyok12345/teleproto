@@ -1,21 +1,20 @@
-import { sha1 as hashSha1 } from "cifrante";
 import bigInt from "big-integer";
 import { Api } from "../../tl";
 import { AuthKey } from "../../crypto/AuthKey";
 import { IGE } from "../../crypto/IGE";
 import {
-    asBuffer,
     generateRandomBytes,
     generateRandomLong,
     toSignedLittleBuffer,
 } from "../../Helpers";
+import { crypto } from "../../platform";
 
 export function tempKeyLifetime(): number {
     return 23 * 3600 + Math.floor(Math.random() * 3600);
 }
 
 function sha1(data: Buffer): Buffer {
-    return asBuffer(hashSha1.sync(data));
+    return crypto.hash("sha1", data);
 }
 
 function calcKeyV1(authKey: Buffer, msgKey: Buffer): { key: Buffer; iv: Buffer } {

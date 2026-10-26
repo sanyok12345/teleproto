@@ -1,14 +1,12 @@
-import crypto from "node:crypto";
-import { sha256 } from "cifrante";
 import bigInt from "big-integer";
 import type { AuthKey } from "../../crypto/AuthKey";
 import {
-    asBuffer,
     generateRandomLong,
     readBigIntFromBuffer,
     readBufferFromBigInt,
     toSignedLittleBuffer,
 } from "../../Helpers";
+import { crypto } from "../../platform";
 import { Api } from "../../tl";
 import { GZIPPacked, TLMessage } from "../../tl/core";
 import { Reader } from "../../tl/binary/Reader";
@@ -78,8 +76,8 @@ export class SessionState {
 
     private calcKey(authKey: Buffer, msgKey: Buffer, client: boolean): { key: Buffer; iv: Buffer } {
         const x = client ? 0 : 8;
-        const a = asBuffer(sha256.sync.create().update(msgKey).update(authKey.subarray(x, x + 36)).digest());
-        const b = asBuffer(sha256.sync.create().update(authKey.subarray(x + 40, x + 76)).update(msgKey).digest());
+        const a = crypto.createHash("sha256").update(msgKey).update(authKey.subarray(x, x + 36)).digest();
+        const b = crypto.createHash("sha256").update(authKey.subarray(x + 40, x + 76)).update(msgKey).digest();
         const key = Buffer.allocUnsafe(32);
         a.copy(key, 0, 0, 8);
         b.copy(key, 8, 8, 24);
@@ -132,9 +130,9 @@ export class SessionState {
         toSignedLittleBuffer(this.salt, 8).copy(plain, 0);
         toSignedLittleBuffer(this.id, 8).copy(plain, 8);
         data.copy(plain, 16);
-        crypto.randomFillSync(plain, 16 + data.length, padLen);
+        crypto.randomFill(plain, 16 + data.length, padLen);
 
-        const msgKey = asBuffer(sha256.sync.create().update(authKey.subarray(88, 120)).update(plain).digest()).subarray(8, 24);
+        const msgKey = crypto.createHash("sha256").update(authKey.subarray(88, 120)).update(plain).digest().subarray(8, 24);
         const { iv, key } = this.calcKey(authKey, msgKey, true);
         readBufferFromBigInt(keyId, 8).copy(packet, 0);
         msgKey.copy(packet, 8);
@@ -160,7 +158,7 @@ export class SessionState {
         const plain = ige.decryptIge(encrypted, encrypted);
         ige.dispose();
 
-        const ourKey = asBuffer(sha256.sync.create().update(authKey.subarray(96, 128)).update(plain).digest());
+        const ourKey = crypto.createHash("sha256").update(authKey.subarray(96, 128)).update(plain).digest();
         if (!msgKey.equals(ourKey.subarray(8, 24))) {
             throw new SecurityError("Received msg_key doesn't match with expected one");
         }

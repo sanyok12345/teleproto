@@ -3,15 +3,13 @@ import type { TelegramClient } from "../TelegramClient";
 import { strippedPhotoToJpg } from "../../Utils";
 import { EntityLike, OutFile, ProgressCallback } from "../../define";
 import * as utils from "../../Utils";
-import * as fs from "fs";
-import path from "path";
 import bigInt from "big-integer";
 import { MediaAbortError } from "../../errors";
 import { FileDownloader } from "../files/FileDownloader";
 import { transferKindFor } from "../files/FileTransfers";
 import { choosePartSize } from "../files/PartsManager";
 import { OrderedSink, openTarget, type DownloadTarget } from "../files/sinks";
-import { crypto } from "../../platform";
+import { crypto, fs } from "../../platform";
 
 export interface progressCallback {
     (
@@ -529,9 +527,9 @@ function getProperFilename(
         return file;
     }
 
-    if (fs.existsSync(file) && fs.lstatSync(file).isDirectory()) {
+    if (fs.isDirectory(file)) {
         let fullName = fileType + date + extension;
-        return path.join(file, fullName);
+        return fs.join(file, fullName);
     }
     return file;
 }

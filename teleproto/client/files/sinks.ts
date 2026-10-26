@@ -1,8 +1,7 @@
-import * as fs from "fs";
-import path from "path";
 import { Writer } from "../../tl/binary/Writer";
 import type { OutFile } from "../../define";
 import type { PartSink } from "./FileDownloader";
+import { fs, type FileHandle } from "../../platform";
 
 export interface DownloadTarget extends PartSink {
     close(): Promise<Buffer | string | undefined>;
@@ -13,12 +12,12 @@ type UserWriter = { write: Function; close?: Function; end?: Function };
 
 class FileTarget implements DownloadTarget {
     private constructor(
-        private readonly handle: fs.promises.FileHandle,
+        private readonly handle: FileHandle,
         private readonly filePath: string
     ) {}
 
     static async open(filePath: string): Promise<FileTarget> {
-        return new FileTarget(await fs.promises.open(filePath, "w"), filePath);
+        return new FileTarget(await fs.open(filePath, "w"), filePath);
     }
 
     async write(offset: number, data: Buffer) {
@@ -31,7 +30,7 @@ class FileTarget implements DownloadTarget {
 
     async close() {
         await this.handle.close();
-        return path.resolve(this.filePath);
+        return fs.resolve(this.filePath);
     }
 
     async abort() {
@@ -105,12 +104,12 @@ class WriterTarget implements DownloadTarget {
 
     async close() {
         const writer = this.writer;
-        if (writer instanceof fs.WriteStream) {
+        if (fs.isFileStream(writer)) {
             await new Promise<void>((resolve, reject) => {
                 writer.once("error", reject);
                 writer.end(() => resolve());
             });
-            return typeof writer.path === "string" ? path.resolve(writer.path) : Buffer.from(writer.path);
+            return typeof writer.path === "string" ? fs.resolve(writer.path) : Buffer.from(writer.path);
         }
         if (writer instanceof Writer) return writer.getValue();
         if (typeof writer.close === "function") await writer.close();
@@ -118,7 +117,7 @@ class WriterTarget implements DownloadTarget {
     }
 
     async abort() {
-        if (this.writer instanceof fs.WriteStream) this.writer.destroy();
+        if (fs.isFileStream(this.writer)) this.writer.destroy();
     }
 }
 

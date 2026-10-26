@@ -1,3 +1,6 @@
+const MAX_GAP_FACTOR = 8;
+const GAP_RECOVERY = 0.9;
+
 interface Job {
     channelId: string;
     run: () => Promise<unknown>;
@@ -19,11 +22,14 @@ export class ChannelScheduler {
     private running = false;
     private nextStartAt = 0;
     private pausedUntil = 0;
+    private gap: number;
 
     constructor(
         private readonly interval: number,
         private readonly concurrency: number,
-    ) {}
+    ) {
+        this.gap = interval;
+    }
 
     start(): void {
         this.running = true;
@@ -53,6 +59,7 @@ export class ChannelScheduler {
 
     pause(milliseconds: number): void {
         this.pausedUntil = Math.max(this.pausedUntil, Date.now() + milliseconds);
+        this.gap = Math.min(this.gap * 2, Math.max(this.interval, 1) * MAX_GAP_FACTOR);
         this.pump();
     }
 
@@ -61,6 +68,7 @@ export class ChannelScheduler {
             pendingRequests: this.queue.length,
             activeRequests: this.active.size,
             pausedUntil: this.pausedUntil > Date.now() ? this.pausedUntil : undefined,
+            requestInterval: this.gap,
         };
     }
 
@@ -90,11 +98,14 @@ export class ChannelScheduler {
         }
         const [job] = this.queue.splice(index, 1);
         this.active.add(job);
-        this.nextStartAt = Date.now() + this.interval;
+        this.nextStartAt = Date.now() + this.gap;
         void Promise.resolve().then(() => {
             if (!this.running || !this.active.has(job)) throw new ChannelPollCancelledError();
             return job.run();
-        }).then(job.resolve, job.reject).finally(() => {
+        }).then((value) => {
+            this.gap = Math.max(this.interval, this.gap * GAP_RECOVERY);
+            job.resolve(value);
+        }, job.reject).finally(() => {
             this.active.delete(job);
             this.pump();
         });

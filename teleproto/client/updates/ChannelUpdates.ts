@@ -19,6 +19,7 @@ export interface ChannelPollingState {
     pendingRequests: number;
     activeRequests: number;
     pausedUntil?: number;
+    requestInterval?: number;
     channels: {
         channelId: string;
         lastPolledAt?: number;

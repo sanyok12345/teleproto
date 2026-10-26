@@ -14,6 +14,7 @@ import {
 
 const DIFFERENCE_LIMIT_USER = 100;
 const DIFFERENCE_LIMIT_BOT = 100_000;
+const FLOOD_WAIT = /^FLOOD_(?:PREMIUM_)?WAIT(?:_|$)/;
 
 export interface ChannelPollingState {
     pendingRequests: number;
@@ -277,6 +278,13 @@ export class ChannelUpdates {
 
     private invoke<R extends Api.AnyRequest>(channelId: string, create: () => R): Promise<R["__response"]> {
         const generation = this.host.generation;
+        return this.schedule(channelId, create, generation).catch((error) => {
+            if (!FLOOD_WAIT.test((error as { errorMessage?: string })?.errorMessage ?? "") || !this.host.isCurrent(generation)) throw error;
+            return this.invoke(channelId, create);
+        });
+    }
+
+    private schedule<R extends Api.AnyRequest>(channelId: string, create: () => R, generation: number): Promise<R["__response"]> {
         const queuedAt = Date.now();
         return this.scheduler.schedule(channelId, async () => {
             if (!this.host.isCurrent(generation)) throw new ChannelPollCancelledError();
@@ -295,7 +303,7 @@ export class ChannelUpdates {
                 if (this.host.isCurrent(generation)) {
                     this.client.updates._suspendAuthorization(error);
                     const flood = error as { errorMessage?: string; seconds?: number };
-                    if (/^FLOOD_(?:PREMIUM_)?WAIT(?:_|$)/.test(flood.errorMessage ?? "")) this.handleFloodWait(request, flood.seconds ?? 0);
+                    if (FLOOD_WAIT.test(flood.errorMessage ?? "")) this.handleFloodWait(request, flood.seconds ?? 0);
                 }
                 throw error;
             } finally {

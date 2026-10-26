@@ -1,11 +1,9 @@
-import * as http from "node:http";
-import * as https from "node:https";
-import type * as net from "node:net";
 import type { Connection } from "../connection/Connection";
 import { ConnectionTCPObfuscated } from "../connection/Obfuscation";
 import { NetSocket } from "./socket/NetSocket";
 import { ProxyRejectedError } from "../../errors/ProxyRejectedError";
 import { Transport, type ResolvedTransport } from "./Transport";
+import { net } from "../../platform";
 
 export interface HttpProxyTransportOptions {
     host: string;
@@ -19,7 +17,7 @@ export interface HttpProxyTransportOptions {
     timeout?: number;
 }
 
-function openHttpTunnel(
+async function openHttpTunnel(
     options: HttpProxyTransportOptions,
     ip: string,
     port: number
@@ -31,37 +29,22 @@ function openHttpTunnel(
         headers["Proxy-Authorization"] = `Basic ${Buffer.from(credentials).toString("base64")}`;
     }
     const seconds = options.timeout || 5;
-    const request = (options.tls ? https : http).request({
+    const response = await net.httpConnect({
         host: options.host,
         port: options.port,
-        method: "CONNECT",
-        path: target,
+        tls: !!options.tls,
+        target,
         headers,
-        agent: false,
+        timeoutMs: seconds * 1000,
+        timeoutError: () => new Error(`HTTP proxy ${options.host}:${options.port} did not answer within ${seconds}s`),
     });
-    return new Promise((resolve, reject) => {
-        const timer = setTimeout(() => {
-            request.destroy(
-                new Error(`HTTP proxy ${options.host}:${options.port} did not answer within ${seconds}s`)
-            );
-        }, seconds * 1000);
-        request.once("connect", (response, socket, head) => {
-            clearTimeout(timer);
-            if (response.statusCode !== 200) {
-                socket.destroy();
-                const message = `HTTP proxy refused CONNECT to ${target}: ${response.statusCode} ${response.statusMessage ?? ""}`.trim();
-                const permanent = response.statusCode === 407 || response.statusCode === 403;
-                reject(permanent ? new ProxyRejectedError(message) : new Error(message));
-                return;
-            }
-            resolve({ socket, head });
-        });
-        request.once("error", (error) => {
-            clearTimeout(timer);
-            reject(error);
-        });
-        request.end();
-    });
+    if (response.statusCode !== 200) {
+        response.socket.destroy();
+        const message = `HTTP proxy refused CONNECT to ${target}: ${response.statusCode} ${response.statusMessage ?? ""}`.trim();
+        const permanent = response.statusCode === 407 || response.statusCode === 403;
+        throw permanent ? new ProxyRejectedError(message) : new Error(message);
+    }
+    return { socket: response.socket, head: response.head };
 }
 
 /** Connects to Telegram through an HTTP proxy that supports CONNECT tunnels. */

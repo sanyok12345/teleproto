@@ -1,8 +1,7 @@
-import { isIP } from "node:net";
 import type { Connection } from "../connection/Connection";
 import type { SocketInterface, SocketFactory } from "./socket/types";
 import { ByteQueue } from "./socket/ByteStream";
-import { crypto, events, timers } from "../../platform";
+import { crypto, events, net, timers } from "../../platform";
 import { mtproxyConnection, parseProxySecret } from "./MTProxyTransport";
 import { Transport, ownFraming, type ResolvedTransport } from "./Transport";
 
@@ -53,7 +52,7 @@ function configure(options: WebProxyOptions) {
         throw new Error("WEB proxy requires a hostname and optional canonical base path");
     }
     const host = new URL(`https://${hostInput}`).hostname;
-    if (isIP(host) || host.length > 253 || !host.includes(".") ||
+    if (net.isIP(host) || host.length > 253 || !host.includes(".") ||
         !host.split(".").every(label => /^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/.test(label))) {
         throw new Error("WEB proxy requires a DNS hostname");
     }

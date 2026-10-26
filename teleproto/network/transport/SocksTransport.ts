@@ -1,10 +1,9 @@
-import type * as net from "node:net";
-import { SocksClient } from "socks";
 import type { Connection } from "../connection/Connection";
 import { ConnectionTCPObfuscated } from "../connection/Obfuscation";
 import { NetSocket } from "./socket/NetSocket";
 import { ProxyRejectedError } from "../../errors/ProxyRejectedError";
 import { Transport, type ResolvedTransport } from "./Transport";
+import { net } from "../../platform";
 
 export interface SocksTransportOptions {
     host: string;
@@ -24,19 +23,16 @@ export async function openSocksTunnel(
     port: number
 ): Promise<{ socket: net.Socket }> {
     try {
-        const info = await SocksClient.createConnection({
-            proxy: {
-                host: options.host,
-                port: options.port,
-                type: options.version,
-                userId: options.username,
-                password: options.password,
-            },
-            command: "connect",
-            timeout: (options.timeout || 5) * 1000,
+        const socket = await net.socksConnect({
+            host: options.host,
+            port: options.port,
+            version: options.version,
+            username: options.username,
+            password: options.password,
+            timeoutMs: (options.timeout || 5) * 1000,
             destination: { host: ip, port },
         });
-        return { socket: info.socket };
+        return { socket };
     } catch (error) {
         if (error instanceof Error && /Authentication failed/i.test(error.message)) {
             throw new ProxyRejectedError(

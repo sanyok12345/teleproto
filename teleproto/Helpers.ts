@@ -1,8 +1,7 @@
 import bigInt from "big-integer";
 import type { EntityLike } from "./define";
 import type { Api } from "./tl";
-import zlib from "node:zlib";
-import { crypto } from "./platform";
+import { compression, crypto } from "./platform";
 
 export function asBuffer(bytes: Uint8Array): Buffer {
     return Buffer.from(bytes.buffer, bytes.byteOffset, bytes.byteLength);
@@ -506,43 +505,8 @@ export function bufferXor(a: Buffer, b: Buffer): Buffer {
     return Buffer.from(res);
 }
 
-// Taken from https://stackoverflow.com/questions/18638900/javascript-crc32/18639999#18639999
-function makeCRCTable() {
-    let c;
-    const crcTable = [];
-    for (let n = 0; n < 256; n++) {
-        c = n;
-        for (let k = 0; k < 8; k++) {
-            c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1;
-        }
-        crcTable[n] = c;
-    }
-    return crcTable;
-}
-
-let crcTable: number[] | undefined = undefined;
-
-const nativeCrc32 = (
-    zlib as { crc32?: (data: Buffer | string, value?: number) => number }
-).crc32;
-
 export function crc32(buf: Buffer | string, previous = 0) {
-    if (nativeCrc32) {
-        return nativeCrc32(buf, previous) >>> 0;
-    }
-    if (!crcTable) {
-        crcTable = makeCRCTable();
-    }
-    if (!Buffer.isBuffer(buf)) {
-        buf = Buffer.from(buf);
-    }
-    let crc = previous ^ -1;
-
-    for (let index = 0; index < buf.length; index++) {
-        const byte = buf[index];
-        crc = crcTable[(crc ^ byte) & 0xff] ^ (crc >>> 8);
-    }
-    return (crc ^ -1) >>> 0;
+    return compression.crc32(buf, previous);
 }
 
 const unionIdCache = new Map<string, number>();

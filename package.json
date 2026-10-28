@@ -527,7 +527,6 @@
         "cifrante": "0.6.0",
         "mime": "^3.0.0",
         "node-localstorage": "^2.2.1",
-        "socks": "^2.6.2",
-        "store2": "^2.13.0"
+        "socks": "^2.6.2"
     }
 }

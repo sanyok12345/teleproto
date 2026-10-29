@@ -32,6 +32,7 @@ const MAX_PENDING_ACKS = 100;
 const STUCK_QUERY_S = 60;
 const MAX_IDS_PER_MESSAGE = 8192;
 const TEMP_KEY_REFRESH_MARGIN_S = 3600;
+const THROTTLE_HOLD_MS = 90_000;
 
 export type ConnectionBreakReason = "disconnected" | "rekey" | "auth-broken";
 
@@ -115,6 +116,7 @@ export class Session implements LinkHost, RouterHost {
     private rtt = 0;
     private jitter = 0;
     private online = false;
+    private throttledUntil = 0;
     private lastActivityAt = 0;
 
     constructor(authKey: AuthKey | undefined, opts: SessionOptions) {
@@ -456,6 +458,7 @@ export class Session implements LinkHost, RouterHost {
         const wasDead = this.status === "dead";
         const run = this.run;
         this.status = "dead";
+        run?.ready.reject(error);
         this.endRun();
         const link = this.link;
         this.link = undefined;
@@ -464,7 +467,6 @@ export class Session implements LinkHost, RouterHost {
         if (broken) this.announceState(UpdateConnectionState.broken);
         if (!this.isMain && !wasDead) this.opts.onConnectionBreak?.(this.dcId, reason);
         this.failAll(error);
-        run?.ready.reject(error);
     }
 
     private endRun() {
@@ -618,8 +620,8 @@ export class Session implements LinkHost, RouterHost {
         link.lastPingAt = 0;
     }
 
-    private timers(_now: number) {
-        const online = this.online;
+    private timers(now: number) {
+        const online = this.online && now >= this.throttledUntil;
         const rtt = Math.max(2, this.rtt * 1.5 + 1);
         const offline = 135 + this.jitter;
         return {
@@ -635,11 +637,12 @@ export class Session implements LinkHost, RouterHost {
         return link.lastPingAt === 0 || now - link.lastPingAt > this.timers(now).pingMay * 1000;
     }
 
-    tick(link: SessionLink, now: number) {
+    tick(link: SessionLink, now: number, stalled: boolean) {
         if (this.tempKey?.bound && this.serverNow() >= this.tempKey.expiresAt - TEMP_KEY_REFRESH_MARGIN_S) {
             this.log.info(`Temporary key for dc ${this.dcId} is about to expire, renewing it`);
             return link.close("restart");
         }
+        if (stalled) return this.resume(link, now);
         const online = this.wantsOnline(now);
         if (online !== this.online) this.setOnline(link, online, now);
         const timers = this.timers(now);
@@ -658,6 +661,19 @@ export class Session implements LinkHost, RouterHost {
         }
         if (!link.gated && (link.lastPingAt === 0 || now - link.lastPingAt > timers.pingMust * 1000)) this.sendPing(link);
         if (this.acks.length && this.acksDue(now)) this.queue.notify();
+    }
+
+    private resume(link: SessionLink, now: number) {
+        this.throttledUntil = now + THROTTLE_HOLD_MS;
+        const timers = this.timers(now);
+        const unanswered = link.lastPingAt > link.lastPongAt;
+        if (unanswered && now - link.lastPingAt > timers.pingDisconnect * 1000) {
+            return link.close("lost", new Error(`Ping got no answer for ${((now - link.lastPingAt) / 1000).toFixed(1)}s while timers were suspended`));
+        }
+        this.log.debug(`Timers on dc ${this.dcId} were suspended, checking the connection with a ping`);
+        link.lastPongAt = Math.max(link.lastPongAt, now - (timers.pingDisconnect - timers.rtt) * 1000);
+        link.markRead(Math.max(link.lastReadAt, now - (timers.readDisconnect - timers.rtt) * 1000));
+        if (!link.gated && !unanswered) this.sendPing(link);
     }
 
     wake() {

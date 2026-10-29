@@ -3,6 +3,7 @@ import type { RequestState } from "../mtproto/RequestState";
 import { InvalidBufferError } from "../../errors";
 
 const TICK_MS = 1_000;
+const STALL_MS = 5_000;
 
 export type LinkCloseReason = "lost" | "bad-key" | "flood" | "restart";
 
@@ -21,7 +22,7 @@ export interface LinkHost {
     onSent(link: SessionLink, packet: OutgoingPacket): void;
     onSendFailed(packet: OutgoingPacket): void;
     receive(link: SessionLink, body: Buffer): Promise<void>;
-    tick(link: SessionLink, now: number): void;
+    tick(link: SessionLink, now: number, stalled: boolean): void;
     wake(): void;
 }
 
@@ -42,6 +43,7 @@ export class SessionLink {
     private readMark = Date.now();
     private markedAt = Date.now();
     private replyDeadline = 0;
+    private lastTickAt = Date.now();
     private timer?: ReturnType<typeof setInterval>;
     private closeInfo?: LinkClose;
     private resolveClosed!: (info: LinkClose) => void;
@@ -71,7 +73,12 @@ export class SessionLink {
     }
 
     start() {
-        this.timer = setInterval(() => this.host.tick(this, Date.now()), TICK_MS);
+        this.timer = setInterval(() => {
+            const now = Date.now();
+            const stalled = now - this.lastTickAt > STALL_MS;
+            this.lastTickAt = now;
+            this.host.tick(this, now, stalled);
+        }, TICK_MS);
         this.timer.unref?.();
         void this.readLoop();
         void this.writeLoop();

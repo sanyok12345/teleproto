@@ -159,6 +159,11 @@ export interface ButtonClickParam {
     password?: string;
 }
 
+export interface CustomMessage {
+    /** @hidden */
+    getBytes(): Buffer;
+}
+
 /**
  * This custom class aggregates both {@link Api.Message} and {@link Api.MessageService} to ease accessing their members.<br/>
  * <br/>
@@ -358,10 +363,6 @@ export class CustomMessage extends SenderGetter {
     _sender?: any;
     /** @hidden */
     _entities?: Map<string, Entity>;
-    /** @hidden */
-
-    /* @ts-ignore */
-    getBytes(): Buffer;
 
     originalArgs: any;
 

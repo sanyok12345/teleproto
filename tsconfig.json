@@ -15,7 +15,10 @@
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "declaration": true,
-    "outDir": "./dist"
+    "outDir": "./dist",
+    "paths": {
+      "#platform/*": ["./teleproto/platform/*/node.ts"]
+    }
   },
   "exclude": [
     "dist",

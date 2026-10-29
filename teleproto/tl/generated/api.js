@@ -1,1 +1,3 @@
-module.exports = { Api: require("../runtime/Registry").registry.api };
+import { registry } from "../runtime/Registry";
+
+export const Api = registry.api;

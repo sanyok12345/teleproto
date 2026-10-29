@@ -1,5 +1,5 @@
 import bigInt from "big-integer";
-import compiledSchema from "../generated/schema";
+import * as compiledSchema from "../generated/schema";
 import { coreObjects } from "../core";
 import type { BareReader } from "./fieldCodec";
 import { defineClass, type ClassContext, type Fields, type TlBaseClass, type TlClass } from "./defineClass";

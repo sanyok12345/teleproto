@@ -226,7 +226,7 @@ function main(): void {
 
     fs.writeFileSync(
         path.resolve(root, "../teleproto/tl/generated/schema.js"),
-        `module.exports = JSON.parse(${JSON.stringify(JSON.stringify(encodeSchema(layer, definitions)))});\n`
+        `export const { layer, strings, definitions } = JSON.parse(${JSON.stringify(JSON.stringify(encodeSchema(layer, definitions)))});\n`
     );
 
     const facadeFunctions = JSON.parse(JSON.stringify(functions)) as TlDefinition[];
@@ -239,7 +239,7 @@ function main(): void {
 
     fs.writeFileSync(
         path.resolve(root, "../teleproto/tl/generated/api.js"),
-        "module.exports = { Api: require(\"../runtime/Registry\").registry.api };\n"
+        'import { registry } from "../runtime/Registry";\n\nexport const Api = registry.api;\n'
     );
 
     fs.writeFileSync(path.resolve(root, "../teleproto/tl/generated/api.d.ts"), dts);

@@ -1,7 +1,7 @@
 import bigInt from "big-integer";
 import type { EntityLike } from "./define";
 import type { Api } from "./tl";
-import { compression, crypto, timers } from "./platform";
+import { Buffer, compression, crypto, timers } from "./platform";
 
 export function asBuffer(bytes: Uint8Array): Buffer {
     return Buffer.from(bytes.buffer, bytes.byteOffset, bytes.byteLength);

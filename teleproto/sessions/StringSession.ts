@@ -1,6 +1,7 @@
 import { MemorySession } from "./Memory";
 import { Reader } from "../tl/binary/Reader";
 import { AuthKey } from "../crypto/AuthKey";
+import { Buffer } from "../platform";
 
 const CURRENT_VERSION = "1";
 

@@ -14,6 +14,7 @@ import {
 } from "./fieldCodec";
 import { castInput, inputCastOf, type TlClient, type TlUtils } from "./inputCasts";
 import type { ClassDef } from "./schema";
+import { Buffer } from "../../platform";
 
 const INSPECT_CUSTOM = Symbol.for("nodejs.util.inspect.custom");
 

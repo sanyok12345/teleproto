@@ -1,3 +1,5 @@
+import { Buffer } from "../buffer";
+
 export type BinaryInput = Uint8Array | string;
 
 export interface Hasher {

@@ -3,6 +3,7 @@ import { returnBigInt } from "../../Helpers";
 import type { Reader } from "../binary/Reader";
 import type { Writer } from "../binary/Writer";
 import type { FieldDef } from "./schema";
+import { Buffer } from "../../platform";
 
 const VECTOR_ID = 0x1cb5c415;
 const BOOL_TRUE = 0x997275b5;

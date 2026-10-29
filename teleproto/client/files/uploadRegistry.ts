@@ -1,5 +1,6 @@
 import type bigInt from "big-integer";
 import { Api } from "../../tl";
+import { Buffer } from "../../platform";
 
 export interface UploadSource {
     read(offset: number, length: number): Promise<Buffer>;

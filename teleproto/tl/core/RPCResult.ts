@@ -2,6 +2,7 @@ import type bigInt from "big-integer";
 import type { Api } from "../api";
 import type { Reader } from "../binary/Reader";
 import { GZIPPacked } from "./GZIPPacked";
+import { Buffer } from "../../platform";
 
 const RPC_ERROR_ID = 0x2144ca19;
 

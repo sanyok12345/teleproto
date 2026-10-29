@@ -1,7 +1,7 @@
 import type { Connection } from "../connection/Connection";
 import type { SocketInterface, SocketFactory } from "./socket/types";
 import { ByteQueue } from "./socket/ByteStream";
-import { crypto, events, net, timers } from "../../platform";
+import { Buffer, crypto, events, net, timers } from "../../platform";
 import { mtproxyConnection, parseProxySecret } from "./MTProxyTransport";
 import { Transport, ownFraming, type ResolvedTransport } from "./Transport";
 

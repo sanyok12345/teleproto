@@ -1,6 +1,7 @@
 import { Connection, PacketCodec } from "./Connection";
 import { InvalidBufferError } from "../../errors";
 import type { PacketReader } from "../transport/socket/types";
+import { Buffer } from "../../platform";
 
 const TRANSPORT_ERROR_HEADS = new Set([0x6c, 0x53, 0x44]);
 const TRANSPORT_ERROR_CODES = new Set([-404, -429, -444]);

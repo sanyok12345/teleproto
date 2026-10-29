@@ -6,7 +6,7 @@ import {
     readBufferFromBigInt,
     toSignedLittleBuffer,
 } from "../../Helpers";
-import { crypto } from "../../platform";
+import { Buffer, crypto } from "../../platform";
 import { Api } from "../../tl";
 import { GZIPPacked, TLMessage } from "../../tl/core";
 import { Reader } from "../../tl/binary/Reader";

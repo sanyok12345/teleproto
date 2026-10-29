@@ -7,7 +7,7 @@ import {
     generateRandomLong,
     toSignedLittleBuffer,
 } from "../../Helpers";
-import { crypto } from "../../platform";
+import { Buffer, crypto } from "../../platform";
 
 export function tempKeyLifetime(): number {
     return 23 * 3600 + Math.floor(Math.random() * 3600);

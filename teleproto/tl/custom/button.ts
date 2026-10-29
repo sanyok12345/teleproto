@@ -2,6 +2,7 @@ import type { ButtonLike, EntityLike } from "../../define";
 import { Api } from "../api";
 import { getInputUser } from "../../Utils";
 import type { BigInteger } from "big-integer";
+import { Buffer } from "../../platform";
 
 export class Button {
     public button: ButtonLike;

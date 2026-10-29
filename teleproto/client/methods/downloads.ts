@@ -9,7 +9,7 @@ import { FileDownloader } from "../files/FileDownloader";
 import { transferKindFor } from "../files/FileTransfers";
 import { choosePartSize } from "../files/PartsManager";
 import { OrderedSink, openTarget, type DownloadTarget } from "../files/sinks";
-import { crypto, fs } from "../../platform";
+import { Buffer, crypto, fs } from "../../platform";
 
 export interface progressCallback {
     (

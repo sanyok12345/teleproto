@@ -2,7 +2,7 @@ import { Api } from "../../tl";
 
 import type { TelegramClient } from "../TelegramClient";
 import { generateRandomLong, unionId } from "../../Helpers";
-import { crypto, fs } from "../../platform";
+import { Buffer, crypto, fs } from "../../platform";
 import { getInputMedia, getMessageId } from "../../Utils";
 import { EntityLike, FileLike, MarkupLike, MessageIDLike } from "../../define";
 import * as utils from "../../Utils";

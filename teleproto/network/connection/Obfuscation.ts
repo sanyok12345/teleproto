@@ -3,6 +3,7 @@ import { Connection } from "./Connection";
 import { IntermediatePacketCodec } from "./IntermediateCodec";
 import { CTR } from "../../crypto/CTR";
 import type { PacketReader, SocketInterface } from "../transport/socket/types";
+import { Buffer } from "../../platform";
 
 const FORBIDDEN_FIRST_INTS = new Set([
     0x44414548,

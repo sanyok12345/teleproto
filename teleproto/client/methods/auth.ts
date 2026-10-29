@@ -4,6 +4,7 @@ import { sleep } from "../../Helpers";
 import { computeCheck as computePasswordSrpCheck } from "../../Password";
 import { UnauthorizedError } from "../../errors";
 import type { TelegramClient } from "../TelegramClient";
+import { Buffer } from "../../platform";
 
 /**
  * Email verification options passed to the email callback.

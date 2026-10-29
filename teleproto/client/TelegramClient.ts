@@ -49,6 +49,7 @@ import { Album, AlbumEvent } from "../events/Album";
 import { CallbackQuery, CallbackQueryEvent } from "../events/CallbackQuery";
 import { EditedMessage, EditedMessageEvent } from "../events/EditedMessage";
 import { DeletedMessage, DeletedMessageEvent } from "../events/DeletedMessage";
+import { Buffer } from "../platform";
 
 /**
  * The TelegramClient uses several methods in different files to provide all the common functionality in a nice interface.</br>

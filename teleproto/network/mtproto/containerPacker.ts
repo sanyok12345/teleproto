@@ -2,6 +2,7 @@ import { Writer } from "../../tl/binary/Writer";
 import { MessageContainer, TLMessage } from "../../tl/core";
 import type { SessionState } from "./SessionState";
 import { expectsAnswer, type OutgoingObject, type RequestState } from "./RequestState";
+import { Buffer } from "../../platform";
 
 const MAX_MESSAGES = 1000;
 const MAX_CONTAINER_BYTES = 32 * 1024;

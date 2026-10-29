@@ -1,5 +1,5 @@
 import { Api } from "../../tl";
-import { crypto } from "../../platform";
+import { Buffer, crypto } from "../../platform";
 
 interface RangeHash {
     limit: number;

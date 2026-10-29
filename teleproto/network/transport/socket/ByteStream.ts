@@ -1,4 +1,5 @@
 import type { PacketReader } from "./types";
+import { Buffer } from "../../../platform";
 
 export class ByteQueue {
     private chunks: Buffer[] = [];

@@ -18,6 +18,7 @@ import * as rich from "../../richMessage";
 import { returnBigInt } from "../../Helpers";
 import { BigInteger } from "big-integer";
 import { MessageButton } from "./messageButton";
+import { Buffer } from "../../platform";
 
 interface MessageBaseInterface {
     id: any;

@@ -7,6 +7,7 @@ import {
 import { Reader } from "../tl/binary/Reader";
 import { sleep } from "../Helpers";
 import bigInt from "big-integer";
+import { Buffer } from "../platform";
 
 export class AuthKey {
     private _key?: Buffer;

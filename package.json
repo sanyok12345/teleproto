@@ -524,6 +524,7 @@
     },
     "dependencies": {
         "big-integer": "^1.6.48",
+        "buffer": "^6.0.3",
         "cifrante": "0.8.0",
         "mime": "^3.0.0",
         "node-localstorage": "^2.2.1",

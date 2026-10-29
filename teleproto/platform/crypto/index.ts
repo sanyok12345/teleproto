@@ -1,5 +1,6 @@
 import { aes, hmac as hmacs, kdf, math, md5, random, rsa, sha1, sha256, sha384, sha512, x25519, type Hash, type Hmac } from "cifrante";
 import type { BinaryInput, CtrCipher, Factors, Hasher, IgeCipher, RsaPublicKey, StreamCipher } from "./types";
+import { Buffer } from "../buffer";
 
 export type * from "./types";
 

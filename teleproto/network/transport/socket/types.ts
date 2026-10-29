@@ -1,3 +1,5 @@
+import { Buffer } from "../../../platform";
+
 export interface PacketReader {
     read(n: number): Promise<Buffer>;
     readExactly(n: number): Promise<Buffer>;

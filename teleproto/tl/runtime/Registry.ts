@@ -5,6 +5,7 @@ import type { BareReader } from "./fieldCodec";
 import { defineClass, type ClassContext, type Fields, type TlBaseClass, type TlClass } from "./defineClass";
 import { tlBases } from "./bases";
 import { decodeDefinition, definitionName, type CompactSchema } from "./schema";
+import { Buffer } from "../../platform";
 
 type ApiTree = Record<string, unknown>;
 

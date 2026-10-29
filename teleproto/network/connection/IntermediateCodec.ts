@@ -1,5 +1,5 @@
 import { generateRandomBytes } from "../../Helpers";
-import { crypto } from "../../platform";
+import { Buffer, crypto } from "../../platform";
 import { Connection, PacketCodec } from "./Connection";
 import { InvalidBufferError } from "../../errors";
 import type { PacketReader } from "../transport/socket/types";

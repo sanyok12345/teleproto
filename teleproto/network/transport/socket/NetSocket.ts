@@ -1,4 +1,4 @@
-import { net } from "../../../platform";
+import { Buffer, net } from "../../../platform";
 import { ByteStream, SocketClosedError } from "./ByteStream";
 import type { SocketInterface } from "./types";
 

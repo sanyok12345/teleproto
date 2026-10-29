@@ -1,5 +1,6 @@
 import type { ProxyInterface } from "../../client/TelegramBaseClient";
 import { WebSocketSocket } from "../../network/transport/socket/WebSocketSocket";
+import { Buffer } from "../../platform";
 
 const ALL = 0x7fffffff;
 

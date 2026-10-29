@@ -1,4 +1,4 @@
-import { crypto, type IgeCipher } from "../platform";
+import { Buffer, crypto, type IgeCipher } from "../platform";
 import { generateRandomBytes } from "../Helpers";
 
 const BLOCK_SIZE = 16;

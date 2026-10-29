@@ -1,5 +1,6 @@
 import { ByteStream, SocketClosedError } from "./ByteStream";
 import type { SocketInterface } from "./types";
+import { Buffer } from "../../../platform";
 
 interface WebSocketLike {
     binaryType: string;

@@ -5,6 +5,7 @@ import type { Entity, EntityLike, MessageIDLike } from "./define";
 import type { EntityCache } from "./entityCache";
 import { returnBigInt, unionId } from "./Helpers";
 import { Api } from "./tl/api";
+import { Buffer } from "./platform";
 
 export function getFileInfo(
     fileLocation:

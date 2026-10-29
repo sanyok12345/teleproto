@@ -1,6 +1,7 @@
 import type { Connection } from "../connection";
 import type { RequestState } from "../mtproto/RequestState";
 import { InvalidBufferError } from "../../errors";
+import { Buffer } from "../../platform";
 
 const TICK_MS = 1_000;
 const STALL_MS = 5_000;

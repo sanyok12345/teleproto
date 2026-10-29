@@ -5,7 +5,7 @@ import { NetSocket } from "./socket/NetSocket";
 import type { SocketInterface } from "./socket/types";
 import { ByteQueue } from "./socket/ByteStream";
 import { generateRandomBytes } from "../../Helpers";
-import { crypto } from "../../platform";
+import { Buffer, crypto } from "../../platform";
 import { Transport, ownFraming, type ResolvedTransport } from "./Transport";
 
 export interface MTProxyTransportOptions {

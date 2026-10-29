@@ -1,5 +1,6 @@
 import type { DateLike } from "../../define";
 import { Writer } from "./Writer";
+import { Buffer } from "../../platform";
 
 export function serializeBytes(data: Buffer | string): Buffer {
     if (typeof data !== "string" && !Buffer.isBuffer(data)) throw new Error(`Bytes or str expected, not ${typeof data}`);

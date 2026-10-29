@@ -2,7 +2,7 @@ import { MemorySession } from "./Memory";
 import type { StoredUpdateState } from "./Abstract";
 import { AuthKey } from "../crypto/AuthKey";
 import bigInt from "big-integer";
-import { fs, storage } from "../platform";
+import { Buffer, fs, storage } from "../platform";
 
 class JsonStore {
     constructor(private readonly area: Storage) {}

@@ -6,7 +6,7 @@ import {
     readBufferFromBigInt,
     sha1,
 } from "../Helpers";
-import { crypto } from "../platform";
+import { Buffer, crypto } from "../platform";
 
 const PUBLIC_KEYS = [
     {

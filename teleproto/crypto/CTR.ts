@@ -1,4 +1,4 @@
-import { crypto, type CtrCipher } from "../platform";
+import { Buffer, crypto, type CtrCipher } from "../platform";
 
 export class CTR {
     private readonly state: CtrCipher;

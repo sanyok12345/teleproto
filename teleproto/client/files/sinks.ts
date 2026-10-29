@@ -1,7 +1,7 @@
 import { Writer } from "../../tl/binary/Writer";
 import type { OutFile } from "../../define";
 import type { PartSink } from "./FileDownloader";
-import { fs, type FileHandle } from "../../platform";
+import { Buffer, fs, type FileHandle } from "../../platform";
 
 export interface DownloadTarget extends PartSink {
     close(): Promise<Buffer | string | undefined>;

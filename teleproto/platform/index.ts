@@ -1,3 +1,4 @@
+export { Buffer } from "./buffer";
 export * as compression from "./compression";
 export * as crypto from "./crypto";
 export * as events from "./events";

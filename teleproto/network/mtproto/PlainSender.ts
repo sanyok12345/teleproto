@@ -5,6 +5,7 @@ import { Reader } from "../../tl/binary/Reader";
 import type { Logger } from "../../extensions/Logger";
 import type { Connection } from "../connection/Connection";
 import { SessionState } from "./SessionState";
+import { Buffer } from "../../platform";
 
 export class PlainSender {
     private readonly state: SessionState;

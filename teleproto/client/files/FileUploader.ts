@@ -6,6 +6,7 @@ import type { FileTransfers } from "./FileTransfers";
 import { PartsManager, type Part } from "./PartsManager";
 import { ResourceState } from "./ResourceState";
 import type { ResourceConsumer, ResourceManager } from "./ResourceManager";
+import { Buffer } from "../../platform";
 
 export const BIG_FILE_SIZE = 10 * 1024 * 1024;
 

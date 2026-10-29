@@ -1,6 +1,7 @@
 import nodeFs from "node:fs";
 import nodePath from "node:path";
 import type { FileHandle, FileStream } from "./types";
+import { Buffer } from "../buffer";
 
 export function open(path: string, flags: "r" | "w"): Promise<FileHandle> {
     return nodeFs.promises.open(path, flags);

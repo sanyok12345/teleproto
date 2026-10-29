@@ -2,6 +2,7 @@ import bigInt, { type BigInteger } from "big-integer";
 import { TypeNotFoundError } from "../../errors/Common";
 import { readBigIntFromBuffer } from "../../Helpers";
 import { registry } from "../runtime/Registry";
+import { Buffer } from "../../platform";
 
 const BOOL_TRUE = 0x997275b5;
 const BOOL_FALSE = 0xbc799737;

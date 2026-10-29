@@ -2,6 +2,7 @@ import { Connection, PacketCodec } from "./Connection";
 import { crc32 } from "../../Helpers";
 import { InvalidBufferError, InvalidChecksumError } from "../../errors";
 import type { PacketReader } from "../transport/socket/types";
+import { Buffer } from "../../platform";
 
 export class FullPacketCodec extends PacketCodec {
     private sendCounter = 0;

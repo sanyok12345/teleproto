@@ -1,5 +1,5 @@
 import bigInt from "big-integer";
-import { timers } from "../../platform";
+import { Buffer, timers } from "../../platform";
 import { AuthKey } from "../../crypto/AuthKey";
 import { Api } from "../../tl";
 import { LAYER } from "../../tl/runtime/Registry";

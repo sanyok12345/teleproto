@@ -8,6 +8,7 @@ import { unionId } from "../../Helpers";
 import type { SessionState } from "./SessionState";
 import type { PendingRequests } from "./PendingRequests";
 import { readResult, RequestState } from "./RequestState";
+import { Buffer } from "../../platform";
 
 const UPDATES_ID = unionId("Updates");
 

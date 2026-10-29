@@ -1,3 +1,5 @@
+import { Buffer } from "../buffer";
+
 export interface TcpSocket {
     readonly destroyed: boolean;
     connect(port: number, host: string, listener: () => void): unknown;

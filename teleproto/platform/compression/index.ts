@@ -1,5 +1,6 @@
 import { crc32 as checksum, gzip as codec } from "cifrante";
 import { crc32 as seededCrc32 } from "./crc32";
+import { Buffer } from "../buffer";
 
 export type * from "./types";
 

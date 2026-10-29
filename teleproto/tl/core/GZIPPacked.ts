@@ -1,6 +1,6 @@
 import { Writer } from "../binary/Writer";
 import type { Reader } from "../binary/Reader";
-import { compression } from "../../platform";
+import { Buffer, compression } from "../../platform";
 
 const MIN_COMPRESS_SIZE = 128;
 const SAMPLE_FROM_SIZE = 16384;

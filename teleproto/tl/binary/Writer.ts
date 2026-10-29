@@ -1,5 +1,6 @@
 import type { BigInteger } from "big-integer";
 import { toSignedLittleBuffer } from "../../Helpers";
+import { Buffer } from "../../platform";
 
 const INITIAL_SIZE = 256;
 

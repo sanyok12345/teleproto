@@ -4,6 +4,7 @@ import { returnBigInt } from "../../Helpers";
 import { getInputUser } from "../../Utils";
 import { Api } from "../api";
 import { Button } from "./button";
+import { Buffer } from "../../platform";
 
 /** Background colour of a button, mapping to the `bg_*` flags of the schema. */
 export type ButtonColor = "primary" | "danger" | "success";

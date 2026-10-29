@@ -1,5 +1,6 @@
 import type { Logger } from "../../extensions/Logger";
 import type { PacketReader, SocketFactory, SocketInterface } from "../transport/socket/types";
+import { Buffer } from "../../platform";
 
 export interface ConnectionInterfaceParams {
     ip: string;

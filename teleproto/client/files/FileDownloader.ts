@@ -7,6 +7,7 @@ import type { FileTransfers, TransferKind } from "./FileTransfers";
 import { PartsManager, type Part } from "./PartsManager";
 import { ResourceState } from "./ResourceState";
 import type { ResourceConsumer, ResourceManager } from "./ResourceManager";
+import { Buffer } from "../../platform";
 
 const STAGGER_START_MS = 50;
 const STAGGER_MIN_MS = 3;

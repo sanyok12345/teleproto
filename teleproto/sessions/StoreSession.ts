@@ -25,10 +25,6 @@ class JsonStore {
         this.area.removeItem(key);
     }
 
-    clear(): void {
-        this.area.clear();
-    }
-
     each(visit: (key: string, value: any) => boolean | void): void {
         for (let i = 0, count = this.area.length; i < count; i++) {
             const key = this.area.key(i);
@@ -179,7 +175,11 @@ export class StoreSession extends MemorySession {
     }
 
     delete() {
-        this.store.clear();
+        const keys: string[] = [];
+        this.store.each((key) => {
+            if (key.startsWith(this.sessionName)) keys.push(key);
+        });
+        for (const key of keys) this.store.remove(key);
         super.delete();
     }
 

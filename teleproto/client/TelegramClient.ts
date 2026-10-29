@@ -1,4 +1,5 @@
 import { TelegramBaseClient, TelegramClientParams } from "./TelegramBaseClient";
+import * as events from "../events";
 import type { DcAddress } from "../network/dc/DcAddressBook";
 
 import type { Connection } from "../network/connection/Connection";
@@ -3443,7 +3444,7 @@ export class TelegramClient<
 
     /** @hidden */
     static get events() {
-        return require("../events");
+        return events;
     }
 
     // endregion

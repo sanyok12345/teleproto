@@ -1,14 +1,11 @@
-import { aes, hmac as hmacs, kdf, math, md5, random, sha1, sha256, sha384, sha512, type Hash, type Hmac } from "cifrante";
-import type { BinaryInput, CtrCipher, Factors, Hasher, IgeCipher, StreamCipher } from "./types";
+import { aes, hmac as hmacs, kdf, math, md5, random, rsa, sha1, sha256, sha384, sha512, x25519, type Hash, type Hmac } from "cifrante";
+import type { BinaryInput, CtrCipher, Factors, Hasher, IgeCipher, RsaPublicKey, StreamCipher } from "./types";
 
 export type * from "./types";
-export { rsaPublicKey } from "./rsaKey";
-export { x25519PublicKey } from "./x25519";
 
 const HASHES: Record<string, Hash> = { md5, sha1, sha256, sha384, sha512 };
 const HMACS: Record<string, Hmac> = { ...hmacs };
 const CTR_ALGORITHM = /^aes-(128|192|256)-ctr$/i;
-const UINT32_RANGE = 0x100000000;
 
 interface DigestState {
     update(data: BinaryInput): unknown;
@@ -17,6 +14,11 @@ interface DigestState {
 
 function toBuffer(bytes: Uint8Array): Buffer {
     return Buffer.from(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+}
+
+function bigintBytes(value: bigint): Buffer {
+    const hex = value.toString(16);
+    return Buffer.from(hex.length % 2 ? `0${hex}` : hex, "hex");
 }
 
 function algorithmName(table: Record<string, unknown>, algorithm: string): string {
@@ -45,16 +47,11 @@ export function randomBytes(count: number): Buffer {
 }
 
 export function randomInt(max: number): number {
-    if (!Number.isSafeInteger(max) || max <= 0 || max > UINT32_RANGE) throw new RangeError(`Invalid random range ${max}`);
-    const limit = UINT32_RANGE - (UINT32_RANGE % max);
-    for (;;) {
-        const value = random.uint32();
-        if (value < limit) return value % max;
-    }
+    return random.int(max);
 }
 
 export function randomFill(buffer: Uint8Array, offset: number, length: number): void {
-    buffer.set(random(length), offset);
+    random.fill(buffer, offset, length);
 }
 
 export function createHash(algorithm: string): Hasher {
@@ -73,27 +70,16 @@ export function hmac(algorithm: string, key: Uint8Array, data: BinaryInput): Buf
     return toBuffer(pick(HMACS, algorithm).sync(key, data));
 }
 
+function kdfHash(digest: string): keyof typeof hmacs {
+    return algorithmName(HMACS, digest) as keyof typeof hmacs;
+}
+
 export async function pbkdf2(password: BinaryInput, salt: BinaryInput, iterations: number, length: number, digest: string): Promise<Buffer> {
-    const hash = algorithmName(HMACS, digest) as keyof typeof hmacs;
-    return toBuffer(await kdf.pbkdf2(password, salt, { hash, iterations, length }));
+    return toBuffer(await kdf.pbkdf2(password, salt, { hash: kdfHash(digest), iterations, length }));
 }
 
 export function pbkdf2Sync(password: BinaryInput, salt: BinaryInput, iterations: number, length: number, digest: string): Buffer {
-    const mac = pick(HMACS, digest).sync;
-    const key = typeof password === "string" ? Buffer.from(password) : password;
-    const out = Buffer.alloc(length);
-    for (let block = 1, offset = 0; offset < length; block++) {
-        const index = Buffer.alloc(4);
-        index.writeUInt32BE(block);
-        let round = mac.create(key).update(salt).update(index).digest();
-        const sum = Buffer.from(round);
-        for (let i = 1; i < iterations; i++) {
-            round = mac(key, round);
-            for (let j = 0; j < sum.length; j++) sum[j] ^= round[j];
-        }
-        offset += sum.copy(out, offset);
-    }
-    return out;
+    return toBuffer(kdf.pbkdf2.sync(password, salt, { hash: kdfHash(digest), iterations, length }));
 }
 
 function streamCipher(algorithm: string, key: Uint8Array, iv: Uint8Array): StreamCipher {
@@ -128,6 +114,15 @@ export function aesCtr(key: Uint8Array, iv: Uint8Array): CtrCipher {
         update: (data, output) => toBuffer(state.update(data, output)),
         dispose: () => state.dispose(),
     };
+}
+
+export function rsaPublicKey(pem: string): RsaPublicKey {
+    const { n, e } = rsa.publicKey(pem);
+    return { n: bigintBytes(n), e: bigintBytes(e) };
+}
+
+export function x25519PublicKey(): Buffer {
+    return toBuffer(x25519.keys.sync().publicKey);
 }
 
 export function modPow(base: bigint, exponent: bigint, modulus: bigint): bigint {

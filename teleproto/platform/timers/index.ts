@@ -23,3 +23,9 @@ export function sleep(ms: number, options: SleepOptions = {}): Promise<void> {
         signal?.addEventListener("abort", abort, { once: true });
     });
 }
+
+export function immediate(callback: () => void): void {
+    const native = (globalThis as { setImmediate?: (callback: () => void) => unknown }).setImmediate;
+    if (native) native(callback);
+    else setTimeout(callback, 0);
+}

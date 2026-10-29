@@ -6,6 +6,8 @@ import type { HttpConnectOptions, HttpConnectResponse, SocksConnectOptions } fro
 
 export type Socket = nodeNet.Socket;
 
+export const tcp = true;
+
 export function createSocket(): Socket {
     return new nodeNet.Socket();
 }

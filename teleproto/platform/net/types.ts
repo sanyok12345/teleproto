@@ -44,6 +44,7 @@ export interface SocksConnectOptions {
 }
 
 export interface Network<Socket extends TcpSocket> {
+    readonly tcp: boolean;
     createSocket(): Socket;
     isIP(host: string): number;
     httpConnect(options: HttpConnectOptions): Promise<HttpConnectResponse<Socket>>;

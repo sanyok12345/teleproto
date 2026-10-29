@@ -4,7 +4,7 @@ import type { SocketFactory as LegacySocketFactory } from "../compat/extensions/
 import { isLegacyProxyConnection } from "../compat/network/connection/TCPMTProxy";
 import type { TelegramClient } from "./TelegramClient";
 import { version } from "../Version";
-import { system } from "../platform";
+import { net, system } from "../platform";
 import { Session, StoreSession } from "../sessions";
 import { Logger } from "../extensions";
 import { Api } from "../tl";
@@ -32,6 +32,7 @@ import { UpdateLoop } from "./updates/UpdateLoop";
 import type { ClientUpdates } from "./updates/ClientUpdates";
 import type { ResolvedTransport, Transport } from "../network/transport/Transport";
 import { TcpTransport } from "../network/transport/TcpTransport";
+import { WebSocketTransport } from "../network/transport/WebSocketTransport";
 import { SocksTransport } from "../network/transport/SocksTransport";
 import { MTProxyTransport } from "../network/transport/MTProxyTransport";
 import { WebProxyTransport, type WebProxyOptions } from "../network/transport/WebProxyTransport";
@@ -159,7 +160,7 @@ export interface TelegramClientParams {
      */
     reconnectRetries?: number;
     /**
-     * How the client reaches Telegram: `TcpTransport` (default), `SocksTransport`, `HttpProxyTransport`,
+     * How the client reaches Telegram: `TcpTransport` (default; `WebSocketTransport` where TCP is unavailable), `SocksTransport`, `HttpProxyTransport`,
      * `MTProxyTransport`, `WebSocketTransport` or `WebProxyTransport`.
      */
     transport?: Transport;
@@ -474,7 +475,7 @@ export abstract class TelegramBaseClient<S extends Session = Session> {
         } else {
             transport =
                 clientParams.transport ??
-                (clientParams.proxy ? proxyTransport(clientParams.proxy) : new TcpTransport());
+                (clientParams.proxy ? proxyTransport(clientParams.proxy) : net.tcp ? new TcpTransport() : new WebSocketTransport());
         }
         const route = transport.resolve(connection);
         this._transport = route;

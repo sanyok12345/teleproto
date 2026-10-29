@@ -43,7 +43,7 @@ export function readBigIntFromBuffer(
     let i = count8b;
     while(i>0){
         let bi = little ? buffer.readBigUInt64LE(buffer.length - (count8b-i+1)*8 )
-                        : buffer.readBigUint64BE((count8b-i)*8);
+                        : buffer.readBigUInt64BE((count8b-i)*8);
         resBigInt = bi + (resBigInt << bi64);
 
         --i;
@@ -64,7 +64,7 @@ export function readBigIntFromBuffer(
         //read 64 bits and discard excess bits
         let bi = little ?
               buffer.readBigUInt64LE(0)
-            : buffer.readBigUint64BE(buffer.length-8);
+            : buffer.readBigUInt64BE(buffer.length-8);
         bi = BigInt.asUintN(8*bytesLeft, bi); // discard higher bits - garbage
         resBigInt = bi + (resBigInt << BigInt(8*bytesLeft));
     }

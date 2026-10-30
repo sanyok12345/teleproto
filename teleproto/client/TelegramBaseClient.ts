@@ -115,7 +115,7 @@ export interface DownloadPoolOptions {
 }
 
 export interface TelegramClientParams {
-    /** MTProto packet framing. Defaults to {@link ConnectionTCPObfuscated}. */
+    /** MTProto packet framing. Defaults to `ConnectionTCPObfuscated` from `teleproto/network/connection`. */
     connection?: typeof Connection;
     /**
      * Whether to connect to the servers through IPv6 or not. By default this is false.

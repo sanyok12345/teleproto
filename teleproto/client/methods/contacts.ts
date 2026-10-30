@@ -31,7 +31,7 @@ function _toNote(
     return note;
 }
 
-/** Parameters for {@link addContact}. */
+/** Parameters for {@link TelegramClient.addContact}. */
 export interface AddContactParams {
     /** The contact's first name. */
     firstName: string;
@@ -81,7 +81,7 @@ export async function deleteContacts(
     return client.invoke(new Api.contacts.DeleteContacts({ id: ids }));
 }
 
-/** One phone-book entry for {@link importContacts}. */
+/** One phone-book entry for {@link TelegramClient.importContacts}. */
 export interface ImportContactEntry {
     /** The contact's phone number. */
     phone: string;
@@ -142,7 +142,7 @@ export async function unblock(
     });
 }
 
-/** Parameters for {@link getBlocked}. */
+/** Parameters for {@link TelegramClient.getBlocked}. */
 export interface GetBlockedParams {
     /** Number of results to skip. */
     offset?: number;

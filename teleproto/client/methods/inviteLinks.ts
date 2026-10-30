@@ -20,7 +20,7 @@ export function _parseInviteHash(link: string): string {
     return match ? match[1] : trimmed;
 }
 
-/** Parameters for {@link exportChatInvite}. */
+/** Parameters for {@link TelegramClient.exportChatInvite}. */
 export interface ExportChatInviteParams {
     /** Human-readable title of the link (visible to admins only). */
     title?: string;
@@ -62,7 +62,7 @@ export async function exportChatInvite(
     );
 }
 
-/** Parameters for {@link editExportedChatInvite}. */
+/** Parameters for {@link TelegramClient.editExportedChatInvite}. */
 export interface EditExportedChatInviteParams {
     /** Revoke the link, preventing further joins. */
     revoked?: boolean;
@@ -150,7 +150,7 @@ export async function getAdminsWithInvites(
     return client.api.messages.getAdminsWithInvites({ peer: peer });
 }
 
-/** Parameters for {@link iterExportedChatInvites}/{@link getExportedChatInvites}. */
+/** Parameters for {@link TelegramClient.iterExportedChatInvites}/{@link TelegramClient.getExportedChatInvites}. */
 export interface ExportedChatInvitesParams {
     /** How many links to retrieve. Defaults to all. */
     limit?: number;

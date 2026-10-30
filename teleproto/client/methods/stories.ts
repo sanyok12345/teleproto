@@ -17,7 +17,7 @@ async function _toStoryMedia(
     return converted.media;
 }
 
-/** Parameters for {@link sendStory}. */
+/** Parameters for {@link TelegramClient.sendStory}. */
 export interface SendStoryParams {
     /** The story photo/video (path, Buffer, uploaded file, or raw {@link Api.TypeInputMedia}). */
     media: FileLike;
@@ -90,7 +90,7 @@ export async function sendStory(
     );
 }
 
-/** Parameters for {@link editStory}. Only the fields you set are changed. */
+/** Parameters for {@link TelegramClient.editStory}. Only the fields you set are changed. */
 export interface EditStoryParams {
     /** New story media. */
     media?: FileLike;
@@ -182,7 +182,7 @@ export async function canSendStory(
     return client.api.stories.canSendStory({ peer: peer });
 }
 
-/** Parameters for {@link getAllStories}. */
+/** Parameters for {@link TelegramClient.getAllStories}. */
 export interface GetAllStoriesParams {
     /** Fetch the next chunk, using the `state` from the previous response. */
     next?: boolean;
@@ -226,7 +226,7 @@ export async function getStoriesByID(
     });
 }
 
-/** Pagination parameters for {@link getPinnedStories}/{@link getStoriesArchive}. */
+/** Pagination parameters for {@link TelegramClient.getPinnedStories}/{@link TelegramClient.getStoriesArchive}. */
 export interface GetStoriesPageParams {
     /** Only return stories with IDs lower than this one. */
     offsetId?: number;
@@ -288,7 +288,7 @@ export async function incrementStoryViews(
     });
 }
 
-/** Parameters for {@link getStoryViewsList}. */
+/** Parameters for {@link TelegramClient.getStoryViewsList}. */
 export interface GetStoryViewsListParams {
     /** Only fetch views from your contacts. */
     justContacts?: boolean;

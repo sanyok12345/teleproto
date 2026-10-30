@@ -6,7 +6,7 @@ import * as utils from "../../Utils";
 import { Api } from "../../tl";
 import { _fileToMedia } from "./uploads";
 
-/** Parameters for {@link updateProfile}. Only the fields you set are changed. */
+/** Parameters for {@link TelegramClient.updateProfile}. Only the fields you set are changed. */
 export interface UpdateProfileParams {
     /** New first name. */
     firstName?: string;
@@ -58,7 +58,7 @@ async function _toInputFile(
     return fileHandle;
 }
 
-/** Parameters for {@link uploadProfilePhoto}. */
+/** Parameters for {@link TelegramClient.uploadProfilePhoto}. */
 export interface UploadProfilePhotoParams {
     /** The photo to upload (path, Buffer, File, or an uploaded {@link Api.TypeInputFile}). */
     file?: FileLike;
@@ -130,7 +130,7 @@ export async function deleteProfilePhotos(
     );
 }
 
-/** Parameters for {@link getUserPhotos}. */
+/** Parameters for {@link TelegramClient.getUserPhotos}. */
 export interface GetUserPhotosParams {
     /** Number of photos to skip. */
     offset?: number;
@@ -174,7 +174,7 @@ export async function getAuthorizations(
 }
 
 /**
- * Terminates a session from {@link getAuthorizations}. Pass no hash (or zero)
+ * Terminates a session from {@link TelegramClient.getAuthorizations}. Pass no hash (or zero)
  * to terminate ALL other sessions.
  * @hidden
  */
@@ -217,7 +217,7 @@ export async function getNotifySettings(
     );
 }
 
-/** New notification settings for {@link updateNotifySettings}. Only the fields you set are changed. */
+/** New notification settings for {@link TelegramClient.updateNotifySettings}. Only the fields you set are changed. */
 export interface UpdateNotifySettingsParams {
     /** Whether to show message previews in notifications. */
     showPreviews?: boolean;

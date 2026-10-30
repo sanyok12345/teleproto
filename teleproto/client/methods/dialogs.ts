@@ -17,7 +17,7 @@ const _MAX_CHUNK_SIZE = 100;
  necessary in small group chats and private chats.
  * @param {Api.TypePeer} [peer] the dialog peer
  * @param {number} [messageId] the message id
- * @return {[number,number]} the channel id and message id
+ * @returns {[number,number]} the channel id and message id
  */
 function _dialogMessageKey(peer: Api.TypePeer, messageId: number): string {
     // can't use arrays as keys for map :( need to convert to string.

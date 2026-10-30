@@ -10,11 +10,11 @@
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "strict": true,
-    "incremental": true,
     "forceConsistentCasingInFileNames": true,
     "moduleResolution": "node16",
     "resolveJsonModule": true,
     "declaration": true,
+    "emitDeclarationOnly": true,
     "rootDir": "./teleproto",
     "outDir": "./dist"
   },

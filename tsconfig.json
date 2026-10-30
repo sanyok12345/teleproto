@@ -1,30 +1,21 @@
 {
   "compilerOptions": {
-    "module": "node16",
     "target": "es2022",
     "lib": ["es2022"],
-    "types": ["node"],
-    "useDefineForClassFields": false,
-    "sourceMap": false,
-    "downlevelIteration": true,
-    "allowJs": true,
-    "esModuleInterop": true,
-    "isolatedModules": true,
-    "allowSyntheticDefaultImports": true,
-    "strict": true,
-    "forceConsistentCasingInFileNames": true,
+    "module": "node16",
     "moduleResolution": "node16",
-    "resolveJsonModule": true,
+    "types": ["node"],
+    "rootDir": "./teleproto",
+    "outDir": "./dist",
     "declaration": true,
     "emitDeclarationOnly": true,
-    "rootDir": "./teleproto",
-    "outDir": "./dist"
+    "allowJs": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "isolatedModules": true,
+    "useDefineForClassFields": false,
+    "strict": true
   },
-  "exclude": [
-    "dist",
-    "teleproto_generator",
-    "node_modules",
-    "teleproto/tl/generated/api.js"
-  ],
-  "include": ["teleproto"]
+  "include": ["teleproto"],
+  "exclude": ["teleproto/tl/generated/api.js"]
 }

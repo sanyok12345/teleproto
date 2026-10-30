@@ -92,5 +92,6 @@
     "notExported": false,
     "invalidLink": true,
     "notDocumented": false
-  }
+  },
+  "treatWarningsAsErrors": true
 }

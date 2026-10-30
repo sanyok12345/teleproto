@@ -27,7 +27,7 @@ export interface InlineQueryInterface {
 type InlineQueryUpdate = Api.UpdateBotInlineQuery | Api.UpdateBotInlineSend;
 
 /**
- * Occurs when a user sends an inline query to your bot (e.g., @bot query).
+ * Occurs when a user sends an inline query to your bot (e.g., `@bot query`).
  *
  * @remarks
  * This event only works for bot accounts.

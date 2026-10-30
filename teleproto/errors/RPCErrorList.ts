@@ -709,7 +709,7 @@ export class BusinessConnectionInvalidError extends BadRequestError {
     }
 }
 
-/** This method was invoked over a business connection using [invokeWithBusinessConnection](https://core.telegram.org/api/business#connected-bots), but either (1) we're a user, and users cannot invoke methods over a business connection; (2) we're a bot, but business mode was disabled in @botfather or (3); we're a bot, but this method cannot be invoked over a business connection. */
+/** This method was invoked over a business connection using [invokeWithBusinessConnection](https://core.telegram.org/api/business#connected-bots), but either (1) we're a user, and users cannot invoke methods over a business connection; (2) we're a bot, but business mode was disabled in \@botfather or (3); we're a bot, but this method cannot be invoked over a business connection. */
 export class BusinessConnectionNotAllowedError extends BadRequestError {
     constructor(args: ErrorArgs) {
         const message = "This method was invoked over a business connection using [invokeWithBusinessConnection](https://core.telegram.org/api/business#connected-bots), but either (1) we're a user, and users cannot invoke methods over a business connection; (2) we're a bot, but business mode was disabled in @botfather or (3); we're a bot, but this method cannot be invoked over a business connection." + RPCError._fmtRequest(args.request);
@@ -6202,7 +6202,7 @@ export class UserBotRequiredError extends BadRequestError {
     }
 }
 
-/** Bot-to-bot messaging is disabled because one of the two bots hasn't enabled the Bot to Bot setting in @BotFather. */
+/** Bot-to-bot messaging is disabled because one of the two bots hasn't enabled the Bot to Bot setting in \@BotFather. */
 export class UserBotToBotDisabledError extends BadRequestError {
     constructor(args: ErrorArgs) {
         const message = "Bot-to-bot messaging is disabled because one of the two bots hasn't enabled the Bot to Bot setting in @BotFather." + RPCError._fmtRequest(args.request);
@@ -6858,7 +6858,7 @@ export class InputRequestTooLongError extends BadRequestError {
     }
 }
 
-/** The current account is spamreported, you cannot execute this action, check @spambot for more info. */
+/** The current account is spamreported, you cannot execute this action, check \@spambot for more info. */
 export class PeerFloodError extends BadRequestError {
     constructor(args: ErrorArgs) {
         const message = "The current account is spamreported, you cannot execute this action, check @spambot for more info." + RPCError._fmtRequest(args.request);

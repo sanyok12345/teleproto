@@ -222,7 +222,7 @@ function renderClass(def: ErrorDef, declared: Set<string>): string {
     if (declared.has(def.className)) return "";
     declared.add(def.className);
 
-    const doc = `/** ${def.description.replace(/\*\//g, "*\\/")} */`;
+    const doc = `/** ${def.description.replace(/\*\//g, "*\\/").replace(/(^|\s)@(?=\w)/g, "$1\\@")} */`;
 
     if (def.param) {
         return `${doc}

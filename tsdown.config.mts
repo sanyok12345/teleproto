@@ -11,7 +11,7 @@ export default defineConfig({
     hash: false,
     cjsDefault: false,
     dts: false,
-    external: [/^#platform\//],
+    deps: { neverBundle: [/^#platform\//] },
     outputOptions: { exports: "named", esModule: true },
     report: { summary: true },
 });

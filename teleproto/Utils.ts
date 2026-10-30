@@ -474,8 +474,8 @@ export function getInputChatPhoto(photo: any): Api.TypeInputChatPhoto {
  * Adds the JPG header and footer to a stripped image.
  * Ported from https://github.com/telegramdesktop/tdesktop/blob/bec39d89e19670eb436dc794a8f20b657cb87c71/Telegram/SourceFiles/ui/image/image.cpp#L225
 
- * @param stripped{Buffer}
- * @returns {Buffer}
+ * @param stripped - the stripped image bytes
+ * @returns the JPG image bytes
  */
 export function strippedPhotoToJpg(stripped: Buffer): Buffer {
     // Note: Changes here should update _stripped_real_length
@@ -884,13 +884,9 @@ export interface GetInputMediaInterface {
  If the media is :tl:`InputFile` and ``is_photo`` is known to be `True`,
  it will be treated as an :tl:`InputMediaUploadedPhoto`. Else, the rest
  of parameters will indicate how to treat it.
- * @param media
- * @param isPhoto - whether it's a photo or not
- * @param attributes
- * @param forceDocument
- * @param voiceNote
- * @param videoNote
- * @param supportsStreaming
+ * @param media - the media to convert
+ * @param params - how to treat an uploaded file
+ * @param params.isPhoto - whether it's a photo or not
  */
 export function getInputMedia(
     media: any,

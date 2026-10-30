@@ -273,31 +273,7 @@ export function generateRandomBytes(count: number): Buffer {
 }
 
 /**
- * Calculate the key based on Telegram guidelines, specifying whether it's the client or not
- * @param sharedKey
- * @param msgKey
- * @param client
- * @returns {{iv: Buffer, key: Buffer}}
- */
-
-/*CONTEST
-this is mtproto 1 (mostly used for secret chats)
-async function calcKey(sharedKey, msgKey, client) {
-    const x = client === true ? 0 : 8
-    const [sha1a, sha1b, sha1c, sha1d] = await Promise.all([
-        sha1(Buffer.concat([msgKey, sharedKey.slice(x, x + 32)])),
-        sha1(Buffer.concat([sharedKey.slice(x + 32, x + 48), msgKey, sharedKey.slice(x + 48, x + 64)])),
-        sha1(Buffer.concat([sharedKey.slice(x + 64, x + 96), msgKey])),
-        sha1(Buffer.concat([msgKey, sharedKey.slice(x + 96, x + 128)]))
-    ])
-    const key = Buffer.concat([sha1a.slice(0, 8), sha1b.slice(8, 20), sha1c.slice(4, 16)])
-    const iv = Buffer.concat([sha1a.slice(8, 20), sha1b.slice(0, 8), sha1c.slice(16, 20), sha1d.slice(0, 8)])
-    return {
-        key,
-        iv
-    }
-}
-
+ * Trims whitespace from both ends of the text and shifts the entities to match.
  */
 export function stripText(text: string, entities: Api.TypeMessageEntity[]) {
     if (!entities || !entities.length) {

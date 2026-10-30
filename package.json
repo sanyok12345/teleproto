@@ -2,476 +2,476 @@
     "name": "teleproto",
     "version": "1.232.0",
     "description": "Modern Telegram MTProto client for Node.js, written in TypeScript",
-    "main": "index.js",
-    "types": "index.d.ts",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
     "exports": {
         ".": {
-            "types": "./index.d.ts",
-            "default": "./index.js"
+            "types": "./dist/index.d.ts",
+            "default": "./dist/index.js"
         },
         "./client": {
-            "types": "./client/index.d.ts",
-            "default": "./client/index.js"
+            "types": "./dist/client/index.d.ts",
+            "default": "./dist/client/index.js"
         },
         "./client/updates": {
-            "types": "./client/updates/index.d.ts",
-            "default": "./client/updates/index.js"
+            "types": "./dist/client/updates/index.d.ts",
+            "default": "./dist/client/updates/index.js"
         },
         "./errors": {
-            "types": "./errors/index.d.ts",
-            "default": "./errors/index.js"
+            "types": "./dist/errors/index.d.ts",
+            "default": "./dist/errors/index.js"
         },
         "./events": {
-            "types": "./events/index.d.ts",
-            "default": "./events/index.js"
+            "types": "./dist/events/index.d.ts",
+            "default": "./dist/events/index.js"
         },
         "./extensions": {
-            "types": "./extensions/index.d.ts",
-            "default": "./extensions/index.js"
+            "types": "./dist/extensions/index.d.ts",
+            "default": "./dist/extensions/index.js"
         },
         "./network": {
-            "types": "./network/index.d.ts",
-            "default": "./network/index.js"
+            "types": "./dist/network/index.d.ts",
+            "default": "./dist/network/index.js"
         },
         "./network/connection": {
-            "types": "./network/connection/index.d.ts",
-            "default": "./network/connection/index.js"
+            "types": "./dist/network/connection/index.d.ts",
+            "default": "./dist/network/connection/index.js"
         },
         "./sessions": {
-            "types": "./sessions/index.d.ts",
-            "default": "./sessions/index.js"
+            "types": "./dist/sessions/index.d.ts",
+            "default": "./dist/sessions/index.js"
         },
         "./tl": {
-            "types": "./tl/index.d.ts",
-            "default": "./tl/index.js"
+            "types": "./dist/tl/index.d.ts",
+            "default": "./dist/tl/index.js"
         },
         "./tl/core": {
-            "types": "./tl/core/index.d.ts",
-            "default": "./tl/core/index.js"
+            "types": "./dist/tl/core/index.d.ts",
+            "default": "./dist/tl/core/index.js"
         },
         "./tl/custom": {
-            "types": "./tl/custom/index.d.ts",
-            "default": "./tl/custom/index.js"
+            "types": "./dist/tl/custom/index.d.ts",
+            "default": "./dist/tl/custom/index.js"
         },
         "./client/2fa": {
-            "types": "./client/methods/2fa.d.ts",
-            "default": "./client/methods/2fa.js"
+            "types": "./dist/client/methods/2fa.d.ts",
+            "default": "./dist/client/methods/2fa.js"
         },
-        "./client/2fa.js": "./client/methods/2fa.js",
+        "./client/2fa.js": "./dist/client/methods/2fa.js",
         "./client/account": {
-            "types": "./client/methods/account.d.ts",
-            "default": "./client/methods/account.js"
+            "types": "./dist/client/methods/account.d.ts",
+            "default": "./dist/client/methods/account.js"
         },
-        "./client/account.js": "./client/methods/account.js",
+        "./client/account.js": "./dist/client/methods/account.js",
         "./client/auth": {
-            "types": "./client/methods/auth.d.ts",
-            "default": "./client/methods/auth.js"
+            "types": "./dist/client/methods/auth.d.ts",
+            "default": "./dist/client/methods/auth.js"
         },
-        "./client/auth.js": "./client/methods/auth.js",
+        "./client/auth.js": "./dist/client/methods/auth.js",
         "./client/bots": {
-            "types": "./client/methods/bots.d.ts",
-            "default": "./client/methods/bots.js"
+            "types": "./dist/client/methods/bots.d.ts",
+            "default": "./dist/client/methods/bots.js"
         },
-        "./client/bots.js": "./client/methods/bots.js",
+        "./client/bots.js": "./dist/client/methods/bots.js",
         "./client/buttons": {
-            "types": "./client/methods/buttons.d.ts",
-            "default": "./client/methods/buttons.js"
+            "types": "./dist/client/methods/buttons.d.ts",
+            "default": "./dist/client/methods/buttons.js"
         },
-        "./client/buttons.js": "./client/methods/buttons.js",
+        "./client/buttons.js": "./dist/client/methods/buttons.js",
         "./client/chats": {
-            "types": "./client/methods/chats.d.ts",
-            "default": "./client/methods/chats.js"
+            "types": "./dist/client/methods/chats.d.ts",
+            "default": "./dist/client/methods/chats.js"
         },
-        "./client/chats.js": "./client/methods/chats.js",
+        "./client/chats.js": "./dist/client/methods/chats.js",
         "./client/communities": {
-            "types": "./client/methods/communities.d.ts",
-            "default": "./client/methods/communities.js"
+            "types": "./dist/client/methods/communities.d.ts",
+            "default": "./dist/client/methods/communities.js"
         },
-        "./client/communities.js": "./client/methods/communities.js",
+        "./client/communities.js": "./dist/client/methods/communities.js",
         "./client/contacts": {
-            "types": "./client/methods/contacts.d.ts",
-            "default": "./client/methods/contacts.js"
+            "types": "./dist/client/methods/contacts.d.ts",
+            "default": "./dist/client/methods/contacts.js"
         },
-        "./client/contacts.js": "./client/methods/contacts.js",
+        "./client/contacts.js": "./dist/client/methods/contacts.js",
         "./client/dialogs": {
-            "types": "./client/methods/dialogs.d.ts",
-            "default": "./client/methods/dialogs.js"
+            "types": "./dist/client/methods/dialogs.d.ts",
+            "default": "./dist/client/methods/dialogs.js"
         },
-        "./client/dialogs.js": "./client/methods/dialogs.js",
+        "./client/dialogs.js": "./dist/client/methods/dialogs.js",
         "./client/downloads": {
-            "types": "./client/methods/downloads.d.ts",
-            "default": "./client/methods/downloads.js"
+            "types": "./dist/client/methods/downloads.d.ts",
+            "default": "./dist/client/methods/downloads.js"
         },
-        "./client/downloads.js": "./client/methods/downloads.js",
+        "./client/downloads.js": "./dist/client/methods/downloads.js",
         "./client/folders": {
-            "types": "./client/methods/folders.d.ts",
-            "default": "./client/methods/folders.js"
+            "types": "./dist/client/methods/folders.d.ts",
+            "default": "./dist/client/methods/folders.js"
         },
-        "./client/folders.js": "./client/methods/folders.js",
+        "./client/folders.js": "./dist/client/methods/folders.js",
         "./client/forums": {
-            "types": "./client/methods/forums.d.ts",
-            "default": "./client/methods/forums.js"
+            "types": "./dist/client/methods/forums.d.ts",
+            "default": "./dist/client/methods/forums.js"
         },
-        "./client/forums.js": "./client/methods/forums.js",
+        "./client/forums.js": "./dist/client/methods/forums.js",
         "./client/inviteLinks": {
-            "types": "./client/methods/inviteLinks.d.ts",
-            "default": "./client/methods/inviteLinks.js"
+            "types": "./dist/client/methods/inviteLinks.d.ts",
+            "default": "./dist/client/methods/inviteLinks.js"
         },
-        "./client/inviteLinks.js": "./client/methods/inviteLinks.js",
+        "./client/inviteLinks.js": "./dist/client/methods/inviteLinks.js",
         "./client/messageParse": {
-            "types": "./client/methods/messageParse.d.ts",
-            "default": "./client/methods/messageParse.js"
+            "types": "./dist/client/methods/messageParse.d.ts",
+            "default": "./dist/client/methods/messageParse.js"
         },
-        "./client/messageParse.js": "./client/methods/messageParse.js",
+        "./client/messageParse.js": "./dist/client/methods/messageParse.js",
         "./client/messages": {
-            "types": "./client/methods/messages.d.ts",
-            "default": "./client/methods/messages.js"
+            "types": "./dist/client/methods/messages.d.ts",
+            "default": "./dist/client/methods/messages.js"
         },
-        "./client/messages.js": "./client/methods/messages.js",
+        "./client/messages.js": "./dist/client/methods/messages.js",
         "./client/rpcControl": {
-            "types": "./client/rpc/RpcCallControl.d.ts",
-            "default": "./client/rpc/RpcCallControl.js"
+            "types": "./dist/client/rpc/RpcCallControl.d.ts",
+            "default": "./dist/client/rpc/RpcCallControl.js"
         },
-        "./client/rpcControl.js": "./client/rpc/RpcCallControl.js",
+        "./client/rpcControl.js": "./dist/client/rpc/RpcCallControl.js",
         "./client/stickers": {
-            "types": "./client/methods/stickers.d.ts",
-            "default": "./client/methods/stickers.js"
+            "types": "./dist/client/methods/stickers.d.ts",
+            "default": "./dist/client/methods/stickers.js"
         },
-        "./client/stickers.js": "./client/methods/stickers.js",
+        "./client/stickers.js": "./dist/client/methods/stickers.js",
         "./client/stories": {
-            "types": "./client/methods/stories.d.ts",
-            "default": "./client/methods/stories.js"
+            "types": "./dist/client/methods/stories.d.ts",
+            "default": "./dist/client/methods/stories.js"
         },
-        "./client/stories.js": "./client/methods/stories.js",
+        "./client/stories.js": "./dist/client/methods/stories.js",
         "./client/telegramBaseClient": {
-            "types": "./client/TelegramBaseClient.d.ts",
-            "default": "./client/TelegramBaseClient.js"
+            "types": "./dist/client/TelegramBaseClient.d.ts",
+            "default": "./dist/client/TelegramBaseClient.js"
         },
-        "./client/telegramBaseClient.js": "./client/TelegramBaseClient.js",
+        "./client/telegramBaseClient.js": "./dist/client/TelegramBaseClient.js",
         "./client/updates/channelScheduler": {
-            "types": "./client/updates/ChannelScheduler.d.ts",
-            "default": "./client/updates/ChannelScheduler.js"
+            "types": "./dist/client/updates/ChannelScheduler.d.ts",
+            "default": "./dist/client/updates/ChannelScheduler.js"
         },
-        "./client/updates/channelScheduler.js": "./client/updates/ChannelScheduler.js",
+        "./client/updates/channelScheduler.js": "./dist/client/updates/ChannelScheduler.js",
         "./client/updates/composer": {
-            "types": "./client/updates/ClientUpdates.d.ts",
-            "default": "./client/updates/ClientUpdates.js"
+            "types": "./dist/client/updates/ClientUpdates.d.ts",
+            "default": "./dist/client/updates/ClientUpdates.js"
         },
-        "./client/updates/composer.js": "./client/updates/ClientUpdates.js",
+        "./client/updates/composer.js": "./dist/client/updates/ClientUpdates.js",
         "./client/updates/context": {
-            "types": "./client/updates/UpdateContext.d.ts",
-            "default": "./client/updates/UpdateContext.js"
+            "types": "./dist/client/updates/UpdateContext.d.ts",
+            "default": "./dist/client/updates/UpdateContext.js"
         },
-        "./client/updates/context.js": "./client/updates/UpdateContext.js",
+        "./client/updates/context.js": "./dist/client/updates/UpdateContext.js",
         "./client/updates/dispatch": {
-            "types": "./compat/client/updates/dispatch.d.ts",
-            "default": "./compat/client/updates/dispatch.js"
+            "types": "./dist/compat/client/updates/dispatch.d.ts",
+            "default": "./dist/compat/client/updates/dispatch.js"
         },
-        "./client/updates/dispatch.js": "./compat/client/updates/dispatch.js",
+        "./client/updates/dispatch.js": "./dist/compat/client/updates/dispatch.js",
         "./client/updates/manager": {
-            "types": "./client/updates/UpdateManager.d.ts",
-            "default": "./client/updates/UpdateManager.js"
+            "types": "./dist/client/updates/UpdateManager.d.ts",
+            "default": "./dist/client/updates/UpdateManager.js"
         },
-        "./client/updates/manager.js": "./client/updates/UpdateManager.js",
+        "./client/updates/manager.js": "./dist/client/updates/UpdateManager.js",
         "./client/updates/ptsWaiter": {
-            "types": "./client/updates/PtsWaiter.d.ts",
-            "default": "./client/updates/PtsWaiter.js"
+            "types": "./dist/client/updates/PtsWaiter.d.ts",
+            "default": "./dist/client/updates/PtsWaiter.js"
         },
-        "./client/updates/ptsWaiter.js": "./client/updates/PtsWaiter.js",
+        "./client/updates/ptsWaiter.js": "./dist/client/updates/PtsWaiter.js",
         "./client/uploads": {
-            "types": "./client/methods/uploads.d.ts",
-            "default": "./client/methods/uploads.js"
+            "types": "./dist/client/methods/uploads.d.ts",
+            "default": "./dist/client/methods/uploads.js"
         },
-        "./client/uploads.js": "./client/methods/uploads.js",
+        "./client/uploads.js": "./dist/client/methods/uploads.js",
         "./client/users": {
-            "types": "./client/methods/users.d.ts",
-            "default": "./client/methods/users.js"
+            "types": "./dist/client/methods/users.d.ts",
+            "default": "./dist/client/methods/users.js"
         },
-        "./client/users.js": "./client/methods/users.js",
+        "./client/users.js": "./dist/client/methods/users.js",
         "./client/wallet": {
-            "types": "./client/methods/wallet.d.ts",
-            "default": "./client/methods/wallet.js"
+            "types": "./dist/client/methods/wallet.d.ts",
+            "default": "./dist/client/methods/wallet.js"
         },
-        "./client/wallet.js": "./client/methods/wallet.js",
+        "./client/wallet.js": "./dist/client/methods/wallet.js",
         "./extensions/BinaryReader": {
-            "types": "./compat/extensions/BinaryReader.d.ts",
-            "default": "./compat/extensions/BinaryReader.js"
+            "types": "./dist/compat/extensions/BinaryReader.d.ts",
+            "default": "./dist/compat/extensions/BinaryReader.js"
         },
-        "./extensions/BinaryReader.js": "./compat/extensions/BinaryReader.js",
+        "./extensions/BinaryReader.js": "./dist/compat/extensions/BinaryReader.js",
         "./extensions/BinaryWriter": {
-            "types": "./compat/extensions/BinaryWriter.d.ts",
-            "default": "./compat/extensions/BinaryWriter.js"
+            "types": "./dist/compat/extensions/BinaryWriter.d.ts",
+            "default": "./dist/compat/extensions/BinaryWriter.js"
         },
-        "./extensions/BinaryWriter.js": "./compat/extensions/BinaryWriter.js",
+        "./extensions/BinaryWriter.js": "./dist/compat/extensions/BinaryWriter.js",
         "./extensions/PromisedNetSockets": {
-            "types": "./compat/extensions/PromisedNetSockets.d.ts",
-            "default": "./compat/extensions/PromisedNetSockets.js"
+            "types": "./dist/compat/extensions/PromisedNetSockets.d.ts",
+            "default": "./dist/compat/extensions/PromisedNetSockets.js"
         },
-        "./extensions/PromisedNetSockets.js": "./compat/extensions/PromisedNetSockets.js",
+        "./extensions/PromisedNetSockets.js": "./dist/compat/extensions/PromisedNetSockets.js",
         "./extensions/PromisedWebSockets": {
-            "types": "./compat/extensions/PromisedWebSockets.d.ts",
-            "default": "./compat/extensions/PromisedWebSockets.js"
+            "types": "./dist/compat/extensions/PromisedWebSockets.d.ts",
+            "default": "./dist/compat/extensions/PromisedWebSockets.js"
         },
-        "./extensions/PromisedWebSockets.js": "./compat/extensions/PromisedWebSockets.js",
+        "./extensions/PromisedWebSockets.js": "./dist/compat/extensions/PromisedWebSockets.js",
         "./extensions/SocketInterface": {
-            "types": "./compat/extensions/SocketInterface.d.ts",
-            "default": "./compat/extensions/SocketInterface.js"
+            "types": "./dist/compat/extensions/SocketInterface.d.ts",
+            "default": "./dist/compat/extensions/SocketInterface.js"
         },
-        "./extensions/SocketInterface.js": "./compat/extensions/SocketInterface.js",
+        "./extensions/SocketInterface.js": "./dist/compat/extensions/SocketInterface.js",
         "./network/Authenticator": {
-            "types": "./network/mtproto/authKeyExchange.d.ts",
-            "default": "./network/mtproto/authKeyExchange.js"
+            "types": "./dist/network/mtproto/authKeyExchange.d.ts",
+            "default": "./dist/network/mtproto/authKeyExchange.js"
         },
-        "./network/Authenticator.js": "./network/mtproto/authKeyExchange.js",
+        "./network/Authenticator.js": "./dist/network/mtproto/authKeyExchange.js",
         "./network/Dcenter": {
-            "types": "./compat/network/Dcenter.d.ts",
-            "default": "./compat/network/Dcenter.js"
+            "types": "./dist/compat/network/Dcenter.d.ts",
+            "default": "./dist/compat/network/Dcenter.js"
         },
-        "./network/Dcenter.js": "./compat/network/Dcenter.js",
+        "./network/Dcenter.js": "./dist/compat/network/Dcenter.js",
         "./network/MTProtoPlainSender": {
-            "types": "./compat/network/MTProtoPlainSender.d.ts",
-            "default": "./compat/network/MTProtoPlainSender.js"
+            "types": "./dist/compat/network/MTProtoPlainSender.d.ts",
+            "default": "./dist/compat/network/MTProtoPlainSender.js"
         },
-        "./network/MTProtoPlainSender.js": "./compat/network/MTProtoPlainSender.js",
+        "./network/MTProtoPlainSender.js": "./dist/compat/network/MTProtoPlainSender.js",
         "./network/MTProtoSender": {
-            "types": "./compat/network/MTProtoSender.d.ts",
-            "default": "./compat/network/MTProtoSender.js"
+            "types": "./dist/compat/network/MTProtoSender.d.ts",
+            "default": "./dist/compat/network/MTProtoSender.js"
         },
-        "./network/MTProtoSender.js": "./compat/network/MTProtoSender.js",
+        "./network/MTProtoSender.js": "./dist/compat/network/MTProtoSender.js",
         "./network/Network": {
-            "types": "./compat/network/Network.d.ts",
-            "default": "./compat/network/Network.js"
+            "types": "./dist/compat/network/Network.d.ts",
+            "default": "./dist/compat/network/Network.js"
         },
-        "./network/Network.js": "./compat/network/Network.js",
+        "./network/Network.js": "./dist/compat/network/Network.js",
         "./network/RequestState": {
-            "types": "./network/mtproto/RequestState.d.ts",
-            "default": "./network/mtproto/RequestState.js"
+            "types": "./dist/network/mtproto/RequestState.d.ts",
+            "default": "./dist/network/mtproto/RequestState.js"
         },
-        "./network/RequestState.js": "./network/mtproto/RequestState.js",
+        "./network/RequestState.js": "./dist/network/mtproto/RequestState.js",
         "./network/SenderSlot": {
-            "types": "./compat/network/SenderSlot.d.ts",
-            "default": "./compat/network/SenderSlot.js"
+            "types": "./dist/compat/network/SenderSlot.d.ts",
+            "default": "./dist/compat/network/SenderSlot.js"
         },
-        "./network/SenderSlot.js": "./compat/network/SenderSlot.js",
+        "./network/SenderSlot.js": "./dist/compat/network/SenderSlot.js",
         "./network/UpdateConnectionState": {
-            "types": "./network/session/UpdateConnectionState.d.ts",
-            "default": "./network/session/UpdateConnectionState.js"
+            "types": "./dist/network/session/UpdateConnectionState.d.ts",
+            "default": "./dist/network/session/UpdateConnectionState.js"
         },
-        "./network/UpdateConnectionState.js": "./network/session/UpdateConnectionState.js",
+        "./network/UpdateConnectionState.js": "./dist/network/session/UpdateConnectionState.js",
         "./network/connection/Connection": {
-            "types": "./compat/network/connection/Connection.d.ts",
-            "default": "./compat/network/connection/Connection.js"
+            "types": "./dist/compat/network/connection/Connection.d.ts",
+            "default": "./dist/compat/network/connection/Connection.js"
         },
-        "./network/connection/Connection.js": "./compat/network/connection/Connection.js",
+        "./network/connection/Connection.js": "./dist/compat/network/connection/Connection.js",
         "./network/connection/TCPAbridged": {
-            "types": "./network/connection/AbridgedCodec.d.ts",
-            "default": "./network/connection/AbridgedCodec.js"
+            "types": "./dist/network/connection/AbridgedCodec.d.ts",
+            "default": "./dist/network/connection/AbridgedCodec.js"
         },
-        "./network/connection/TCPAbridged.js": "./network/connection/AbridgedCodec.js",
+        "./network/connection/TCPAbridged.js": "./dist/network/connection/AbridgedCodec.js",
         "./network/connection/TCPFull": {
-            "types": "./network/connection/FullCodec.d.ts",
-            "default": "./network/connection/FullCodec.js"
+            "types": "./dist/network/connection/FullCodec.d.ts",
+            "default": "./dist/network/connection/FullCodec.js"
         },
-        "./network/connection/TCPFull.js": "./network/connection/FullCodec.js",
+        "./network/connection/TCPFull.js": "./dist/network/connection/FullCodec.js",
         "./network/connection/TCPMTProxy": {
-            "types": "./compat/network/connection/TCPMTProxy.d.ts",
-            "default": "./compat/network/connection/TCPMTProxy.js"
+            "types": "./dist/compat/network/connection/TCPMTProxy.d.ts",
+            "default": "./dist/compat/network/connection/TCPMTProxy.js"
         },
-        "./network/connection/TCPMTProxy.js": "./compat/network/connection/TCPMTProxy.js",
+        "./network/connection/TCPMTProxy.js": "./dist/compat/network/connection/TCPMTProxy.js",
         "./network/connection/TCPObfuscated": {
-            "types": "./network/connection/Obfuscation.d.ts",
-            "default": "./network/connection/Obfuscation.js"
+            "types": "./dist/network/connection/Obfuscation.d.ts",
+            "default": "./dist/network/connection/Obfuscation.js"
         },
-        "./network/connection/TCPObfuscated.js": "./network/connection/Obfuscation.js",
+        "./network/connection/TCPObfuscated.js": "./dist/network/connection/Obfuscation.js",
         "./network/connection/WebProxy": {
-            "types": "./compat/network/connection/WebProxy.d.ts",
-            "default": "./compat/network/connection/WebProxy.js"
+            "types": "./dist/compat/network/connection/WebProxy.d.ts",
+            "default": "./dist/compat/network/connection/WebProxy.js"
         },
-        "./network/connection/WebProxy.js": "./compat/network/connection/WebProxy.js",
+        "./network/connection/WebProxy.js": "./dist/compat/network/connection/WebProxy.js",
         "./network/core_types": {
-            "types": "./network/dc/dcId.d.ts",
-            "default": "./network/dc/dcId.js"
+            "types": "./dist/network/dc/dcId.d.ts",
+            "default": "./dist/network/dc/dcId.js"
         },
-        "./network/core_types.js": "./network/dc/dcId.js",
+        "./network/core_types.js": "./dist/network/dc/dcId.js",
         "./tl/runtime/helpers": {
-            "types": "./tl/binary/serialize.d.ts",
-            "default": "./tl/binary/serialize.js"
+            "types": "./dist/tl/binary/serialize.d.ts",
+            "default": "./dist/tl/binary/serialize.js"
         },
-        "./tl/runtime/helpers.js": "./tl/binary/serialize.js",
+        "./tl/runtime/helpers.js": "./dist/tl/binary/serialize.js",
         "./tl/runtime/registry": {
-            "types": "./tl/runtime/Registry.d.ts",
-            "default": "./tl/runtime/Registry.js"
+            "types": "./dist/tl/runtime/Registry.d.ts",
+            "default": "./dist/tl/runtime/Registry.js"
         },
-        "./tl/runtime/registry.js": "./tl/runtime/Registry.js",
+        "./tl/runtime/registry.js": "./dist/tl/runtime/Registry.js",
         "./package.json": "./package.json",
         "./README.md": "./README.md",
         "./LICENSE": "./LICENSE",
-        "./*.js": "./*.js",
-        "./*.json": "./*.json",
-        "./*.ts": "./*.ts",
+        "./*.js": "./dist/*.js",
+        "./*.json": "./dist/*.json",
+        "./*.ts": "./dist/*.ts",
         "./*": {
-            "types": "./*.d.ts",
-            "default": "./*.js"
+            "types": "./dist/*.d.ts",
+            "default": "./dist/*.js"
         }
     },
     "typesVersions": {
         "*": {
             "client/2fa": [
-                "client/methods/2fa.d.ts"
+                "dist/client/methods/2fa.d.ts"
             ],
             "client/account": [
-                "client/methods/account.d.ts"
+                "dist/client/methods/account.d.ts"
             ],
             "client/auth": [
-                "client/methods/auth.d.ts"
+                "dist/client/methods/auth.d.ts"
             ],
             "client/bots": [
-                "client/methods/bots.d.ts"
+                "dist/client/methods/bots.d.ts"
             ],
             "client/buttons": [
-                "client/methods/buttons.d.ts"
+                "dist/client/methods/buttons.d.ts"
             ],
             "client/chats": [
-                "client/methods/chats.d.ts"
+                "dist/client/methods/chats.d.ts"
             ],
             "client/communities": [
-                "client/methods/communities.d.ts"
+                "dist/client/methods/communities.d.ts"
             ],
             "client/contacts": [
-                "client/methods/contacts.d.ts"
+                "dist/client/methods/contacts.d.ts"
             ],
             "client/dialogs": [
-                "client/methods/dialogs.d.ts"
+                "dist/client/methods/dialogs.d.ts"
             ],
             "client/downloads": [
-                "client/methods/downloads.d.ts"
+                "dist/client/methods/downloads.d.ts"
             ],
             "client/folders": [
-                "client/methods/folders.d.ts"
+                "dist/client/methods/folders.d.ts"
             ],
             "client/forums": [
-                "client/methods/forums.d.ts"
+                "dist/client/methods/forums.d.ts"
             ],
             "client/inviteLinks": [
-                "client/methods/inviteLinks.d.ts"
+                "dist/client/methods/inviteLinks.d.ts"
             ],
             "client/messageParse": [
-                "client/methods/messageParse.d.ts"
+                "dist/client/methods/messageParse.d.ts"
             ],
             "client/messages": [
-                "client/methods/messages.d.ts"
+                "dist/client/methods/messages.d.ts"
             ],
             "client/rpcControl": [
-                "client/rpc/RpcCallControl.d.ts"
+                "dist/client/rpc/RpcCallControl.d.ts"
             ],
             "client/stickers": [
-                "client/methods/stickers.d.ts"
+                "dist/client/methods/stickers.d.ts"
             ],
             "client/stories": [
-                "client/methods/stories.d.ts"
+                "dist/client/methods/stories.d.ts"
             ],
             "client/telegramBaseClient": [
-                "client/TelegramBaseClient.d.ts"
+                "dist/client/TelegramBaseClient.d.ts"
             ],
             "client/updates/channelScheduler": [
-                "client/updates/ChannelScheduler.d.ts"
+                "dist/client/updates/ChannelScheduler.d.ts"
             ],
             "client/updates/composer": [
-                "client/updates/ClientUpdates.d.ts"
+                "dist/client/updates/ClientUpdates.d.ts"
             ],
             "client/updates/context": [
-                "client/updates/UpdateContext.d.ts"
+                "dist/client/updates/UpdateContext.d.ts"
             ],
             "client/updates/dispatch": [
-                "compat/client/updates/dispatch.d.ts"
+                "dist/compat/client/updates/dispatch.d.ts"
             ],
             "client/updates/manager": [
-                "client/updates/UpdateManager.d.ts"
+                "dist/client/updates/UpdateManager.d.ts"
             ],
             "client/updates/ptsWaiter": [
-                "client/updates/PtsWaiter.d.ts"
+                "dist/client/updates/PtsWaiter.d.ts"
             ],
             "client/uploads": [
-                "client/methods/uploads.d.ts"
+                "dist/client/methods/uploads.d.ts"
             ],
             "client/users": [
-                "client/methods/users.d.ts"
+                "dist/client/methods/users.d.ts"
             ],
             "client/wallet": [
-                "client/methods/wallet.d.ts"
+                "dist/client/methods/wallet.d.ts"
             ],
             "extensions/BinaryReader": [
-                "compat/extensions/BinaryReader.d.ts"
+                "dist/compat/extensions/BinaryReader.d.ts"
             ],
             "extensions/BinaryWriter": [
-                "compat/extensions/BinaryWriter.d.ts"
+                "dist/compat/extensions/BinaryWriter.d.ts"
             ],
             "extensions/PromisedNetSockets": [
-                "compat/extensions/PromisedNetSockets.d.ts"
+                "dist/compat/extensions/PromisedNetSockets.d.ts"
             ],
             "extensions/PromisedWebSockets": [
-                "compat/extensions/PromisedWebSockets.d.ts"
+                "dist/compat/extensions/PromisedWebSockets.d.ts"
             ],
             "extensions/SocketInterface": [
-                "compat/extensions/SocketInterface.d.ts"
+                "dist/compat/extensions/SocketInterface.d.ts"
             ],
             "network/Authenticator": [
-                "network/mtproto/authKeyExchange.d.ts"
+                "dist/network/mtproto/authKeyExchange.d.ts"
             ],
             "network/Dcenter": [
-                "compat/network/Dcenter.d.ts"
+                "dist/compat/network/Dcenter.d.ts"
             ],
             "network/MTProtoPlainSender": [
-                "compat/network/MTProtoPlainSender.d.ts"
+                "dist/compat/network/MTProtoPlainSender.d.ts"
             ],
             "network/MTProtoSender": [
-                "compat/network/MTProtoSender.d.ts"
+                "dist/compat/network/MTProtoSender.d.ts"
             ],
             "network/Network": [
-                "compat/network/Network.d.ts"
+                "dist/compat/network/Network.d.ts"
             ],
             "network/RequestState": [
-                "network/mtproto/RequestState.d.ts"
+                "dist/network/mtproto/RequestState.d.ts"
             ],
             "network/SenderSlot": [
-                "compat/network/SenderSlot.d.ts"
+                "dist/compat/network/SenderSlot.d.ts"
             ],
             "network/UpdateConnectionState": [
-                "network/session/UpdateConnectionState.d.ts"
+                "dist/network/session/UpdateConnectionState.d.ts"
             ],
             "network/connection/Connection": [
-                "compat/network/connection/Connection.d.ts"
+                "dist/compat/network/connection/Connection.d.ts"
             ],
             "network/connection/TCPAbridged": [
-                "network/connection/AbridgedCodec.d.ts"
+                "dist/network/connection/AbridgedCodec.d.ts"
             ],
             "network/connection/TCPFull": [
-                "network/connection/FullCodec.d.ts"
+                "dist/network/connection/FullCodec.d.ts"
             ],
             "network/connection/TCPMTProxy": [
-                "compat/network/connection/TCPMTProxy.d.ts"
+                "dist/compat/network/connection/TCPMTProxy.d.ts"
             ],
             "network/connection/TCPObfuscated": [
-                "network/connection/Obfuscation.d.ts"
+                "dist/network/connection/Obfuscation.d.ts"
             ],
             "network/connection/WebProxy": [
-                "compat/network/connection/WebProxy.d.ts"
+                "dist/compat/network/connection/WebProxy.d.ts"
             ],
             "network/core_types": [
-                "network/dc/dcId.d.ts"
+                "dist/network/dc/dcId.d.ts"
             ],
             "tl/runtime/helpers": [
-                "tl/binary/serialize.d.ts"
+                "dist/tl/binary/serialize.d.ts"
             ],
             "tl/runtime/registry": [
-                "tl/runtime/Registry.d.ts"
+                "dist/tl/runtime/Registry.d.ts"
             ]
         }
     },
     "imports": {
         "#platform/*": {
-            "node": "./platform/*/node.js",
-            "default": "./platform/*/browser.js"
+            "node": "./dist/platform/*/node.js",
+            "default": "./dist/platform/*/browser.js"
         }
     },
     "repository": {
@@ -486,7 +486,7 @@
         "generate:errors": "ts-node --transpile-only teleproto_generator/generate-errors.ts",
         "generate:docs": "ts-node --transpile-only teleproto_generator/harvest-docs.ts",
         "generate": "npm run generate:tl && npm run generate:errors",
-        "publish:dist-manifest": "node -e \"const fs=require('fs');const pkg=require('./package.json');const out={name:pkg.name,version:pkg.version,description:pkg.description,main:pkg.main,types:pkg.types,exports:pkg.exports,typesVersions:pkg.typesVersions,imports:pkg.imports,repository:pkg.repository,license:pkg.license,bugs:pkg.bugs,keywords:pkg.keywords,homepage:pkg.homepage,funding:pkg.funding,engines:pkg.engines,dependencies:pkg.dependencies};fs.writeFileSync('dist/package.json',JSON.stringify(out,null,2)+'\\n');\"",
+        "publish:dist-manifest": "node -e \"const fs=require('fs');const pkg=require('./package.json');const strip=v=>typeof v==='string'?(v.startsWith('./dist/')?'./'+v.slice(7):v.startsWith('dist/')?v.slice(5):v):Array.isArray(v)?v.map(strip):v&&typeof v==='object'?Object.fromEntries(Object.entries(v).map(([k,x])=>[k,strip(x)])):v;const out={name:pkg.name,version:pkg.version,description:pkg.description,main:strip(pkg.main),types:strip(pkg.types),exports:strip(pkg.exports),typesVersions:strip(pkg.typesVersions),imports:strip(pkg.imports),repository:pkg.repository,license:pkg.license,bugs:pkg.bugs,keywords:pkg.keywords,homepage:pkg.homepage,funding:pkg.funding,engines:pkg.engines,dependencies:pkg.dependencies};fs.writeFileSync('dist/package.json',JSON.stringify(out,null,2)+'\\n');\"",
         "publish:prepare": "npm run clean && npm run generate:tl && npm run generate:errors && npm run build && npm run typecheck && npm run publish:dist-manifest && cp README.md LICENSE dist/ && rm -f dist/tsconfig.tsbuildinfo",
         "publish:check": "npm run publish:prepare && npm pack ./dist --dry-run",
         "publish:latest": "npm run publish:prepare && npm publish ./dist --tag latest",

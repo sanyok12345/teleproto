@@ -12,6 +12,10 @@ export default defineConfig({
     cjsDefault: false,
     dts: false,
     deps: { neverBundle: [/^#platform\//] },
+    copy: [
+        { from: "teleproto/define.d.ts" },
+        { from: "teleproto/tl/generated/api.d.ts", to: "dist/tl/generated" },
+    ],
     outputOptions: { exports: "named", esModule: true },
     report: { summary: true },
 });

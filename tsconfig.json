@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
+    "module": "node16",
     "target": "es2022",
     "lib": ["es2022"],
     "useDefineForClassFields": false,
@@ -12,13 +12,11 @@
     "strict": true,
     "incremental": true,
     "forceConsistentCasingInFileNames": true,
-    "moduleResolution": "node",
+    "moduleResolution": "node16",
     "resolveJsonModule": true,
     "declaration": true,
-    "outDir": "./dist",
-    "paths": {
-      "#platform/*": ["./teleproto/platform/*/node.ts"]
-    }
+    "rootDir": "./teleproto",
+    "outDir": "./dist"
   },
   "exclude": [
     "dist",

@@ -6,10 +6,10 @@ interface WebSocketLike {
     binaryType: string;
     send(data: Uint8Array): void;
     close(code?: number): void;
-    onopen: ((ev?: unknown) => void) | null;
-    onmessage: ((ev: { data: ArrayBuffer | string }) => void) | null;
-    onclose: ((ev?: unknown) => void) | null;
-    onerror: ((ev?: unknown) => void) | null;
+    onopen: ((event: never) => void) | null;
+    onmessage: ((event: never) => void) | null;
+    onclose: ((event: never) => void) | null;
+    onerror: ((event: never) => void) | null;
 }
 
 type WebSocketCtor = new (url: string, protocols?: string | string[]) => WebSocketLike;
@@ -41,7 +41,7 @@ export class WebSocketSocket implements SocketInterface {
         const socket = new impl(url, "binary");
         socket.binaryType = "arraybuffer";
         this.socket = socket;
-        socket.onmessage = (ev) =>
+        socket.onmessage = (ev: { data: ArrayBuffer | string }) =>
             stream.push(typeof ev.data === "string" ? Buffer.from(ev.data) : Buffer.from(new Uint8Array(ev.data)));
         await new Promise<void>((resolve, reject) => {
             socket.onopen = () => resolve();

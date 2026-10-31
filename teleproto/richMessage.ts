@@ -19,6 +19,30 @@
 import { Api } from "./tl/api";
 import { unionId } from "./Helpers";
 
+export {
+    text,
+    bold,
+    italic,
+    underline,
+    strike,
+    code,
+    subscript,
+    superscript,
+    marked,
+    spoiler,
+    link,
+    email,
+    phone,
+    mention,
+    anchor,
+    math,
+    date,
+    customEmoji,
+    image,
+    type RichTextLike,
+    type RichDateOptions,
+} from "./tl/custom/richText";
+
 /**
  * Media referenced from HTML/Markdown content by id: map of id → uploaded
  * photo or document. Reference them from the content by that id

@@ -9,6 +9,7 @@ export type EntityMap = Map<string, Api.TypeUser | Api.TypeChat>;
 export interface DispatchPayload {
     others: Api.TypeUpdate[] | null;
     entities?: EntityMap;
+    missed?: boolean;
 }
 
 export function isCommonPtsUpdate(update: Api.TypeUpdate): update is PtsUpdate {

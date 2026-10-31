@@ -33,5 +33,9 @@ export class UpdateContext extends EventCommon {
     }
 }
 
-/** The original event with a non-enumerable chat context. */
-export type WithUpdateContext<T> = T & { readonly context: UpdateContext };
+/** The original event with non-enumerable `context` and `missed`. */
+export type WithUpdateContext<T> = T & {
+    readonly context: UpdateContext;
+    /** `true` when the update was not delivered live and was fetched later, after a gap, a reconnect or a restart. */
+    readonly missed: boolean;
+};

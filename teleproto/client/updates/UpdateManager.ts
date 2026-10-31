@@ -288,6 +288,7 @@ export class UpdateManager implements ChannelUpdatesHost {
         if (!this.running || this.isDuplicateMessage(update)) return;
         if ((update as { _noDispatch?: boolean })._noDispatch) return;
         (update as unknown as { _entities: Map<string, unknown> })._entities = payload.entities ?? new Map();
+        if (payload.missed) Object.defineProperty(update, "missed", { value: true, configurable: true });
         this.client._updateDispatcher.dispatch(update).catch((e) => this.client._log.error(`Error dispatching update: ${e}`));
     }
 
@@ -509,7 +510,7 @@ export class UpdateManager implements ChannelUpdatesHost {
         await this.saveEntities(diff);
         const entities = collectEntities(diff.users, diff.chats);
         this.client._log.debug(`Repaired a single pts gap at ${pts + 1}`);
-        this.globalPts.updateAndApply(pts + 1, 1, { tag: "update", update: updates[0] }, (applied) => this.dispatch(applied, { others: null, entities }), () => {});
+        this.globalPts.updateAndApply(pts + 1, 1, { tag: "update", update: updates[0] }, (applied) => this.dispatch(applied, { others: null, entities, missed: true }), () => {});
     }
 
     private async fetchDifference(): Promise<void> {
@@ -597,18 +598,18 @@ export class UpdateManager implements ChannelUpdatesHost {
                     update instanceof Api.UpdateMessageID || update instanceof Api.UpdateEncryption || update instanceof Api.UpdateFolderPeers
             )
         );
-        for (const update of first) this.dispatch(update, { others, entities });
+        for (const update of first) this.dispatch(update, { others, entities, missed: true });
         for (const message of diff.newMessages.filter(isMessage)) {
-            this.dispatch(new Api.UpdateNewMessage({ message, pts: 0, ptsCount: 0 }), { others: null, entities });
+            this.dispatch(new Api.UpdateNewMessage({ message, pts: 0, ptsCount: 0 }), { others: null, entities, missed: true });
         }
         for (const message of diff.newEncryptedMessages) {
-            this.dispatch(new Api.UpdateNewEncryptedMessage({ message, qts: 0 }), { others: null, entities });
+            this.dispatch(new Api.UpdateNewEncryptedMessage({ message, qts: 0 }), { others: null, entities, missed: true });
         }
         for (const update of others) {
             if (first.has(update)) continue;
             if (update instanceof Api.UpdateChannelTooLong) this.channels.tooLong(update, true);
-            else if (isChannelPtsUpdate(update)) this.channels.feed(update, { others, entities });
-            else this.dispatch(update, { others, entities });
+            else if (isChannelPtsUpdate(update)) this.channels.feed(update, { others, entities, missed: true });
+            else this.dispatch(update, { others, entities, missed: true });
         }
     }
 }

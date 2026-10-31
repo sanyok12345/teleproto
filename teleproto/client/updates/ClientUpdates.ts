@@ -58,6 +58,7 @@ type UpdateFields = {
     message?: { peerId?: Api.TypePeer };
     _entities?: Map<string, Api.TypeUser | Api.TypeChat>;
     state?: Record<string, unknown>;
+    missed?: boolean;
 };
 
 const fieldsOf = (update: unknown): UpdateFields => (update ?? {}) as UpdateFields;
@@ -650,6 +651,9 @@ export class ClientUpdates {
 
     private attachContext(event: object, update: AnyUpdate = event as AnyUpdate): void {
         if ("context" in event) return;
+        if (!("missed" in event)) {
+            Object.defineProperty(event, "missed", { value: fieldsOf(update).missed === true, enumerable: false, configurable: true });
+        }
         let context: UpdateContext | undefined;
         Object.defineProperty(event, "context", {
             get: () => context ??= new UpdateContext(

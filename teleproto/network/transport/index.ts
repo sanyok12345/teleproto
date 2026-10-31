@@ -1,4 +1,4 @@
-export { Transport, type ResolvedTransport } from "./Transport";
+export { Transport, type ResolvedTransport, type TransportAddress, type TransportStream } from "./Transport";
 export { TcpTransport } from "./TcpTransport";
 export { SocksTransport, type SocksTransportOptions } from "./SocksTransport";
 export { HttpProxyTransport, type HttpProxyTransportOptions } from "./HttpProxyTransport";

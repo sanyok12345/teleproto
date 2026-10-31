@@ -1,16 +1,16 @@
 import { Buffer, net } from "../../../platform";
 import { ByteStream, SocketClosedError } from "./ByteStream";
-import type { SocketInterface } from "./types";
+import type { SocketInterface, TransportStream } from "./types";
 
 const DEFAULT_KEEP_ALIVE_INTERVAL = 30_000;
 
 export interface Tunnel {
-    socket: net.Socket;
+    socket: TransportStream;
     head?: Buffer;
 }
 
 export class NetSocket implements SocketInterface {
-    private socket?: net.Socket;
+    private socket?: TransportStream;
     private stream = new ByteStream();
     private readonly keepAliveInterval: number;
 
@@ -30,7 +30,8 @@ export class NetSocket implements SocketInterface {
     async connect(port: number, ip: string) {
         const stream = (this.stream = new ByteStream());
         const tunnel = await this.openTunnel(port, ip);
-        const socket = tunnel?.socket ?? net.createSocket();
+        const direct = tunnel ? undefined : net.createSocket();
+        const socket: TransportStream = tunnel?.socket ?? direct!;
         this.socket = socket;
         if (tunnel?.head?.length) stream.push(tunnel.head);
         socket.on("data", (chunk: Buffer) => stream.push(chunk));
@@ -44,12 +45,12 @@ export class NetSocket implements SocketInterface {
             const ready = () => {
                 socket.off("error", fail);
                 socket.on("error", (error) => stream.end(error));
-                socket.setNoDelay(true);
-                socket.setKeepAlive(this.keepAliveInterval > 0, Math.max(0, this.keepAliveInterval));
+                socket.setNoDelay?.(true);
+                socket.setKeepAlive?.(this.keepAliveInterval > 0, Math.max(0, this.keepAliveInterval));
                 resolve();
             };
-            if (tunnel) ready();
-            else socket.connect(port, ip, ready);
+            if (direct) direct.connect(port, ip, ready);
+            else ready();
         });
     }
 
@@ -73,7 +74,7 @@ export class NetSocket implements SocketInterface {
         if (!socket || socket.destroyed) return;
         const closed = new Promise<void>((resolve) => socket.once("close", () => resolve()));
         socket.destroy();
-        socket.unref();
+        socket.unref?.();
         await closed;
     }
 

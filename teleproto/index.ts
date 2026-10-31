@@ -29,6 +29,8 @@ export {
     WebProxyTransport,
 } from "./network/transport";
 export type {
+    TransportAddress,
+    TransportStream,
     SocksTransportOptions,
     HttpProxyTransportOptions,
     MTProxyTransportOptions,

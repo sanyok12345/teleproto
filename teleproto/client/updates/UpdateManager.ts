@@ -229,12 +229,13 @@ export class UpdateManager implements ChannelUpdatesHost {
     private async initState(generation: number) {
         try {
             const stored = this.client.session.getUpdateState();
-            const resume = !!stored && stored.pts > 0;
+            const resume = !!stored && stored.pts > 0 && this.client._catchUp;
             if (resume) {
                 this.client._log.info(`Resuming updates from saved state pts=${stored.pts} qts=${stored.qts} date=${stored.date}`);
                 this.refreshFromState(stored);
                 this.channels.restore(stored.channels);
             } else {
+                if (stored && stored.pts > 0) this.client._log.info("Skipping the updates missed while offline");
                 this.refreshFromState(await this.client.api.updates.getState());
             }
             if (!this.isCurrent(generation)) return;

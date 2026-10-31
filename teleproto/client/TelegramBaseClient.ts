@@ -178,9 +178,7 @@ export interface TelegramClientParams {
     autoReconnect?: boolean;
     /** Deliver updates one at a time, awaiting all handlers. Defaults to false. Slow handlers accumulate queued updates; destroy clears pending work. */
     sequentialUpdates?: boolean;
-    /** The threshold below which the library should automatically sleep on flood wait and slow mode wait errors (inclusive).<br/>
-     *  For instance, if a FloodWaitError for 17s occurs and floodSleepThreshold is 20s, the library will sleep automatically.<br/>
-     *  If the error was for 21s, it would raise FloodWaitError instead. defaults to 60 sec.*/
+    /** Flood waits up to this many seconds (inclusive) are slept through and retried; longer ones throw `FloodWaitError`. Defaults to 60. */
     floodSleepThreshold?: number;
     /**
      * Device model to be sent when creating the initial connection. Defaults to os.type().toString().

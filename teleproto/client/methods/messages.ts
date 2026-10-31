@@ -29,6 +29,7 @@ import {
     SendFileInterface,
 } from "./uploads";
 import { Buffer } from "../../platform";
+import { RichContent } from "../../tl/custom/RichContent";
 
 const _MAX_CHUNK_SIZE = 100;
 
@@ -589,8 +590,8 @@ export interface SendMessageParams {
     /** Suggested-post metadata for direct-messages channels. */
     suggestedPost?: Api.TypeSuggestedPost;
     /** Rich message content (Layer 228): tables, headings, lists, inline media.<br/>
-     * Build it with the `Rich` helpers — `Rich.markdown("# hi")`, `Rich.html("<h1>hi</h1>")` (server-side parsing), or `Rich.blocks([...])`. Only for plain text messages. */
-    richMessage?: Api.TypeInputRichMessage;
+     * Build it with {@link RichContent}, or with the `Rich` helpers — `Rich.markdown("# hi")`, `Rich.html("<h1>hi</h1>")` (server-side parsing), or `Rich.blocks([...])`. Only for plain text messages. */
+    richMessage?: Api.TypeInputRichMessage | RichContent;
 }
 
 /** interface used for forwarding messages */
@@ -668,8 +669,8 @@ export interface EditMessageParams {
     scheduleRepeatPeriod?: number;
     /** If editing a message inside a quick-reply shortcut, the ID of that shortcut. */
     quickReplyShortcutId?: number;
-    /** New rich message content (Layer 228 page-block tree). */
-    richMessage?: Api.TypeInputRichMessage;
+    /** New rich message content (Layer 228 page-block tree), or a {@link RichContent}. */
+    richMessage?: Api.TypeInputRichMessage | RichContent;
 }
 
 /** Interface for editing messages */
@@ -805,6 +806,10 @@ export async function getMessages(
 }
 
 // region Message
+function _toRichMessage(value: Api.TypeInputRichMessage | RichContent | undefined): Api.TypeInputRichMessage | undefined {
+    return value instanceof RichContent ? value.build() : value;
+}
+
 /** @hidden */
 export async function sendMessage(
     client: TelegramClient,
@@ -954,7 +959,7 @@ export async function sendMessage(
             allowPaidStars: allowPaidStars,
             quickReplyShortcut: _toQuickReplyShortcut(quickReplyShortcut),
             suggestedPost: suggestedPost,
-            richMessage: richMessage,
+            richMessage: _toRichMessage(richMessage),
             sendAs: sendAs
                 ? await client.getInputEntity(sendAs)
                 : undefined,
@@ -994,7 +999,7 @@ export async function sendMessage(
             allowPaidStars: allowPaidStars,
             quickReplyShortcut: _toQuickReplyShortcut(quickReplyShortcut),
             suggestedPost: suggestedPost,
-            richMessage: richMessage,
+            richMessage: _toRichMessage(richMessage),
             sendAs: sendAs
                 ? await client.getInputEntity(sendAs)
                 : undefined,
@@ -1206,7 +1211,7 @@ export async function editMessage(
         scheduleDate: schedule,
         scheduleRepeatPeriod: scheduleRepeatPeriod,
         quickReplyShortcutId: quickReplyShortcutId,
-        richMessage: richMessage,
+        richMessage: _toRichMessage(richMessage),
         invertMedia: invertMedia,
     });
     const result = await client.invoke(request);
@@ -1828,8 +1833,8 @@ export interface SaveDraftParams {
     effect?: BigInteger;
     /** Suggested-post metadata for direct-messages channels. */
     suggestedPost?: Api.TypeSuggestedPost;
-    /** Rich message content (Layer 228). Build it with the `Rich` helpers (`Rich.markdown`, `Rich.html`, `Rich.blocks`). */
-    richMessage?: Api.TypeInputRichMessage;
+    /** Rich message content (Layer 228). Build it with {@link RichContent} or the `Rich` helpers (`Rich.markdown`, `Rich.html`, `Rich.blocks`). */
+    richMessage?: Api.TypeInputRichMessage | RichContent;
 }
 
 /** @hidden */
@@ -1873,7 +1878,7 @@ export async function saveDraft(
             media: params.media,
             effect: params.effect,
             suggestedPost: params.suggestedPost,
-            richMessage: params.richMessage,
+            richMessage: _toRichMessage(params.richMessage),
         })
     );
 }

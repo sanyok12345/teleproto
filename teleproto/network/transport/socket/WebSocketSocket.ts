@@ -2,7 +2,8 @@ import { ByteStream, SocketClosedError } from "./ByteStream";
 import type { SocketInterface } from "./types";
 import { Buffer } from "../../../platform";
 
-interface WebSocketLike {
+/** The parts of a WebSocket the client uses: the browser `WebSocket`, the `ws` package or a compatible object. */
+export interface WebSocketLike {
     binaryType: string;
     send(data: Uint8Array): void;
     close(code?: number): void;
@@ -28,17 +29,21 @@ export class WebSocketSocket implements SocketInterface {
         return this.stream.lastDataAt;
     }
 
-    async connect(port: number, ip: string, testServers = false) {
+    protected create(url: string, protocols: string | string[]): WebSocketLike {
         const impl = (this.constructor as typeof WebSocketSocket).webSocketImpl ?? WebSocketSocket.webSocketImpl ?? (globalThis as { WebSocket?: WebSocketCtor }).WebSocket;
         if (!impl) {
             throw new Error(
                 "No WebSocket implementation found: run on Node.js 22+ or a browser, " +
-                    'or set WebSocketSocket.webSocketImpl (e.g. require("ws").WebSocket)'
+                    "or override WebSocketTransport.webSocket() to return one"
             );
         }
-        const stream = (this.stream = new ByteStream());
+        return new impl(url, protocols);
+    }
+
+    async connect(port: number, ip: string, testServers = false) {
         const url = `${port === 443 ? "wss" : "ws"}://${ip}:${port}/apiws${testServers ? "_test" : ""}`;
-        const socket = new impl(url, "binary");
+        const socket = this.create(url, "binary");
+        const stream = (this.stream = new ByteStream());
         socket.binaryType = "arraybuffer";
         this.socket = socket;
         socket.onmessage = (ev: { data: ArrayBuffer | string }) =>

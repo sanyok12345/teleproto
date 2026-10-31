@@ -3,5 +3,5 @@ export { TcpTransport } from "./TcpTransport";
 export { SocksTransport, type SocksTransportOptions } from "./SocksTransport";
 export { HttpProxyTransport, type HttpProxyTransportOptions } from "./HttpProxyTransport";
 export { MTProxyTransport, type MTProxyTransportOptions } from "./MTProxyTransport";
-export { WebSocketTransport } from "./WebSocketTransport";
+export { WebSocketTransport, type WebSocketLike } from "./WebSocketTransport";
 export { WebProxyTransport, type WebProxyOptions, type WebProxyWebSocket } from "./WebProxyTransport";

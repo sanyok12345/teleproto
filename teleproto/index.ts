@@ -31,6 +31,7 @@ export {
 export type {
     TransportAddress,
     TransportStream,
+    WebSocketLike,
     SocksTransportOptions,
     HttpProxyTransportOptions,
     MTProxyTransportOptions,

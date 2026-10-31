@@ -534,7 +534,7 @@
         "buffer": "^6.0.3",
         "cifrante": "0.8.1",
         "mime": "^3.0.0",
-        "node-localstorage": "^2.2.1",
+        "node-localstorage": "^3.0.5",
         "socks": "^2.6.2"
     }
 }

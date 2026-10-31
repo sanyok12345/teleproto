@@ -47,3 +47,4 @@ export * from "./FileErrors";
 export * from "./RPCBaseErrors";
 export * from "./RPCErrorList";
 export * from "./aliases";
+export { match, handle, type ErrorHandlers } from "./match";

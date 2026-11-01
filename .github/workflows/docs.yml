@@ -2,7 +2,8 @@ name: Generate Docs
 
 on:
   release:
-    types: [created]
+    types: [published]
+  workflow_dispatch:
 
 jobs:
   build-and-deploy:

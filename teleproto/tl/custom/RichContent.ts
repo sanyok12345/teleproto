@@ -1,6 +1,6 @@
 import { Api } from "../api";
-import { getInputDocument, getInputPhoto, getInputUser } from "../../Utils";
-import { referencesOf, text, type RichReference, type RichTextLike } from "./richText";
+import { getInputDocument, getInputPhoto } from "../../Utils";
+import { inputUserOf, referencesOf, text, type RichReference, type RichTextLike } from "./richText";
 
 export interface RichContentOptions {
     /** Right-to-left layout. */
@@ -340,8 +340,7 @@ export class RichContent {
     }
 
     private attachUser(user: Api.TypeInputUser | Api.User): Api.InputUser {
-        const input = getInputUser(user);
-        if (!(input instanceof Api.InputUser)) throw new Error("A rich message can only refer to users with an id and access hash");
+        const input = inputUserOf(user);
         this.users.set(input.userId.toString(), input);
         return input;
     }

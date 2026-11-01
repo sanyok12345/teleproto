@@ -87,10 +87,18 @@ export function phone(label: RichTextLike, number: string): Api.TextPhone {
     return new Api.TextPhone({ text: text(label), phone: number });
 }
 
+/** @hidden */
+export function inputUserOf(user: Api.TypeInputUser | Api.User): Api.InputUser {
+    const input = user instanceof Api.User && user.accessHash
+        ? new Api.InputUser({ userId: user.id, accessHash: user.accessHash })
+        : getInputUser(user);
+    if (!(input instanceof Api.InputUser)) throw new Error("A rich message can only refer to users with an id and access hash");
+    return input;
+}
+
 /** A mention of `user` by id; the user is attached to the message for you. */
 export function mention(label: RichTextLike, user: Api.TypeInputUser | Api.User): Api.TextMentionName {
-    const input = getInputUser(user);
-    if (!(input instanceof Api.InputUser)) throw new Error("A rich mention needs a user with an id and access hash");
+    const input = inputUserOf(user);
     return withReference(new Api.TextMentionName({ text: text(label), userId: input.userId }), input);
 }
 

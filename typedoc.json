@@ -75,7 +75,7 @@
   "gitRevision": "main",
   "sourceLinkTemplate": "https://github.com/sanyok12345/teleproto/blob/{gitRevision}/{path}#L{line}",
 
-  "highlightLanguages": ["typescript", "javascript", "json", "bash", "html"],
+  "highlightLanguages": ["typescript", "javascript", "json", "bash", "html", "diff"],
   "blockTags": [
     "@param",
     "@returns",

@@ -4439,7 +4439,24 @@
             "INPUT_METHOD_INVALID": [],
             "INPUT_REQUEST_TOO_LONG": [],
             "PEER_FLOOD": [],
-            "STICKERSET_NOT_MODIFIED": []
+            "STICKERSET_NOT_MODIFIED": [],
+            "AUTH_TOKEN_INVALID2": [],
+            "BASE_PORT_LOC_INVALID": [],
+            "BOT_COMMANDS_TOO_MUCH": [],
+            "BOT_MISSING": [],
+            "BOT_POLLS_DISABLED": [],
+            "BROADCAST_CALLS_DISABLED": [],
+            "CHANNEL_BANNED": [],
+            "EXPIRE_FORBIDDEN": [],
+            "FIELD_NAME_EMPTY": [],
+            "FIELD_NAME_INVALID": [],
+            "FILE_PART_0_MISSING": [],
+            "GROUP_CALL_INVALID": [],
+            "POLL_UNSUPPORTED": [],
+            "REFLECTOR_NOT_AVAILABLE": [],
+            "SHORTNAME_OCCUPY_FAILED": [],
+            "TYPE_CONSTRUCTOR_INVALID": [],
+            "UNKNOWN_ERROR": []
         },
         "401": {
             "AUTH_KEY_UNREGISTERED": [
@@ -5191,7 +5208,8 @@
             "SESSION_PASSWORD_NEEDED": [],
             "SESSION_REVOKED": [],
             "USER_DEACTIVATED": [],
-            "USER_DEACTIVATED_BAN": []
+            "USER_DEACTIVATED_BAN": [],
+            "ACTIVE_USER_REQUIRED": []
         },
         "403": {
             "ACCESS_DENIED": [
@@ -5541,7 +5559,8 @@
             "YOUR_PRIVACY_RESTRICTED": [
                 "messages.getOutboxReadDate"
             ],
-            "CHAT_FORBIDDEN": []
+            "CHAT_FORBIDDEN": [],
+            "NOT_ALLOWED": []
         },
         "404": {
             "METHOD_INVALID": [
@@ -5717,7 +5736,8 @@
             "USERPIC_UPLOAD_REQUIRED": [
                 "contacts.getLocated"
             ],
-            "AUTH_KEY_DUPLICATED": []
+            "AUTH_KEY_DUPLICATED": [],
+            "PREVIOUS_CHAT_IMPORT_ACTIVE_WAIT_XMIN": []
         },
         "420": {
             "2FA_CONFIRM_WAIT_%d": [
@@ -5815,7 +5835,30 @@
             ],
             "TRANSLATION_TIMEOUT": [
                 "messages.translateText"
-            ]
+            ],
+            "CHAT_GET_FAILED": [],
+            "CHP_CALL_FAIL": [],
+            "ENCRYPTION_OCCUPY_FAILED": [],
+            "GROUPCALL_ADD_PARTICIPANTS_FAILED": [],
+            "HISTORY_GET_FAILED": [],
+            "INTERDC_%d_CALL_ERROR": [],
+            "INTERDC_%d_CALL_RICH_ERROR": [],
+            "MEMBER_NO_LOCATION": [],
+            "MEMBER_OCCUPY_PRIMARY_LOC_FAILED": [],
+            "MSGID_DECREASE_RETRY": [],
+            "MT_SEND_QUEUE_TOO_LONG": [],
+            "NEED_CHAT_INVALID": [],
+            "NEED_MEMBER_INVALID": [],
+            "PARTICIPANT_CALL_FAILED": [],
+            "POSTPONED_TIMEOUT": [],
+            "PTS_CHANGE_EMPTY": [],
+            "REG_ID_GENERATE_FAILED": [],
+            "RPC_CALL_FAIL": [],
+            "RPC_MCGET_FAIL": [],
+            "STORAGE_CHECK_FAILED": [],
+            "STORE_INVALID_SCALAR_TYPE": [],
+            "UNKNOWN_METHOD": [],
+            "WORKER_BUSY_TOO_LONG_RETRY": []
         },
         "-503": {
             "Timeout": [
@@ -6605,7 +6648,42 @@
         "WEBPUSH_KEY_INVALID": "The specified web push elliptic curve Diffie-Hellman public key is invalid.",
         "WEBPUSH_TOKEN_INVALID": "The specified web push token is invalid.",
         "YOU_BLOCKED_USER": "You blocked this user.",
-        "YOUR_PRIVACY_RESTRICTED": "You cannot fetch the read date of this message because you have disallowed other users to do so for *your* messages; to fix, allow other users to see *your* exact last online date OR purchase a [Telegram Premium](https://core.telegram.org/api/premium) subscription."
+        "YOUR_PRIVACY_RESTRICTED": "You cannot fetch the read date of this message because you have disallowed other users to do so for *your* messages; to fix, allow other users to see *your* exact last online date OR purchase a [Telegram Premium](https://core.telegram.org/api/premium) subscription.",
+        "ACTIVE_USER_REQUIRED": "The method is only available to already activated users",
+        "AUTH_TOKEN_INVALID2": "An invalid authorization token was provided",
+        "BASE_PORT_LOC_INVALID": "Base port location invalid",
+        "BOT_COMMANDS_TOO_MUCH": "The provided commands are too many",
+        "BOT_MISSING": "This method can only be run by a bot",
+        "BOT_POLLS_DISABLED": "You cannot create polls under a bot account",
+        "CHANNEL_BANNED": "The channel is banned",
+        "CHP_CALL_FAIL": "The statistics cannot be retrieved at this time",
+        "ENCRYPTION_OCCUPY_FAILED": "TDLib developer claimed it is not an error while accepting secret chats and 500 is used instead of 420",
+        "FIELD_NAME_EMPTY": "The field with the name FIELD_NAME is missing",
+        "FIELD_NAME_INVALID": "The field with the name FIELD_NAME is invalid",
+        "FILE_PART_0_MISSING": "File part 0 missing",
+        "GROUP_CALL_INVALID": "Group call invalid",
+        "HISTORY_GET_FAILED": "Fetching of history failed",
+        "INTERDC_%d_CALL_ERROR": "An error occurred while communicating with DC %d",
+        "INTERDC_%d_CALL_RICH_ERROR": "A rich error occurred while communicating with DC %d",
+        "MEMBER_NO_LOCATION": "An internal failure occurred while fetching user info (couldn't find location)",
+        "MEMBER_OCCUPY_PRIMARY_LOC_FAILED": "Occupation of primary member location failed",
+        "MSGID_DECREASE_RETRY": "The request should be retried with a lower message ID",
+        "NEED_CHAT_INVALID": "The provided chat is invalid",
+        "NEED_MEMBER_INVALID": "The provided member is invalid or does not exist (for example a thumb size)",
+        "PARTICIPANT_CALL_FAILED": "Failure while making call",
+        "POLL_UNSUPPORTED": "This layer does not support polls in the issued method",
+        "POSTPONED_TIMEOUT": "The postponed call has timed out",
+        "PREVIOUS_CHAT_IMPORT_ACTIVE_WAIT_XMIN": "Similar to a flood wait, must wait %d minutes",
+        "PTS_CHANGE_EMPTY": "No PTS change",
+        "REFLECTOR_NOT_AVAILABLE": "Invalid call reflector server",
+        "REG_ID_GENERATE_FAILED": "Failure while generating registration ID",
+        "RPC_CALL_FAIL": "Telegram is having internal issues, please try again later.",
+        "RPC_MCGET_FAIL": "Telegram is having internal issues, please try again later.",
+        "SHORTNAME_OCCUPY_FAILED": "An error occurred when trying to register the short-name used for the sticker pack. Try a different name",
+        "STORAGE_CHECK_FAILED": "Server storage check failed",
+        "TYPE_CONSTRUCTOR_INVALID": "The type constructor is invalid",
+        "UNKNOWN_METHOD": "The method you tried to call cannot be called on non-CDN DCs",
+        "WORKER_BUSY_TOO_LONG_RETRY": "Telegram workers are too busy to respond immediately"
     },
     "user_only": [
         "account.acceptAuthorization",

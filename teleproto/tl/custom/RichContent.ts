@@ -67,19 +67,6 @@ export class RichContent {
 
     constructor(private readonly options: RichContentOptions = {}) {}
 
-    title(...parts: RichTextLike[]): this {
-        return this.push(new Api.PageBlockTitle({ text: this.text(parts) }));
-    }
-
-    subtitle(...parts: RichTextLike[]): this {
-        return this.push(new Api.PageBlockSubtitle({ text: this.text(parts) }));
-    }
-
-    /** A small line above the title. */
-    kicker(...parts: RichTextLike[]): this {
-        return this.push(new Api.PageBlockKicker({ text: this.text(parts) }));
-    }
-
     heading(level: 1 | 2 | 3 | 4 | 5 | 6, ...parts: RichTextLike[]): this {
         const Heading = [
             Api.PageBlockHeading1,
@@ -98,11 +85,6 @@ export class RichContent {
 
     footer(...parts: RichTextLike[]): this {
         return this.push(new Api.PageBlockFooter({ text: this.text(parts) }));
-    }
-
-    byline(author: RichTextLike, published: Date | number): this {
-        const seconds = typeof published === "number" ? published : Math.floor(published.getTime() / 1000);
-        return this.push(new Api.PageBlockAuthorDate({ author: this.text([author]), publishedDate: seconds }));
     }
 
     code(source: string, language = ""): this {
@@ -178,13 +160,6 @@ export class RichContent {
         return this.push(new Api.PageBlockDocument({ documentId: input.id, caption: this.caption(options) }));
     }
 
-    /** A cover made of the first block of `content`, usually a photo or video. */
-    cover(content: RichContentLike): this {
-        const [cover] = this.nested(content);
-        if (!cover) throw new Error("A rich cover needs a block");
-        return this.push(new Api.PageBlockCover({ cover }));
-    }
-
     collage(content: RichContentLike, options: RichCaptionOptions = {}): this {
         return this.push(new Api.PageBlockCollage({ items: this.nested(content), caption: this.caption(options) }));
     }
@@ -215,22 +190,6 @@ export class RichContent {
     map(geo: Api.TypeInputGeoPoint, options: RichCaptionOptions & { zoom: number; width: number; height: number }): this {
         return this.push(
             new Api.InputPageBlockMap({ geo, zoom: options.zoom, w: options.width, h: options.height, caption: this.caption(options) })
-        );
-    }
-
-    embed(
-        source: { url: string } | { html: string },
-        options: RichCaptionOptions & { width?: number; height?: number; fullWidth?: boolean; allowScrolling?: boolean } = {}
-    ): this {
-        return this.push(
-            new Api.PageBlockEmbed({
-                ...source,
-                w: options.width,
-                h: options.height,
-                fullWidth: options.fullWidth,
-                allowScrolling: options.allowScrolling,
-                caption: this.caption(options),
-            })
         );
     }
 

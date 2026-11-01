@@ -1,7 +1,7 @@
 import bigInt from "big-integer";
 import { Api } from "../api";
 import { Buffer } from "../../platform";
-import { getInputDocument, getInputUser } from "../../Utils";
+import { getInputUser } from "../../Utils";
 import { returnBigInt } from "../../Helpers";
 
 /** Rich text input: a string, a TL rich text object, or a list of them joined together. */
@@ -125,13 +125,6 @@ export function date(value: Date | number, options: RichDateOptions = {}): Api.T
 
 export function customEmoji(documentId: bigInt.BigInteger | string, alt: string): Api.TextCustomEmoji {
     return new Api.TextCustomEmoji({ documentId: returnBigInt(documentId), alt });
-}
-
-/** An inline image from a document; the document is attached to the message for you. */
-export function image(document: Api.TypeInputDocument | Api.TypeDocument, width: number, height: number): Api.TextImage {
-    const input = getInputDocument(document);
-    if (!(input instanceof Api.InputDocument)) throw new Error("A rich image needs a document with an id");
-    return withReference(new Api.TextImage({ documentId: input.id, w: width, h: height }), input);
 }
 
 /** @hidden */

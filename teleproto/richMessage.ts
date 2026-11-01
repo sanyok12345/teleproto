@@ -38,7 +38,6 @@ export {
     math,
     date,
     customEmoji,
-    image,
     type RichTextLike,
     type RichDateOptions,
 } from "./tl/custom/richText";

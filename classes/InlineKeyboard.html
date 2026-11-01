@@ -1,5 +1,5 @@
-<!DOCTYPE html><html class="default" lang="en" data-base="../"><head><meta charset="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>InlineKeyboard | teleproto - v1.232.0</title><meta name="description" content="Documentation for teleproto"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="../assets/style.css"/><link rel="stylesheet" href="../assets/highlight.css"/><script defer src="../assets/main.js"></script><script async src="../assets/icons.js" id="tsd-icons-script"></script><script async src="../assets/search.js" id="tsd-search-script"></script><script async src="../assets/navigation.js" id="tsd-nav-script"></script><script async src="../assets/hierarchy.js" id="tsd-hierarchy-script"></script></head><body><script>document.documentElement.dataset.theme = localStorage.getItem("tsd-theme") || "os";document.body.style.display="none";setTimeout(() => window.app?app.showPage():document.body.style.removeProperty("display"),500)</script><header class="tsd-page-toolbar">
-<div class="tsd-toolbar-contents container"><a href="https://docs.teleproto.dev" class="title">teleproto - v1.232.0</a>
+<!DOCTYPE html><html class="default" lang="en" data-base="../"><head><meta charset="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>InlineKeyboard | teleproto - v1.232.1</title><meta name="description" content="Documentation for teleproto"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="../assets/style.css"/><link rel="stylesheet" href="../assets/highlight.css"/><script defer src="../assets/main.js"></script><script async src="../assets/icons.js" id="tsd-icons-script"></script><script async src="../assets/search.js" id="tsd-search-script"></script><script async src="../assets/navigation.js" id="tsd-nav-script"></script><script async src="../assets/hierarchy.js" id="tsd-hierarchy-script"></script></head><body><script>document.documentElement.dataset.theme = localStorage.getItem("tsd-theme") || "os";document.body.style.display="none";setTimeout(() => window.app?app.showPage():document.body.style.removeProperty("display"),500)</script><header class="tsd-page-toolbar">
+<div class="tsd-toolbar-contents container"><a href="https://docs.teleproto.dev" class="title">teleproto - v1.232.1</a>
 <div id="tsd-toolbar-links"><a href="https://github.com/sanyok12345/teleproto">GitHub</a><a href="https://www.npmjs.com/package/teleproto">npm</a><a href="https://github.com/sanyok12345/teleproto/issues">Issues</a></div><button id="tsd-search-trigger" class="tsd-widget" aria-label="Search"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-search"></use></svg></button><dialog id="tsd-search" aria-label="Search"><input role="combobox" id="tsd-search-input" aria-controls="tsd-search-results" aria-autocomplete="list" aria-expanded="true" autocapitalize="off" autocomplete="off" placeholder="Search the docs" maxLength="100"/>
 <ul role="listbox" id="tsd-search-results"></ul>
 <div id="tsd-search-status" aria-live="polite" aria-atomic="true">
@@ -15,18 +15,18 @@
 </div>
 <div class="tsd-comment tsd-typography">
 <div class="tsd-tag-example">
-<h4 class="tsd-anchor-link" id="example">Example<a href="#example" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><pre><code class="ts"><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">keyboard</span><span class="hl-1"> = </span><span class="hl-4">new</span><span class="hl-1"> </span><span class="hl-6">InlineKeyboard</span><span class="hl-1">()</span><br/><span class="hl-1">    .</span><span class="hl-6">callback</span><span class="hl-1">(</span><span class="hl-3">&quot;Yes&quot;</span><span class="hl-1">, </span><span class="hl-3">&quot;yes&quot;</span><span class="hl-1">, { </span><span class="hl-2">style:</span><span class="hl-1"> { </span><span class="hl-2">color:</span><span class="hl-1"> </span><span class="hl-3">&quot;success&quot;</span><span class="hl-1"> } })</span><br/><span class="hl-1">    .</span><span class="hl-6">callback</span><span class="hl-1">(</span><span class="hl-3">&quot;No&quot;</span><span class="hl-1">, </span><span class="hl-3">&quot;no&quot;</span><span class="hl-1">, { </span><span class="hl-2">style:</span><span class="hl-1"> { </span><span class="hl-2">color:</span><span class="hl-1"> </span><span class="hl-3">&quot;danger&quot;</span><span class="hl-1"> } })</span><br/><span class="hl-1">    .</span><span class="hl-6">row</span><span class="hl-1">()</span><br/><span class="hl-1">    .</span><span class="hl-6">url</span><span class="hl-1">(</span><span class="hl-3">&quot;Open&quot;</span><span class="hl-1">, </span><span class="hl-3">&quot;https://t.me/durov&quot;</span><span class="hl-1">);</span><br/><br/><span class="hl-0">await</span><span class="hl-1"> </span><span class="hl-2">client</span><span class="hl-1">.</span><span class="hl-6">sendMessage</span><span class="hl-1">(</span><span class="hl-2">chat</span><span class="hl-1">, { </span><span class="hl-2">message:</span><span class="hl-1"> </span><span class="hl-3">&quot;Well?&quot;</span><span class="hl-1">, </span><span class="hl-2">buttons:</span><span class="hl-1"> </span><span class="hl-2">keyboard</span><span class="hl-1"> });</span>
+<h4 class="tsd-anchor-link" id="example">Example<a href="#example" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><pre><code class="ts"><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">keyboard</span><span class="hl-1"> = </span><span class="hl-4">new</span><span class="hl-1"> </span><span class="hl-6">InlineKeyboard</span><span class="hl-1">()</span><br/><span class="hl-1">    .</span><span class="hl-6">callback</span><span class="hl-1">(</span><span class="hl-3">&quot;Yes&quot;</span><span class="hl-1">, </span><span class="hl-3">&quot;yes&quot;</span><span class="hl-1">, { </span><span class="hl-0">style:</span><span class="hl-1"> { </span><span class="hl-0">color:</span><span class="hl-1"> </span><span class="hl-3">&quot;success&quot;</span><span class="hl-1"> } })</span><br/><span class="hl-1">    .</span><span class="hl-6">callback</span><span class="hl-1">(</span><span class="hl-3">&quot;No&quot;</span><span class="hl-1">, </span><span class="hl-3">&quot;no&quot;</span><span class="hl-1">, { </span><span class="hl-0">style:</span><span class="hl-1"> { </span><span class="hl-0">color:</span><span class="hl-1"> </span><span class="hl-3">&quot;danger&quot;</span><span class="hl-1"> } })</span><br/><span class="hl-1">    .</span><span class="hl-6">row</span><span class="hl-1">()</span><br/><span class="hl-1">    .</span><span class="hl-6">url</span><span class="hl-1">(</span><span class="hl-3">&quot;Open&quot;</span><span class="hl-1">, </span><span class="hl-3">&quot;https://t.me/durov&quot;</span><span class="hl-1">);</span><br/><br/><span class="hl-2">await</span><span class="hl-1"> </span><span class="hl-0">client</span><span class="hl-1">.</span><span class="hl-6">sendMessage</span><span class="hl-1">(</span><span class="hl-0">chat</span><span class="hl-1">, { </span><span class="hl-0">message:</span><span class="hl-1"> </span><span class="hl-3">&quot;Well?&quot;</span><span class="hl-1">, </span><span class="hl-0">buttons:</span><span class="hl-1"> </span><span class="hl-0">keyboard</span><span class="hl-1"> });</span>
 </code><button type="button">Copy</button></pre>
 
 </div></div></section>
-<section class="tsd-panel tsd-hierarchy" data-refl="230159">
+<section class="tsd-panel tsd-hierarchy" data-refl="230333">
 <h4>Hierarchy</h4>
 <ul class="tsd-hierarchy">
 <li class="tsd-hierarchy-item"><span class="tsd-signature-type">KeyboardBuilder</span><span class="tsd-signature-symbol">&lt;</span><a href="../types/Api.TypeKeyboardInlineButton.html" class="tsd-signature-type tsd-kind-type-alias">TypeKeyboardInlineButton</a><span class="tsd-signature-symbol">&gt;</span>
 <ul class="tsd-hierarchy">
 <li class="tsd-hierarchy-item"><span class="tsd-hierarchy-target">InlineKeyboard</span></li></ul></li></ul></section><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/tl/custom/keyboard.ts#L186">teleproto/tl/custom/keyboard.ts:186</a></li></ul></aside>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/tl/custom/keyboard.ts#L187">teleproto/tl/custom/keyboard.ts:187</a></li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-accordion" open><summary class="tsd-accordion-summary tsd-index-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
@@ -72,7 +72,7 @@
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4><aside class="tsd-sources">
 <p>Inherited from KeyboardBuilder.size</p>
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/tl/custom/keyboard.ts#L157">teleproto/tl/custom/keyboard.ts:157</a></li></ul></aside></div></li></ul></section></section></details>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/tl/custom/keyboard.ts#L158">teleproto/tl/custom/keyboard.ts:158</a></li></ul></aside></div></li></ul></section></section></details>
 <details class="tsd-panel-group tsd-member-group tsd-accordion" open><summary class="tsd-accordion-summary" data-key="section-Constructors"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
 <h2 class="tsd-anchor-link" id="constructors-1">Constructors<a href="#constructors-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h2></summary>
 <section>
@@ -90,7 +90,7 @@
 <h4 class="tsd-returns-title">Returns <a href="" class="tsd-signature-type tsd-kind-class">InlineKeyboard</a></h4><aside class="tsd-sources">
 <p>Overrides KeyboardBuilder&lt;Api.TypeKeyboardInlineButton&gt;.constructor</p>
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/tl/custom/keyboard.ts#L189">teleproto/tl/custom/keyboard.ts:189</a></li></ul></aside></div></li></ul></section></section></details>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/tl/custom/keyboard.ts#L190">teleproto/tl/custom/keyboard.ts:190</a></li></ul></aside></div></li></ul></section></section></details>
 <details class="tsd-panel-group tsd-member-group tsd-accordion" open><summary class="tsd-accordion-summary" data-key="section-Methods"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
 <h2 class="tsd-anchor-link" id="methods-1">Methods<a href="#methods-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h2></summary>
 <section>
@@ -109,7 +109,7 @@
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">this</span></h4><aside class="tsd-sources">
 <p>Inherited from KeyboardBuilder.add</p>
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/tl/custom/keyboard.ts#L140">teleproto/tl/custom/keyboard.ts:140</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/tl/custom/keyboard.ts#L141">teleproto/tl/custom/keyboard.ts:141</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="build"><span>build</span><a href="#build" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -120,7 +120,7 @@
 </div>
 <h4 class="tsd-returns-title">Returns <a href="Api.ReplyInlineMarkup.html" class="tsd-signature-type tsd-kind-class">ReplyInlineMarkup</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/tl/custom/keyboard.ts#L300">teleproto/tl/custom/keyboard.ts:300</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/tl/custom/keyboard.ts#L301">teleproto/tl/custom/keyboard.ts:301</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="buy"><span>buy</span><a href="#buy" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -136,12 +136,12 @@
 <li><span><span class="tsd-kind-parameter">options</span>: <span class="tsd-signature-type">ButtonOptions</span><span class="tsd-signature-symbol"> = {}</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">this</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/tl/custom/keyboard.ts#L284">teleproto/tl/custom/keyboard.ts:284</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/tl/custom/keyboard.ts#L285">teleproto/tl/custom/keyboard.ts:285</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="callback"><span>callback</span><a href="#callback" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
 <li class="">
-<div class="tsd-signature tsd-anchor-link" id="callback-1"><span class="tsd-kind-call-signature">callback</span><span class="tsd-signature-symbol">(</span><br/>    <span class="tsd-kind-parameter">text</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">data</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">Buffer</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">ArrayBufferLike</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">options</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">CallbackButtonOptions</span><span class="tsd-signature-symbol">,</span><br/><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">this</span><a href="#callback-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-signature tsd-anchor-link" id="callback-1"><span class="tsd-kind-call-signature">callback</span><span class="tsd-signature-symbol">(</span><br/>    <span class="tsd-kind-parameter">text</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">data</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">Buffer</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">options</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">CallbackButtonOptions</span><span class="tsd-signature-symbol">,</span><br/><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">this</span><a href="#callback-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
 <div class="tsd-comment tsd-typography"><p>Sends <code>data</code> back as a callback query when pressed.</p>
 </div>
@@ -149,11 +149,11 @@
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
 <li><span><span class="tsd-kind-parameter">text</span>: <span class="tsd-signature-type">string</span></span></li>
-<li><span><span class="tsd-kind-parameter">data</span>: <span class="tsd-signature-type">string</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">Buffer</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">ArrayBufferLike</span><span class="tsd-signature-symbol">&gt;</span></span></li>
+<li><span><span class="tsd-kind-parameter">data</span>: <span class="tsd-signature-type">string</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">Buffer</span></span></li>
 <li><span><span class="tsd-kind-parameter">options</span>: <span class="tsd-signature-type">CallbackButtonOptions</span><span class="tsd-signature-symbol"> = {}</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">this</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/tl/custom/keyboard.ts#L208">teleproto/tl/custom/keyboard.ts:208</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/tl/custom/keyboard.ts#L209">teleproto/tl/custom/keyboard.ts:209</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member tsd-is-inherited">
 <h3 class="tsd-anchor-link" id="columns"><span>columns</span><a href="#columns" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-is-inherited">
@@ -169,7 +169,7 @@
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">this</span></h4><aside class="tsd-sources">
 <p>Inherited from KeyboardBuilder.columns</p>
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/tl/custom/keyboard.ts#L146">teleproto/tl/custom/keyboard.ts:146</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/tl/custom/keyboard.ts#L147">teleproto/tl/custom/keyboard.ts:147</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="copy"><span>copy</span><a href="#copy" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -186,7 +186,7 @@
 <li><span><span class="tsd-kind-parameter">options</span>: <span class="tsd-signature-type">ButtonOptions</span><span class="tsd-signature-symbol"> = {}</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">this</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/tl/custom/keyboard.ts#L274">teleproto/tl/custom/keyboard.ts:274</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/tl/custom/keyboard.ts#L275">teleproto/tl/custom/keyboard.ts:275</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="disabled"><span>disabled</span><a href="#disabled" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -202,7 +202,7 @@
 <li><span><span class="tsd-kind-parameter">options</span>: <span class="tsd-signature-type">ButtonOptions</span><span class="tsd-signature-symbol"> = {}</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">this</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/tl/custom/keyboard.ts#L289">teleproto/tl/custom/keyboard.ts:289</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/tl/custom/keyboard.ts#L290">teleproto/tl/custom/keyboard.ts:290</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="forcereply"><span>force<wbr/>Reply</span><a href="#forcereply" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -217,7 +217,7 @@
 <li><span><span class="tsd-kind-parameter">forceReply</span>: <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = true</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">this</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/tl/custom/keyboard.ts#L294">teleproto/tl/custom/keyboard.ts:294</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/tl/custom/keyboard.ts#L295">teleproto/tl/custom/keyboard.ts:295</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="game"><span>game</span><a href="#game" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -233,7 +233,7 @@
 <li><span><span class="tsd-kind-parameter">options</span>: <span class="tsd-signature-type">ButtonOptions</span><span class="tsd-signature-symbol"> = {}</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">this</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/tl/custom/keyboard.ts#L279">teleproto/tl/custom/keyboard.ts:279</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/tl/custom/keyboard.ts#L280">teleproto/tl/custom/keyboard.ts:280</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member tsd-is-inherited">
 <h3 class="tsd-anchor-link" id="row"><span>row</span><a href="#row" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-is-inherited">
@@ -245,7 +245,7 @@
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">this</span></h4><aside class="tsd-sources">
 <p>Inherited from KeyboardBuilder.row</p>
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/tl/custom/keyboard.ts#L134">teleproto/tl/custom/keyboard.ts:134</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/tl/custom/keyboard.ts#L135">teleproto/tl/custom/keyboard.ts:135</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="switchinline"><span>switch<wbr/>Inline</span><a href="#switchinline" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -261,7 +261,7 @@
 <li><span><span class="tsd-kind-parameter">options</span>: <span class="tsd-signature-type">SwitchInlineButtonOptions</span><span class="tsd-signature-symbol"> = {}</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">this</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/tl/custom/keyboard.ts#L252">teleproto/tl/custom/keyboard.ts:252</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/tl/custom/keyboard.ts#L253">teleproto/tl/custom/keyboard.ts:253</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="url"><span>url</span><a href="#url" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -278,7 +278,7 @@
 <li><span><span class="tsd-kind-parameter">options</span>: <span class="tsd-signature-type">ButtonOptions</span><span class="tsd-signature-symbol"> = {}</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">this</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/tl/custom/keyboard.ts#L224">teleproto/tl/custom/keyboard.ts:224</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/tl/custom/keyboard.ts#L225">teleproto/tl/custom/keyboard.ts:225</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="urlauth"><span>url<wbr/>Auth</span><a href="#urlauth" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -295,7 +295,7 @@
 <li><span><span class="tsd-kind-parameter">options</span>: <span class="tsd-signature-type">UrlAuthButtonOptions</span><span class="tsd-signature-symbol"> = {}</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">this</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/tl/custom/keyboard.ts#L229">teleproto/tl/custom/keyboard.ts:229</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/tl/custom/keyboard.ts#L230">teleproto/tl/custom/keyboard.ts:230</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="userprofile"><span>user<wbr/>Profile</span><a href="#userprofile" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -312,7 +312,7 @@
 <li><span><span class="tsd-kind-parameter">options</span>: <span class="tsd-signature-type">ButtonOptions</span><span class="tsd-signature-symbol"> = {}</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">this</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/tl/custom/keyboard.ts#L265">teleproto/tl/custom/keyboard.ts:265</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/tl/custom/keyboard.ts#L266">teleproto/tl/custom/keyboard.ts:266</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="webapp"><span>web<wbr/>App</span><a href="#webapp" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -329,7 +329,7 @@
 <li><span><span class="tsd-kind-parameter">options</span>: <span class="tsd-signature-type">ButtonOptions</span><span class="tsd-signature-symbol"> = {}</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">this</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/tl/custom/keyboard.ts#L247">teleproto/tl/custom/keyboard.ts:247</a></li></ul></aside></div></li></ul></section></section></details></div>
+<li>Defined in <a href="https://github.com/sanyok12345/teleproto/blob/main/teleproto/tl/custom/keyboard.ts#L248">teleproto/tl/custom/keyboard.ts:248</a></li></ul></aside></div></li></ul></section></section></details></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">
@@ -351,7 +351,7 @@
 <div><a href="#add" class="tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>add</span></a><a href="#build"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>build</span></a><a href="#buy"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>buy</span></a><a href="#callback"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>callback</span></a><a href="#columns" class="tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>columns</span></a><a href="#copy"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>copy</span></a><a href="#disabled"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>disabled</span></a><a href="#forcereply"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>force<wbr/>Reply</span></a><a href="#game"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>game</span></a><a href="#row" class="tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>row</span></a><a href="#switchinline"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>switch<wbr/>Inline</span></a><a href="#url"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>url</span></a><a href="#urlauth"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>url<wbr/>Auth</span></a><a href="#userprofile"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>user<wbr/>Profile</span></a><a href="#webapp"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>web<wbr/>App</span></a></div></details></div></details></div>
 <div class="site-menu">
 <nav id="tsd-sidebar-links" class="tsd-navigation"><a href="https://github.com/sanyok12345/teleproto" class="tsd-nav-link">GitHub</a><a href="https://www.npmjs.com/package/teleproto" class="tsd-nav-link">npm</a><a href="https://github.com/sanyok12345/teleproto/issues" class="tsd-nav-link">Issues</a></nav>
-<nav class="tsd-navigation"><a href="../modules.html">teleproto - v1.232.0</a>
+<nav class="tsd-navigation"><a href="../modules.html">teleproto - v1.232.1</a>
 <ul class="tsd-small-nested-navigation" id="tsd-nav-container">
 <li>Loading...</li></ul></nav></div></div></div><footer></footer>
 <div class="overlay"></div></body></html>

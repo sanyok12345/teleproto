@@ -18,6 +18,7 @@
  */
 import { Api } from "./tl/api";
 import { unionId } from "./Helpers";
+import { Buffer } from "./platform";
 
 export {
     text,
@@ -664,4 +665,72 @@ export function toMarkdown(source: RichSource): string {
 /** Renders a rich message to HTML. Media are emitted as tags with `data-photo-id`/`data-document-id` attributes pointing into `richMessage.photos`/`documents`. */
 export function toHtml(source: RichSource): string {
     return renderBlocks(_blocksOf(source), "html");
+}
+
+/** A button found inside a received {@link Api.RichMessage}, in document order. */
+export interface RichButton {
+    text: string;
+    data?: Buffer;
+    url?: string;
+    disabled: boolean;
+    style?: {
+        bgPrimary?: boolean;
+        bgDanger?: boolean;
+        bgSuccess?: boolean;
+        link?: boolean;
+    };
+}
+
+/**
+ * Collects every button inside a received rich message. Senders commonly place
+ * pills as inline {@link Api.TextButton} nodes inside paragraphs/concatenations
+ * rather than as {@link Api.PageBlockButtonRow} blocks; the text renderers
+ * flatten those to labels, so callback data and styles are only reachable
+ * through this walker.
+ */
+export function collectButtons(source: RichSource): RichButton[] {
+    const out: RichButton[] = [];
+    const walk = (node: unknown): void => {
+        if (!node || typeof node !== "object") return;
+        if (Array.isArray(node)) {
+            for (const item of node) walk(item);
+            return;
+        }
+        const obj = node as { className?: string } & Record<string, unknown>;
+        if (obj.className === "TextButton" || obj.className === "PageButton") {
+            const button = node as Api.TextButton;
+            const type = button.type as
+                | Api.InlineButtonTypeCallback
+                | Api.InlineButtonTypeUrl
+                | Api.InlineButtonTypeDisabled
+                | undefined;
+            out.push({
+                text: renderRichText(button.text, "text"),
+                data:
+                    type && type.className === "InlineButtonTypeCallback"
+                        ? (type as Api.InlineButtonTypeCallback).data
+                        : undefined,
+                url:
+                    type && type.className === "InlineButtonTypeUrl"
+                        ? (type as Api.InlineButtonTypeUrl).url
+                        : undefined,
+                disabled: type?.className === "InlineButtonTypeDisabled",
+                style: button.style
+                    ? {
+                          bgPrimary: !!button.style.bgPrimary,
+                          bgDanger: !!button.style.bgDanger,
+                          bgSuccess: !!button.style.bgSuccess,
+                          link: !!button.style.link,
+                      }
+                    : undefined,
+            });
+            return;
+        }
+        for (const key of Object.keys(obj)) {
+            if (key[0] === "_") continue;
+            walk(obj[key]);
+        }
+    };
+    walk(_blocksOf(source));
+    return out;
 }

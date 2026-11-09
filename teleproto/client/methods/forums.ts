@@ -160,13 +160,15 @@ export async function toggleForum(
     client: TelegramClient,
     entity: EntityLike,
     enabled: boolean,
-    tabs: boolean = false
+    tabs: boolean = false,
+    sidebar: boolean = false
 ) {
     const channel = await client.getInputEntity(entity);
     return client.api.channels.toggleForum({
         channel: getInputChannel(channel),
         enabled: enabled,
         tabs: tabs,
+        sidebar: sidebar,
     });
 }
 

@@ -2430,8 +2430,8 @@ export class TelegramClient<
     }
 
     /** Enables or disables forum topics in a supergroup (`channels.toggleForum`). */
-    toggleForum(entity: EntityLike, enabled: boolean, tabs?: boolean) {
-        return forumMethods.toggleForum(this, entity, enabled, tabs);
+    toggleForum(entity: EntityLike, enabled: boolean, tabs?: boolean, sidebar?: boolean) {
+        return forumMethods.toggleForum(this, entity, enabled, tabs, sidebar);
     }
 
     /** Toggles viewing a forum as a regular chat (`channels.toggleViewForumAsMessages`). */

@@ -6182,5 +6182,37 @@
     "setClientDHParams": {
         "summary": "",
         "params": {}
+    },
+    "messages.getTranscriptionLangs": {
+        "summary": "",
+        "params": {}
+    },
+    "messages.getBotWidgetQueryAnswer": {
+        "summary": "",
+        "params": {}
+    },
+    "messages.editWidgetData": {
+        "summary": "",
+        "params": {}
+    },
+    "messages.transcribeAudioFile": {
+        "summary": "",
+        "params": {}
+    },
+    "messages.getWidgetPublicData": {
+        "summary": "",
+        "params": {}
+    },
+    "messages.setBotWidgetQueryAnswer": {
+        "summary": "",
+        "params": {}
+    },
+    "messages.editInlineBotMessageWidgetData": {
+        "summary": "",
+        "params": {}
+    },
+    "messages.editMessageWidgetData": {
+        "summary": "",
+        "params": {}
     }
 }

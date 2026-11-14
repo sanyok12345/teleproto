@@ -10,6 +10,7 @@ package-lock.json
 
 # Environment and local config
 .env
+teleproto_tests/.env
 /.vscode/
 /.idea/
 /settings/
@@ -17,6 +18,8 @@ package-lock.json
 # Local runtime data
 *.session
 /usermedia/
+.smoke-session/
+
 
 # Temporary playground files
 example.js

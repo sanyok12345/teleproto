@@ -470,7 +470,8 @@
     },
     "imports": {
         "#platform/*": {
-            "node": "./dist/platform/*/node.js",
+            "bun": "./dist/platform/*/node.js",
+        "node": "./dist/platform/*/node.js",
             "default": "./dist/platform/*/browser.js"
         }
     },
@@ -511,6 +512,7 @@
         "mtproto",
         "userbot",
         "typescript",
+        "bun",
         "nodejs",
         "gramjs",
         "gramjs-alternative",

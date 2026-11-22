@@ -855,6 +855,13 @@ export class CustomMessage extends SenderGetter {
             : undefined;
     }
 
+    /** Buttons contained in {@link richMessage} (inline text buttons and block-level page buttons), in document order. */
+    get richButtons(): rich.RichButton[] {
+        return this.richMessage && this.richMessage instanceof Api.RichMessage
+            ? rich.collectButtons(this.richMessage)
+            : [];
+    }
+
     /** Markdown rendering of {@link richMessage}, or `undefined` if the message is not rich. */
     get richMarkdown(): string | undefined {
         return this.richMessage && this.richMessage instanceof Api.RichMessage

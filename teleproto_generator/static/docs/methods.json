@@ -6214,5 +6214,53 @@
     "messages.editMessageWidgetData": {
         "summary": "",
         "params": {}
+    },
+    "aicompose.setChatStyle": {
+        "summary": "",
+        "params": {}
+    },
+    "payments.cancelStarGiftOnchainOffer": {
+        "summary": "",
+        "params": {}
+    },
+    "messages.getTranscriptionModels": {
+        "summary": "",
+        "params": {}
+    },
+    "payments.buyStarGiftOnchain": {
+        "summary": "",
+        "params": {}
+    },
+    "payments.acceptStarGiftOnchainOffer": {
+        "summary": "",
+        "params": {}
+    },
+    "bots.setBotSettings": {
+        "summary": "",
+        "params": {}
+    },
+    "messages.inviteUsersToBot": {
+        "summary": "",
+        "params": {}
+    },
+    "payments.cancelStarGiftOnchainSale": {
+        "summary": "",
+        "params": {}
+    },
+    "payments.withdrawStarsRevenueToWallet": {
+        "summary": "",
+        "params": {}
+    },
+    "payments.declineStarGiftOnchainOffer": {
+        "summary": "",
+        "params": {}
+    },
+    "payments.sendStarGiftOnchainOffer": {
+        "summary": "",
+        "params": {}
+    },
+    "payments.updateStarGiftOnchainPrice": {
+        "summary": "",
+        "params": {}
     }
 }

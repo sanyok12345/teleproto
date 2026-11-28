@@ -13,6 +13,9 @@ quickest path to a merged change is one that's easy to review.
 ## What gets merged
 
 - The change compiles cleanly: `npm run typecheck` passes.
+- The offline tests pass on both runtimes: `npm test` (Node) and
+  `bun test` (Bun) after a `npm run build`. They import the built `dist/`,
+  so a stale build shows up as stale results.
 - One logical change per PR. Drive-by reformatting goes in a separate PR.
 - The PR description says *why* the change exists; the diff already shows *what*.
 - Commit messages follow the existing convention:

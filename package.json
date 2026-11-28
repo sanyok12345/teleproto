@@ -470,7 +470,8 @@
     },
     "imports": {
         "#platform/*": {
-            "node": "./dist/platform/*/node.js",
+            "bun": "./dist/platform/*/node.js",
+        "node": "./dist/platform/*/node.js",
             "default": "./dist/platform/*/browser.js"
         }
     },
@@ -491,7 +492,11 @@
         "publish:check": "npm run publish:prepare && npm pack ./dist --dry-run",
         "publish:latest": "npm run publish:prepare && npm publish ./dist --tag latest",
         "publishOnly": "npm run publish:latest",
-        "docs": "typedoc"
+        "docs": "typedoc",
+        "test": "vitest run",
+        "test:bun": "bun test",
+        "smoke:bun": "bun teleproto_tests/smoke-live.ts",
+        "smoke:node": "ts-node --transpile-only teleproto_tests/smoke-live.ts"
     },
     "license": "MIT",
     "engines": {
@@ -507,6 +512,7 @@
         "mtproto",
         "userbot",
         "typescript",
+        "bun",
         "nodejs",
         "gramjs",
         "gramjs-alternative",
@@ -521,13 +527,17 @@
         "url": "https://github.com/sponsors/sanyok12345"
     },
     "devDependencies": {
+        "@types/bun": "^1.2.0",
         "@types/mime": "^3.0.4",
         "@types/node": "^22.15.18",
         "@types/node-localstorage": "^1.3.0",
+        "@types/qrcode": "^1.5.6",
+        "qrcode": "^1.5.4",
         "ts-node": "^9.1.1",
         "tsdown": "^0.23.4",
         "typedoc": "^0.28.7",
-        "typescript": "^5.8.3"
+        "typescript": "^5.8.3",
+        "vitest": "^3.2.4"
     },
     "dependencies": {
         "big-integer": "^1.6.48",

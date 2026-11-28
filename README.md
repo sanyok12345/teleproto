@@ -7,7 +7,8 @@ Telegram MTProto client for servers and browsers, written in TypeScript.
 
 teleproto connects to Telegram the same way the official apps do and works as
 a user account or a bot: send and read messages, handle updates, transfer
-files, and call any Telegram API method with full types.
+files, and call any Telegram API method with full types. It runs on Node.js,
+Bun and browsers.
 
 Forked from GramJS in 2025 and developed independently: see
 [Coming from GramJS](#coming-from-gramjs) for what changed.
@@ -30,6 +31,7 @@ API reference: [ref.teleproto.dev](https://ref.teleproto.dev). Guides:
 - [Messages and files](#messages-and-files)
 - [Sessions](#sessions)
 - [Browser](#browser)
+- [Bun](#bun)
 - [Extending](#extending)
 - [Examples](#examples)
 - [Versioning](#versioning)
@@ -42,9 +44,11 @@ API reference: [ref.teleproto.dev](https://ref.teleproto.dev). Guides:
 npm install teleproto
 ```
 
-Node.js 18+ and browsers through a bundler, with no polyfills (see
-[Browser](#browser)). TypeScript types included; works with both `import` and
-`require`.
+or `bun add teleproto` on Bun.
+
+Node.js 18+, Bun and browsers through a bundler, with no polyfills (see
+[Browser](#browser) and [Bun](#bun)). TypeScript types included; works with
+both `import` and `require`.
 
 ## Quick start
 
@@ -432,6 +436,31 @@ paths. TCP transports (MTProxy, SOCKS, HTTP proxy) need raw sockets that
 browsers do not have; go through a proxy with `WebProxyTransport` or your own
 WebSocket relay via [`WebSocketTransport.webSocket`](#custom-transport).
 
+## Bun
+
+The same package works out of the box under Bun — no adapter, no special
+entry point. Everything the Node build does works on Bun 1.2+: TCP and all
+proxy transports, MTProxy with fake-TLS, `StoreSession` on disk, file
+transfers, and the `client.updates` chain.
+
+```ts
+import { TelegramClient } from "teleproto";
+import { StoreSession } from "teleproto/sessions";
+
+const client = new TelegramClient(new StoreSession("main"), apiId, apiHash, {});
+await client.start({ botAuthToken });
+```
+
+```
+bun add teleproto
+bun run bot.ts
+```
+
+Crypto runs through the native `cifrante` backend on both runtimes, with the
+same digests and the same AES-IGE bytes. Node-only APIs stay behind the
+package's runtime seam, so the browser variant of a module is never loaded
+under Bun.
+
 ## Extending
 
 Storage, network route, logging and text parsing come from objects you pass
@@ -559,6 +588,13 @@ environment:
 ```
 npm install && npm run build
 TG_API_ID=... TG_API_HASH=... npx ts-node --transpile-only teleproto_examples/print_updates.ts
+```
+
+On Bun the build is enough, ts-node is not:
+
+```
+bun install && bun run build
+TG_API_ID=... TG_API_HASH=... bun teleproto_examples/print_updates.ts
 ```
 
 ## Versioning
